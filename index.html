@@ -13,12 +13,16 @@
         
         body {
             font-family: 'Poppins', sans-serif !important;
-            line-height: 1.2;
+            line-height: 0.9;
             background: linear-gradient(135deg, #000000 0%, #0f0f0f 50%, #1a1a1a 100%);
             color: #ffffff;
             position: relative;
             overflow-x: hidden;
             min-height: 100vh;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            line-height: 0.8 !important;
         }
         
         @keyframes float {
@@ -193,7 +197,7 @@
     <!-- Hero Section -->
     <section id="hero" class="min-h-screen flex items-center justify-center px-6 pt-24">
         <div class="container mx-auto text-center max-w-4xl">
-            <h1 class="text-2xl md:text-4xl font-bold mb-4 fade-in">
+            <h1 class="text-2xl md:text-4xl font-semibold mb-4 fade-in leading-tight">
                 El cliente de tus sueños está trabajando con un fotógrafo que sí sabe venderse.
             </h1>
             <p class="text-lg md:text-xl mb-8 text-gray-300 fade-in">
@@ -223,7 +227,7 @@
         <div class="container mx-auto max-w-6xl">
             <div class="grid md:grid-cols-2 gap-12 mb-16">
                 <div class="space-y-6 fade-in">
-                    <h3 class="text-lg md:text-xl font-bold mb-6 text-red-400">Seguro te has tragado (mínimo) una de estas mierdas:</h3>
+                    <h3 class="text-lg md:text-xl font-semibold mb-6 text-red-400 leading-tight">Seguro te has tragado (mínimo) una de estas mierdas:</h3>
                     <div class="flex items-start space-x-3">
                         <span class="text-red-500 text-xl">❌</span>
                         <p class="text-base">Te hierve la sangre viendo fotógrafos mediocres cobrando más que tú.</p>
@@ -239,7 +243,7 @@
                 </div>
                 
                 <div class="space-y-6 fade-in">
-                    <h3 class="text-lg md:text-xl font-bold mb-6 text-green-400">Así se ve cuando sí te sabes vender:</h3>
+                    <h3 class="text-lg md:text-xl font-semibold mb-6 text-green-400 leading-tight">Así se ve cuando sí te sabes vender:</h3>
                     <div class="flex items-start space-x-3">
                         <span class="text-green-500 text-xl">✔</span>
                         <p class="text-base">Encuentras un nicho, y te posicionas como un experto, cobrando como tal.</p>
@@ -266,9 +270,9 @@
     <!-- Quote Section -->
     <section class="py-16 px-6">
         <div class="container mx-auto text-center">
-            <h2 class="text-lg md:text-xl font-bold fade-in">
+            <p class="text-sm md:text-base fade-in leading-tight">
                 Si eres un fotógrafo más, eres un fotógrafo menos.
-            </h2>
+            </p>
         </div>
     </section>
 
@@ -276,7 +280,7 @@
     <section id="comunidad" class="py-16 px-6 section-alt">
         <div class="container mx-auto max-w-6xl">
             <div class="text-center mb-12">
-                <h2 class="text-xl md:text-3xl font-bold mb-4 fade-in">
+                <h2 class="text-2xl md:text-4xl font-semibold mb-4 fade-in leading-tight">
                     La única comunidad de fotógrafos que NO habla de fotografía.
                 </h2>
                 <p class="text-sm text-gray-300 fade-in">
@@ -285,44 +289,44 @@
             </div>
             
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-                <div class="testimonial-card rounded-lg fade-in relative overflow-hidden min-h-[160px]" style="background-image: url('https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314900/Workshops_hnheo6.png'); background-size: contain; background-repeat: no-repeat; background-position: right center;">
-                    <div class="p-6 w-2/3">
-                        <h3 class="text-2xl font-bold mb-4 leading-tight">Workshops</h3>
+                <div class="testimonial-card rounded-lg fade-in relative overflow-hidden min-h-[140px]" style="background-image: url('https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314900/Workshops_hnheo6.png'); background-size: contain; background-repeat: no-repeat; background-position: right center;">
+                    <div class="p-4 w-2/3">
+                        <h3 class="text-xl font-semibold mb-3 leading-tight">Workshops</h3>
                         <p class="text-xs leading-tight">Cada cierto tiempo surgen nuevos problemas, así que le buscamos solución. Nos vemos en vivo para hacer seguimiento de los avances y nuevos conocimientos.</p>
                     </div>
                 </div>
                 
-                <div class="testimonial-card rounded-lg fade-in relative overflow-hidden min-h-[160px]" style="background-image: url('https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314879/Cursos_h95dkv.png'); background-size: contain; background-repeat: no-repeat; background-position: right center;">
-                    <div class="p-6 w-2/3">
-                        <h3 class="text-2xl font-bold mb-4 leading-tight">Cursos</h3>
+                <div class="testimonial-card rounded-lg fade-in relative overflow-hidden min-h-[140px]" style="background-image: url('https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314879/Cursos_h95dkv.png'); background-size: contain; background-repeat: no-repeat; background-position: right center;">
+                    <div class="p-4 w-2/3">
+                        <h3 class="text-xl font-semibold mb-3 leading-tight">Cursos</h3>
                         <p class="text-xs leading-tight">Desde marketing básico hasta contenido muy MUY avanzado. Si estás dispuesto a salir con el cerebro frito, esto es para ti. Nada de esto lo vas a encontrar en YouTube.</p>
                     </div>
                 </div>
                 
-                <div class="testimonial-card rounded-lg fade-in relative overflow-hidden min-h-[160px]" style="background-image: url('https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314897/Recursos_zmu2kb.png'); background-size: contain; background-repeat: no-repeat; background-position: right center;">
-                    <div class="p-6 w-2/3">
-                        <h3 class="text-2xl font-bold mb-4 leading-tight">Recursos</h3>
+                <div class="testimonial-card rounded-lg fade-in relative overflow-hidden min-h-[140px]" style="background-image: url('https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314897/Recursos_zmu2kb.png'); background-size: contain; background-repeat: no-repeat; background-position: right center;">
+                    <div class="p-4 w-2/3">
+                        <h3 class="text-xl font-semibold mb-3 leading-tight">Recursos</h3>
                         <p class="text-xs leading-tight">Contratos, cotizadores, planes de marketing. Todo lo que alguna vez pensaste "¿Será que hay alguien tan loco como para crear esto?" Aquí lo tenemos.</p>
                     </div>
                 </div>
                 
-                <div class="testimonial-card rounded-lg fade-in relative overflow-hidden min-h-[160px]" style="background-image: url('https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314880/Grupo_Exclusivo_madj94.png'); background-size: contain; background-repeat: no-repeat; background-position: right center;">
-                    <div class="p-6 w-2/3">
-                        <h3 class="text-2xl font-bold mb-4 leading-tight">Grupo exclusivo</h3>
+                <div class="testimonial-card rounded-lg fade-in relative overflow-hidden min-h-[140px]" style="background-image: url('https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314880/Grupo_Exclusivo_madj94.png'); background-size: contain; background-repeat: no-repeat; background-position: right center;">
+                    <div class="p-4 w-2/3">
+                        <h3 class="text-xl font-semibold mb-3 leading-tight">Grupo exclusivo</h3>
                         <p class="text-xs leading-tight">El grupo de WhatsApp es el centro de todo. Convive, ríe, llora y comparte con otros locos como tú, de todas partes del mundo. No te garantizo que no te volvamos sticker.</p>
                     </div>
                 </div>
                 
-                <div class="testimonial-card rounded-lg fade-in relative overflow-hidden min-h-[160px]" style="background-image: url('https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314898/Retos_bcfbhp.png'); background-size: contain; background-repeat: no-repeat; background-position: right center;">
-                    <div class="p-6 w-2/3">
-                        <h3 class="text-2xl font-bold mb-4 leading-tight">Retos</h3>
+                <div class="testimonial-card rounded-lg fade-in relative overflow-hidden min-h-[140px]" style="background-image: url('https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314898/Retos_bcfbhp.png'); background-size: contain; background-repeat: no-repeat; background-position: right center;">
+                    <div class="p-4 w-2/3">
+                        <h3 class="text-xl font-semibold mb-3 leading-tight">Retos</h3>
                         <p class="text-xs leading-tight">Nada como un poco de presión saludable para que obtengas resultados en el menor tiempo posible. Compite por premios, regalos y sorpresas.</p>
                     </div>
                 </div>
                 
-                <div class="testimonial-card rounded-lg fade-in relative overflow-hidden min-h-[160px]" style="background-image: url('https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314883/Libros_bjjrbp.png'); background-size: contain; background-repeat: no-repeat; background-position: right center;">
-                    <div class="p-6 w-2/3">
-                        <h3 class="text-2xl font-bold mb-4 leading-tight">Libros</h3>
+                <div class="testimonial-card rounded-lg fade-in relative overflow-hidden min-h-[140px]" style="background-image: url('https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314883/Libros_bjjrbp.png'); background-size: contain; background-repeat: no-repeat; background-position: right center;">
+                    <div class="p-4 w-2/3">
+                        <h3 class="text-xl font-semibold mb-3 leading-tight">Libros</h3>
                         <p class="text-xs leading-tight">No vuelvas a comprar un libro en PDF. Lo compro yo para la comunidad, y lo dejo a disposición de todos. Lo mío es tuyo y lo tuyo es tuyo.</p>
                     </div>
                 </div>
@@ -339,12 +343,98 @@
     <!-- Testimonios Section -->
     <section id="testimonios" class="py-16 px-6">
         <div class="container mx-auto max-w-6xl">
-            <h2 class="text-xl md:text-3xl font-bold text-center mb-12 fade-in">
+            <h2 class="text-xl md:text-3xl font-semibold text-center mb-12 fade-in leading-tight">
                 Gente que pagó... y encima quedó feliz
             </h2>
             
             <div class="carousel-container" id="carouselContainer">
                 <div id="testimonialCarousel" class="carousel">
+                    <!-- Original set -->
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314965/Yorman_Alexis_keq115.jpg" alt="Testimonio Yorman Alexis">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314960/Yorel_Cando_i6zmen.jpg" alt="Testimonio Yorel Cando">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314959/Will_Plla_2_et3mtw.jpg" alt="Testimonio Will Plla">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314957/Will_Pilla_u58s9n.jpg" alt="Testimonio Will Pilla">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314957/Victor_Villarroel_m5ljmu.jpg" alt="Testimonio Victor Villarroel">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314954/Ricardo_Araque_rwtk94.jpg" alt="Testimonio Ricardo Araque">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314953/Saul_D%C3%ADaz_yc3ioc.jpg" alt="Testimonio Saul Díaz">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314952/Pankarra_Larrea_gfzr9a.jpg" alt="Testimonio Pankarra Larrea">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314951/Milton_Garc%C3%ADa_vbwo5z.jpg" alt="Testimonio Milton García">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314948/Melina_Irais_at2ruq.jpg" alt="Testimonio Melina Irais">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314948/Milton_Garc%C3%ADa_2_mbv8xj.jpg" alt="Testimonio Milton García 2">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314948/Lucas_Milde_wguilp.jpg" alt="Testimonio Lucas Milde">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314947/Melina_Irais_2_dcu5mo.jpg" alt="Testimonio Melina Irais 2">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314947/Luis_Montoya_yitpvz.jpg" alt="Testimonio Luis Montoya">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314944/Lucas_Milde_2_opw7z5.jpg" alt="Testimonio Lucas Milde 2">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314943/Jair_Lidioma_wmit3m.jpg" alt="Testimonio Jair Lidioma">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314942/Jair_Lidioma_2_fjhhly.jpg" alt="Testimonio Jair Lidioma 2">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314941/Franco_de_Olivera_xu1jeg.jpg" alt="Testimonio Franco de Olivera">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314939/Franco_de_Olivera_3_mtss9y.jpg" alt="Testimonio Franco de Olivera 3">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314939/Franco_de_Olivera_2_w3jnkr.jpg" alt="Testimonio Franco de Olivera 2">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314938/Esteban_Suarez_fhjbau.jpg" alt="Testimonio Esteban Suarez">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314937/David_Becerra_rvvzpo.jpg" alt="Testimonio David Becerra">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314936/Cristy_Palacios_jhvn7y.jpg" alt="Testimonio Cristy Palacios">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314936/David_Becerra_2_qpcn2l.jpg" alt="Testimonio David Becerra 2">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314936/Daniel_Camacho_rpdjkc.jpg" alt="Testimonio Daniel Camacho">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314935/Ale_Mendoza_fj81dm.jpg" alt="Testimonio Ale Mendoza">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314935/Ale_Azad_ozjwp3.jpg" alt="Testimonio Ale Azad">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314935/Ale_Azad_2_wfljtt.jpg" alt="Testimonio Ale Azad 2">
+                    </div>
+                    <!-- Duplicate set for infinite scroll -->
                     <div class="testimonial-slide">
                         <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314965/Yorman_Alexis_keq115.jpg" alt="Testimonio Yorman Alexis">
                     </div>
@@ -448,7 +538,7 @@
     <!-- FAQ Section -->
     <section id="faq" class="py-16 px-6 section-alt">
         <div class="container mx-auto max-w-4xl">
-            <h2 class="text-xl md:text-3xl font-bold text-center mb-12 fade-in">
+            <h2 class="text-xl md:text-3xl font-semibold text-center mb-12 fade-in leading-tight">
                 Lo que siempre preguntan antes de entrar
             </h2>
             
@@ -519,15 +609,28 @@
     <!-- CTA Final -->
     <section id="cta" class="py-16 px-6">
         <div class="container mx-auto text-center max-w-4xl">
-            <h2 class="text-xl md:text-3xl font-bold mb-6 fade-in">
+            <h2 class="text-xl md:text-3xl font-semibold mb-6 fade-in leading-tight">
                 ¿Listo para dejar de ser un fotógrafo más?
             </h2>
             <p class="text-sm mb-8 text-gray-300 fade-in">
                 Agenda tu llamada de admisiones y descubre si tienes lo que se necesita.
             </p>
-            <button onclick="scheduleCall()" class="glass-button px-8 py-4 rounded-full text-lg font-medium fade-in">
-                Agenda tu llamada de admisiones
-            </button>
+            
+            <!-- Cal inline embed code begins -->
+            <div style="width:100%;height:600px;overflow:scroll" id="my-cal-inline-admisiones" class="fade-in"></div>
+            <script type="text/javascript">
+              (function (C, A, L) { let p = function (a, ar) { a.q.push(ar); }; let d = C.document; C.Cal = C.Cal || function () { let cal = C.Cal; let ar = arguments; if (!cal.loaded) { cal.ns = {}; cal.q = cal.q || []; d.head.appendChild(d.createElement("script")).src = A; cal.loaded = true; } if (ar[0] === L) { const api = function () { p(api, arguments); }; const namespace = ar[1]; api.q = api.q || []; if(typeof namespace === "string"){cal.ns[namespace] = cal.ns[namespace] || api;p(cal.ns[namespace], ar);p(cal, ["initNamespace", namespace]);} else p(cal, ar); return;} p(cal, ar); }; })(window, "https://app.cal.com/embed/embed.js", "init");
+            Cal("init", "admisiones", {origin:"https://app.cal.com"});
+
+              Cal.ns.admisiones("inline", {
+                elementOrSelector:"#my-cal-inline-admisiones",
+                config: {"layout":"month_view","theme":"light"},
+                calLink: "themarketographer/admisiones",
+              });
+
+              Cal.ns.admisiones("ui", {"theme":"light","cssVarsPerTheme":{"light":{"cal-brand":"#181818"},"dark":{"cal-brand":"#f8f8f8"}},"hideEventTypeDetails":true,"layout":"month_view"});
+              </script>
+              <!-- Cal inline embed code ends -->
         </div>
     </section>
 
@@ -591,6 +694,7 @@
             const slides = carousel.querySelectorAll('.testimonial-slide');
             let offset = 0;
             
+            // Calculate offset for current position
             for (let i = 0; i < currentTestimonial; i++) {
                 const img = slides[i].querySelector('img');
                 const marginRight = window.innerWidth <= 480 ? 8 : window.innerWidth <= 768 ? 10 : 20;
@@ -598,6 +702,33 @@
             }
             
             carousel.style.transform = `translateX(-${offset}px)`;
+            
+            // Reset position for infinite scroll
+            if (currentTestimonial >= totalTestimonials) {
+                setTimeout(() => {
+                    carousel.style.transition = 'none';
+                    currentTestimonial = 0;
+                    carousel.style.transform = `translateX(0px)`;
+                    setTimeout(() => {
+                        carousel.style.transition = 'transform 0.3s ease';
+                    }, 50);
+                }, 300);
+            } else if (currentTestimonial < 0) {
+                setTimeout(() => {
+                    carousel.style.transition = 'none';
+                    currentTestimonial = totalTestimonials - 1;
+                    let resetOffset = 0;
+                    for (let i = 0; i < currentTestimonial; i++) {
+                        const img = slides[i].querySelector('img');
+                        const marginRight = window.innerWidth <= 480 ? 8 : window.innerWidth <= 768 ? 10 : 20;
+                        resetOffset += img.offsetWidth + marginRight;
+                    }
+                    carousel.style.transform = `translateX(-${resetOffset}px)`;
+                    setTimeout(() => {
+                        carousel.style.transition = 'transform 0.3s ease';
+                    }, 50);
+                }, 300);
+            }
         }
         
         // Drag and wheel functionality
@@ -637,15 +768,15 @@
                     // Set timeout to reset accumulator
                     scrollTimeout = setTimeout(() => {
                         scrollAccumulator = 0;
-                    }, 150);
+                    }, 100);
                     
-                    // Threshold for smooth scrolling
-                    const threshold = 50;
+                    // Threshold for smooth scrolling - reduced for more responsive control
+                    const threshold = 30;
                     
-                    if (scrollAccumulator > threshold && currentTestimonial < totalTestimonials - 1) {
+                    if (scrollAccumulator > threshold) {
                         nextTestimonial();
                         scrollAccumulator = 0;
-                    } else if (scrollAccumulator < -threshold && currentTestimonial > 0) {
+                    } else if (scrollAccumulator < -threshold) {
                         prevTestimonial();
                         scrollAccumulator = 0;
                     }
@@ -680,9 +811,9 @@
                 
                 carousel.style.transition = 'transform 0.3s ease';
                 
-                if (deltaX > threshold && currentTestimonial > 0) {
+                if (deltaX > threshold) {
                     prevTestimonial();
-                } else if (deltaX < -threshold && currentTestimonial < totalTestimonials - 1) {
+                } else if (deltaX < -threshold) {
                     nextTestimonial();
                 } else {
                     updateCarousel();
@@ -718,5 +849,5 @@
             }, 500);
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96fe48a3e23412b3',t:'MTc1NTMxOTU0Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96fe57b395493c1b',t:'MTc1NTMyMDE1OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

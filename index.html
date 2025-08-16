@@ -204,17 +204,42 @@
                 Tu competencia ya sabe lo que vas a aprender aquí.
             </p>
             
-            <!-- Video VSL -->
-            <div class="rounded-lg mb-8 fade-in">
-                <video 
-                    controls 
-                    class="w-full max-w-2xl mx-auto rounded-lg"
-                    poster="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755319085/Dale_click_al_video_kcjzxf.jpg"
-                >
-                    <source src="https://res.cloudinary.com/dplhu2z6j/video/upload/v1755315080/VSL_-_Motion_-_Abr_2025_qzm8zj.mov" type="video/mp4">
-                    Tu navegador no soporta el elemento de video.
-                </video>
-            </div>
+           <!-- Video VSL -->
+<div class="relative rounded-lg mb-8 fade-in w-full max-w-2xl mx-auto">
+    <!-- Botón Play overlay -->
+    <button id="playBtn"
+        class="absolute inset-0 flex items-center justify-center bg-black/40 rounded-lg transition hover:bg-black/60 z-10">
+        <svg xmlns="http://www.w3.org/2000/svg" 
+             class="w-16 h-16 text-white" 
+             fill="currentColor" viewBox="0 0 24 24">
+            <path d="M8 5v14l11-7z"/>
+        </svg>
+    </button>
+
+    <!-- Video -->
+    <video 
+        id="myVideo"
+        playsinline 
+        webkit-playsinline 
+        class="w-full rounded-lg opacity-0 transition-opacity duration-700"
+        poster="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755319085/Dale_click_al_video_kcjzxf.jpg"
+    >
+        <source src="https://res.cloudinary.com/dplhu2z6j/video/upload/v1755315080/VSL_-_Motion_-_Abr_2025_qzm8zj.mov" type="video/mp4">
+        Tu navegador no soporta el elemento de video.
+    </video>
+</div>
+
+<script>
+  const playBtn = document.getElementById('playBtn');
+  const myVideo = document.getElementById('myVideo');
+
+  playBtn.addEventListener('click', () => {
+    myVideo.play();
+    playBtn.style.display = 'none';
+    myVideo.setAttribute("controls","true");
+    myVideo.classList.remove("opacity-0"); // hace que aparezca con fade-in
+  });
+</script>
             
             <button onclick="scrollToSection('cta')" class="glass-button px-6 py-3 rounded-full text-base font-medium fade-in">
                 Agenda tu llamada de admisiones

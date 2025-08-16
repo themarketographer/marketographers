@@ -67,6 +67,14 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.3);
             color: #000000 !important;
+            transition: all 0.3s ease;
+        }
+        
+        .testimonial-card:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.5);
         }
         
         .testimonial-card h3,
@@ -120,12 +128,23 @@
         
         @media (max-width: 768px) {
             .testimonial-slide {
-                margin-right: 15px;
+                margin-right: 10px;
             }
             
             .testimonial-slide img {
-                max-height: 220px;
-                max-width: 250px;
+                max-height: 200px;
+                max-width: 200px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .testimonial-slide {
+                margin-right: 8px;
+            }
+            
+            .testimonial-slide img {
+                max-height: 180px;
+                max-width: 180px;
             }
         }
         
@@ -186,7 +205,7 @@
                 <video 
                     controls 
                     class="w-full max-w-2xl mx-auto rounded-lg"
-                    poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 450'%3E%3Crect width='800' height='450' fill='%23111'/%3E%3C/svg%3E"
+                    poster="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755319085/Dale_click_al_video_kcjzxf.jpg"
                 >
                     <source src="https://res.cloudinary.com/dplhu2z6j/video/upload/v1755315080/VSL_-_Motion_-_Abr_2025_qzm8zj.mov" type="video/mp4">
                     Tu navegador no soporta el elemento de video.
@@ -266,44 +285,44 @@
             </div>
             
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-                <div class="testimonial-card rounded-lg fade-in relative overflow-hidden min-h-[200px]" style="background-image: url('https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314900/Workshops_hnheo6.png'); background-size: contain; background-repeat: no-repeat; background-position: right center;">
+                <div class="testimonial-card rounded-lg fade-in relative overflow-hidden min-h-[160px]" style="background-image: url('https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314900/Workshops_hnheo6.png'); background-size: contain; background-repeat: no-repeat; background-position: right center;">
                     <div class="p-6 w-2/3">
-                        <h3 class="text-xl font-bold mb-4 leading-tight">Workshops</h3>
+                        <h3 class="text-2xl font-bold mb-4 leading-tight">Workshops</h3>
                         <p class="text-xs leading-tight">Cada cierto tiempo surgen nuevos problemas, así que le buscamos solución. Nos vemos en vivo para hacer seguimiento de los avances y nuevos conocimientos.</p>
                     </div>
                 </div>
                 
-                <div class="testimonial-card rounded-lg fade-in relative overflow-hidden min-h-[200px]" style="background-image: url('https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314879/Cursos_h95dkv.png'); background-size: contain; background-repeat: no-repeat; background-position: right center;">
+                <div class="testimonial-card rounded-lg fade-in relative overflow-hidden min-h-[160px]" style="background-image: url('https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314879/Cursos_h95dkv.png'); background-size: contain; background-repeat: no-repeat; background-position: right center;">
                     <div class="p-6 w-2/3">
-                        <h3 class="text-xl font-bold mb-4 leading-tight">Cursos</h3>
+                        <h3 class="text-2xl font-bold mb-4 leading-tight">Cursos</h3>
                         <p class="text-xs leading-tight">Desde marketing básico hasta contenido muy MUY avanzado. Si estás dispuesto a salir con el cerebro frito, esto es para ti. Nada de esto lo vas a encontrar en YouTube.</p>
                     </div>
                 </div>
                 
-                <div class="testimonial-card rounded-lg fade-in relative overflow-hidden min-h-[200px]" style="background-image: url('https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314897/Recursos_zmu2kb.png'); background-size: contain; background-repeat: no-repeat; background-position: right center;">
+                <div class="testimonial-card rounded-lg fade-in relative overflow-hidden min-h-[160px]" style="background-image: url('https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314897/Recursos_zmu2kb.png'); background-size: contain; background-repeat: no-repeat; background-position: right center;">
                     <div class="p-6 w-2/3">
-                        <h3 class="text-xl font-bold mb-4 leading-tight">Recursos</h3>
+                        <h3 class="text-2xl font-bold mb-4 leading-tight">Recursos</h3>
                         <p class="text-xs leading-tight">Contratos, cotizadores, planes de marketing. Todo lo que alguna vez pensaste "¿Será que hay alguien tan loco como para crear esto?" Aquí lo tenemos.</p>
                     </div>
                 </div>
                 
-                <div class="testimonial-card rounded-lg fade-in relative overflow-hidden min-h-[200px]" style="background-image: url('https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314880/Grupo_Exclusivo_madj94.png'); background-size: contain; background-repeat: no-repeat; background-position: right center;">
+                <div class="testimonial-card rounded-lg fade-in relative overflow-hidden min-h-[160px]" style="background-image: url('https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314880/Grupo_Exclusivo_madj94.png'); background-size: contain; background-repeat: no-repeat; background-position: right center;">
                     <div class="p-6 w-2/3">
-                        <h3 class="text-xl font-bold mb-4 leading-tight">Grupo exclusivo</h3>
+                        <h3 class="text-2xl font-bold mb-4 leading-tight">Grupo exclusivo</h3>
                         <p class="text-xs leading-tight">El grupo de WhatsApp es el centro de todo. Convive, ríe, llora y comparte con otros locos como tú, de todas partes del mundo. No te garantizo que no te volvamos sticker.</p>
                     </div>
                 </div>
                 
-                <div class="testimonial-card rounded-lg fade-in relative overflow-hidden min-h-[200px]" style="background-image: url('https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314898/Retos_bcfbhp.png'); background-size: contain; background-repeat: no-repeat; background-position: right center;">
+                <div class="testimonial-card rounded-lg fade-in relative overflow-hidden min-h-[160px]" style="background-image: url('https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314898/Retos_bcfbhp.png'); background-size: contain; background-repeat: no-repeat; background-position: right center;">
                     <div class="p-6 w-2/3">
-                        <h3 class="text-xl font-bold mb-4 leading-tight">Retos</h3>
+                        <h3 class="text-2xl font-bold mb-4 leading-tight">Retos</h3>
                         <p class="text-xs leading-tight">Nada como un poco de presión saludable para que obtengas resultados en el menor tiempo posible. Compite por premios, regalos y sorpresas.</p>
                     </div>
                 </div>
                 
-                <div class="testimonial-card rounded-lg fade-in relative overflow-hidden min-h-[200px]" style="background-image: url('https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314883/Libros_bjjrbp.png'); background-size: contain; background-repeat: no-repeat; background-position: right center;">
+                <div class="testimonial-card rounded-lg fade-in relative overflow-hidden min-h-[160px]" style="background-image: url('https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314883/Libros_bjjrbp.png'); background-size: contain; background-repeat: no-repeat; background-position: right center;">
                     <div class="p-6 w-2/3">
-                        <h3 class="text-xl font-bold mb-4 leading-tight">Libros</h3>
+                        <h3 class="text-2xl font-bold mb-4 leading-tight">Libros</h3>
                         <p class="text-xs leading-tight">No vuelvas a comprar un libro en PDF. Lo compro yo para la comunidad, y lo dejo a disposición de todos. Lo mío es tuyo y lo tuyo es tuyo.</p>
                     </div>
                 </div>
@@ -574,25 +593,64 @@
             
             for (let i = 0; i < currentTestimonial; i++) {
                 const img = slides[i].querySelector('img');
-                offset += img.offsetWidth + 20; // 20px margin
+                const marginRight = window.innerWidth <= 480 ? 8 : window.innerWidth <= 768 ? 10 : 20;
+                offset += img.offsetWidth + marginRight;
             }
             
             carousel.style.transform = `translateX(-${offset}px)`;
         }
         
-        // Drag functionality
+        // Drag and wheel functionality
         function initCarouselDrag() {
             const container = document.getElementById('carouselContainer');
             const carousel = document.getElementById('testimonialCarousel');
             
+            // Mouse drag
             container.addEventListener('mousedown', startDrag);
-            container.addEventListener('touchstart', startDrag);
-            
             document.addEventListener('mousemove', drag);
-            document.addEventListener('touchmove', drag);
-            
             document.addEventListener('mouseup', endDrag);
+            
+            // Touch drag
+            container.addEventListener('touchstart', startDrag, { passive: false });
+            document.addEventListener('touchmove', drag, { passive: false });
             document.addEventListener('touchend', endDrag);
+            
+            // Wheel/trackpad scroll
+            let scrollAccumulator = 0;
+            let scrollTimeout;
+            container.addEventListener('wheel', handleWheel, { passive: false });
+            
+            function handleWheel(e) {
+                // Only prevent default for horizontal scrolling
+                const deltaX = e.deltaX;
+                const deltaY = e.deltaY;
+                
+                // Only handle horizontal scroll or when horizontal is dominant
+                if (Math.abs(deltaX) > Math.abs(deltaY) || Math.abs(deltaX) > 5) {
+                    e.preventDefault();
+                    
+                    scrollAccumulator += deltaX;
+                    
+                    // Clear existing timeout
+                    clearTimeout(scrollTimeout);
+                    
+                    // Set timeout to reset accumulator
+                    scrollTimeout = setTimeout(() => {
+                        scrollAccumulator = 0;
+                    }, 150);
+                    
+                    // Threshold for smooth scrolling
+                    const threshold = 50;
+                    
+                    if (scrollAccumulator > threshold && currentTestimonial < totalTestimonials - 1) {
+                        nextTestimonial();
+                        scrollAccumulator = 0;
+                    } else if (scrollAccumulator < -threshold && currentTestimonial > 0) {
+                        prevTestimonial();
+                        scrollAccumulator = 0;
+                    }
+                }
+            }
             
             function startDrag(e) {
                 isDragging = true;
@@ -646,7 +704,7 @@
 
         // Schedule call function
         function scheduleCall() {
-            alert('¡Perfecto! Te redirigiremos al calendario de admisiones.\n\n(En la versión real, esto abriría tu sistema de calendario)');
+            window.open('https://cal.com/themarketographer/admisiones', '_blank');
         }
 
         // Initialize animations when page loads
@@ -660,5 +718,5 @@
             }, 500);
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96fe25b7e25c484e',t:'MTc1NTMxODExMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96fe48a3e23412b3',t:'MTc1NTMxOTU0Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

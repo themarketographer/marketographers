@@ -204,42 +204,29 @@
                 Tu competencia ya sabe lo que vas a aprender aquí.
             </p>
             
-           <!-- Video VSL -->
-<div class="relative rounded-lg mb-8 fade-in w-full max-w-2xl mx-auto">
-    <!-- Botón Play overlay -->
-    <button id="playBtn"
-        class="absolute inset-0 flex items-center justify-center bg-black/40 rounded-lg transition hover:bg-black/60 z-10">
-        <svg xmlns="http://www.w3.org/2000/svg" 
-             class="w-16 h-16 text-white" 
-             fill="currentColor" viewBox="0 0 24 24">
-            <path d="M8 5v14l11-7z"/>
-        </svg>
-    </button>
+            <!-- Video VSL (overlay bonito) -->
+            <div class="relative rounded-lg mb-8 fade-in w-full max-w-2xl mx-auto">
+              <!-- Botón Play overlay -->
+              <button id="playBtn"
+                class="absolute inset-0 flex items-center justify-center bg-black/40 rounded-lg transition hover:bg-black/60 z-10">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+              </button>
 
-    <!-- Video -->
-    <video 
-        id="myVideo"
-        playsinline 
-        webkit-playsinline 
-        class="w-full rounded-lg opacity-0 transition-opacity duration-700"
-        poster="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755319085/Dale_click_al_video_kcjzxf.jpg"
-    >
-        <source src="https://res.cloudinary.com/dplhu2z6j/video/upload/v1755315080/VSL_-_Motion_-_Abr_2025_qzm8zj.mov" type="video/mp4">
-        Tu navegador no soporta el elemento de video.
-    </video>
-</div>
-
-<script>
-  const playBtn = document.getElementById('playBtn');
-  const myVideo = document.getElementById('myVideo');
-
-  playBtn.addEventListener('click', () => {
-    myVideo.play();
-    playBtn.style.display = 'none';
-    myVideo.setAttribute("controls","true");
-    myVideo.classList.remove("opacity-0"); // hace que aparezca con fade-in
-  });
-</script>
+              <!-- Video -->
+              <video 
+                id="myVideo"
+                playsinline 
+                webkit-playsinline
+                preload="metadata"
+                class="w-full rounded-lg opacity-0 transition-opacity duration-500"
+                poster="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755319085/Dale_click_al_video_kcjzxf.jpg"
+              >
+                <source src="https://res.cloudinary.com/dplhu2z6j/video/upload/f_mp4,vc_h264,q_auto:good,w_1280,h_720,c_fit/VSL_-_Motion_-_Abr_2025_qzm8zj.mp4" type="video/mp4">
+                Tu navegador no soporta el elemento de video.
+              </video>
+            </div>
             
             <button onclick="scrollToSection('cta')" class="glass-button px-6 py-3 rounded-full text-base font-medium fade-in">
                 Agenda tu llamada de admisiones
@@ -863,6 +850,18 @@
             window.open('https://cal.com/themarketographer/admisiones', '_blank');
         }
 
+        // Video player functionality
+        const playBtn = document.getElementById('playBtn');
+        const myVideo = document.getElementById('myVideo');
+
+        playBtn.addEventListener('click', () => {
+            myVideo.setAttribute("controls","true");
+            myVideo.classList.remove("opacity-0");
+            const p = myVideo.play();
+            if (p && p.catch) p.catch(() => {});
+            playBtn.style.display = 'none';
+        });
+
         // Initialize animations when page loads
         document.addEventListener('DOMContentLoaded', function() {
             observeElements();
@@ -874,5 +873,5 @@
             }, 500);
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96fe62bcc4c5b53c',t:'MTc1NTMyMDYxMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96fe8053a148cdcd',t:'MTc1NTMyMTgyMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

@@ -6,59 +6,179 @@
     <title>The Marketographers - Comunidad de Marketing para Fotógrafos</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Meta Pixel Code (TU ID: 664341546312942) -->
-    <script>
-      !function(f,b,e,v,n,t,s)
-      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-      n.queue=[];t=b.createElement(e);t.async=!0;
-      t.src=v;s=b.getElementsByTagName(e)[0];
-      s.parentNode.insertBefore(t,s)}(window, document,'script',
-      'https://connect.facebook.net/en_US/fbevents.js');
-      fbq('init', '664341546312942');
-      fbq('track', 'PageView');
-    </script>
-    <noscript>
-      <img height="1" width="1" style="display:none"
-      src="https://www.facebook.com/tr?id=664341546312942&ev=PageView&noscript=1"/>
-    </noscript>
-    <!-- End Meta Pixel Code -->
-
     <style>
-        * { font-family: 'Poppins', sans-serif !important; }
+        * {
+            font-family: 'Poppins', sans-serif !important;
+        }
+        
         body {
             font-family: 'Poppins', sans-serif !important;
             line-height: 0.9;
             background: linear-gradient(135deg, #000000 0%, #0f0f0f 50%, #1a1a1a 100%);
-            color: #ffffff; position: relative; overflow-x: hidden; min-height: 100vh;
+            color: #ffffff;
+            position: relative;
+            overflow-x: hidden;
+            min-height: 100vh;
         }
-        h1, h2, h3, h4, h5, h6 { line-height: 1.1 !important; }
-        @keyframes float { 0%,100%{transform:translate(0,0) rotate(0)} 33%{transform:translate(-20px,-20px) rotate(1deg)} 66%{transform:translate(20px,-10px) rotate(-1deg)} }
-        .glass-effect{background:rgba(255,255,255,.05);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.1);border-radius:20px;}
-        .glass-button{background:rgba(255,255,255,.95);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.3);transition:all .3s ease;color:#000!important;}
-        .glass-button:hover{background:#fff;transform:translateY(-2px);box-shadow:0 10px 25px rgba(255,255,255,.3)}
-        .glass-button-transparent{background:rgba(255,255,255,.1);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.2);transition:all .3s ease;color:#fff!important;}
-        .glass-button-transparent:hover{background:rgba(255,255,255,.2);transform:translateY(-2px);box-shadow:0 10px 25px rgba(255,255,255,.1)}
-        .testimonial-card{background:rgba(255,255,255,.95);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.3);color:#000!important;transition:all .3s ease;}
-        .testimonial-card:hover{background:#fff;transform:translateY(-5px);box-shadow:0 15px 35px rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.5)}
-        .testimonial-card h3,.testimonial-card p{color:#000!important}
-        .fade-in{opacity:0;transform:translateY(30px);transition:all .6s ease;}
-        .fade-in.visible{opacity:1;transform:translateY(0)}
-        .carousel-container{overflow:hidden;position:relative;cursor:grab;user-select:none}
-        .carousel-container:active{cursor:grabbing}
-        .carousel{display:flex;transition:transform .3s ease;will-change:transform}
-        .testimonial-slide{margin-right:20px;flex-shrink:0;display:flex;align-items:center}
-        .testimonial-slide img{border-radius:8px;object-fit:contain;max-height:280px;max-width:300px;width:auto;height:auto}
-        @media (max-width:768px){.testimonial-slide{margin-right:10px}.testimonial-slide img{max-height:240px;max-width:240px}}
-        @media (max-width:480px){.testimonial-slide{margin-right:8px}.testimonial-slide img{max-height:220px;max-width:220px}}
-        .faq-item{border-bottom:1px solid rgba(255,255,255,.1)}
-        .faq-content{max-height:0;overflow:hidden;transition:all .15s cubic-bezier(.4,0,.2,1);opacity:0}
-        .faq-content.open{max-height:200px;opacity:1}
-        .faq-arrow{transition:transform .15s ease}
-        .faq-arrow.rotated{transform:rotate(45deg)}
-        .section-alt{background:rgba(255,255,255,.02)}
+        
+        h1, h2, h3, h4, h5, h6 {
+            line-height: 1.1 !important;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(-20px, -20px) rotate(1deg); }
+            66% { transform: translate(20px, -10px) rotate(-1deg); }
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+        }
+        
+        .glass-button {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            color: #000000 !important;
+        }
+        
+        .glass-button:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.3);
+        }
+        
+        .glass-button-transparent {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            color: #ffffff !important;
+        }
+        
+        .glass-button-transparent:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.1);
+        }
+        
+        .testimonial-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #000000 !important;
+            transition: all 0.3s ease;
+        }
+        
+        .testimonial-card:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        
+        .testimonial-card h3,
+        .testimonial-card p {
+            color: #000000 !important;
+        }
+        
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+        
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .carousel-container {
+            overflow: hidden;
+            position: relative;
+            cursor: grab;
+            user-select: none;
+        }
+        
+        .carousel-container:active {
+            cursor: grabbing;
+        }
+        
+        .carousel {
+            display: flex;
+            transition: transform 0.3s ease;
+            will-change: transform;
+        }
+        
+        .testimonial-slide {
+            margin-right: 20px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .testimonial-slide img {
+            border-radius: 8px;
+            object-fit: contain;
+            max-height: 280px;
+            max-width: 300px;
+            width: auto;
+            height: auto;
+        }
+        
+        @media (max-width: 768px) {
+            .testimonial-slide {
+                margin-right: 10px;
+            }
+            
+            .testimonial-slide img {
+                max-height: 240px;
+                max-width: 240px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .testimonial-slide {
+                margin-right: 8px;
+            }
+            
+            .testimonial-slide img {
+                max-height: 220px;
+                max-width: 220px;
+            }
+        }
+        
+        .faq-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .faq-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+        }
+        
+        .faq-content.open {
+            max-height: 200px;
+            opacity: 1;
+        }
+        
+        .faq-arrow {
+            transition: transform 0.15s ease;
+        }
+        
+        .faq-arrow.rotated {
+            transform: rotate(45deg);
+        }
+        
+        .section-alt {
+            background: rgba(255, 255, 255, 0.02);
+        }
     </style>
 </head>
 <body>
@@ -67,12 +187,9 @@
         <div class="px-6 py-3">
             <div class="flex justify-between items-center">
                 <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314903/Marketographers_Blanco_S_F_p1toov.png" alt="The Marketographers" class="h-12 cursor-pointer" onclick="scrollToSection('hero')">
-                <!-- Botón: abre Cal + evento Lead -->
-                <a href="https://cal.com/themarketographer/admisiones"
-                   class="glass-button-transparent px-4 py-2 rounded-full font-medium text-sm"
-                   target="_blank" rel="noopener" data-fb-lead>
+                <button onclick="scrollToSection('cta')" class="glass-button-transparent px-4 py-2 rounded-full font-medium text-sm">
                     Agenda tu llamada
-                </a>
+                </button>
             </div>
         </div>
     </header>
@@ -86,9 +203,10 @@
             <p class="text-base md:text-xl mb-8 text-gray-300 fade-in font-light">
                 Tu competencia ya sabe lo que vas a aprender aquí.
             </p>
-
-            <!-- Video VSL -->
+            
+            <!-- Video VSL (overlay bonito) -->
             <div class="relative rounded-lg mb-8 fade-in w-full max-w-2xl mx-auto">
+              <!-- Botón Play overlay -->
               <button id="playBtn"
                 class="absolute inset-0 flex items-center justify-center bg-black/40 rounded-lg transition hover:bg-black/60 z-10">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -96,20 +214,23 @@
                 </svg>
               </button>
 
-              <video id="myVideo" playsinline webkit-playsinline preload="metadata"
-                     class="w-full rounded-lg opacity-0 transition-opacity duration-500"
-                     poster="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755319085/Dale_click_al_video_kcjzxf.jpg">
+              <!-- Video -->
+              <video 
+                id="myVideo"
+                playsinline 
+                webkit-playsinline
+                preload="metadata"
+                class="w-full rounded-lg opacity-0 transition-opacity duration-500"
+                poster="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755319085/Dale_click_al_video_kcjzxf.jpg"
+              >
                 <source src="https://res.cloudinary.com/dplhu2z6j/video/upload/f_mp4,vc_h264,q_auto:good,w_1280,h_720,c_fit/VSL_-_Motion_-_Abr_2025_qzm8zj.mp4" type="video/mp4">
                 Tu navegador no soporta el elemento de video.
               </video>
             </div>
-
-            <!-- Botón: abre Cal + evento Lead -->
-            <a href="https://cal.com/themarketographer/admisiones" target="_blank" rel="noopener"
-               class="glass-button px-5 md:px-6 py-2.5 md:py-3 rounded-full text-xs md:text-base font-medium fade-in"
-               data-fb-lead>
+            
+            <button onclick="scrollToSection('cta')" class="glass-button px-5 md:px-6 py-2.5 md:py-3 rounded-full text-xs md:text-base font-medium fade-in">
                 Agenda tu llamada de admisiones
-            </a>
+            </button>
         </div>
     </section>
 
@@ -119,29 +240,46 @@
             <div class="grid md:grid-cols-2 gap-12 mb-16">
                 <div class="space-y-3 fade-in">
                     <h3 class="text-lg md:text-xl font-semibold mb-4 text-red-400 leading-tight">Seguro te has tragado (mínimo) una de estas mierdas:</h3>
-                    <div class="flex items-start space-x-3"><span class="text-red-500 text-xl">❌</span><p class="text-base">Te hierve la sangre viendo fotógrafos mediocres cobrando más que tú.</p></div>
-                    <div class="flex items-start space-x-3"><span class="text-red-500 text-xl">❌</span><p class="text-base">Sabes que tu trabajo es bueno, pero te quieren pagar como si fueras nuevo.</p></div>
-                    <div class="flex items-start space-x-3"><span class="text-red-500 text-xl">❌</span><p class="text-base">Te caga aceptar trabajos que no te apasionan, porque "es trabajo".</p></div>
+                    <div class="flex items-start space-x-3">
+                        <span class="text-red-500 text-xl">❌</span>
+                        <p class="text-base">Te hierve la sangre viendo fotógrafos mediocres cobrando más que tú.</p>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <span class="text-red-500 text-xl">❌</span>
+                        <p class="text-base">Sabes que tu trabajo es bueno, pero te quieren pagar como si fueras nuevo.</p>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <span class="text-red-500 text-xl">❌</span>
+                        <p class="text-base">Te caga aceptar trabajos que no te apasionan, porque "es trabajo".</p>
+                    </div>
                 </div>
+                
                 <div class="space-y-3 fade-in">
                     <h3 class="text-lg md:text-xl font-semibold mb-4 text-green-400 leading-tight">Así se ve cuando sí te sabes vender:</h3>
-                    <div class="flex items-start space-x-3"><span class="text-green-500 text-xl">✔</span><p class="text-base">Encuentras un nicho, y te posicionas como un experto, cobrando como tal.</p></div>
-                    <div class="flex items-start space-x-3"><span class="text-green-500 text-xl">✔</span><p class="text-base">Atraes clientes que aman tu trabajo y te dan las gracias cuando te pagan.</p></div>
-                    <div class="flex items-start space-x-3"><span class="text-green-500 text-xl">✔</span><p class="text-base">Ganar más, trabajar menos y mandar a la mierda a los malos clientes.</p></div>
+                    <div class="flex items-start space-x-3">
+                        <span class="text-green-500 text-xl">✔</span>
+                        <p class="text-base">Encuentras un nicho, y te posicionas como un experto, cobrando como tal.</p>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <span class="text-green-500 text-xl">✔</span>
+                        <p class="text-base">Atraes clientes que aman tu trabajo y te dan las gracias cuando te pagan.</p>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <span class="text-green-500 text-xl">✔</span>
+                        <p class="text-base">Ganar más, trabajar menos y mandar a la mierda a los malos clientes.</p>
+                    </div>
                 </div>
             </div>
+            
             <div class="text-center">
-                <!-- Botón: abre Cal + evento Lead -->
-                <a href="https://cal.com/themarketographer/admisiones" target="_blank" rel="noopener"
-                   class="glass-button px-5 md:px-6 py-2.5 md:py-3 rounded-full text-xs md:text-base font-medium fade-in"
-                   data-fb-lead>
+                <button onclick="scrollToSection('cta')" class="glass-button px-5 md:px-6 py-2.5 md:py-3 rounded-full text-xs md:text-base font-medium fade-in">
                     Agenda tu llamada de admisiones
-                </a>
+                </button>
             </div>
         </div>
     </section>
 
-    <!-- Quote -->
+    <!-- Quote Section -->
     <section class="py-16 px-8">
         <div class="container mx-auto text-center">
             <p class="text-sm md:text-base fade-in leading-tight">
@@ -161,25 +299,326 @@
                     Posicionamiento, precios, pitch de ventas, creación de contenido, ads.
                 </p>
             </div>
-            <!-- ... tarjetas tal como estaban ... -->
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                <div class="testimonial-card rounded-lg fade-in relative overflow-hidden min-h-[120px] md:min-h-[140px]" style="background-image: url('https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314900/Workshops_hnheo6.png'); background-size: contain; background-repeat: no-repeat; background-position: right center;">
+                    <div class="p-6 md:p-8 w-2/3">
+                        <h3 class="text-xl md:text-xl font-semibold mb-2 md:mb-3" style="line-height: 0.9;">Workshops</h3>
+                        <p class="text-[10px] md:text-xs leading-tight">Cada cierto tiempo surgen nuevos problemas, así que le buscamos solución. Nos vemos en vivo para hacer seguimiento de los avances y nuevos conocimientos.</p>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card rounded-lg fade-in relative overflow-hidden min-h-[120px] md:min-h-[140px]" style="background-image: url('https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314879/Cursos_h95dkv.png'); background-size: contain; background-repeat: no-repeat; background-position: right center;">
+                    <div class="p-6 md:p-8 w-2/3">
+                        <h3 class="text-xl md:text-xl font-semibold mb-2 md:mb-3" style="line-height: 0.9;">Cursos</h3>
+                        <p class="text-[10px] md:text-xs leading-tight">Desde marketing básico hasta contenido muy MUY avanzado. Si estás dispuesto a salir con el cerebro frito, esto es para ti. Nada de esto lo vas a encontrar en YouTube.</p>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card rounded-lg fade-in relative overflow-hidden min-h-[120px] md:min-h-[140px]" style="background-image: url('https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314897/Recursos_zmu2kb.png'); background-size: contain; background-repeat: no-repeat; background-position: right center;">
+                    <div class="p-6 md:p-8 w-2/3">
+                        <h3 class="text-xl md:text-xl font-semibold mb-2 md:mb-3" style="line-height: 0.9;">Recursos</h3>
+                        <p class="text-[10px] md:text-xs leading-tight">Contratos, cotizadores, planes de marketing. Todo lo que alguna vez pensaste "¿Será que hay alguien tan loco como para crear esto?" Aquí lo tenemos.</p>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card rounded-lg fade-in relative overflow-hidden min-h-[120px] md:min-h-[140px]" style="background-image: url('https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314880/Grupo_Exclusivo_madj94.png'); background-size: contain; background-repeat: no-repeat; background-position: right center;">
+                    <div class="p-6 md:p-8 w-2/3">
+                        <h3 class="text-xl md:text-xl font-semibold mb-2 md:mb-3" style="line-height: 0.9;">Grupo exclusivo</h3>
+                        <p class="text-[10px] md:text-xs leading-tight">El grupo de WhatsApp es el centro de todo. Convive, ríe, llora y comparte con otros locos como tú, de todas partes del mundo. No te garantizo que no te volvamos sticker.</p>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card rounded-lg fade-in relative overflow-hidden min-h-[120px] md:min-h-[140px]" style="background-image: url('https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314898/Retos_bcfbhp.png'); background-size: contain; background-repeat: no-repeat; background-position: right center;">
+                    <div class="p-6 md:p-8 w-2/3">
+                        <h3 class="text-xl md:text-xl font-semibold mb-2 md:mb-3" style="line-height: 0.9;">Retos</h3>
+                        <p class="text-[10px] md:text-xs leading-tight">Nada como un poco de presión saludable para que obtengas resultados en el menor tiempo posible. Compite por premios, regalos y sorpresas.</p>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card rounded-lg fade-in relative overflow-hidden min-h-[120px] md:min-h-[140px]" style="background-image: url('https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314883/Libros_bjjrbp.png'); background-size: contain; background-repeat: no-repeat; background-position: right center;">
+                    <div class="p-6 md:p-8 w-2/3">
+                        <h3 class="text-xl md:text-xl font-semibold mb-2 md:mb-3" style="line-height: 0.9;">Libros</h3>
+                        <p class="text-[10px] md:text-xs leading-tight">No vuelvas a comprar un libro en PDF. Lo compro yo para la comunidad, y lo dejo a disposición de todos. Lo mío es tuyo y lo tuyo es tuyo.</p>
+                    </div>
+                </div>
+            </div>
+            
             <div class="text-center">
-                <!-- Botón: abre Cal + evento Lead -->
-                <a href="https://cal.com/themarketographer/admisiones" target="_blank" rel="noopener"
-                   class="glass-button px-5 md:px-6 py-2.5 md:py-3 rounded-full text-xs md:text-base font-medium fade-in"
-                   data-fb-lead>
+                <button onclick="scrollToSection('cta')" class="glass-button px-5 md:px-6 py-2.5 md:py-3 rounded-full text-xs md:text-base font-medium fade-in">
                     Agenda tu llamada de admisiones
-                </a>
+                </button>
             </div>
         </div>
     </section>
 
-    <!-- Testimonios (igual que antes) -->
-    <!-- ... mantengo tu carrusel tal cual ... -->
+    <!-- Testimonios Section -->
+    <section id="testimonios" class="py-16 px-8">
+        <div class="container mx-auto max-w-6xl">
+            <h2 class="text-xl md:text-3xl font-semibold text-center mb-12 fade-in leading-tight">
+                Gente que pagó... y encima quedó feliz
+            </h2>
+            
+            <div class="carousel-container" id="carouselContainer">
+                <div id="testimonialCarousel" class="carousel">
+                    <!-- Original set -->
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314965/Yorman_Alexis_keq115.jpg" alt="Testimonio Yorman Alexis">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314960/Yorel_Cando_i6zmen.jpg" alt="Testimonio Yorel Cando">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314959/Will_Plla_2_et3mtw.jpg" alt="Testimonio Will Plla">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314957/Will_Pilla_u58s9n.jpg" alt="Testimonio Will Pilla">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314957/Victor_Villarroel_m5ljmu.jpg" alt="Testimonio Victor Villarroel">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314954/Ricardo_Araque_rwtk94.jpg" alt="Testimonio Ricardo Araque">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314953/Saul_D%C3%ADaz_yc3ioc.jpg" alt="Testimonio Saul Díaz">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314952/Pankarra_Larrea_gfzr9a.jpg" alt="Testimonio Pankarra Larrea">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314951/Milton_Garc%C3%ADa_vbwo5z.jpg" alt="Testimonio Milton García">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314948/Melina_Irais_at2ruq.jpg" alt="Testimonio Melina Irais">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314948/Milton_Garc%C3%ADa_2_mbv8xj.jpg" alt="Testimonio Milton García 2">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314948/Lucas_Milde_wguilp.jpg" alt="Testimonio Lucas Milde">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314947/Melina_Irais_2_dcu5mo.jpg" alt="Testimonio Melina Irais 2">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314947/Luis_Montoya_yitpvz.jpg" alt="Testimonio Luis Montoya">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314944/Lucas_Milde_2_opw7z5.jpg" alt="Testimonio Lucas Milde 2">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314943/Jair_Lidioma_wmit3m.jpg" alt="Testimonio Jair Lidioma">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314942/Jair_Lidioma_2_fjhhly.jpg" alt="Testimonio Jair Lidioma 2">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314941/Franco_de_Olivera_xu1jeg.jpg" alt="Testimonio Franco de Olivera">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314939/Franco_de_Olivera_3_mtss9y.jpg" alt="Testimonio Franco de Olivera 3">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314939/Franco_de_Olivera_2_w3jnkr.jpg" alt="Testimonio Franco de Olivera 2">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314938/Esteban_Suarez_fhjbau.jpg" alt="Testimonio Esteban Suarez">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314937/David_Becerra_rvvzpo.jpg" alt="Testimonio David Becerra">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314936/Cristy_Palacios_jhvn7y.jpg" alt="Testimonio Cristy Palacios">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314936/David_Becerra_2_qpcn2l.jpg" alt="Testimonio David Becerra 2">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314936/Daniel_Camacho_rpdjkc.jpg" alt="Testimonio Daniel Camacho">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314935/Ale_Mendoza_fj81dm.jpg" alt="Testimonio Ale Mendoza">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314935/Ale_Azad_ozjwp3.jpg" alt="Testimonio Ale Azad">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314935/Ale_Azad_2_wfljtt.jpg" alt="Testimonio Ale Azad 2">
+                    </div>
+                    <!-- Duplicate set for infinite scroll -->
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314965/Yorman_Alexis_keq115.jpg" alt="Testimonio Yorman Alexis">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314960/Yorel_Cando_i6zmen.jpg" alt="Testimonio Yorel Cando">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314959/Will_Plla_2_et3mtw.jpg" alt="Testimonio Will Plla">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314957/Will_Pilla_u58s9n.jpg" alt="Testimonio Will Pilla">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314957/Victor_Villarroel_m5ljmu.jpg" alt="Testimonio Victor Villarroel">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314954/Ricardo_Araque_rwtk94.jpg" alt="Testimonio Ricardo Araque">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314953/Saul_D%C3%ADaz_yc3ioc.jpg" alt="Testimonio Saul Díaz">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314952/Pankarra_Larrea_gfzr9a.jpg" alt="Testimonio Pankarra Larrea">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314951/Milton_Garc%C3%ADa_vbwo5z.jpg" alt="Testimonio Milton García">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314948/Melina_Irais_at2ruq.jpg" alt="Testimonio Melina Irais">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314948/Milton_Garc%C3%ADa_2_mbv8xj.jpg" alt="Testimonio Milton García 2">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314948/Lucas_Milde_wguilp.jpg" alt="Testimonio Lucas Milde">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314947/Melina_Irais_2_dcu5mo.jpg" alt="Testimonio Melina Irais 2">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314947/Luis_Montoya_yitpvz.jpg" alt="Testimonio Luis Montoya">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314944/Lucas_Milde_2_opw7z5.jpg" alt="Testimonio Lucas Milde 2">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314943/Jair_Lidioma_wmit3m.jpg" alt="Testimonio Jair Lidioma">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314942/Jair_Lidioma_2_fjhhly.jpg" alt="Testimonio Jair Lidioma 2">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314941/Franco_de_Olivera_xu1jeg.jpg" alt="Testimonio Franco de Olivera">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314939/Franco_de_Olivera_3_mtss9y.jpg" alt="Testimonio Franco de Olivera 3">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314939/Franco_de_Olivera_2_w3jnkr.jpg" alt="Testimonio Franco de Olivera 2">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314938/Esteban_Suarez_fhjbau.jpg" alt="Testimonio Esteban Suarez">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314937/David_Becerra_rvvzpo.jpg" alt="Testimonio David Becerra">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314936/Cristy_Palacios_jhvn7y.jpg" alt="Testimonio Cristy Palacios">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314936/David_Becerra_2_qpcn2l.jpg" alt="Testimonio David Becerra 2">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314936/Daniel_Camacho_rpdjkc.jpg" alt="Testimonio Daniel Camacho">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314935/Ale_Mendoza_fj81dm.jpg" alt="Testimonio Ale Mendoza">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314935/Ale_Azad_ozjwp3.jpg" alt="Testimonio Ale Azad">
+                    </div>
+                    <div class="testimonial-slide">
+                        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314935/Ale_Azad_2_wfljtt.jpg" alt="Testimonio Ale Azad 2">
+                    </div>
+                </div>
+                
+                <button onclick="prevTestimonial()" class="absolute left-4 top-1/2 transform -translate-y-1/2 glass-button-transparent p-1.5 rounded-full">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </button>
+                <button onclick="nextTestimonial()" class="absolute right-4 top-1/2 transform -translate-y-1/2 glass-button-transparent p-1.5 rounded-full">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </section>
 
-    <!-- FAQ (igual que antes) -->
-    <!-- ... -->
+    <!-- FAQ Section -->
+    <section id="faq" class="py-16 px-8 section-alt">
+        <div class="container mx-auto max-w-4xl">
+            <h2 class="text-2xl md:text-3xl font-semibold text-center mb-12 fade-in leading-tight">
+                Lo que siempre preguntan antes de entrar
+            </h2>
+            
+            <div class="space-y-2">
+                <div class="faq-item">
+                    <button onclick="toggleFAQ(0)" class="w-full text-left py-4 flex justify-between items-center">
+                        <span class="text-lg font-medium">¿Tienen garantía de devolución?</span>
+                        <span class="faq-arrow text-xl">+</span>
+                    </button>
+                    <div class="faq-content pb-4">
+                        <p class="text-gray-300 text-sm">JAJAJAJAJA. No. Aquí no devolvemos dinero porque sabemos que, si entras, vas a querer quedarte. Y si no te gusta, probablemente es porque esperabas milagros sin mover un dedo.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button onclick="toggleFAQ(1)" class="w-full text-left py-4 flex justify-between items-center">
+                        <span class="text-lg font-medium">¿Tengo que entrar a las clases?</span>
+                        <span class="faq-arrow text-xl">+</span>
+                    </button>
+                    <div class="faq-content pb-4">
+                        <p class="text-gray-300 text-sm">Solo si quieres aprender. Las clases son martes y jueves, y si no puedes, quedan grabadas para que las veas mientras cenas, conduces o finges escuchar a alguien.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button onclick="toggleFAQ(2)" class="w-full text-left py-4 flex justify-between items-center">
+                        <span class="text-lg font-medium">¿Puedo cancelar cuando quiera?</span>
+                        <span class="faq-arrow text-xl">+</span>
+                    </button>
+                    <div class="faq-content pb-4">
+                        <p class="text-gray-300 text-sm">Sí. Un clic y listo. No te vamos a mandar un correo de 15 párrafos con "¿pero por qué te vas?" ni a llamarte para convencerte como ex tóxica.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button onclick="toggleFAQ(3)" class="w-full text-left py-4 flex justify-between items-center">
+                        <span class="text-lg font-medium">¿Cómo sé si esto es para mí?</span>
+                        <span class="faq-arrow text-xl">+</span>
+                    </button>
+                    <div class="faq-content pb-4">
+                        <p class="text-gray-300 text-sm">Si quieres clientes, facturar y dejar de vivir del "boca a boca", sí es para ti. Si te encanta coleccionar cursos como estampitas y nunca abrirlos, mejor ahórrate el dinero… o mándamelo directo, igual de inútil va a ser.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button onclick="toggleFAQ(4)" class="w-full text-left py-4 flex justify-between items-center">
+                        <span class="text-lg font-medium">¿Y si no sé nada de marketing?</span>
+                        <span class="faq-arrow text-xl">+</span>
+                    </button>
+                    <div class="faq-content pb-4">
+                        <p class="text-gray-300 text-sm">Mejor. Así no tienes que desaprender pendejadas de gurús que te dijeron que "el contenido de valor" era la solución a todo.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button onclick="toggleFAQ(5)" class="w-full text-left py-4 flex justify-between items-center">
+                        <span class="text-lg font-medium">¿Y siempre dices groserías?</span>
+                        <span class="faq-arrow text-xl">+</span>
+                    </button>
+                    <div class="faq-content pb-4">
+                        <p class="text-gray-300 text-sm">Sí. Un vergo. Porque decir "cliente de mierda" es más potente que decir "cliente poco comprometido". Y si eso te ofende, vete a buscar otro curso gratis en Youtube.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    <!-- CTA Final con embed de Cal (dejado igual) -->
+    <!-- CTA Final -->
     <section id="cta" class="py-16 px-8">
         <div class="container mx-auto text-center max-w-4xl">
             <h2 class="text-2xl md:text-3xl font-semibold mb-6 fade-in leading-tight">
@@ -188,12 +627,12 @@
             <p class="text-sm mb-8 text-gray-300 fade-in">
                 Agenda tu llamada de admisiones y descubre si tienes lo que se necesita.
             </p>
-
+            
             <!-- Cal inline embed code begins -->
             <div style="width:100%;min-height:600px;height:auto;overflow:visible" id="my-cal-inline-admisiones" class="fade-in"></div>
             <script type="text/javascript">
               (function (C, A, L) { let p = function (a, ar) { a.q.push(ar); }; let d = C.document; C.Cal = C.Cal || function () { let cal = C.Cal; let ar = arguments; if (!cal.loaded) { cal.ns = {}; cal.q = cal.q || []; d.head.appendChild(d.createElement("script")).src = A; cal.loaded = true; } if (ar[0] === L) { const api = function () { p(api, arguments); }; const namespace = ar[1]; api.q = api.q || []; if(typeof namespace === "string"){cal.ns[namespace] = cal.ns[namespace] || api;p(cal.ns[namespace], ar);p(cal, ["initNamespace", namespace]);} else p(cal, ar); return;} p(cal, ar); }; })(window, "https://app.cal.com/embed/embed.js", "init");
-              Cal("init", "admisiones", {origin:"https://app.cal.com"});
+            Cal("init", "admisiones", {origin:"https://app.cal.com"});
 
               Cal.ns.admisiones("inline", {
                 elementOrSelector:"#my-cal-inline-admisiones",
@@ -202,8 +641,8 @@
               });
 
               Cal.ns.admisiones("ui", {"theme":"light","cssVarsPerTheme":{"light":{"cal-brand":"#181818"},"dark":{"cal-brand":"#f8f8f8"}},"hideEventTypeDetails":true,"layout":"month_view"});
-            </script>
-            <!-- Cal inline embed code ends -->
+              </script>
+              <!-- Cal inline embed code ends -->
         </div>
     </section>
 
@@ -212,57 +651,274 @@
         function observeElements() {
             const elements = document.querySelectorAll('.fade-in');
             const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
             }, { threshold: 0.1 });
-            elements.forEach(el => observer.observe(el));
-        }
 
-        function scrollToSection(id){ const el=document.getElementById(id); if(el) el.scrollIntoView({behavior:'smooth'}); }
-
-        // FAQ
-        function toggleFAQ(i){
-          const faqItems=document.querySelectorAll('.faq-content');
-          const arrows=document.querySelectorAll('.faq-arrow');
-          faqItems[i].classList.toggle('open');
-          const isOpen=faqItems[i].classList.contains('open');
-          arrows[i].textContent=isOpen?'−':'+';
-          arrows[i].classList.toggle('rotated',isOpen);
-        }
-
-        // Testimonios (tu lógica original sigue abajo en tu archivo real)
-        // ...
-
-        // Disparo de LEAD en todos los enlaces marcados
-        document.addEventListener('DOMContentLoaded', function(){
-          document.querySelectorAll('[data-fb-lead]').forEach(function(el){
-            el.addEventListener('click', function(){
-              if (window.fbq) fbq('track','Lead');
+            elements.forEach(element => {
+                observer.observe(element);
             });
-          });
-          observeElements();
-        });
+        }
 
-        // Player
-        const playBtn=document.getElementById('playBtn');
-        const myVideo=document.getElementById('myVideo');
+        // Smooth scroll to section
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // FAQ functionality
+        function toggleFAQ(index) {
+            const faqItems = document.querySelectorAll('.faq-content');
+            const arrows = document.querySelectorAll('.faq-arrow');
+            
+            // Toggle current FAQ
+            faqItems[index].classList.toggle('open');
+            const isOpen = faqItems[index].classList.contains('open');
+            arrows[index].textContent = isOpen ? '−' : '+';
+            arrows[index].classList.toggle('rotated', isOpen);
+        }
+
+        // Testimonial carousel
+        let currentTestimonial = 0;
+        const totalTestimonials = 28;
+        let isDragging = false;
+        let startX = 0;
+        let currentX = 0;
+        let initialTransform = 0;
+        
+        function nextTestimonial() {
+            currentTestimonial = (currentTestimonial + 1) % totalTestimonials;
+            updateCarousel();
+        }
+        
+        function prevTestimonial() {
+            currentTestimonial = (currentTestimonial - 1 + totalTestimonials) % totalTestimonials;
+            updateCarousel();
+        }
+        
+        function updateCarousel() {
+            const carousel = document.getElementById('testimonialCarousel');
+            const slides = carousel.querySelectorAll('.testimonial-slide');
+            let offset = 0;
+            
+            // Calculate offset for current position
+            for (let i = 0; i < currentTestimonial; i++) {
+                const img = slides[i].querySelector('img');
+                const marginRight = window.innerWidth <= 480 ? 8 : window.innerWidth <= 768 ? 10 : 20;
+                offset += img.offsetWidth + marginRight;
+            }
+            
+            carousel.style.transform = `translateX(-${offset}px)`;
+            
+            // Reset position for infinite scroll
+            if (currentTestimonial >= totalTestimonials) {
+                setTimeout(() => {
+                    carousel.style.transition = 'none';
+                    currentTestimonial = 0;
+                    carousel.style.transform = `translateX(0px)`;
+                    setTimeout(() => {
+                        carousel.style.transition = 'transform 0.3s ease';
+                    }, 50);
+                }, 300);
+            } else if (currentTestimonial < 0) {
+                setTimeout(() => {
+                    carousel.style.transition = 'none';
+                    currentTestimonial = totalTestimonials - 1;
+                    let resetOffset = 0;
+                    for (let i = 0; i < currentTestimonial; i++) {
+                        const img = slides[i].querySelector('img');
+                        const marginRight = window.innerWidth <= 480 ? 8 : window.innerWidth <= 768 ? 10 : 20;
+                        resetOffset += img.offsetWidth + marginRight;
+                    }
+                    carousel.style.transform = `translateX(-${resetOffset}px)`;
+                    setTimeout(() => {
+                        carousel.style.transition = 'transform 0.3s ease';
+                    }, 50);
+                }, 300);
+            }
+        }
+        
+        // Drag and wheel functionality
+        function initCarouselDrag() {
+            const container = document.getElementById('carouselContainer');
+            const carousel = document.getElementById('testimonialCarousel');
+            
+            // Mouse drag
+            container.addEventListener('mousedown', startDrag);
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', endDrag);
+            
+            // Touch drag
+            container.addEventListener('touchstart', startDrag, { passive: false });
+            document.addEventListener('touchmove', drag, { passive: false });
+            document.addEventListener('touchend', endDrag);
+            
+            // Wheel/trackpad scroll
+            let scrollAccumulator = 0;
+            let scrollTimeout;
+            container.addEventListener('wheel', handleWheel, { passive: false });
+            
+            function handleWheel(e) {
+                // Only prevent default for horizontal scrolling
+                const deltaX = e.deltaX;
+                const deltaY = e.deltaY;
+                
+                // Only handle horizontal scroll or when horizontal is dominant
+                if (Math.abs(deltaX) > Math.abs(deltaY) || Math.abs(deltaX) > 5) {
+                    e.preventDefault();
+                    
+                    scrollAccumulator += deltaX;
+                    
+                    // Clear existing timeout
+                    clearTimeout(scrollTimeout);
+                    
+                    // Set timeout to reset accumulator
+                    scrollTimeout = setTimeout(() => {
+                        scrollAccumulator = 0;
+                    }, 100);
+                    
+                    // Threshold for smooth scrolling - reduced for more responsive control
+                    const threshold = 30;
+                    
+                    if (scrollAccumulator > threshold) {
+                        nextTestimonial();
+                        scrollAccumulator = 0;
+                    } else if (scrollAccumulator < -threshold) {
+                        prevTestimonial();
+                        scrollAccumulator = 0;
+                    }
+                }
+            }
+            
+            function startDrag(e) {
+                isDragging = true;
+                startX = e.type === 'mousedown' ? e.clientX : e.touches[0].clientX;
+                const transform = carousel.style.transform;
+                initialTransform = transform ? parseInt(transform.match(/-?\d+/)[0]) : 0;
+                carousel.style.transition = 'none';
+            }
+            
+            function drag(e) {
+                if (!isDragging) return;
+                e.preventDefault();
+                
+                currentX = e.type === 'mousemove' ? e.clientX : e.touches[0].clientX;
+                const deltaX = currentX - startX;
+                const newTransform = initialTransform + deltaX;
+                
+                carousel.style.transform = `translateX(${newTransform}px)`;
+            }
+            
+            function endDrag() {
+                if (!isDragging) return;
+                isDragging = false;
+                
+                const deltaX = currentX - startX;
+                const threshold = 50;
+                
+                carousel.style.transition = 'transform 0.3s ease';
+                
+                if (deltaX > threshold) {
+                    prevTestimonial();
+                } else if (deltaX < -threshold) {
+                    nextTestimonial();
+                } else {
+                    updateCarousel();
+                }
+            }
+        }
+        
+        // Auto-advance carousel with smart pause
+        let autoAdvance = setInterval(nextTestimonial, 4000);
+        let userInteractionTimeout;
+        let isUserInteracting = false;
+        
+        function pauseAutoAdvance() {
+            clearInterval(autoAdvance);
+            isUserInteracting = true;
+            
+            // Clear existing timeout
+            clearTimeout(userInteractionTimeout);
+            
+            // Resume auto-advance after 12 seconds of no interaction
+            userInteractionTimeout = setTimeout(() => {
+                isUserInteracting = false;
+                autoAdvance = setInterval(nextTestimonial, 4000);
+            }, 12000);
+        }
+        
+        function resumeAutoAdvanceIfNotInteracting() {
+            if (!isUserInteracting) {
+                clearInterval(autoAdvance);
+                autoAdvance = setInterval(nextTestimonial, 4000);
+            }
+        }
+        
+        // Pause auto-advance on any user interaction
+        document.getElementById('carouselContainer').addEventListener('mouseenter', pauseAutoAdvance);
+        document.getElementById('carouselContainer').addEventListener('touchstart', pauseAutoAdvance);
+        document.getElementById('carouselContainer').addEventListener('mousedown', pauseAutoAdvance);
+        document.getElementById('carouselContainer').addEventListener('wheel', pauseAutoAdvance);
+        
+        // Resume when leaving if no recent interaction
+        document.getElementById('carouselContainer').addEventListener('mouseleave', resumeAutoAdvanceIfNotInteracting);
+
+        // Schedule call function
+        function scheduleCall() {
+            window.open('https://cal.com/themarketographer/admisiones', '_blank');
+        }
+
+        // Video player functionality
+        const playBtn = document.getElementById('playBtn');
+        const myVideo = document.getElementById('myVideo');
         let controlsTimeout;
-        if (playBtn && myVideo){
-          playBtn.addEventListener('click',()=>{
+
+        playBtn.addEventListener('click', () => {
             myVideo.setAttribute("controls","true");
             myVideo.classList.remove("opacity-0");
-            const p=myVideo.play(); if(p&&p.catch) p.catch(()=>{});
-            playBtn.style.display='none';
-            const hideControls=()=>{ myVideo.removeAttribute("controls"); };
-            const reset=()=>{ clearTimeout(controlsTimeout); myVideo.setAttribute("controls","true"); controlsTimeout=setTimeout(hideControls,3000); };
-            myVideo.addEventListener('mousemove',reset);
-            myVideo.addEventListener('click',reset);
-            document.addEventListener('click',(e)=>{ if(!myVideo.contains(e.target)) hideControls(); });
-            controlsTimeout=setTimeout(hideControls,3000);
-          });
-        }
-    </script>
+            const p = myVideo.play();
+            if (p && p.catch) p.catch(() => {});
+            playBtn.style.display = 'none';
+            
+            // Auto-hide controls after 3 seconds of inactivity
+            const hideControls = () => {
+                myVideo.removeAttribute("controls");
+            };
+            
+            const resetControlsTimer = () => {
+                clearTimeout(controlsTimeout);
+                myVideo.setAttribute("controls","true");
+                controlsTimeout = setTimeout(hideControls, 3000);
+            };
+            
+            // Hide controls on click outside video or after inactivity
+            myVideo.addEventListener('mousemove', resetControlsTimer);
+            myVideo.addEventListener('click', resetControlsTimer);
+            document.addEventListener('click', (e) => {
+                if (!myVideo.contains(e.target)) {
+                    hideControls();
+                }
+            });
+            
+            // Start the initial timer
+            controlsTimeout = setTimeout(hideControls, 3000);
+        });
 
-    <!-- (Dejé tu script raro de Cloudflare tal cual, si no lo necesitas, bórralo) -->
-    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96fe9f37b25acdc9',t:'MTc1NTMyMzA4OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-</body>
+        // Initialize animations when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            observeElements();
+            initCarouselDrag();
+            
+            // Wait for images to load before calculating carousel
+            setTimeout(() => {
+                updateCarousel();
+            }, 500);
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96fe9f37b25acdc9',t:'MTc1NTMyMzA4OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

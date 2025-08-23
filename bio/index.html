@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketographers - Links</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #f1f5f9 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.3) 1px, transparent 1px),
+                radial-gradient(circle at 75% 75%, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
+            background-size: 50px 50px, 30px 30px;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .link-button {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(226, 232, 240, 0.5);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06), inset 0 -2px 4px rgba(255, 255, 255, 0.8);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .link-button:hover {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08), inset 0 -1px 3px rgba(255, 255, 255, 0.9), 0 4px 12px rgba(0, 0, 0, 0.05);
+            border-color: rgba(203, 213, 225, 0.7);
+        }
+        
+        .logo-container {
+            background: white;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out forwards;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        
+        .fade-in-up-delay-1 {
+            animation: fadeInUp 0.8s ease-out 0.2s forwards;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        
+        .fade-in-up-delay-2 {
+            animation: fadeInUp 0.8s ease-out 0.4s forwards;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        
+        .fade-in-up-delay-3 {
+            animation: fadeInUp 0.8s ease-out 0.6s forwards;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-6">
+    <div class="w-full max-w-sm">
+        <!-- Logo Container -->
+        <div class="text-center mb-12 fade-in-up">
+            <div class="logo-container inline-block p-3 rounded-2xl shadow-sm">
+                <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755900443/v3_1_1_p3ne1x.png" 
+                     alt="Marketographers Logo" 
+                     class="w-16 h-16 object-cover rounded-full"
+                     onerror="this.src=''; this.alt='Logo no disponible'; this.style.display='none';">
+            </div>
+            <h1 class="text-2xl font-semibold text-gray-900 mt-4 mb-1">@themarketographer</h1>
+            <p class="text-gray-500 text-sm font-light">Marketing para Fotógrafos</p>
+        </div>
+
+        <!-- Links Container -->
+        <div class="space-y-4">
+            <!-- Nas.io Link -->
+            <a href="https://nas.io/referral?code=MOTION_MARKETING_PARA_FOTGRAFOS" 
+               target="_blank" 
+               class="link-button block w-full p-6 rounded-2xl group fade-in-up-delay-1">
+                <div class="flex items-center">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQj80pVtPMVp_xzHIffmRpbn-vXnvPlbU09h5KbSPnGaJg20_8NxXHrES_sPfHFuOxDuYs&usqp=CAU" 
+                         alt="Nas.io" 
+                         class="w-12 h-12 rounded-lg mr-4 flex-shrink-0"
+                         onerror="this.src=''; this.alt='Icono no disponible'; this.style.display='none';">
+                    <div class="text-left">
+                        <h3 class="font-medium text-gray-900 mb-1">Abre tu comunidad en Nas.io</h3>
+                        <p class="text-xs text-gray-600 font-light">Monetiza tu conocimiento y ten 5 dólares de regalo</p>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Marketographers Link -->
+            <a href="http://marketographers.com" 
+               target="_blank" 
+               class="link-button block w-full p-6 rounded-2xl group fade-in-up-delay-2">
+                <div class="flex items-center">
+                    <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755921021/Negro_zzvz3m.jpg" 
+                         alt="Marketographers" 
+                         class="w-12 h-12 rounded-lg mr-4 flex-shrink-0 object-contain"
+                         onerror="this.src=''; this.alt='Icono no disponible'; this.style.display='none';">
+                    <div class="text-left">
+                        <h3 class="font-medium text-gray-900 mb-1">Únete a la comunidad de Marketographers</h3>
+                        <p class="text-xs text-gray-600 font-light">Cursos de marketing para fotógrafos</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-12 fade-in-up-delay-3">
+            <p class="text-gray-400 text-xs font-light">© 2025 Marketographers</p>
+        </div>
+    </div>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9737ad35c724cdcd',t:'MTc1NTkyMTM1MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

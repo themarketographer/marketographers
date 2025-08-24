@@ -549,6 +549,10 @@
         }
 
         @media (max-width: 768px) {
+            .banner {
+                padding: 8px 0;
+            }
+
             .container {
                 grid-template-columns: 1fr;
                 gap: 30px;
@@ -560,46 +564,52 @@
             }
             
             .phone-preview {
-                order: -1;
+                order: 1;
                 display: flex;
                 justify-content: center;
                 position: static;
+                margin-top: 20px;
             }
             
             .iphone-container {
-                width: 250px;
-                height: 500px;
+                width: 280px;
+                height: 560px;
             }
             
             .banner-content {
                 flex-direction: column;
-                gap: 12px;
+                gap: 8px;
                 padding: 0 15px;
             }
             
             .banner-left {
                 flex-direction: column;
-                gap: 8px;
+                gap: 6px;
                 text-align: center;
             }
             
             .banner-right {
                 flex-direction: column;
-                gap: 8px;
+                gap: 6px;
                 text-align: center;
             }
             
+            .banner img {
+                height: 28px;
+            }
+            
             .banner-text {
-                font-size: 14px;
+                font-size: 13px;
+                line-height: 1.3;
             }
 
             .inscripciones-text {
-                font-size: 12px;
+                font-size: 11px;
             }
 
             .pulse-btn {
-                font-size: 11px;
-                padding: 6px 12px;
+                font-size: 10px;
+                padding: 5px 10px;
             }
 
             .title {
@@ -641,11 +651,30 @@
 
         @media (max-width: 480px) {
             .banner {
-                padding: 8px 0;
+                padding: 6px 0;
             }
 
             .banner-content {
                 padding: 0 10px;
+                gap: 6px;
+            }
+
+            .banner img {
+                height: 24px;
+            }
+
+            .banner-text {
+                font-size: 12px;
+                line-height: 1.2;
+            }
+
+            .inscripciones-text {
+                font-size: 10px;
+            }
+
+            .pulse-btn {
+                font-size: 9px;
+                padding: 4px 8px;
             }
 
             .main-content {
@@ -657,8 +686,8 @@
             }
 
             .iphone-container {
-                width: 200px;
-                height: 400px;
+                width: 240px;
+                height: 480px;
             }
 
             .emoji-grid {
@@ -957,5 +986,5 @@
         // Inicializar preview
         updatePreview();
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'974069d211fb3d82',t:'MTc1NjAxMjk2MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'974073c67201cdca',t:'MTc1NjAxMzM2OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

@@ -1,0 +1,678 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Presupuestador para Fotógrafos</title>
+  <meta name="description" content="Calcula punto de equilibrio, tarifas sugeridas, ahorro para equipo con inflación y presupuesto de ads. Todo en tiempo real." />
+  <meta property="og:title" content="Presupuestador para Fotógrafos" />
+  <meta property="og:description" content="Calcula tarifas, ahorro, y punto de equilibrio en minutos." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314903/Marketographers_Blanco_S_F_p1toov.png" />
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#000;--fg:#fff;--muted:#c7c7c7;--panel:#111;--panel2:#151515;--accent:#7dd3fc;--danger:#ef4444;--ok:#22c55e}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--fg);font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial,'Noto Sans',sans-serif;letter-spacing:-0.03em;line-height:1.4}
+    a{color:var(--fg)}
+    .wrap{max-width:1180px;margin:0 auto;padding:20px}
+    header{display:flex;align-items:center;gap:16px;margin-bottom:16px}
+    header img.logo{height:36px;width:auto;opacity:0.9}
+    header h1{font-size:20px;margin:0;font-weight:600;letter-spacing:-0.02em}
+    .grid{display:grid;gap:12px}
+    @media(min-width:768px){.grid.two{grid-template-columns:1fr 1fr}}
+    @media(min-width:1024px){.grid.three{grid-template-columns:1fr 1fr 1fr}}
+    .card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid #222;border-radius:16px;padding:16px}
+    .card h2{margin:0 0 10px 0;font-size:16px;font-weight:600}
+    .row{display:flex;gap:8px;flex-wrap:wrap}
+    label{font-size:12px;color:var(--muted);display:block;margin-bottom:6px}
+    input,select,button{border-radius:12px;border:1px solid #333;background:#0c0c0c;color:var(--fg);padding:10px 12px;font-size:14px}
+    input:focus,select:focus,button:focus{outline:2px solid var(--accent);outline-offset:1px}
+    input[type=number]{width:140px}
+    .btn{cursor:pointer}
+    .btn.secondary{background:#111}
+    .btn.ghost{background:transparent;border-color:#444}
+    .btn.small{padding:6px 10px;font-size:12px;border-radius:10px}
+    .tag{font-size:12px;padding:6px 8px;border:1px solid #333;border-radius:999px;background:#0b0b0b;color:#bbb}
+    .totals{display:flex;gap:12px;flex-wrap:wrap}
+    .total{padding:10px 12px;border:1px solid #333;border-radius:12px;background:#0c0c0c}
+    .warn{color:var(--danger);font-size:12px}
+    .ok{color:var(--ok);font-size:12px}
+    table{width:100%;border-collapse:collapse}
+    th,td{border-bottom:1px solid #222;padding:8px;text-align:left;font-size:13px}
+    th{color:#ddd;font-weight:600}
+    td input{width:100%}
+    .right{text-align:right}
+    .chart{height:180px;border:1px solid #222;border-radius:12px;padding:10px;background:#0b0b0b}
+    .muted{color:#aaa}
+    .inline{display:inline-flex;align-items:center;gap:8px}
+    .range-row{display:flex;align-items:center;gap:10px}
+    input[type=range]{width:200px}
+    footer{margin:24px 0 8px;color:#808080;font-size:12px}
+
+    /* Steper */
+    .step{display:none}
+    .step.active{display:block}
+    .step-nav{display:flex;gap:8px;align-items:center;margin:8px 0}
+    .step-nav .next{margin-left:auto}
+  </style>
+</head>
+<body>
+  <a href="#main" class="tag" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden">Saltar al contenido</a>
+  <div class="wrap">
+    <header>
+      <img class="logo" src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314903/Marketographers_Blanco_S_F_p1toov.png" alt="Logo" />
+      <h1>Presupuestador para Fotógrafos</h1>
+      <span class="tag">Fondo negro, texto blanco, Poppins. Obvio.</span>
+    </header>
+
+    <main id="main" class="grid">
+      <!-- 1 Datos personales -->
+      <section class="card step active" data-step="1">
+        <h2>1) Datos del fotógrafo</h2>
+        <div class="grid two">
+          <div>
+            <label>Nombre</label>
+            <input id="nombre" placeholder="Tu nombre" />
+          </div>
+          <div>
+            <label>Apellido</label>
+            <input id="apellido" placeholder="Tu apellido" />
+          </div>
+          <div>
+            <label>Nicho de fotografía</label>
+            <input id="nicho" placeholder="Bodas, producto, retrato…" />
+          </div>
+          <div>
+            <label>Edad</label>
+            <input id="edad" type="number" min="10" max="100" />
+          </div>
+          <div>
+            <label>País</label>
+            <select id="pais"></select>
+          </div>
+          <div>
+            <label>Años de experiencia</label>
+            <input id="experiencia" type="number" min="0" max="60" />
+          </div>
+        </div>
+        <div class="step-nav"><span class="tag">Paso 1 de 9</span><button class="btn next">Siguiente ➜</button></div>
+      </section>
+
+      <!-- 2 Moneda -->
+      <section class="card step" data-step="2">
+        <h2>2) Moneda</h2>
+        <div class="row">
+          <div class="inline">
+            <input type="radio" name="monedaTipo" id="monLocal" checked>
+            <label for="monLocal">Usar moneda local</label>
+          </div>
+          <div class="inline">
+            <input type="radio" name="monedaTipo" id="monUSD">
+            <label for="monUSD">Usar USD</label>
+          </div>
+          <div>
+            <label>Símbolo (editable)</label>
+            <input id="simbolo" value="$" />
+          </div>
+        </div>
+        <div class="muted" id="inflacionInfo">Inflación anual estimada: 5% (editable más abajo).</div>
+        <div class="step-nav"><button class="btn prev">⬅ Volver</button><span class="tag">Paso 2 de 9</span><button class="btn next">Siguiente ➜</button></div>
+      </section>
+
+      <!-- 3 Gastos personales -->
+      <section class="card step" data-step="3">
+        <h2>3) Gastos personales mensuales (Básicos)</h2>
+        <table id="tablaBasicos">
+          <thead>
+            <tr><th>Categoría</th><th>Descripción</th><th class="right">Monto mensual</th><th></th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <div class="row" style="margin-top:8px">
+          <button class="btn small" id="addBasico">+ Agregar fila</button>
+          <span class="muted">Incluye: Vivienda, Servicios, Alimentación, Salud, Transporte y Otros.</span>
+        </div>
+        <div class="totals" style="margin-top:10px">
+          <div class="total">Total básicos (mes): <span id="totalBasicosMes">$0</span></div>
+          <div class="total">Total básicos (año): <span id="totalBasicosAnio">$0</span></div>
+        </div>
+        <div class="step-nav"><button class="btn prev">⬅ Volver</button><span class="tag">Paso 3 de 9</span><button class="btn next">Siguiente ➜</button></div>
+      </section>
+
+      <!-- 4 Deseos -->
+      <section class="card step" data-step="4">
+        <h2>4) Gustos y entretenimiento (Deseos)</h2>
+        <table id="tablaDeseos">
+          <thead>
+            <tr><th>Categoría</th><th>Descripción</th><th class="right">Monto mensual</th><th></th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <div class="row" style="margin-top:8px">
+          <button class="btn small" id="addDeseo">+ Agregar fila</button>
+          <span class="muted">Incluye: Membresías, Streaming, Deporte, Ropa, Accesorios, Entretenimiento y Otros.</span>
+        </div>
+        <div class="totals" style="margin-top:10px">
+          <div class="total">Total deseos (mes): <span id="totalDeseosMes">$0</span></div>
+          <div class="total">Total deseos (año): <span id="totalDeseosAnio">$0</span></div>
+        </div>
+        <div class="step-nav"><button class="btn prev">⬅ Volver</button><span class="tag">Paso 4 de 9</span><button class="btn next">Siguiente ➜</button></div>
+      </section>
+
+      <!-- 5 Gastos empresa (nuevo) -->
+      <section class="card step" data-step="5">
+        <h2>5) Gastos de la empresa (mensuales)</h2>
+        <table id="tablaEmpresa">
+          <thead>
+            <tr><th>Categoría</th><th>Descripción</th><th class="right">Monto mensual</th><th></th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <div class="row" style="margin-top:8px">
+          <button class="btn small" id="addEmpresa">+ Agregar fila</button>
+          <span class="muted">Ejemplos: alquiler estudio, servicios, membresías, educación, software.</span>
+        </div>
+        <div class="totals" style="margin-top:10px">
+          <div class="total">Total empresa (mes): <span id="totalEmpresaMes">$0</span></div>
+          <div class="total">Total empresa (año): <span id="totalEmpresaAnio">$0</span></div>
+        </div>
+        <div class="step-nav"><button class="btn prev">⬅ Volver</button><span class="tag">Paso 5 de 9</span><button class="btn next">Siguiente ➜</button></div>
+      </section>
+
+      <!-- 6 Equipo inventario -->
+      <section class="card step" data-step="6">
+        <h2>6) Equipo (única vez) → Ahorro mensual para renovar (4 años + inflación)</h2>
+        <div class="row">
+          <div>
+            <label>Inflación anual % (según país, editable)</label>
+            <input id="inflacion" type="number" min="0" max="500" step="0.1" value="5" />
+          </div>
+        </div>
+        <table id="tablaEquipo">
+          <thead>
+            <tr><th>Categoría</th><th>Descripción</th><th class="right">Costo único</th><th></th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <div class="row" style="margin-top:8px">
+          <button class="btn small" id="addEquipo">+ Agregar fila</button>
+          <span class="muted">Vida útil: 4 años. Se proyecta reposición con inflación compuesta.</span>
+        </div>
+        <div class="totals" style="margin-top:10px">
+          <div class="total">Ahorro equipo (mes): <span id="ahorroMes">$0</span></div>
+          <div class="total">Reposición estimada a 4 años: <span id="reposicion">$0</span></div>
+        </div>
+        <div class="step-nav"><button class="btn prev">⬅ Volver</button><span class="tag">Paso 6 de 9</span><button class="btn next">Siguiente ➜</button></div>
+      </section>
+
+      <!-- 7 Nuevo equipo a comprar (cuotas) -->
+      <section class="card step" data-step="7">
+        <h2>7) Nuevo equipo (financiado)</h2>
+        <div class="grid three">
+          <div>
+            <label>Ítem</label>
+            <input id="neItem" placeholder="Lente Sigma 18-35 mm"/>
+          </div>
+          <div>
+            <label>Plazo (meses)</label>
+            <input id="neMeses" type="number" min="0" value="0"/>
+          </div>
+          <div>
+            <label>Precio</label>
+            <input id="nePrecio" type="number" min="0" step="0.01" placeholder="0"/>
+          </div>
+        </div>
+        <div class="totals" style="margin-top:10px">
+          <div class="total">Cuota mensual nuevo equipo: <span id="neCuota">$0</span></div>
+        </div>
+        <div class="step-nav"><button class="btn prev">⬅ Volver</button><span class="tag">Paso 7 de 9</span><button class="btn next">Siguiente ➜</button></div>
+      </section>
+
+      <!-- 8 Resumen y fondos -->
+      <section class="card step" data-step="8">
+        <h2>8) Resumen y fondos</h2>
+        <div class="grid two">
+          <div>
+            <div class="chart">
+              <svg id="barChart" width="100%" height="160" role="img" aria-label="Gráfico de barras de Básicos, Deseos y Ahorro"></svg>
+            </div>
+          </div>
+          <div>
+            <div class="range-row">
+              <label>% Ahorro</label>
+              <input id="pctAhorro" type="range" min="0" max="50" value="20">
+              <span id="pctAhorroLbl" class="tag">20%</span>
+            </div>
+            <div class="range-row">
+              <label>% Inversión</label>
+              <input id="pctInv" type="range" min="0" max="50" value="10">
+              <span id="pctInvLbl" class="tag">10%</span>
+            </div>
+            <div class="range-row">
+              <label>% Emergencia</label>
+              <input id="pctEmerg" type="range" min="0" max="50" value="10">
+              <span id="pctEmergLbl" class="tag">10%</span>
+            </div>
+            <div class="muted" id="asignacionInfo">Las reservas se aplican sobre el total de ingresos. Resultado siempre cierra en 100% sin magia negra.</div>
+            <div class="totals" style="margin-top:10px">
+              <div class="total">Total personales (mes): <span id="totalPersMes">$0</span></div>
+              <div class="total">Total empresa (mes): <span id="totalEmpMes">$0</span></div>
+              <div class="total">Base mensual (pers+empresa+ahorro equipo+cuota nuevo): <span id="baseMensual">$0</span></div>
+              <div class="total">Ingresos requeridos (100%): <span id="ingresosRequeridos">$0</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="step-nav"><button class="btn prev">⬅ Volver</button><span class="tag">Paso 8 de 9</span><button class="btn next">Siguiente ➜</button></div>
+      </section>
+
+      <!-- 9 Cotizador y resultados -->
+      <section class="card step" data-step="9">
+        <h2>9) Cotizador y resultados</h2>
+        <div class="grid three">
+          <div>
+            <label>% a invertir en Ads</label>
+            <input id="pctAds" type="number" min="0" max="90" value="10" />
+          </div>
+          <div>
+            <label>Horas de trabajo por día</label>
+            <input id="horasDia" type="number" min="1" max="16" value="6" />
+          </div>
+          <div>
+            <label>Días de trabajo por semana</label>
+            <input id="diasSemana" type="number" min="1" max="7" value="5" />
+          </div>
+        </div>
+        <div class="totals" style="margin-top:10px">
+          <div class="total">Horas/mes aprox.: <span id="horasMes">0</span></div>
+          <div class="total">Tarifa hora mínima: <span id="horaMin">$0</span></div>
+          <div class="total">Tarifa hora estándar (+50%): <span id="horaStd">$0</span></div>
+          <div class="total">Tarifa hora ideal (+150%): <span id="horaIdeal">$0</span></div>
+          <div class="total">Presupuesto de Ads (mes): <span id="adsMes">$0</span></div>
+        </div>
+
+        <h3 style="margin-top:14px">Proyecto</h3>
+        <table id="tablaProyectos">
+          <thead>
+            <tr><th>Proyecto</th><th class="right">Horas</th><th class="right">Paquete mínimo</th><th class="right">Paquete estándar</th><th class="right">Paquete ideal</th><th class="right">Clientes equilibrio (mín/std/ideal)</th><th></th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <div class="row" style="margin-top:8px">
+          <span class="muted">Solo 1 proyecto permitido.</span>
+        </div>
+
+        <div class="totals" style="margin-top:14px">
+          <div class="total">Aviso: la versión completa en Excel mejorada está en la comunidad de Marketographers. Te invitamos a unirte.</div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer>
+      Hecho para ahorrar dolores de cabeza. Si algo falla, probablemente era evitable.
+    </footer>
+  </div>
+
+  <script>
+    // Datos base
+    const paises = [
+      { name:'Argentina', currency:'ARS', symbol:'$' },
+      { name:'Bolivia', currency:'BOB', symbol:'Bs' },
+      { name:'Brasil', currency:'BRL', symbol:'R$' },
+      { name:'Chile', currency:'CLP', symbol:'$' },
+      { name:'Colombia', currency:'COP', symbol:'$' },
+      { name:'Costa Rica', currency:'CRC', symbol:'₡' },
+      { name:'Ecuador', currency:'USD', symbol:'$' },
+      { name:'El Salvador', currency:'USD', symbol:'$' },
+      { name:'España', currency:'EUR', symbol:'€' },
+      { name:'Guatemala', currency:'GTQ', symbol:'Q' },
+      { name:'Honduras', currency:'HNL', symbol:'L' },
+      { name:'México', currency:'MXN', symbol:'$' },
+      { name:'Nicaragua', currency:'NIO', symbol:'C$' },
+      { name:'Panamá', currency:'USD', symbol:'$' },
+      { name:'Paraguay', currency:'PYG', symbol:'₲' },
+      { name:'Perú', currency:'PEN', symbol:'S/' },
+      { name:'Rep. Dominicana', currency:'DOP', symbol:'RD$' },
+      { name:'Uruguay', currency:'UYU', symbol:'$' },
+      { name:'Venezuela', currency:'VES', symbol:'Bs.' },
+      { name:'Estados Unidos', currency:'USD', symbol:'$' },
+      { name:'Reino Unido', currency:'GBP', symbol:'£' },
+      { name:'Canadá', currency:'CAD', symbol:'$' }
+    ];
+
+    const inflacionPais = {
+      'Argentina': 140, 'Bolivia': 3, 'Brasil': 4.5, 'Chile': 4, 'Colombia': 8,
+      'Costa Rica': 4, 'Ecuador': 2, 'El Salvador': 3, 'España': 3.5, 'Guatemala': 5,
+      'Honduras': 5, 'México': 4.5, 'Nicaragua': 7, 'Panamá': 3, 'Paraguay': 4,
+      'Perú': 3.5, 'Rep. Dominicana': 4, 'Uruguay': 6, 'Venezuela': 200, 'Estados Unidos': 3.2,
+      'Reino Unido': 3.8, 'Canadá': 3.5
+    };
+
+    const categoriasBasicos = ['Vivienda','Servicios','Alimentación','Salud','Transporte','Otros'];
+    const categoriasDeseos = ['Membresías','Streaming','Deporte','Ropa','Accesorios','Entretenimiento','Otros'];
+    const categoriasEmpresa = ['Alquiler estudio','Servicios','Software','Membresías','Educación','Marketing','Otros'];
+    const categoriasEquipo = ['Cámara','Lentes','Luz LED','Flash','Trípode','Pedestal','Monturas','Filtros','Accesorios','Baterías','Mochila','Audio','Escritorio/Oficina','Electrónica','Otros'];
+
+    // Estado
+    const st = {
+      symbol:'$',
+      country:null,
+      currency:'',
+      inflacion:5,
+      basicos:[],
+      deseos:[],
+      empresa:[],
+      equipo:[],
+      pctAhorro:0.20,
+      pctInv:0.10,
+      pctEmerg:0.10,
+      pctAds:0.10,
+      horasDia:6,
+      diasSemana:5,
+      proyectos:[],
+      neMeses:0,
+      nePrecio:0
+    };
+
+    // Utilidades
+    function fmt(n){
+      const s = document.getElementById('simbolo')?.value || st.symbol || '$';
+      return s + ' ' + (isFinite(n)? n.toLocaleString(undefined,{maximumFractionDigits:2}) : '0');
+    }
+    function sum(arr, key){ return arr.reduce((a,b)=> a + (+b[key]||0), 0); }
+    function weeksPerMonth(){ return 4.33 }
+
+    // Helpers tablas
+    function addRow(tbody, row){
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>
+          <input list="${tbody.id}-cats" value="${row.categoria||''}" aria-label="Categoría" />
+          <datalist id="${tbody.id}-cats"></datalist>
+        </td>
+        <td><input value="${row.descripcion||''}" placeholder="Descripción" aria-label="Descripción"/></td>
+        <td class="right"><input type="number" min="0" step="0.01" value="${row.monto||row.costo||0}" aria-label="Monto"/></td>
+        <td class="right"><button class="btn small ghost">Eliminar</button></td>
+      `;
+      tbody.appendChild(tr);
+      tr.querySelector('button').addEventListener('click', ()=>{ tr.remove(); recalcAll(); saveLS(); });
+      tr.querySelectorAll('input').forEach(inp=> inp.addEventListener('input', ()=>{ recalcAll(); saveLS(); }));
+      return tr;
+    }
+    function seedTable(tbody, cats){
+      tbody.innerHTML='';
+      cats.forEach(c=> addRow(tbody, {categoria:c, descripcion:'', monto:0, costo:0}));
+      addRow(tbody, {categoria:'Otros', descripcion:'', monto:0, costo:0});
+      const dl = document.getElementById(`${tbody.id}-cats`);
+      if(dl) dl.innerHTML = cats.map(c=>`<option value="${c}"></option>`).join('');
+    }
+
+    // Inicialización
+    function init(){
+      const selPais = document.getElementById('pais');
+      paises.forEach(p=>{ const opt = document.createElement('option'); opt.value=p.name; opt.textContent=p.name; selPais.appendChild(opt); });
+      selPais.addEventListener('change', ()=>{
+        st.country = selPais.value;
+        const p = paises.find(x=>x.name===st.country);
+        if(p){ st.currency = p.currency; document.getElementById('simbolo').value = p.symbol; st.symbol=p.symbol; }
+        const inf = inflacionPais[st.country] ?? 5; st.inflacion = inf; document.getElementById('inflacion').value = inf;
+        document.getElementById('inflacionInfo').textContent = `Inflación anual estimada: ${inf}% (editable).`;
+        recalcAll(); saveLS();
+      });
+
+      document.getElementById('monLocal').addEventListener('change', ()=>{ if(document.getElementById('monLocal').checked){ const p=paises.find(x=>x.name===st.country); if(p){ document.getElementById('simbolo').value=p.symbol; st.symbol=p.symbol; } recalcAll(); saveLS(); }});
+      document.getElementById('monUSD').addEventListener('change', ()=>{ if(document.getElementById('monUSD').checked){ document.getElementById('simbolo').value='$'; st.symbol='$'; recalcAll(); saveLS(); }});
+      document.getElementById('simbolo').addEventListener('input', ()=>{ st.symbol=document.getElementById('simbolo').value; recalcAll(); saveLS(); });
+
+      // Tablas
+      seedTable(document.querySelector('#tablaBasicos tbody'), categoriasBasicos);
+      seedTable(document.querySelector('#tablaDeseos tbody'), categoriasDeseos);
+      seedTable(document.querySelector('#tablaEmpresa tbody'), categoriasEmpresa);
+      seedTable(document.querySelector('#tablaEquipo tbody'), categoriasEquipo);
+
+      document.getElementById('addBasico').addEventListener('click', ()=>{ addRow(document.querySelector('#tablaBasicos tbody'), {categoria:'Otros'}); });
+      document.getElementById('addDeseo').addEventListener('click', ()=>{ addRow(document.querySelector('#tablaDeseos tbody'), {categoria:'Otros'}); });
+      document.getElementById('addEmpresa').addEventListener('click', ()=>{ addRow(document.querySelector('#tablaEmpresa tbody'), {categoria:'Otros'}); });
+      document.getElementById('addEquipo').addEventListener('click', ()=>{ addRow(document.querySelector('#tablaEquipo tbody'), {categoria:'Otros'}); });
+
+      // Sliders fondos
+      const pctAhorro = document.getElementById('pctAhorro');
+      const pctInv = document.getElementById('pctInv');
+      const pctEmerg = document.getElementById('pctEmerg');
+      pctAhorro.addEventListener('input', ()=>{ document.getElementById('pctAhorroLbl').textContent = pctAhorro.value+'%'; recalcAll(); saveLS(); });
+      pctInv.addEventListener('input', ()=>{ document.getElementById('pctInvLbl').textContent = pctInv.value+'%'; recalcAll(); saveLS(); });
+      pctEmerg.addEventListener('input', ()=>{ document.getElementById('pctEmergLbl').textContent = pctEmerg.value+'%'; recalcAll(); saveLS(); });
+
+      // Cotizador
+      ;['pctAds','horasDia','diasSemana'].forEach(id=>{ document.getElementById(id).addEventListener('input', ()=>{ recalcAll(); saveLS(); }) });
+
+      // Datos personales
+      ;['nombre','apellido','nicho','edad','experiencia'].forEach(id=>{ document.getElementById(id).addEventListener('input', saveLS) });
+
+      // Proyecto único
+      addProyectoRow({nombre:'Sesión retrato', horas:5});
+
+      // Nuevo equipo financiado
+      ;['neMeses','nePrecio','neItem'].forEach(id=>{ const el=document.getElementById(id); if(el) el.addEventListener('input', ()=>{ recalcAll(); saveLS(); }); });
+
+      // Stepper
+      setupStepper();
+
+      loadLS();
+      recalcAll();
+    }
+
+    function setupStepper(){
+      const steps = [...document.querySelectorAll('.step')];
+      const show = i=>{ steps.forEach(s=> s.classList.remove('active')); const step = steps[i]; if(step) step.classList.add('active'); };
+      steps.forEach((s,idx)=>{
+        const n = s.querySelector('.next'); if(n) n.addEventListener('click', ()=> show(Math.min(idx+1, steps.length-1)));
+        const p = s.querySelector('.prev'); if(p) p.addEventListener('click', ()=> show(Math.max(idx-1, 0)));
+      });
+    }
+
+    function getTableData(tbody, isEquipo=false){
+      const rows = [...tbody.querySelectorAll('tr')];
+      return rows.map(tr=>{
+        const [cat, desc, val] = tr.querySelectorAll('input');
+        const num = +val.value || 0;
+        return isEquipo ? {categoria:cat.value, descripcion:desc.value, costo:num} : {categoria:cat.value, descripcion:desc.value, monto:num};
+      });
+    }
+
+    function recalcAll(){
+      // Recolectar
+      const basicos = st.basicos = getTableData(document.querySelector('#tablaBasicos tbody'));
+      const deseos = st.deseos = getTableData(document.querySelector('#tablaDeseos tbody'));
+      const empresa = st.empresa = getTableData(document.querySelector('#tablaEmpresa tbody'));
+      const equipo = st.equipo = getTableData(document.querySelector('#tablaEquipo tbody'), true);
+
+      const totalBasMes = sum(basicos,'monto');
+      const totalDesMes = sum(deseos,'monto');
+      const totalEmpMes = sum(empresa,'monto');
+
+      // Equipo → ahorro mensual con inflación compuesta
+      const inf = (+document.getElementById('inflacion').value || 0)/100;
+      const totalCostoEquipo = sum(equipo,'costo');
+      const reposicion = totalCostoEquipo * Math.pow(1+inf, 4);
+      const ahorroMensual = reposicion / 48; // 4 años * 12 meses
+
+      // Nuevo equipo financiado
+      const neMeses = +document.getElementById('neMeses').value || 0;
+      const nePrecio = +document.getElementById('nePrecio').value || 0;
+      const cuotaNE = neMeses>0 ? nePrecio/neMeses : 0;
+      document.getElementById('neCuota').textContent = fmt(cuotaNE);
+
+      // Totales visibles
+      document.getElementById('totalBasicosMes').textContent = fmt(totalBasMes);
+      document.getElementById('totalBasicosAnio').textContent = fmt(totalBasMes*12);
+      document.getElementById('totalDeseosMes').textContent = fmt(totalDesMes);
+      document.getElementById('totalDeseosAnio').textContent = fmt(totalDesMes*12);
+      document.getElementById('totalEmpresaMes').textContent = fmt(totalEmpMes);
+      document.getElementById('totalEmpresaAnio').textContent = fmt(totalEmpMes*12);
+      document.getElementById('reposicion').textContent = fmt(reposicion);
+      document.getElementById('ahorroMes').textContent = fmt(ahorroMensual);
+
+      // Base mensual
+      const totalPers = totalBasMes + totalDesMes;
+      document.getElementById('totalPersMes').textContent = fmt(totalPers);
+      document.getElementById('totalEmpMes').textContent = fmt(totalEmpMes);
+
+      const baseMensual = totalPers + totalEmpMes + ahorroMensual + cuotaNE;
+      document.getElementById('baseMensual').textContent = fmt(baseMensual);
+
+      // Sliders reservas
+      const pctAhorro = (+document.getElementById('pctAhorro').value || 0)/100;
+      const pctInv = (+document.getElementById('pctInv').value || 0)/100;
+      const pctEmerg = (+document.getElementById('pctEmerg').value || 0)/100;
+      const pctSuma = pctAhorro + pctInv + pctEmerg;
+      const info = document.getElementById('asignacionInfo');
+      if(pctSuma >= 0.95){ info.innerHTML = '<span class="warn">Tus fondos superan 95%. Sí, te pasaste. Ajusta porcentajes.</span>'; }
+      else info.textContent = 'Las reservas se aplican sobre el total de ingresos. Resultado siempre cierra en 100% sin magia negra.';
+
+      const divisor = Math.max(0.01, 1 - pctSuma); // evitar división por cero
+      const ingresosRequeridos = baseMensual / divisor;
+      document.getElementById('ingresosRequeridos').textContent = fmt(ingresosRequeridos);
+
+      drawBars(totalBasMes + totalDesMes, totalEmpMes, ahorroMensual + cuotaNE);
+
+      // Cotizador
+      const pctAds = (+document.getElementById('pctAds').value || 0)/100;
+      const horasDia = +document.getElementById('horasDia').value || 0;
+      const diasSemana = +document.getElementById('diasSemana').value || 0;
+      const horasMes = horasDia * diasSemana * weeksPerMonth();
+      document.getElementById('horasMes').textContent = isFinite(horasMes)? horasMes.toFixed(1) : '0';
+
+      let tarifaMin = horasMes>0 ? (ingresosRequeridos / horasMes) : 0;
+      const tarifaStd = tarifaMin * 1.5;
+      const tarifaIdeal = tarifaMin * 2.5; // +150%
+      document.getElementById('horaMin').textContent = fmt(tarifaMin);
+      document.getElementById('horaStd').textContent = fmt(tarifaStd);
+      document.getElementById('horaIdeal').textContent = fmt(tarifaIdeal);
+
+      const adsMes = ingresosRequeridos * pctAds;
+      document.getElementById('adsMes').textContent = fmt(adsMes);
+
+      // Proyectos (único)
+      const tbody = document.querySelector('#tablaProyectos tbody');
+      [...tbody.querySelectorAll('tr')].forEach(tr=>{
+        const hrs = +tr.querySelector('input[name=ph]').value || 0;
+        const pMin = hrs * tarifaMin;
+        const pStd = hrs * tarifaStd;
+        const pIdeal = hrs * tarifaIdeal;
+        tr.querySelector('.pmin').textContent = fmt(pMin);
+        tr.querySelector('.pstd').textContent = fmt(pStd);
+        tr.querySelector('.pideal').textContent = fmt(pIdeal);
+        // Punto de equilibrio: clientes necesarios (redondear hacia arriba)
+        const nMin = pMin>0 ? Math.ceil(ingresosRequeridos / pMin) : 0;
+        const nStd = pStd>0 ? Math.ceil(ingresosRequeridos / pStd) : 0;
+        const nIdeal = pIdeal>0 ? Math.ceil(ingresosRequeridos / pIdeal) : 0;
+        tr.querySelector('.peq').textContent = `${nMin} / ${nStd} / ${nIdeal}`;
+      });
+    }
+
+    function drawBars(pers, emp, aho){
+      const svg = document.getElementById('barChart');
+      if(!svg) return;
+      const w = svg.clientWidth || 300, h = 160, pad=30;
+      while(svg.firstChild) svg.removeChild(svg.firstChild);
+      const vals = [pers, emp, aho];
+      const labels = ['Personales','Empresa','Ahorro'];
+      const max = Math.max(1, ...vals);
+      const bw = (w - pad*2)/3*0.6;
+      vals.forEach((v,i)=>{
+        const x = pad + i*((w - pad*2)/3) + ((w - pad*2)/3 - bw)/2;
+        const bh = (h - pad*1.6) * (v/max);
+        const y = h - pad - bh;
+        const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+        rect.setAttribute('x', x);
+        rect.setAttribute('y', y);
+        rect.setAttribute('width', bw);
+        rect.setAttribute('height', bh);
+        rect.setAttribute('fill', 'white');
+        rect.setAttribute('opacity', '0.9');
+        svg.appendChild(rect);
+        const text = document.createElementNS('http://www.w3.org/2000/svg','text');
+        text.setAttribute('x', x + bw/2); text.setAttribute('y', h-10); text.setAttribute('text-anchor','middle'); text.setAttribute('fill','#bbb'); text.setAttribute('font-size','12');
+        text.textContent = labels[i];
+        svg.appendChild(text);
+      });
+      const axis = document.createElementNS('http://www.w3.org/2000/svg','line');
+      axis.setAttribute('x1', pad); axis.setAttribute('x2', w-pad); axis.setAttribute('y1', h-pad); axis.setAttribute('y2', h-pad); axis.setAttribute('stroke','#333');
+      svg.appendChild(axis);
+    }
+
+    function addProyectoRow({nombre, horas}){
+      const tbody = document.querySelector('#tablaProyectos tbody');
+      tbody.innerHTML = '';// aseguramos solo 1
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input name="pn" value="${nombre||''}" /></td>
+        <td class="right"><input name="ph" type="number" min="0" step="0.1" value="${horas||0}" /></td>
+        <td class="right pmin">$0</td>
+        <td class="right pstd">$0</td>
+        <td class="right pideal">$0</td>
+        <td class="right peq">0 / 0 / 0</td>
+        <td class="right"></td>
+      `;
+      tbody.appendChild(tr);
+      tr.querySelectorAll('input').forEach(inp=> inp.addEventListener('input', ()=>{ recalcAll(); saveLS(); }));
+      recalcAll();
+    }
+
+    // Persistencia
+    function saveLS(){ try{ localStorage.setItem('pf-data', JSON.stringify(serialize())); }catch(e){} }
+    function loadLS(){ try{ const raw = localStorage.getItem('pf-data'); if(!raw) return; const d = JSON.parse(raw); deserialize(d); }catch(e){} }
+    function serialize(){
+      return {
+        nombre:document.getElementById('nombre').value,
+        apellido:document.getElementById('apellido').value,
+        nicho:document.getElementById('nicho').value,
+        edad:document.getElementById('edad').value,
+        pais:document.getElementById('pais').value,
+        experiencia:document.getElementById('experiencia').value,
+        simbolo:document.getElementById('simbolo').value,
+        inflacion:document.getElementById('inflacion').value,
+        pctAhorro:document.getElementById('pctAhorro').value,
+        pctInv:document.getElementById('pctInv').value,
+        pctEmerg:document.getElementById('pctEmerg').value,
+        pctAds:document.getElementById('pctAds').value,
+        horasDia:document.getElementById('horasDia').value,
+        diasSemana:document.getElementById('diasSemana').value,
+        basicos:getTableData(document.querySelector('#tablaBasicos tbody')),
+        deseos:getTableData(document.querySelector('#tablaDeseos tbody')),
+        empresa:getTableData(document.querySelector('#tablaEmpresa tbody')),
+        equipo:getTableData(document.querySelector('#tablaEquipo tbody'), true),
+        proyecto:[...document.querySelectorAll('#tablaProyectos tbody tr')].map(tr=>({
+          nombre: tr.querySelector('input[name=pn]').value,
+          horas: tr.querySelector('input[name=ph]').value
+        }))[0] || null,
+        neMeses:document.getElementById('neMeses').value,
+        nePrecio:document.getElementById('nePrecio').value,
+        neItem:document.getElementById('neItem').value
+      };
+    }
+    function deserialize(d){
+      if(!d) return;
+      ['nombre','apellido','nicho','edad','experiencia','simbolo','inflacion','pctAhorro','pctInv','pctEmerg','pctAds','horasDia','diasSemana','neMeses','nePrecio','neItem'].forEach(id=>{ if(d[id]!==undefined && document.getElementById(id)) document.getElementById(id).value = d[id]; });
+      if(d.pais){ document.getElementById('pais').value = d.pais; st.country=d.pais; }
+      if(d.basicos){ const tb = document.querySelector('#tablaBasicos tbody'); tb.innerHTML=''; d.basicos.forEach(r=> addRow(tb, r)); }
+      if(d.deseos){ const tb = document.querySelector('#tablaDeseos tbody'); tb.innerHTML=''; d.deseos.forEach(r=> addRow(tb, r)); }
+      if(d.empresa){ const tb = document.querySelector('#tablaEmpresa tbody'); tb.innerHTML=''; d.empresa.forEach(r=> addRow(tb, r)); }
+      if(d.equipo){ const tb = document.querySelector('#tablaEquipo tbody'); tb.innerHTML=''; d.equipo.forEach(r=> addRow(tb, r)); }
+      if(d.proyecto){ addProyectoRow({nombre:d.proyecto.nombre, horas:d.proyecto.horas}); }
+      document.getElementById('pctAhorroLbl').textContent = document.getElementById('pctAhorro').value+'%';
+      document.getElementById('pctInvLbl').textContent = document.getElementById('pctInv').value+'%';
+      document.getElementById('pctEmergLbl').textContent = document.getElementById('pctEmerg').value+'%';
+    }
+
+    // Arranque
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

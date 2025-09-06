@@ -1,6 +1,25 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    
+    <!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1305776927866042');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1305776927866042&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>¡Gracias por agendar!</title>
@@ -279,8 +298,8 @@
             const phoneNumber = "59169422335"; // Tu número de WhatsApp
             
             // Crear mensaje personalizado con los parámetros y saltos de línea
-            let message = `¡Hola! 👋\n\n`;
-            message += `Soy ${params.name || 'un futuro Marketographer'} y acabo de agendar una ${params.eventTitle} contigo.\n\n`;
+            let message = `¡Holaaa! 👋\n\n`;
+            message += `Soy ${params.name || 'un futuro Marketographer'} 🤓 y acabo de agendar una ${params.eventTitle} contigo.\n\n`;
             
             message += `📅 *DETALLES DEL EVENTO:*\n`;
             message += `• Evento: ${params.eventTitle}\n`;

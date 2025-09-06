@@ -235,10 +235,10 @@
             </svg>
         </div>
         
-        <h1>¡Perfecto!</h1>
+        <h1 id="greeting">¡Perfecto!</h1>
         
-        <p class="subtitle">
-            Tu sesión ha sido agendada exitosamente. Recibirás un email de confirmación en breve, revisa tu carpeta de spam.
+        <p class="subtitle" id="subtitle">
+            Tu sesión ha sido agendada exitosamente. Recibirás un email de confirmación en breve.
         </p>
         
         <a href="#" class="whatsapp-btn" onclick="confirmWhatsApp()">
@@ -249,15 +249,50 @@
         </a>
         
         <p class="info-text">
-            ¡No te olvides agregar este evento a tu calendario!
+            ¡No te olvides añadir este evento en tu calendario!
         </p>
     </div>
 
     <script>
+        // Función para obtener parámetros de URL
+        function getUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                name: params.get('name') || '',
+                email: params.get('email') || '',
+                date: params.get('date') || '',
+                time: params.get('time') || '',
+                event: params.get('event') || 'sesión',
+                duration: params.get('duration') || '',
+                timezone: params.get('timezone') || ''
+            };
+        }
+
         function confirmWhatsApp() {
-            // Personaliza este mensaje y número de teléfono
-            const phoneNumber = "59169422335"; // Reemplaza con tu número de WhatsApp
-            const message = "¡Hola! Acabo de agendar mi llamada de admisiones contigo a través de Cal y quiero confirmar los detalles del evento. ¡Gracias!";
+            const params = getUrlParams();
+            const phoneNumber = "59169422335"; // Tu número de WhatsApp
+            
+            // Crear mensaje personalizado con los parámetros
+            let message = `¡Hola! Soy ${params.name || 'un usuario'} y acabo de agendar una ${params.event} contigo a través de Cal.com.`;
+            
+            if (params.date && params.time) {
+                message += ` La cita está programada para el ${params.date} a las ${params.time}`;
+                if (params.timezone) {
+                    message += ` (${params.timezone})`;
+                }
+                message += '.';
+            }
+            
+            if (params.duration) {
+                message += ` Duración: ${params.duration}.`;
+            }
+            
+            if (params.email) {
+                message += ` Mi email de contacto es: ${params.email}.`;
+            }
+            
+            message += ' Quiero confirmar los detalles del evento. ¡Gracias!';
+            
             const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
             
             // Abre en la ventana padre si está en iframe, sino en nueva ventana
@@ -268,8 +303,40 @@
             }
         }
 
+        // Personalizar contenido con parámetros de URL
+        function personalizeContent() {
+            const params = getUrlParams();
+            const greeting = document.getElementById('greeting');
+            const subtitle = document.getElementById('subtitle');
+            
+            // Personalizar saludo
+            if (params.name) {
+                greeting.textContent = `¡Perfecto, ${params.name}!`;
+            }
+            
+            // Personalizar mensaje
+            let subtitleText = 'Tu sesión ha sido agendada exitosamente.';
+            
+            if (params.date && params.time) {
+                subtitleText = `Tu ${params.event} para el ${params.date} a las ${params.time} ha sido agendada exitosamente.`;
+            } else if (params.event && params.event !== 'sesión') {
+                subtitleText = `Tu ${params.event} ha sido agendada exitosamente.`;
+            }
+            
+            if (params.email) {
+                subtitleText += ` Recibirás un email de confirmación en ${params.email}.`;
+            } else {
+                subtitleText += ' Recibirás un email de confirmación en breve.';
+            }
+            
+            subtitle.textContent = subtitleText;
+        }
+
         // Animación de entrada optimizada para embed
         window.addEventListener('load', function() {
+            // Personalizar contenido primero
+            personalizeContent();
+            
             const container = document.querySelector('.container');
             container.style.opacity = '0';
             container.style.transform = 'translateY(20px)';
@@ -294,5 +361,5 @@
         // Notificar cuando se carga la página
         window.addEventListener('load', () => notifyParent('loaded'));
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97aff0f2e225cdca',t:'MTc1NzE4MjQxNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97b01d2795bdcdca',t:'MTc1NzE4NDIyNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

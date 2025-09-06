@@ -262,7 +262,7 @@
                 firstName: params.get('Scheduler first name') || '',
                 phone: params.get('attendeePhoneNumber') || '',
                 email: params.get('email') || '',
-                eventTitle: params.get('Event type title') || 'sesión',
+                eventTitle: params.get('Event type title') || 'llamada de amisiones',
                 duration: params.get('Event duration') || '',
                 organiser: params.get('Organiser') || '',
                 organiserFirstName: params.get('Organiser first name') || '',
@@ -280,7 +280,7 @@
             
             // Crear mensaje personalizado con los parámetros y saltos de línea
             let message = `¡Hola! 👋\n\n`;
-            message += `Soy ${params.name || 'un usuario'} y acabo de agendar una ${params.eventTitle} contigo a través de Cal.com.\n\n`;
+            message += `Soy ${params.name || 'un futuro Marketographer'} y acabo de agendar una ${params.eventTitle} contigo a través de Cal.\n\n`;
             
             message += `📅 *DETALLES DEL EVENTO:*\n`;
             message += `• Evento: ${params.eventTitle}\n`;

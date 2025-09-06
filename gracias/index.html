@@ -238,7 +238,7 @@
         <h1>¡Perfecto!</h1>
         
         <p class="subtitle">
-            Tu sesión ha sido agendada exitosamente. Recibirás un email de confirmación en breve.
+            Tu sesión ha sido agendada exitosamente. Recibirás un email de confirmación en breve, revisa tu carpeta de spam.
         </p>
         
         <a href="#" class="whatsapp-btn" onclick="confirmWhatsApp()">
@@ -249,15 +249,15 @@
         </a>
         
         <p class="info-text">
-            También puedes agregar este evento a tu calendario
+            ¡No te olvides agregar este evento a tu calendario!
         </p>
     </div>
 
     <script>
         function confirmWhatsApp() {
             // Personaliza este mensaje y número de teléfono
-            const phoneNumber = "1234567890"; // Reemplaza con tu número de WhatsApp
-            const message = "¡Hola! Acabo de agendar una sesión contigo a través de Cal.com y quiero confirmar los detalles del evento. ¡Gracias!";
+            const phoneNumber = "59169422335"; // Reemplaza con tu número de WhatsApp
+            const message = "¡Hola! Acabo de agendar mi llamada de admisiones contigo a través de Cal.com y quiero confirmar los detalles del evento. ¡Gracias!";
             const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
             
             // Abre en la ventana padre si está en iframe, sino en nueva ventana

@@ -258,14 +258,18 @@
         function getUrlParams() {
             const params = new URLSearchParams(window.location.search);
             return {
-                name: params.get('name') || '',
+                name: params.get('Scheduler') || '',
+                firstName: params.get('Scheduler first name') || '',
                 phone: params.get('attendeePhoneNumber') || '',
                 email: params.get('email') || '',
+                eventTitle: params.get('Event type title') || 'sesión',
+                duration: params.get('Event duration') || '',
+                organiser: params.get('Organiser') || '',
+                organiserFirstName: params.get('Organiser first name') || '',
+                location: params.get('Location') || '',
                 day: params.get('day') || '',
                 date: params.get('date') || '',
                 time: params.get('time') || '',
-                event: params.get('event') || 'sesión',
-                duration: params.get('duration') || '',
                 timezone: params.get('timezone') || ''
             };
         }
@@ -276,9 +280,10 @@
             
             // Crear mensaje personalizado con los parámetros y saltos de línea
             let message = `¡Hola! 👋\n\n`;
-            message += `Soy ${params.name || 'un usuario'} y acabo de agendar una ${params.event} contigo a través de Cal.com.\n\n`;
+            message += `Soy ${params.name || 'un usuario'} y acabo de agendar una ${params.eventTitle} contigo a través de Cal.com.\n\n`;
             
             message += `📅 *DETALLES DEL EVENTO:*\n`;
+            message += `• Evento: ${params.eventTitle}\n`;
             
             if (params.day && params.date && params.time) {
                 message += `• Día: ${params.day}\n`;
@@ -299,6 +304,10 @@
             
             if (params.duration) {
                 message += `• Duración: ${params.duration}\n`;
+            }
+            
+            if (params.location) {
+                message += `• Ubicación: ${params.location}\n`;
             }
             
             message += `\n📞 *MIS DATOS DE CONTACTO:*\n`;
@@ -338,9 +347,9 @@
             let subtitleText = 'Tu sesión ha sido agendada exitosamente.';
             
             if (params.date && params.time) {
-                subtitleText = `Tu ${params.event} para el ${params.date} a las ${params.time} ha sido agendada exitosamente.`;
-            } else if (params.event && params.event !== 'sesión') {
-                subtitleText = `Tu ${params.event} ha sido agendada exitosamente.`;
+                subtitleText = `Tu ${params.eventTitle} para el ${params.date} a las ${params.time} ha sido agendada exitosamente.`;
+            } else if (params.eventTitle && params.eventTitle !== 'sesión') {
+                subtitleText = `Tu ${params.eventTitle} ha sido agendada exitosamente.`;
             }
             
             if (params.email) {
@@ -381,5 +390,5 @@
         // Notificar cuando se carga la página
         window.addEventListener('load', () => notifyParent('loaded'));
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97b02db6e207b526',t:'MTc1NzE4NDkwNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97b0344052e1b526',t:'MTc1NzE4NTE3My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

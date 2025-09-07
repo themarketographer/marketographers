@@ -3,39 +3,52 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Generador de Landing (HTML + Netlify)</title>
+  <title>Generador de Landing (HTML + Netlify) – v2</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
     :root{
-      --bg:#0b0b0b; --fg:#eaeaea; --muted:#a1a1a1; --brand:#00c389; --card:#121212; --line:#1f1f1f;
+      /* Paleta por defecto (claro) */
+      --bg:#ffffff; --fg:#111111; --muted:#5b5b5b; --line:#eaeaea;
+      --brand:#00c389; --cta-text:#001b12; --card:#fafafa;
+      --h1:#0b0b0b; --h2:#1a1a1a; --link:#0e7afe;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
     body{margin:0;font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,sans-serif;background:var(--bg);color:var(--fg);}
-    .wrap{max-width:1100px;margin:0 auto;padding:24px}
+    .wrap{max-width:1200px;margin:0 auto;padding:24px}
     header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}
     .title{font-weight:700;letter-spacing:-0.02em}
     .badge{font-size:12px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted)}
-    .grid{display:grid;grid-template-columns:380px 1fr;gap:20px}
-    @media (max-width:1000px){.grid{grid-template-columns:1fr}}
+    .grid{display:grid;grid-template-columns:420px 1fr;gap:20px}
+    @media (max-width:1100px){.grid{grid-template-columns:1fr}}
     .card{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
-    .card h3{margin:0;padding:16px 16px 8px;border-bottom:1px solid var(--line);font-size:16px;color:#cfcfcf}
+    .card h3{margin:0;padding:16px 16px 8px;border-bottom:1px solid var(--line);font-size:16px;color:#333}
     .card .body{padding:16px}
     label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
-    input[type="text"], input[type="url"], textarea, select{width:100%;background:#0f0f0f;border:1px solid var(--line);color:var(--fg);padding:10px 12px;border-radius:10px;outline:none}
-    textarea{min-height:100px;resize:vertical}
+    input[type="text"], input[type="url"], input[type="number"], textarea, select{width:100%;background:#fff;border:1px solid var(--line);color:var(--fg);padding:10px 12px;border-radius:10px;outline:none}
+    textarea{min-height:90px;resize:vertical}
     .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-    button{background:var(--brand);color:#001b12;border:none;padding:10px 14px;border-radius:12px;font-weight:700;cursor:pointer}
+    button{background:var(--brand);color:var(--cta-text);border:none;padding:10px 14px;border-radius:12px;font-weight:700;cursor:pointer}
     button.secondary{background:transparent;border:1px solid var(--line);color:var(--fg)}
     .hint{font-size:12px;color:var(--muted);margin-top:6px}
+    .inline{display:flex;align-items:center;gap:8px}
+    .switches{display:grid;grid-template-columns:repeat(2, minmax(0,1fr));gap:10px}
+    .hr{height:1px;background:var(--line);margin:14px 0}
+    .chips{display:flex;flex-wrap:wrap;gap:6px}
+    .chip{font-size:11px;padding:4px 8px;border:1px solid var(--line);border-radius:999px;color:#666}
     /* Preview */
     .preview-wrap{padding:0}
-    iframe{width:100%;height:74vh;border:0;border-top:1px solid var(--line)}
+    iframe{width:100%;height:78vh;border:0;border-top:1px solid var(--line)}
     .toolbar{display:flex;gap:10px;align-items:center;padding:12px;border-bottom:1px solid var(--line)}
-    .chip{font-size:12px;color:var(--muted)}
     .spacer{flex:1}
     .ghost{opacity:.6}
+    .grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+    .grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .small{font-size:12px;color:#777}
+    .color-row{display:grid;grid-template-columns:140px 1fr;gap:8px;align-items:center}
+    .color-row input[type="color"]{width:100%;height:36px;border:1px solid var(--line);border-radius:10px;padding:0}
+    .toggle{display:flex;gap:8px;align-items:center}
   </style>
 </head>
 <body>
@@ -43,43 +56,33 @@
     <header>
       <div>
         <div class="title">Generador de Landing en HTML</div>
-        <div class="chip">Sube imagen o video, escribe tu copy y descarga un ZIP listo para Netlify.</div>
+        <div class="chips">
+          <span class="chip">v2 • fondo blanco</span>
+          <span class="chip">ZIP listo para Netlify</span>
+          <span class="chip">secciones opcionales</span>
+        </div>
       </div>
-      <div class="badge">v1 – client‑side, sin backend</div>
+      <div class="badge">client‑side, sin backend</div>
     </header>
 
     <div class="grid">
-      <!-- FORM -->
+      <!-- PANEL IZQUIERDO -->
       <section class="card">
-        <h3>Contenido</h3>
+        <h3>Datos generales</h3>
         <div class="body">
-          <label>Título</label>
-          <input id="title" type="text" placeholder="Ej. Sesiones gastronómicas que venden" value="Sesiones gastronómicas que venden" />
-
-          <div class="row" style="margin-top:12px">
+          <div class="row">
             <div>
               <label>Subtítulo</label>
-              <input id="subtitle" type="text" placeholder="Texto breve de soporte" value="Fotografía de comida con intención de venta" />
+              <input id="subtitle" type="text" placeholder="Ej. Fotografía gastronómica con intención de venta" />
             </div>
             <div>
-              <label>CTA (texto)</label>
-              <input id="ctaText" type="text" placeholder="Reserva tu sesión" value="Agenda tu sesión" />
-            </div>
-          </div>
-
-          <div class="row" style="margin-top:12px">
-            <div>
-              <label>CTA (enlace)</label>
-              <input id="ctaHref" type="url" placeholder="https://cal.com/tuusuario/agenda" value="https://cal.com/marketographer/agenda" />
-            </div>
-            <div>
-              <label>Color de marca (hex)</label>
-              <input id="brand" type="text" placeholder="#00c389" value="#00c389" />
+              <label>Título</label>
+              <input id="title" type="text" placeholder="Sesiones gastronómicas que venden" />
             </div>
           </div>
 
           <label style="margin-top:12px">Descripción</label>
-          <textarea id="body" placeholder="Beneficios, bullets, garantías...">Fotos que abren apetito y caja registradora. Paquetes ágiles, entrega rápida y dirección de arte para que tu menú no se vea barato.</textarea>
+          <textarea id="body" placeholder="Beneficios, garantías, propuesta clara."></textarea>
 
           <div class="row" style="margin-top:12px">
             <div>
@@ -90,19 +93,170 @@
               </select>
             </div>
             <div>
-              <label>Archivo (jpg/png/mp4)</label>
+              <label>Archivo principal (jpg/png/mp4)</label>
               <input id="file" type="file" accept="image/*,video/mp4" />
             </div>
           </div>
 
           <div class="row" style="margin-top:12px">
             <div>
-              <label>Favicon (png 32x32) <span class="ghost">opcional</span></label>
-              <input id="favicon" type="file" accept="image/png" />
+              <label>Logo (png/svg)</label>
+              <input id="logo" type="file" accept="image/png,image/svg+xml" />
             </div>
             <div>
-              <label>Fuente Google <span class="ghost">opcional</span></label>
+              <label>Favicon (png 32x32)</label>
+              <input id="favicon" type="file" accept="image/png" />
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:12px">
+            <div>
+              <label>Nombre del sitio (opcional)</label>
+              <input id="siteName" type="text" placeholder="Marketographers" />
+            </div>
+            <div>
+              <label>Fuente Google (opcional)</label>
               <input id="googleFont" type="text" placeholder="Poppins:300,400,600,700" />
+            </div>
+          </div>
+
+          <div class="hr"></div>
+          <h3 style="padding:0;border:0;margin:0 0 8px">Colores</h3>
+          <div class="grid-2">
+            <div class="color-row"><label>Fondo</label><div class="inline"><input id="cBg" type="color" value="#ffffff"><input id="hexBg" type="text" value="#ffffff"></div></div>
+            <div class="color-row"><label>Texto</label><div class="inline"><input id="cFg" type="color" value="#111111"><input id="hexFg" type="text" value="#111111"></div></div>
+            <div class="color-row"><label>Detalles (líneas)</label><div class="inline"><input id="cLine" type="color" value="#eaeaea"><input id="hexLine" type="text" value="#eaeaea"></div></div>
+            <div class="color-row"><label>Card</label><div class="inline"><input id="cCard" type="color" value="#fafafa"><input id="hexCard" type="text" value="#fafafa"></div></div>
+            <div class="color-row"><label>Marca (CTA)</label><div class="inline"><input id="cBrand" type="color" value="#00c389"><input id="hexBrand" type="text" value="#00c389"></div></div>
+            <div class="color-row"><label>Texto CTA</label><div class="inline"><input id="cCtaText" type="color" value="#001b12"><input id="hexCtaText" type="text" value="#001b12"></div></div>
+          </div>
+
+          <div class="hr"></div>
+          <h3 style="padding:0;border:0;margin:0 0 8px">CTA principal</h3>
+          <div class="row">
+            <div>
+              <label>Texto</label>
+              <input id="ctaText" type="text" placeholder="Agenda tu sesión" />
+            </div>
+            <div>
+              <label>Enlace</label>
+              <input id="ctaHref" type="url" placeholder="https://cal.com/tuusuario/agenda" />
+            </div>
+          </div>
+
+          <div class="hr"></div>
+          <h3 style="padding:0;border:0;margin:0 8px 8px">Secciones (marca lo que quieres incluir)</h3>
+          <div class="switches">
+            <label class="toggle"><input type="checkbox" id="sProblema" checked> Esto es para ti si (Problema)</label>
+            <label class="toggle"><input type="checkbox" id="sProceso" checked> Proceso (Qué incluye)</label>
+            <label class="toggle"><input type="checkbox" id="sRecibes" checked> Qué recibirás</label>
+            <label class="toggle"><input type="checkbox" id="sPortafolio" checked> Portafolio (carrusel)</label>
+            <label class="toggle"><input type="checkbox" id="sTestimonios" checked> Testimonios</label>
+            <label class="toggle"><input type="checkbox" id="sAgendar" checked> Agendar (Cal.com)</label>
+            <label class="toggle"><input type="checkbox" id="sFAQ" checked> Preguntas frecuentes</label>
+          </div>
+        </div>
+      </section>
+
+      <!-- PANEL DERECHO: CAMPOS POR SECCIÓN + PREVIEW -->
+      <section class="card">
+        <h3>Contenido por sección</h3>
+        <div class="body">
+          <div class="grid-3">
+            <div>
+              <label>Esto es para ti si (1)</label>
+              <input id="pb1" type="text" placeholder="Tu menú no convierte" />
+            </div>
+            <div>
+              <label>(2)</label>
+              <input id="pb2" type="text" placeholder="Tus fotos no venden" />
+            </div>
+            <div>
+              <label>(3)</label>
+              <input id="pb3" type="text" placeholder="No tienes proceso claro" />
+            </div>
+          </div>
+
+          <div class="grid-3" style="margin-top:10px">
+            <div>
+              <label>Qué incluye (1)</label>
+              <input id="pr1" type="text" placeholder="Dirección de arte" />
+            </div>
+            <div>
+              <label>(2)</label>
+              <input id="pr2" type="text" placeholder="Sesión en locación" />
+            </div>
+            <div>
+              <label>(3)</label>
+              <input id="pr3" type="text" placeholder="Edición y corrección de color" />
+            </div>
+          </div>
+
+          <label style="margin-top:10px">Qué recibirás (bullets, 1 por línea)</label>
+          <textarea id="recibes" placeholder="20 fotos finales
+Entrega en 5 días
+Asesoría de estilo"></textarea>
+
+          <div class="hr"></div>
+          <h4 style="margin:0 0 8px">Portafolio (hasta 10 imágenes)</h4>
+          <input id="galeria" type="file" accept="image/*" multiple />
+          <div class="small">Sugerencia: sube JPG optimizados.</div>
+
+          <div class="hr"></div>
+          <h4 style="margin:0 0 8px">Testimonios (máx. 3)</h4>
+          <div class="grid-3">
+            <div>
+              <label>Nombre 1</label>
+              <input id="t1n" type="text" placeholder="Cliente A" />
+              <label>Texto 1</label>
+              <textarea id="t1q" placeholder="Quedamos felices, subieron las reservas."></textarea>
+            </div>
+            <div>
+              <label>Nombre 2</label>
+              <input id="t2n" type="text" placeholder="Cliente B" />
+              <label>Texto 2</label>
+              <textarea id="t2q" placeholder="Proceso claro y resultados pro."></textarea>
+            </div>
+            <div>
+              <label>Nombre 3</label>
+              <input id="t3n" type="text" placeholder="Cliente C" />
+              <label>Texto 3</label>
+              <textarea id="t3q" placeholder="Fotos que venden, punto."></textarea>
+            </div>
+          </div>
+
+          <div class="hr"></div>
+          <h4 style="margin:0 0 8px">Agendar (pega aquí tu código de Cal.com)</h4>
+          <textarea id="calcode" placeholder="<div style='width:100%;height:700px'><iframe ...></iframe></div>"></textarea>
+
+          <div class="hr"></div>
+          <h4 style="margin:0 0 8px">Preguntas frecuentes (3 pares)</h4>
+          <div class="grid-3">
+            <div>
+              <label>Pregunta 1</label><input id="fq1" type="text" placeholder="¿Tiempo de entrega?" />
+              <label>Respuesta 1</label><textarea id="fa1" placeholder="5 días hábiles"></textarea>
+            </div>
+            <div>
+              <label>Pregunta 2</label><input id="fq2" type="text" placeholder="¿Forma de pago?" />
+              <label>Respuesta 2</label><textarea id="fa2" placeholder="50% reserva, 50% entrega"></textarea>
+            </div>
+            <div>
+              <label>Pregunta 3</label><input id="fq3" type="text" placeholder="¿Entregas crudos?" />
+              <label>Respuesta 3</label><textarea id="fa3" placeholder="No, solo seleccionadas y editadas"></textarea>
+            </div>
+          </div>
+
+          <div class="hr"></div>
+          <div class="grid-2">
+            <div>
+              <label>Facebook Pixel (pega el código completo) <span class="ghost">opcional</span></label>
+              <textarea id="fbpixel" placeholder="<!-- Meta Pixel Code -->
+<script>...<\/script>
+<!-- End Meta Pixel Code -->"></textarea>
+            </div>
+            <div>
+              <label>Meta description (SEO) <span class="ghost">opcional</span></label>
+              <textarea id="metaDesc" placeholder="Servicios de fotografía gastronómica..."></textarea>
             </div>
           </div>
 
@@ -115,12 +269,11 @@
         </div>
       </section>
 
-      <!-- PREVIEW -->
       <section class="card preview-wrap">
         <div class="toolbar">
-          <div class="chip">Preview</div>
+          <div>Preview</div>
           <div class="spacer"></div>
-          <div class="chip ghost">Responsive: usa DevTools si quieres simular móvil</div>
+          <div class="ghost small">Responsive: usa DevTools si quieres simular móvil</div>
         </div>
         <iframe id="preview"></iframe>
       </section>
@@ -133,160 +286,283 @@
 
   <script>
     const $ = sel => document.querySelector(sel);
-    const state = { mediaFile:null, faviconFile:null };
+    const state = { mediaFile:null, faviconFile:null, logoFile:null, galeriaFiles:[] };
 
+    // File inputs
     $('#file').addEventListener('change', e => { state.mediaFile = e.target.files?.[0] || null; });
     $('#favicon').addEventListener('change', e => { state.faviconFile = e.target.files?.[0] || null; });
-    $('#btnReset').addEventListener('click', () => { document.querySelectorAll('input, textarea').forEach(i=>{ if(i.type!=='file') i.value=''; }); $('#preview').srcdoc=''; state.mediaFile=null; state.faviconFile=null; });
+    $('#logo').addEventListener('change', e => { state.logoFile = e.target.files?.[0] || null; });
+    $('#galeria').addEventListener('change', e => { state.galeriaFiles = Array.from(e.target.files||[]).slice(0,10); });
 
-    function escapeHTML(s=''){ return s.replace(/[&<>\"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+    // Reset
+    $('#btnReset').addEventListener('click', () => { document.querySelectorAll('input, textarea').forEach(i=>{ if(i.type!=="file" && i.type!=="color") i.value=''; });
+      ['cBg','cFg','cLine','cCard','cBrand','cCtaText'].forEach(id=>{ /* keep defaults */ });
+      $('#preview').srcdoc=''; state.mediaFile=null; state.faviconFile=null; state.logoFile=null; state.galeriaFiles=[]; });
 
-    function landingTemplate(opts){
-      const fontTag = opts.googleFont ? `<link href="https://fonts.googleapis.com/css2?family=${opts.googleFont.replace(/ /g,'+')}&display=swap" rel="stylesheet">` : '';
-      const mediaEl = opts.mediaType === 'video' ?
-        `<video class="hero-media" src="assets/${opts.mediaName}" autoplay muted playsinline loop></video>` :
-        `<img class="hero-media" src="assets/${opts.mediaName}" alt="media" />`;
+    // Color sync helpers
+    function bindColor(colorId, hexId){
+      const c = $('#'+colorId), h = $('#'+hexId);
+      const sync = (fromColor) => {
+        if(fromColor){ h.value = c.value; } else { c.value = h.value; }
+      };
+      c.addEventListener('input', ()=>sync(true));
+      h.addEventListener('input', ()=>sync(false));
+    }
+    bindColor('cBg','hexBg'); bindColor('cFg','hexFg'); bindColor('cLine','hexLine'); bindColor('cCard','hexCard'); bindColor('cBrand','hexBrand'); bindColor('cCtaText','hexCtaText');
 
-      return `<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${escapeHTML(opts.title)}</title>
-  ${fontTag}
-  ${opts.faviconName ? `<link rel="icon" type="image/png" href="assets/${opts.faviconName}">` : ''}
-  <style>
-    :root{ --brand:${opts.brand}; --bg:#0b0b0b; --fg:#eaeaea; --muted:#a1a1a1; --line:#1f1f1f; }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:${opts.cssFont};background:var(--bg);color:var(--fg);}
-    .wrap{max-width:1100px;margin:0 auto;padding:24px}
-    .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center;min-height:75vh}
-    @media(max-width:960px){.hero{grid-template-columns:1fr;min-height:unset}}
-    .kicker{color:var(--muted);font-size:12px;letter-spacing:.12em;text-transform:uppercase}
-    h1{margin:.2rem 0 0;letter-spacing:-.02em;font-size:clamp(28px,4.4vw,52px)}
-    p{line-height:1.6;color:#cfcfcf}
-    .cta{display:inline-flex;align-items:center;gap:10px;background:var(--brand);color:#001b12;border:none;padding:12px 16px;border-radius:12px;font-weight:700;text-decoration:none}
-    .cta:hover{filter:brightness(.95)}
-    .hero-media{width:100%;height:100%;object-fit:cover;border-radius:16px;border:1px solid var(--line);background:#0f0f0f}
-    .section{margin-top:36px;border-top:1px solid var(--line);padding-top:24px}
-    ul{padding-left:18px}
-    footer{margin:40px 0 10px;color:var(--muted);font-size:12px}
-  </style>
-</head>
-<body>
-  <div class="wrap">
-    <section class="hero">
-      <div>
-        <div class="kicker">${escapeHTML(opts.subtitle)}</div>
-        <h1>${escapeHTML(opts.title)}</h1>
-        <p>${escapeHTML(opts.body)}</p>
-        <p><a class="cta" href="${opts.ctaHref}" target="_blank" rel="noopener">${escapeHTML(opts.ctaText)}</a></p>
+    function escapeHTML(s=''){ return s.replace(/[&<>\"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c] || c)); }
+
+    function sectionProblema(o){
+      if(!o.sProblema) return '';
+      const items = [o.pb1,o.pb2,o.pb3].filter(Boolean).map(x=>`<li>${escapeHTML(x)}</li>`).join('');
+      if(!items) return '';
+      return `<section class="section"><h2>Esto es para ti si</h2><ul>${items}</ul></section>`;
+    }
+    function sectionProceso(o){
+      if(!o.sProceso) return '';
+      const items = [o.pr1,o.pr2,o.pr3].filter(Boolean).map(x=>`<li>${escapeHTML(x)}</li>`).join('');
+      if(!items) return '';
+      return `<section class="section"><h2>Qué incluye el servicio</h2><ul>${items}</ul></section>`;
+    }
+    function sectionRecibes(o){
+      if(!o.sRecibes) return '';
+      const items = (o.recibes||'').split(/\n+/).map(s=>s.trim()).filter(Boolean).map(x=>`<li>${escapeHTML(x)}</li>`).join('');
+      if(!items) return '';
+      return `<section class="section"><h2>Qué recibirás</h2><ul>${items}</ul></section>`;
+    }
+    function sectionGaleria(o){
+      if(!o.sPortafolio || !o.galeriaNames?.length) return '';
+      const slides = o.galeriaNames.map((name,i)=>`<div class="slide${i===0?' active':''}"><img src="assets/${name}" alt="portafolio ${i+1}"/></div>`).join('');
+      return `<section class="section"><h2>Portafolio</h2>
+      <div class="carousel"><button class="nav prev" aria-label="Anterior">‹</button><div class="viewport">${slides}</div><button class="nav next" aria-label="Siguiente">›</button></div>
+      </section>`;
+    }
+    function sectionTestimonios(o){
+      if(!o.sTestimonios) return '';
+      const blocks = [[o.t1n,o.t1q],[o.t2n,o.t2q],[o.t3n,o.t3q]].filter(([n,q])=>n||q).map(([n,q])=>`<div class="testi"><p class="q">“${escapeHTML(q||'')}”</p><p class="n">${escapeHTML(n||'')}</p></div>`).join('');
+      if(!blocks) return '';
+      return `<section class="section"><h2>Testimonios</h2><div class="testis">${blocks}</div></section>`;
+    }
+    function sectionAgendar(o){
+      if(!o.sAgendar || !o.calcode) return '';
+      return `<section class="section"><h2>Agenda tu sesión</h2>${o.calcode}</section>`;
+    }
+    function sectionFAQ(o){
+      if(!o.sFAQ) return '';
+      const qa = [[o.fq1,o.fa1],[o.fq2,o.fa2],[o.fq3,o.fa3]].filter(([q,a])=>q||a).map(([q,a])=>`<details><summary>${escapeHTML(q||'')}</summary><p>${escapeHTML(a||'')}</p></details>`).join('');
+      if(!qa) return '';
+      return `<section class="section"><h2>Preguntas frecuentes</h2>${qa}</section>`;
+    }
+
+    function landingTemplate(o){
+      const fontTag = o.googleFont ? `<link href="https://fonts.googleapis.com/css2?family=${o.googleFont.replace(/ /g,'+')}\&display=swap" rel="stylesheet">` : '';
+      const mediaEl = o.mediaType === 'video' ?
+        `<video class="hero-media" src="assets/${o.mediaName}" autoplay muted playsinline loop></video>` :
+        `<img class="hero-media" src="assets/${o.mediaName}" alt="media" />`;
+      const logoEl = o.logoName ? `<img class="logo" src="assets/${o.logoName}" alt="logo">` : '';
+
+      const css = `:root{ --bg:${o.cBg}; --fg:${o.cFg}; --muted:#6b6b6b; --line:${o.cLine}; --brand:${o.cBrand}; --cta-text:${o.cCtaText}; --card:${o.cCard}; }
+        *{box-sizing:border-box}body{margin:0;font-family:${o.cssFont};background:var(--bg);color:var(--fg)}
+        a{color:var(--link)} .wrap{max-width:1100px;margin:0 auto;padding:24px}
+        header.site{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+        header.site .site-name{font-weight:700;letter-spacing:-.02em}
+        .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center;min-height:68vh}
+        @media(max-width:960px){.hero{grid-template-columns:1fr;min-height:unset}}
+        .kicker{color:var(--muted);font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+        h1{margin:.2rem 0 0;color:${o.cH1||'#0b0b0b'};letter-spacing:-.02em;font-size:clamp(28px,4.4vw,52px)}
+        h2{margin:0 0 10px;color:${o.cH2||'#1a1a1a'};letter-spacing:-.01em;font-size:clamp(20px,2.6vw,28px)}
+        p{line-height:1.65;color:${o.cP||'#2a2a2a'}}
+        .cta{display:inline-flex;align-items:center;gap:10px;background:var(--brand);color:var(--cta-text);border:none;padding:12px 16px;border-radius:12px;font-weight:700;text-decoration:none}
+        .cta:hover{filter:brightness(.97)}
+        .hero-media{width:100%;height:100%;object-fit:cover;border-radius:16px;border:1px solid var(--line);background:#f4f4f4}
+        .section{margin-top:36px;border-top:1px solid var(--line);padding-top:24px}
+        ul{padding-left:18px}
+        .carousel{position:relative}
+        .carousel .viewport{display:grid;grid-auto-flow:column;gap:12px;overflow:hidden}
+        .carousel .slide{width:100%;height:420px;display:none}
+        .carousel .slide.active{display:block}
+        .carousel img{width:100%;height:100%;object-fit:cover;border-radius:12px;border:1px solid var(--line)}
+        .carousel .nav{position:absolute;top:50%;transform:translateY(-50%);border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 10px;cursor:pointer}
+        .carousel .prev{left:6px}.carousel .next{right:6px}
+        .testis{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+        .testi{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:14px}
+        .testi .q{margin:0 0 8px}
+        footer.site{margin:40px 0 10px;color:#777;font-size:12px;border-top:1px solid var(--line);padding-top:12px}
+      `;
+
+      const html = `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>${escapeHTML(o.title || o.siteName || 'Mi Landing')}</title>
+        ${o.metaDesc ? `<meta name="description" content="${escapeHTML(o.metaDesc)}">` : ''}
+        ${fontTag}
+        ${o.faviconName ? `<link rel="icon" type="image/png" href="assets/${o.faviconName}">` : ''}
+        <style>${css}</style>
+        ${o.fbpixel || ''}
+      </head><body>
+      <div class="wrap">
+        <header class="site"> <div class="inline">${logoEl} <div class="site-name">${escapeHTML(o.siteName||'')}</div></div> <a class="cta" href="${o.ctaHref}" target="_blank" rel="noopener">${escapeHTML(o.ctaText||'Abrir')}</a> </header>
+        <section class="hero">
+          <div>
+            <div class="kicker">${escapeHTML(o.subtitle||'')}</div>
+            <h1>${escapeHTML(o.title||'')}</h1>
+            <p>${escapeHTML(o.body||'')}</p>
+            <p><a class="cta" href="${o.ctaHref}" target="_blank" rel="noopener">${escapeHTML(o.ctaText||'Abrir')}</a></p>
+          </div>
+          <div>${mediaEl}</div>
+        </section>
+        ${sectionProblema(o)}
+        ${sectionProceso(o)}
+        ${sectionRecibes(o)}
+        ${sectionGaleria(o)}
+        ${sectionTestimonios(o)}
+        ${sectionAgendar(o)}
+        ${sectionFAQ(o)}
+        <footer class="site">Hecho con el generador estático client‑side.</footer>
       </div>
-      <div>
-        ${mediaEl}
-      </div>
-    </section>
-
-    <section class="section">
-      <h2 style="margin:0 0 8px;letter-spacing:-.02em">Preguntas frecuentes</h2>
-      <ul>
-        <li>¿Puedo editar este HTML? Sí, es tuyo.</li>
-        <li>¿Cómo publico? Sube la carpeta al repo y conéctala a Netlify.</li>
-        <li>¿SEO? Cambia el <code>&lt;title&gt;</code> y agrega tu descripción si quieres lucirte.</li>
-      </ul>
-    </section>
-
-    <footer>Hecho con el generador estático client‑side.</footer>
-  </div>
-</body>
-</html>`;
+      <script>(function(){
+        const c = document.querySelector('.carousel'); if(!c) return;
+        const slides = Array.from(c.querySelectorAll('.slide'));
+        let i=0; const show = n=>{slides.forEach((s,k)=>s.classList.toggle('active',k===n));};
+        c.querySelector('.prev').addEventListener('click',()=>{i=(i-1+slides.length)%slides.length;show(i)});
+        c.querySelector('.next').addEventListener('click',()=>{i=(i+1)%slides.length;show(i)});
+      })();</script>
+      </body></html>`;
+      return html;
     }
 
     async function buildZip(){
-      // Recolectar datos
-      const data = {
-        title: $('#title').value.trim() || 'Mi Landing',
-        subtitle: $('#subtitle').value.trim() || '',
-        body: $('#body').value.trim() || '',
-        ctaText: $('#ctaText').value.trim() || 'Abrir',
-        ctaHref: $('#ctaHref').value.trim() || '#',
-        brand: ($('#brand').value.trim() || '#00c389'),
-        mediaType: $('#mediaType').value,
-        googleFont: $('#googleFont').value.trim(),
-        cssFont: $('#googleFont').value ? `'${$('#googleFont').value.split(':')[0].replace(/\+/g,' ')}', Poppins, sans-serif` : 'Poppins, sans-serif'
-      };
-
-      // Validaciones mínimas
+      const data = collect();
       if(!state.mediaFile){ alert('Sube una imagen o video.'); throw new Error('no media'); }
-
       const zip = new JSZip();
       const assets = zip.folder('assets');
 
-      // Guardar media
+      // Media principal
       const mediaBuf = await state.mediaFile.arrayBuffer();
       const mediaName = state.mediaFile.name.replace(/[^\w\.\-]/g,'_');
-      assets.file(mediaName, mediaBuf);
-      data.mediaName = mediaName;
+      assets.file(mediaName, mediaBuf); data.mediaName = mediaName;
 
-      // Guardar favicon si hay
-      if(state.faviconFile){
-        const favBuf = await state.faviconFile.arrayBuffer();
-        const favName = state.faviconFile.name.replace(/[^\w\.\-]/g,'_');
-        assets.file(favName, favBuf);
-        data.faviconName = favName;
-      } else {
-        data.faviconName = '';
-      }
+      // Favicon
+      if(state.faviconFile){ const favBuf = await state.faviconFile.arrayBuffer(); const favName = state.faviconFile.name.replace(/[^\w\.\-]/g,'_'); assets.file(favName, favBuf); data.faviconName = favName; }
 
-      // Crear index.html
+      // Logo
+      if(state.logoFile){ const lbuf = await state.logoFile.arrayBuffer(); const lname = state.logoFile.name.replace(/[^\w\.\-]/g,'_'); assets.file(lname, lbuf); data.logoName = lname; }
+
+      // Galería
+      data.galeriaNames = [];
+      for(const f of state.galeriaFiles){ const ab = await f.arrayBuffer(); const nn = f.name.replace(/[^\w\.\-]/g,'_'); assets.file(nn, ab); data.galeriaNames.push(nn); }
+
       const html = landingTemplate(data);
       zip.file('index.html', html);
-
-      // Descargar
       const out = await zip.generateAsync({type:'blob'});
-      saveAs(out, (data.title || 'landing') + '.zip');
+      saveAs(out, (data.title || data.siteName || 'landing') + '.zip');
+    }
+
+    function collect(){
+      const data = {
+        subtitle: $('#subtitle').value.trim(),
+        title: $('#title').value.trim(),
+        body: $('#body').value.trim(),
+        mediaType: $('#mediaType').value,
+        siteName: $('#siteName').value.trim(),
+        googleFont: $('#googleFont').value.trim(),
+        cssFont: $('#googleFont').value ? `'${$('#googleFont').value.split(':')[0].replace(/\+/g,' ')}', Poppins, sans-serif` : 'Poppins, sans-serif',
+        cBg: $('#hexBg').value || '#ffffff',
+        cFg: $('#hexFg').value || '#111111',
+        cLine: $('#hexLine').value || '#eaeaea',
+        cCard: $('#hexCard').value || '#fafafa',
+        cBrand: $('#hexBrand').value || '#00c389',
+        cCtaText: $('#hexCtaText').value || '#001b12',
+        cH1: '#0b0b0b', cH2:'#1a1a1a', cP:'#2a2a2a',
+        ctaText: $('#ctaText').value.trim() || 'Abrir',
+        ctaHref: $('#ctaHref').value.trim() || '#',
+        // switches
+        sProblema: $('#sProblema').checked,
+        sProceso: $('#sProceso').checked,
+        sRecibes: $('#sRecibes').checked,
+        sPortafolio: $('#sPortafolio').checked,
+        sTestimonios: $('#sTestimonios').checked,
+        sAgendar: $('#sAgendar').checked,
+        sFAQ: $('#sFAQ').checked,
+        // problema
+        pb1: $('#pb1').value.trim(), pb2: $('#pb2').value.trim(), pb3: $('#pb3').value.trim(),
+        // proceso
+        pr1: $('#pr1').value.trim(), pr2: $('#pr2').value.trim(), pr3: $('#pr3').value.trim(),
+        // recibes
+        recibes: $('#recibes').value,
+        // galería
+        galeriaNames: [],
+        // testimonios
+        t1n: $('#t1n').value.trim(), t1q: $('#t1q').value.trim(),
+        t2n: $('#t2n').value.trim(), t2q: $('#t2q').value.trim(),
+        t3n: $('#t3n').value.trim(), t3q: $('#t3q').value.trim(),
+        // agendar
+        calcode: $('#calcode').value.trim(),
+        // faq
+        fq1: $('#fq1').value.trim(), fa1: $('#fa1').value.trim(),
+        fq2: $('#fq2').value.trim(), fa2: $('#fa2').value.trim(),
+        fq3: $('#fq3').value.trim(), fa3: $('#fa3').value.trim(),
+        // seo + pixel
+        metaDesc: $('#metaDesc').value.trim(), fbpixel: $('#fbpixel').value
+      };
+      return data;
     }
 
     async function preview(){
-      // Genera una vista temporal embebiendo media como data URL para el iframe
-      const data = {
-        title: $('#title').value.trim() || 'Mi Landing',
-        subtitle: $('#subtitle').value.trim() || '',
-        body: $('#body').value.trim() || '',
-        ctaText: $('#ctaText').value.trim() || 'Abrir',
-        ctaHref: $('#ctaHref').value.trim() || '#',
-        brand: ($('#brand').value.trim() || '#00c389'),
-        mediaType: $('#mediaType').value,
-        googleFont: $('#googleFont').value.trim(),
-        cssFont: $('#googleFont').value ? `'${$('#googleFont').value.split(':')[0].replace(/\+/g,' ')}', Poppins, sans-serif` : 'Poppins, sans-serif'
-      };
-
-      let mediaHTML = '<div style="width:100%;height:320px;border:1px dashed #333;border-radius:12px;display:grid;place-items:center;color:#777">Sin media</div>';
+      const data = collect();
+      // Proveer media temporal
+      let mediaHTML = '<div style="width:100%;height:320px;border:1px dashed #ccc;border-radius:12px;display:grid;place-items:center;color:#999">Sin media</div>';
       if(state.mediaFile){
         const url = URL.createObjectURL(state.mediaFile);
         mediaHTML = data.mediaType==='video' ? `<video class="hero-media" src="${url}" autoplay muted playsinline loop></video>` : `<img class="hero-media" src="${url}" alt="media" />`;
       }
-
+      const logoHTML = state.logoFile ? `<img class="logo" style="height:28px" src="${URL.createObjectURL(state.logoFile)}" alt="logo">` : '';
       const fontTag = data.googleFont ? `<link href="https://fonts.googleapis.com/css2?family=${data.googleFont.replace(/ /g,'+')}\&display=swap" rel="stylesheet">` : '';
-      const html = `<!DOCTYPE html><html><head><meta charset="utf-8">${fontTag}<style>
-        :root{ --brand:${data.brand}; --bg:#0b0b0b; --fg:#eaeaea; --muted:#a1a1a1; --line:#1f1f1f; }
+
+      const css = `:root{ --bg:${data.cBg}; --fg:${data.cFg}; --muted:#6b6b6b; --line:${data.cLine}; --brand:${data.cBrand}; --cta-text:${data.cCtaText}; --card:${data.cCard}; }
         *{box-sizing:border-box}body{margin:0;font-family:${data.cssFont};background:var(--bg);color:var(--fg)}
         .wrap{max-width:1100px;margin:0 auto;padding:24px}
-        .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center;min-height:75vh}
+        header.site{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+        .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center;min-height:64vh}
         @media(max-width:960px){.hero{grid-template-columns:1fr;min-height:unset}}
-        .kicker{color:var(--muted);font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+        .kicker{color:#666;font-size:12px;letter-spacing:.12em;text-transform:uppercase}
         h1{margin:.2rem 0 0;letter-spacing:-.02em;font-size:clamp(28px,4.4vw,52px)}
-        p{line-height:1.6;color:#cfcfcf}
-        .cta{display:inline-flex;align-items:center;gap:10px;background:var(--brand);color:#001b12;border:none;padding:12px 16px;border-radius:12px;font-weight:700;text-decoration:none}
-        .cta:hover{filter:brightness(.95)}
-        .hero-media{width:100%;height:100%;object-fit:cover;border-radius:16px;border:1px solid var(--line);background:#0f0f0f}
-      </style></head><body>
-      <div class="wrap"><section class="hero"><div>
-        <div class="kicker">${escapeHTML(data.subtitle)}</div>
-        <h1>${escapeHTML(data.title)}</h1>
-        <p>${escapeHTML(data.body)}</p>
-        <p><a class="cta" href="${data.ctaHref}" target="_blank" rel="noopener">${escapeHTML(data.ctaText)}</a></p>
-      </div><div>${mediaHTML}</div></section></div>
+        p{line-height:1.65}
+        .cta{display:inline-flex;align-items:center;gap:10px;background:var(--brand);color:var(--cta-text);border:none;padding:12px 16px;border-radius:12px;font-weight:700;text-decoration:none}
+        .hero-media{width:100%;height:100%;object-fit:cover;border-radius:16px;border:1px solid var(--line)}
+        .section{margin-top:36px;border-top:1px solid var(--line);padding-top:24px}
+        ul{padding-left:18px}
+        .carousel{position:relative}
+        .carousel .viewport{height:420px}
+        .carousel .slide{display:none;height:100%}
+        .carousel .slide.active{display:block}
+        .carousel img{width:100%;height:100%;object-fit:cover;border-radius:12px;border:1px solid var(--line)}
+        .carousel .nav{position:absolute;top:50%;transform:translateY(-50%);border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 10px;cursor:pointer}
+        .carousel .prev{left:6px}.carousel .next{right:6px}
+        .testis{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+        .testi{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:14px}
+      `;
+
+      const secciones = [
+        data.sProblema ? `<section class="section"><h2>Esto es para ti si</h2><ul>${[data.pb1,data.pb2,data.pb3].filter(Boolean).map(x=>`<li>${escapeHTML(x)}</li>`).join('')}</ul></section>` : '',
+        data.sProceso ? `<section class="section"><h2>Qué incluye el servicio</h2><ul>${[data.pr1,data.pr2,data.pr3].filter(Boolean).map(x=>`<li>${escapeHTML(x)}</li>`).join('')}</ul></section>` : '',
+        data.sRecibes ? `<section class="section"><h2>Qué recibirás</h2><ul>${(data.recibes||'').split(/\n+/).map(s=>s.trim()).filter(Boolean).map(x=>`<li>${escapeHTML(x)}</li>`).join('')}</ul></section>` : '',
+        data.sPortafolio && state.galeriaFiles.length ? (()=>{ const first = URL.createObjectURL(state.galeriaFiles[0]); return `<section class="section"><h2>Portafolio</h2><div class="carousel"><button class="nav prev">‹</button><div class="viewport"><div class="slide active"><img src="${first}"></div></div><button class="nav next">›</button></div></section>` })() : '',
+        data.sTestimonios ? (()=>{ const blocks = [[data.t1n,data.t1q],[data.t2n,data.t2q],[data.t3n,data.t3q]].filter(([n,q])=>n||q).map(([n,q])=>`<div class='testi'><p class='q'>“${escapeHTML(q||'')}”</p><p class='n'>${escapeHTML(n||'')}</p></div>`).join(''); return blocks? `<section class='section'><h2>Testimonios</h2><div class='testis'>${blocks}</div></section>`:''; })() : '',
+        data.sAgendar && data.calcode ? `<section class="section"><h2>Agenda tu sesión</h2>${data.calcode}</section>` : '',
+        data.sFAQ ? (()=>{ const qa = [[data.fq1,data.fa1],[data.fq2,data.fa2],[data.fq3,data.fa3]].filter(([q,a])=>q||a).map(([q,a])=>`<details><summary>${escapeHTML(q||'')}</summary><p>${escapeHTML(a||'')}</p></details>`).join(''); return qa? `<section class='section'><h2>Preguntas frecuentes</h2>${qa}</section>`:''; })() : ''
+      ].join('');
+
+      const html = `<!DOCTYPE html><html><head><meta charset="utf-8">${fontTag}<style>${css}</style></head><body>
+        <div class="wrap">
+          <header class="site"><div class="inline">${logoHTML}<div style="margin-left:8px;font-weight:700">${escapeHTML(data.siteName||'')}</div></div><a class="cta" href="${data.ctaHref}" target="_blank" rel="noopener">${escapeHTML(data.ctaText||'Abrir')}</a></header>
+          <section class="hero"><div>
+            <div class="kicker">${escapeHTML(data.subtitle||'')}</div>
+            <h1>${escapeHTML(data.title||'')}</h1>
+            <p>${escapeHTML(data.body||'')}</p>
+            <p><a class="cta" href="${data.ctaHref}" target="_blank" rel="noopener">${escapeHTML(data.ctaText||'Abrir')}</a></p>
+          </div><div>${mediaHTML}</div></section>
+          ${secciones}
+        </div>
       </body></html>`;
       $('#preview').srcdoc = html;
     }

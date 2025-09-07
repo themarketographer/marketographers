@@ -1,577 +1,1233 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Generador de Landing (HTML + Netlify) – v2</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root{
-      /* Paleta por defecto (claro) */
-      --bg:#ffffff; --fg:#111111; --muted:#5b5b5b; --line:#eaeaea;
-      --brand:#00c389; --cta-text:#001b12; --card:#fafafa;
-      --h1:#0b0b0b; --h2:#1a1a1a; --link:#0e7afe;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{margin:0;font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,sans-serif;background:var(--bg);color:var(--fg);}
-    .wrap{max-width:1200px;margin:0 auto;padding:24px}
-    header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}
-    .title{font-weight:700;letter-spacing:-0.02em}
-    .badge{font-size:12px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted)}
-    .grid{display:grid;grid-template-columns:420px 1fr;gap:20px}
-    @media (max-width:1100px){.grid{grid-template-columns:1fr}}
-    .card{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
-    .card h3{margin:0;padding:16px 16px 8px;border-bottom:1px solid var(--line);font-size:16px;color:#333}
-    .card .body{padding:16px}
-    label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
-    input[type="text"], input[type="url"], input[type="number"], textarea, select{width:100%;background:#fff;border:1px solid var(--line);color:var(--fg);padding:10px 12px;border-radius:10px;outline:none}
-    textarea{min-height:90px;resize:vertical}
-    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-    button{background:var(--brand);color:var(--cta-text);border:none;padding:10px 14px;border-radius:12px;font-weight:700;cursor:pointer}
-    button.secondary{background:transparent;border:1px solid var(--line);color:var(--fg)}
-    .hint{font-size:12px;color:var(--muted);margin-top:6px}
-    .inline{display:flex;align-items:center;gap:8px}
-    .switches{display:grid;grid-template-columns:repeat(2, minmax(0,1fr));gap:10px}
-    .hr{height:1px;background:var(--line);margin:14px 0}
-    .chips{display:flex;flex-wrap:wrap;gap:6px}
-    .chip{font-size:11px;padding:4px 8px;border:1px solid var(--line);border-radius:999px;color:#666}
-    /* Preview */
-    .preview-wrap{padding:0}
-    iframe{width:100%;height:78vh;border:0;border-top:1px solid var(--line)}
-    .toolbar{display:flex;gap:10px;align-items:center;padding:12px;border-bottom:1px solid var(--line)}
-    .spacer{flex:1}
-    .ghost{opacity:.6}
-    .grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-    .grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-    .small{font-size:12px;color:#777}
-    .color-row{display:grid;grid-template-columns:140px 1fr;gap:8px;align-items:center}
-    .color-row input[type="color"]{width:100%;height:36px;border:1px solid var(--line);border-radius:10px;padding:0}
-    .toggle{display:flex;gap:8px;align-items:center}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Landing Pages para Fotógrafos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: white;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .form-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid #e9ecef;
+        }
+
+        .form-section h3 {
+            color: #495057;
+            margin-bottom: 20px;
+            font-weight: 600;
+            font-size: 1.3rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-item:hover {
+            border-color: #667eea;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+        }
+
+        .checkbox-item.checked {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .color-picker-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .color-picker {
+            width: 50px;
+            height: 40px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .hex-input {
+            flex: 1;
+            max-width: 120px;
+        }
+
+        .file-upload {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-upload input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-upload-label {
+            display: block;
+            padding: 20px;
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            text-align: center;
+            background: #f0f4ff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload-label:hover {
+            background: #e6edff;
+        }
+
+        .file-preview {
+            margin-top: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .generate-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .preview-container {
+            margin-top: 40px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border: 1px solid #e9ecef;
+        }
+
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .preview-header h3 {
+            color: #495057;
+            font-weight: 600;
+        }
+
+        .download-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+        }
+
+        .download-btn:hover {
+            background: #218838;
+        }
+
+        .code-preview {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+
+        .dynamic-inputs {
+            display: none;
+        }
+
+        .dynamic-inputs.active {
+            display: block;
+        }
+
+        .list-input {
+            margin-bottom: 10px;
+        }
+
+        .add-item-btn {
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        .remove-item-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+            margin-left: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .form-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div>
-        <div class="title">Generador de Landing en HTML</div>
-        <div class="chips">
-          <span class="chip">v2 • fondo blanco</span>
-          <span class="chip">ZIP listo para Netlify</span>
-          <span class="chip">secciones opcionales</span>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 Generador de Landing Pages</h1>
+            <p>Crea tu página web profesional para fotografía en minutos</p>
         </div>
-      </div>
-      <div class="badge">client‑side, sin backend</div>
-    </header>
 
-    <div class="grid">
-      <!-- PANEL IZQUIERDO -->
-      <section class="card">
-        <h3>Datos generales</h3>
-        <div class="body">
-          <div class="row">
-            <div>
-              <label>Subtítulo</label>
-              <input id="subtitle" type="text" placeholder="Ej. Fotografía gastronómica con intención de venta" />
-            </div>
-            <div>
-              <label>Título</label>
-              <input id="title" type="text" placeholder="Sesiones gastronómicas que venden" />
-            </div>
-          </div>
+        <div class="form-container">
+            <!-- Configuración General -->
+            <div class="form-section">
+                <h3>📋 Configuración General</h3>
+                
+                <div class="form-group">
+                    <label>Nombre del Sitio</label>
+                    <input type="text" id="siteName" placeholder="Mi Estudio Fotográfico">
+                </div>
 
-          <label style="margin-top:12px">Descripción</label>
-          <textarea id="body" placeholder="Beneficios, garantías, propuesta clara."></textarea>
+                <div class="form-group">
+                    <label>Logo</label>
+                    <div class="file-upload">
+                        <input type="file" id="logo" accept="image/*">
+                        <label for="logo" class="file-upload-label">
+                            📁 Subir Logo (PNG, JPG)
+                        </label>
+                    </div>
+                    <div id="logoPreview" class="file-preview" style="display: none;"></div>
+                </div>
 
-          <div class="row" style="margin-top:12px">
-            <div>
-              <label>Tipo de media</label>
-              <select id="mediaType">
-                <option value="image" selected>Imagen</option>
-                <option value="video">Video</option>
-              </select>
-            </div>
-            <div>
-              <label>Archivo principal (jpg/png/mp4)</label>
-              <input id="file" type="file" accept="image/*,video/mp4" />
-            </div>
-          </div>
+                <div class="form-group">
+                    <label>Favicon</label>
+                    <div class="file-upload">
+                        <input type="file" id="favicon" accept="image/*">
+                        <label for="favicon" class="file-upload-label">
+                            🔖 Subir Favicon (PNG, ICO)
+                        </label>
+                    </div>
+                    <div id="faviconPreview" class="file-preview" style="display: none;"></div>
+                </div>
 
-          <div class="row" style="margin-top:12px">
-            <div>
-              <label>Logo (png/svg)</label>
-              <input id="logo" type="file" accept="image/png,image/svg+xml" />
+                <div class="form-group">
+                    <label>Pixel de Facebook (Opcional)</label>
+                    <input type="text" id="facebookPixel" placeholder="123456789012345">
+                </div>
             </div>
-            <div>
-              <label>Favicon (png 32x32)</label>
-              <input id="favicon" type="file" accept="image/png" />
-            </div>
-          </div>
 
-          <div class="row" style="margin-top:12px">
-            <div>
-              <label>Nombre del sitio (opcional)</label>
-              <input id="siteName" type="text" placeholder="Marketographers" />
+            <!-- Secciones a Incluir -->
+            <div class="form-section">
+                <h3>✅ Secciones a Incluir</h3>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="includeSubtitle" checked>
+                        <label for="includeSubtitle">Subtítulo</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="includeTitle" checked>
+                        <label for="includeTitle">Título Principal</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="includeDescription" checked>
+                        <label for="includeDescription">Descripción</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="includeMedia" checked>
+                        <label for="includeMedia">Foto/Video</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="includeProblem" checked>
+                        <label for="includeProblem">Problema (Esto es para ti si)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="includeProcess" checked>
+                        <label for="includeProcess">Proceso (Qué incluye)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="includeReceive" checked>
+                        <label for="includeReceive">Qué recibirás</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="includePortfolio" checked>
+                        <label for="includePortfolio">Portafolio</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="includeTestimonials">
+                        <label for="includeTestimonials">Testimonios</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="includeSchedule" checked>
+                        <label for="includeSchedule">Agendar (Cal.com)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="includeFAQ" checked>
+                        <label for="includeFAQ">Preguntas Frecuentes</label>
+                    </div>
+                </div>
             </div>
-            <div>
-              <label>Fuente Google (opcional)</label>
-              <input id="googleFont" type="text" placeholder="Poppins:300,400,600,700" />
-            </div>
-          </div>
-
-          <div class="hr"></div>
-          <h3 style="padding:0;border:0;margin:0 0 8px">Colores</h3>
-          <div class="grid-2">
-            <div class="color-row"><label>Fondo</label><div class="inline"><input id="cBg" type="color" value="#ffffff"><input id="hexBg" type="text" value="#ffffff"></div></div>
-            <div class="color-row"><label>Texto</label><div class="inline"><input id="cFg" type="color" value="#111111"><input id="hexFg" type="text" value="#111111"></div></div>
-            <div class="color-row"><label>Detalles (líneas)</label><div class="inline"><input id="cLine" type="color" value="#eaeaea"><input id="hexLine" type="text" value="#eaeaea"></div></div>
-            <div class="color-row"><label>Card</label><div class="inline"><input id="cCard" type="color" value="#fafafa"><input id="hexCard" type="text" value="#fafafa"></div></div>
-            <div class="color-row"><label>Marca (CTA)</label><div class="inline"><input id="cBrand" type="color" value="#00c389"><input id="hexBrand" type="text" value="#00c389"></div></div>
-            <div class="color-row"><label>Texto CTA</label><div class="inline"><input id="cCtaText" type="color" value="#001b12"><input id="hexCtaText" type="text" value="#001b12"></div></div>
-          </div>
-
-          <div class="hr"></div>
-          <h3 style="padding:0;border:0;margin:0 0 8px">CTA principal</h3>
-          <div class="row">
-            <div>
-              <label>Texto</label>
-              <input id="ctaText" type="text" placeholder="Agenda tu sesión" />
-            </div>
-            <div>
-              <label>Enlace</label>
-              <input id="ctaHref" type="url" placeholder="https://cal.com/tuusuario/agenda" />
-            </div>
-          </div>
-
-          <div class="hr"></div>
-          <h3 style="padding:0;border:0;margin:0 8px 8px">Secciones (marca lo que quieres incluir)</h3>
-          <div class="switches">
-            <label class="toggle"><input type="checkbox" id="sProblema" checked> Esto es para ti si (Problema)</label>
-            <label class="toggle"><input type="checkbox" id="sProceso" checked> Proceso (Qué incluye)</label>
-            <label class="toggle"><input type="checkbox" id="sRecibes" checked> Qué recibirás</label>
-            <label class="toggle"><input type="checkbox" id="sPortafolio" checked> Portafolio (carrusel)</label>
-            <label class="toggle"><input type="checkbox" id="sTestimonios" checked> Testimonios</label>
-            <label class="toggle"><input type="checkbox" id="sAgendar" checked> Agendar (Cal.com)</label>
-            <label class="toggle"><input type="checkbox" id="sFAQ" checked> Preguntas frecuentes</label>
-          </div>
         </div>
-      </section>
 
-      <!-- PANEL DERECHO: CAMPOS POR SECCIÓN + PREVIEW -->
-      <section class="card">
-        <h3>Contenido por sección</h3>
-        <div class="body">
-          <div class="grid-3">
-            <div>
-              <label>Esto es para ti si (1)</label>
-              <input id="pb1" type="text" placeholder="Tu menú no convierte" />
-            </div>
-            <div>
-              <label>(2)</label>
-              <input id="pb2" type="text" placeholder="Tus fotos no venden" />
-            </div>
-            <div>
-              <label>(3)</label>
-              <input id="pb3" type="text" placeholder="No tienes proceso claro" />
-            </div>
-          </div>
+        <!-- Contenido de las Secciones -->
+        <div class="form-container">
+            <div class="form-section">
+                <h3>📝 Contenido Principal</h3>
+                
+                <div class="dynamic-inputs active" id="subtitleSection">
+                    <div class="form-group">
+                        <label>Subtítulo</label>
+                        <input type="text" id="subtitle" placeholder="Fotógrafo Profesional">
+                    </div>
+                </div>
 
-          <div class="grid-3" style="margin-top:10px">
-            <div>
-              <label>Qué incluye (1)</label>
-              <input id="pr1" type="text" placeholder="Dirección de arte" />
-            </div>
-            <div>
-              <label>(2)</label>
-              <input id="pr2" type="text" placeholder="Sesión en locación" />
-            </div>
-            <div>
-              <label>(3)</label>
-              <input id="pr3" type="text" placeholder="Edición y corrección de color" />
-            </div>
-          </div>
+                <div class="dynamic-inputs active" id="titleSection">
+                    <div class="form-group">
+                        <label>Título Principal</label>
+                        <input type="text" id="title" placeholder="Capturamos tus momentos más especiales">
+                    </div>
+                </div>
 
-          <label style="margin-top:10px">Qué recibirás (bullets, 1 por línea)</label>
-          <textarea id="recibes" placeholder="20 fotos finales
-Entrega en 5 días
-Asesoría de estilo"></textarea>
+                <div class="dynamic-inputs active" id="descriptionSection">
+                    <div class="form-group">
+                        <label>Descripción</label>
+                        <textarea id="description" placeholder="Especialistas en fotografía de bodas, eventos y retratos. Con más de 10 años de experiencia..."></textarea>
+                    </div>
+                </div>
 
-          <div class="hr"></div>
-          <h4 style="margin:0 0 8px">Portafolio (hasta 10 imágenes)</h4>
-          <input id="galeria" type="file" accept="image/*" multiple />
-          <div class="small">Sugerencia: sube JPG optimizados.</div>
+                <div class="dynamic-inputs active" id="mediaSection">
+                    <div class="form-group">
+                        <label>Foto/Video Principal</label>
+                        <div class="file-upload">
+                            <input type="file" id="mainMedia" accept="image/*,video/*">
+                            <label for="mainMedia" class="file-upload-label">
+                                🎬 Subir Foto o Video Principal
+                            </label>
+                        </div>
+                        <div id="mediaPreview" class="file-preview" style="display: none;"></div>
+                    </div>
+                </div>
 
-          <div class="hr"></div>
-          <h4 style="margin:0 0 8px">Testimonios (máx. 3)</h4>
-          <div class="grid-3">
-            <div>
-              <label>Nombre 1</label>
-              <input id="t1n" type="text" placeholder="Cliente A" />
-              <label>Texto 1</label>
-              <textarea id="t1q" placeholder="Quedamos felices, subieron las reservas."></textarea>
-            </div>
-            <div>
-              <label>Nombre 2</label>
-              <input id="t2n" type="text" placeholder="Cliente B" />
-              <label>Texto 2</label>
-              <textarea id="t2q" placeholder="Proceso claro y resultados pro."></textarea>
-            </div>
-            <div>
-              <label>Nombre 3</label>
-              <input id="t3n" type="text" placeholder="Cliente C" />
-              <label>Texto 3</label>
-              <textarea id="t3q" placeholder="Fotos que venden, punto."></textarea>
-            </div>
-          </div>
+                <div class="dynamic-inputs active" id="problemSection">
+                    <div class="form-group">
+                        <label>Problema - "Esto es para ti si:" (3 puntos)</label>
+                        <div id="problemList">
+                            <input type="text" class="list-input" placeholder="Buscas un fotógrafo profesional y confiable">
+                            <input type="text" class="list-input" placeholder="Quieres fotos de alta calidad para tu evento">
+                            <input type="text" class="list-input" placeholder="Necesitas un servicio personalizado y único">
+                        </div>
+                    </div>
+                </div>
 
-          <div class="hr"></div>
-          <h4 style="margin:0 0 8px">Agendar (pega aquí tu código de Cal.com)</h4>
-          <textarea id="calcode" placeholder="<div style='width:100%;height:700px'><iframe ...></iframe></div>"></textarea>
+                <div class="dynamic-inputs active" id="processSection">
+                    <div class="form-group">
+                        <label>Proceso - "Qué incluye el servicio:" (3 puntos)</label>
+                        <div id="processList">
+                            <input type="text" class="list-input" placeholder="Sesión fotográfica completa">
+                            <input type="text" class="list-input" placeholder="Edición profesional de todas las fotos">
+                            <input type="text" class="list-input" placeholder="Entrega digital en alta resolución">
+                        </div>
+                    </div>
+                </div>
 
-          <div class="hr"></div>
-          <h4 style="margin:0 0 8px">Preguntas frecuentes (3 pares)</h4>
-          <div class="grid-3">
-            <div>
-              <label>Pregunta 1</label><input id="fq1" type="text" placeholder="¿Tiempo de entrega?" />
-              <label>Respuesta 1</label><textarea id="fa1" placeholder="5 días hábiles"></textarea>
+                <div class="dynamic-inputs active" id="receiveSection">
+                    <div class="form-group">
+                        <label>Qué Recibirás</label>
+                        <textarea id="receive" placeholder="- Galería digital con todas las fotos editadas&#10;- Fotos en alta resolución&#10;- Álbum físico premium&#10;- Sesión de seguimiento gratuita"></textarea>
+                    </div>
+                </div>
             </div>
-            <div>
-              <label>Pregunta 2</label><input id="fq2" type="text" placeholder="¿Forma de pago?" />
-              <label>Respuesta 2</label><textarea id="fa2" placeholder="50% reserva, 50% entrega"></textarea>
-            </div>
-            <div>
-              <label>Pregunta 3</label><input id="fq3" type="text" placeholder="¿Entregas crudos?" />
-              <label>Respuesta 3</label><textarea id="fa3" placeholder="No, solo seleccionadas y editadas"></textarea>
-            </div>
-          </div>
 
-          <div class="hr"></div>
-          <div class="grid-2">
-            <div>
-              <label>Facebook Pixel (pega el código completo) <span class="ghost">opcional</span></label>
-              <textarea id="fbpixel" placeholder="<!-- Meta Pixel Code -->
-<script>...<\/script>
-<!-- End Meta Pixel Code -->"></textarea>
-            </div>
-            <div>
-              <label>Meta description (SEO) <span class="ghost">opcional</span></label>
-              <textarea id="metaDesc" placeholder="Servicios de fotografía gastronómica..."></textarea>
-            </div>
-          </div>
+            <div class="form-section">
+                <h3>🎨 Personalización Visual</h3>
+                
+                <div class="form-group">
+                    <label>Color Principal</label>
+                    <div class="color-picker-group">
+                        <input type="color" class="color-picker" id="primaryColor" value="#667eea">
+                        <input type="text" class="hex-input" id="primaryColorHex" value="#667eea">
+                    </div>
+                </div>
 
-          <div class="actions">
-            <button id="btnPreview">Previsualizar</button>
-            <button id="btnDownload">Descargar ZIP</button>
-            <button id="btnReset" class="secondary">Reset</button>
-          </div>
-          <div class="hint">Privado: todo se procesa en tu navegador. El ZIP incluye <code>index.html</code> y carpeta <code>assets/</code>.</div>
+                <div class="form-group">
+                    <label>Color Secundario</label>
+                    <div class="color-picker-group">
+                        <input type="color" class="color-picker" id="secondaryColor" value="#764ba2">
+                        <input type="text" class="hex-input" id="secondaryColorHex" value="#764ba2">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Color de Texto</label>
+                    <div class="color-picker-group">
+                        <input type="color" class="color-picker" id="textColor" value="#333333">
+                        <input type="text" class="hex-input" id="textColorHex" value="#333333">
+                    </div>
+                </div>
+
+                <div class="dynamic-inputs" id="portfolioSection">
+                    <div class="form-group">
+                        <label>Portafolio (hasta 10 fotos)</label>
+                        <div class="file-upload">
+                            <input type="file" id="portfolioImages" accept="image/*" multiple>
+                            <label for="portfolioImages" class="file-upload-label">
+                                🖼️ Subir Fotos del Portafolio (máx. 10)
+                            </label>
+                        </div>
+                        <div id="portfolioPreview" class="file-preview" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <div class="dynamic-inputs" id="testimonialsSection">
+                    <div class="form-group">
+                        <label>Testimonios</label>
+                        <div id="testimonialsList">
+                            <div class="testimonial-item">
+                                <input type="text" placeholder="Nombre del cliente" class="list-input">
+                                <textarea placeholder="Testimonio del cliente..." class="list-input"></textarea>
+                                <button type="button" class="remove-item-btn" onclick="removeTestimonial(this)">Eliminar</button>
+                            </div>
+                        </div>
+                        <button type="button" class="add-item-btn" onclick="addTestimonial()">+ Agregar Testimonio</button>
+                    </div>
+                </div>
+
+                <div class="dynamic-inputs" id="scheduleSection">
+                    <div class="form-group">
+                        <label>Código de Cal.com</label>
+                        <textarea id="calcomCode" placeholder='<iframe src="https://cal.com/tu-usuario" width="100%" height="600"></iframe>'></textarea>
+                    </div>
+                </div>
+
+                <div class="dynamic-inputs" id="faqSection">
+                    <div class="form-group">
+                        <label>Preguntas Frecuentes</label>
+                        <div id="faqList">
+                            <div class="faq-item">
+                                <input type="text" placeholder="Pregunta" class="list-input">
+                                <textarea placeholder="Respuesta..." class="list-input"></textarea>
+                                <button type="button" class="remove-item-btn" onclick="removeFAQ(this)">Eliminar</button>
+                            </div>
+                        </div>
+                        <button type="button" class="add-item-btn" onclick="addFAQ()">+ Agregar Pregunta</button>
+                    </div>
+                </div>
+            </div>
         </div>
-      </section>
 
-      <section class="card preview-wrap">
-        <div class="toolbar">
-          <div>Preview</div>
-          <div class="spacer"></div>
-          <div class="ghost small">Responsive: usa DevTools si quieres simular móvil</div>
+        <button class="generate-btn" onclick="generateLanding()">
+            🚀 Generar Landing Page
+        </button>
+
+        <div class="preview-container" id="previewContainer" style="display: none;">
+            <div class="preview-header">
+                <h3>📄 Tu Landing Page Generada</h3>
+                <button class="download-btn" onclick="downloadHTML()">⬇️ Descargar HTML</button>
+            </div>
+            <div class="code-preview" id="codePreview"></div>
         </div>
-        <iframe id="preview"></iframe>
-      </section>
     </div>
-  </div>
 
-  <!-- JSZip + FileSaver from CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    <script>
+        let generatedHTML = '';
 
-  <script>
-    const $ = sel => document.querySelector(sel);
-    const state = { mediaFile:null, faviconFile:null, logoFile:null, galeriaFiles:[] };
+        // Sincronizar color pickers con inputs hex
+        document.getElementById('primaryColor').addEventListener('input', function() {
+            document.getElementById('primaryColorHex').value = this.value;
+        });
 
-    // File inputs
-    $('#file').addEventListener('change', e => { state.mediaFile = e.target.files?.[0] || null; });
-    $('#favicon').addEventListener('change', e => { state.faviconFile = e.target.files?.[0] || null; });
-    $('#logo').addEventListener('change', e => { state.logoFile = e.target.files?.[0] || null; });
-    $('#galeria').addEventListener('change', e => { state.galeriaFiles = Array.from(e.target.files||[]).slice(0,10); });
+        document.getElementById('primaryColorHex').addEventListener('input', function() {
+            document.getElementById('primaryColor').value = this.value;
+        });
 
-    // Reset
-    $('#btnReset').addEventListener('click', () => { document.querySelectorAll('input, textarea').forEach(i=>{ if(i.type!=="file" && i.type!=="color") i.value=''; });
-      ['cBg','cFg','cLine','cCard','cBrand','cCtaText'].forEach(id=>{ /* keep defaults */ });
-      $('#preview').srcdoc=''; state.mediaFile=null; state.faviconFile=null; state.logoFile=null; state.galeriaFiles=[]; });
+        document.getElementById('secondaryColor').addEventListener('input', function() {
+            document.getElementById('secondaryColorHex').value = this.value;
+        });
 
-    // Color sync helpers
-    function bindColor(colorId, hexId){
-      const c = $('#'+colorId), h = $('#'+hexId);
-      const sync = (fromColor) => {
-        if(fromColor){ h.value = c.value; } else { c.value = h.value; }
-      };
-      c.addEventListener('input', ()=>sync(true));
-      h.addEventListener('input', ()=>sync(false));
-    }
-    bindColor('cBg','hexBg'); bindColor('cFg','hexFg'); bindColor('cLine','hexLine'); bindColor('cCard','hexCard'); bindColor('cBrand','hexBrand'); bindColor('cCtaText','hexCtaText');
+        document.getElementById('secondaryColorHex').addEventListener('input', function() {
+            document.getElementById('secondaryColor').value = this.value;
+        });
 
-    function escapeHTML(s=''){ return s.replace(/[&<>\"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c] || c)); }
+        document.getElementById('textColor').addEventListener('input', function() {
+            document.getElementById('textColorHex').value = this.value;
+        });
 
-    function sectionProblema(o){
-      if(!o.sProblema) return '';
-      const items = [o.pb1,o.pb2,o.pb3].filter(Boolean).map(x=>`<li>${escapeHTML(x)}</li>`).join('');
-      if(!items) return '';
-      return `<section class="section"><h2>Esto es para ti si</h2><ul>${items}</ul></section>`;
-    }
-    function sectionProceso(o){
-      if(!o.sProceso) return '';
-      const items = [o.pr1,o.pr2,o.pr3].filter(Boolean).map(x=>`<li>${escapeHTML(x)}</li>`).join('');
-      if(!items) return '';
-      return `<section class="section"><h2>Qué incluye el servicio</h2><ul>${items}</ul></section>`;
-    }
-    function sectionRecibes(o){
-      if(!o.sRecibes) return '';
-      const items = (o.recibes||'').split(/\n+/).map(s=>s.trim()).filter(Boolean).map(x=>`<li>${escapeHTML(x)}</li>`).join('');
-      if(!items) return '';
-      return `<section class="section"><h2>Qué recibirás</h2><ul>${items}</ul></section>`;
-    }
-    function sectionGaleria(o){
-      if(!o.sPortafolio || !o.galeriaNames?.length) return '';
-      const slides = o.galeriaNames.map((name,i)=>`<div class="slide${i===0?' active':''}"><img src="assets/${name}" alt="portafolio ${i+1}"/></div>`).join('');
-      return `<section class="section"><h2>Portafolio</h2>
-      <div class="carousel"><button class="nav prev" aria-label="Anterior">‹</button><div class="viewport">${slides}</div><button class="nav next" aria-label="Siguiente">›</button></div>
-      </section>`;
-    }
-    function sectionTestimonios(o){
-      if(!o.sTestimonios) return '';
-      const blocks = [[o.t1n,o.t1q],[o.t2n,o.t2q],[o.t3n,o.t3q]].filter(([n,q])=>n||q).map(([n,q])=>`<div class="testi"><p class="q">“${escapeHTML(q||'')}”</p><p class="n">${escapeHTML(n||'')}</p></div>`).join('');
-      if(!blocks) return '';
-      return `<section class="section"><h2>Testimonios</h2><div class="testis">${blocks}</div></section>`;
-    }
-    function sectionAgendar(o){
-      if(!o.sAgendar || !o.calcode) return '';
-      return `<section class="section"><h2>Agenda tu sesión</h2>${o.calcode}</section>`;
-    }
-    function sectionFAQ(o){
-      if(!o.sFAQ) return '';
-      const qa = [[o.fq1,o.fa1],[o.fq2,o.fa2],[o.fq3,o.fa3]].filter(([q,a])=>q||a).map(([q,a])=>`<details><summary>${escapeHTML(q||'')}</summary><p>${escapeHTML(a||'')}</p></details>`).join('');
-      if(!qa) return '';
-      return `<section class="section"><h2>Preguntas frecuentes</h2>${qa}</section>`;
-    }
+        document.getElementById('textColorHex').addEventListener('input', function() {
+            document.getElementById('textColor').value = this.value;
+        });
 
-    function landingTemplate(o){
-      const fontTag = o.googleFont ? `<link href="https://fonts.googleapis.com/css2?family=${o.googleFont.replace(/ /g,'+')}\&display=swap" rel="stylesheet">` : '';
-      const mediaEl = o.mediaType === 'video' ?
-        `<video class="hero-media" src="assets/${o.mediaName}" autoplay muted playsinline loop></video>` :
-        `<img class="hero-media" src="assets/${o.mediaName}" alt="media" />`;
-      const logoEl = o.logoName ? `<img class="logo" src="assets/${o.logoName}" alt="logo">` : '';
+        // Manejar checkboxes para mostrar/ocultar secciones
+        const checkboxes = document.querySelectorAll('.checkbox-item input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const parent = this.closest('.checkbox-item');
+                if (this.checked) {
+                    parent.classList.add('checked');
+                } else {
+                    parent.classList.remove('checked');
+                }
 
-      const css = `:root{ --bg:${o.cBg}; --fg:${o.cFg}; --muted:#6b6b6b; --line:${o.cLine}; --brand:${o.cBrand}; --cta-text:${o.cCtaText}; --card:${o.cCard}; }
-        *{box-sizing:border-box}body{margin:0;font-family:${o.cssFont};background:var(--bg);color:var(--fg)}
-        a{color:var(--link)} .wrap{max-width:1100px;margin:0 auto;padding:24px}
-        header.site{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
-        header.site .site-name{font-weight:700;letter-spacing:-.02em}
-        .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center;min-height:68vh}
-        @media(max-width:960px){.hero{grid-template-columns:1fr;min-height:unset}}
-        .kicker{color:var(--muted);font-size:12px;letter-spacing:.12em;text-transform:uppercase}
-        h1{margin:.2rem 0 0;color:${o.cH1||'#0b0b0b'};letter-spacing:-.02em;font-size:clamp(28px,4.4vw,52px)}
-        h2{margin:0 0 10px;color:${o.cH2||'#1a1a1a'};letter-spacing:-.01em;font-size:clamp(20px,2.6vw,28px)}
-        p{line-height:1.65;color:${o.cP||'#2a2a2a'}}
-        .cta{display:inline-flex;align-items:center;gap:10px;background:var(--brand);color:var(--cta-text);border:none;padding:12px 16px;border-radius:12px;font-weight:700;text-decoration:none}
-        .cta:hover{filter:brightness(.97)}
-        .hero-media{width:100%;height:100%;object-fit:cover;border-radius:16px;border:1px solid var(--line);background:#f4f4f4}
-        .section{margin-top:36px;border-top:1px solid var(--line);padding-top:24px}
-        ul{padding-left:18px}
-        .carousel{position:relative}
-        .carousel .viewport{display:grid;grid-auto-flow:column;gap:12px;overflow:hidden}
-        .carousel .slide{width:100%;height:420px;display:none}
-        .carousel .slide.active{display:block}
-        .carousel img{width:100%;height:100%;object-fit:cover;border-radius:12px;border:1px solid var(--line)}
-        .carousel .nav{position:absolute;top:50%;transform:translateY(-50%);border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 10px;cursor:pointer}
-        .carousel .prev{left:6px}.carousel .next{right:6px}
-        .testis{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
-        .testi{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:14px}
-        .testi .q{margin:0 0 8px}
-        footer.site{margin:40px 0 10px;color:#777;font-size:12px;border-top:1px solid var(--line);padding-top:12px}
-      `;
+                // Mostrar/ocultar secciones dinámicas
+                const sectionMap = {
+                    'includeSubtitle': 'subtitleSection',
+                    'includeTitle': 'titleSection',
+                    'includeDescription': 'descriptionSection',
+                    'includeMedia': 'mediaSection',
+                    'includeProblem': 'problemSection',
+                    'includeProcess': 'processSection',
+                    'includeReceive': 'receiveSection',
+                    'includePortfolio': 'portfolioSection',
+                    'includeTestimonials': 'testimonialsSection',
+                    'includeSchedule': 'scheduleSection',
+                    'includeFAQ': 'faqSection'
+                };
 
-      const html = `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>${escapeHTML(o.title || o.siteName || 'Mi Landing')}</title>
-        ${o.metaDesc ? `<meta name="description" content="${escapeHTML(o.metaDesc)}">` : ''}
-        ${fontTag}
-        ${o.faviconName ? `<link rel="icon" type="image/png" href="assets/${o.faviconName}">` : ''}
-        <style>${css}</style>
-        ${o.fbpixel || ''}
-      </head><body>
-      <div class="wrap">
-        <header class="site"> <div class="inline">${logoEl} <div class="site-name">${escapeHTML(o.siteName||'')}</div></div> <a class="cta" href="${o.ctaHref}" target="_blank" rel="noopener">${escapeHTML(o.ctaText||'Abrir')}</a> </header>
-        <section class="hero">
-          <div>
-            <div class="kicker">${escapeHTML(o.subtitle||'')}</div>
-            <h1>${escapeHTML(o.title||'')}</h1>
-            <p>${escapeHTML(o.body||'')}</p>
-            <p><a class="cta" href="${o.ctaHref}" target="_blank" rel="noopener">${escapeHTML(o.ctaText||'Abrir')}</a></p>
-          </div>
-          <div>${mediaEl}</div>
-        </section>
-        ${sectionProblema(o)}
-        ${sectionProceso(o)}
-        ${sectionRecibes(o)}
-        ${sectionGaleria(o)}
-        ${sectionTestimonios(o)}
-        ${sectionAgendar(o)}
-        ${sectionFAQ(o)}
-        <footer class="site">Hecho con el generador estático client‑side.</footer>
-      </div>
-      <script>(function(){
-        const c = document.querySelector('.carousel'); if(!c) return;
-        const slides = Array.from(c.querySelectorAll('.slide'));
-        let i=0; const show = n=>{slides.forEach((s,k)=>s.classList.toggle('active',k===n));};
-        c.querySelector('.prev').addEventListener('click',()=>{i=(i-1+slides.length)%slides.length;show(i)});
-        c.querySelector('.next').addEventListener('click',()=>{i=(i+1)%slides.length;show(i)});
-      })();</script>
-      </body></html>`;
-      return html;
-    }
+                const sectionId = sectionMap[this.id];
+                if (sectionId) {
+                    const section = document.getElementById(sectionId);
+                    if (this.checked) {
+                        section.classList.add('active');
+                    } else {
+                        section.classList.remove('active');
+                    }
+                }
+            });
 
-    async function buildZip(){
-      const data = collect();
-      if(!state.mediaFile){ alert('Sube una imagen o video.'); throw new Error('no media'); }
-      const zip = new JSZip();
-      const assets = zip.folder('assets');
+            // Inicializar estado
+            if (checkbox.checked) {
+                checkbox.closest('.checkbox-item').classList.add('checked');
+            }
+        });
 
-      // Media principal
-      const mediaBuf = await state.mediaFile.arrayBuffer();
-      const mediaName = state.mediaFile.name.replace(/[^\w\.\-]/g,'_');
-      assets.file(mediaName, mediaBuf); data.mediaName = mediaName;
+        // Manejar preview de archivos
+        function handleFilePreview(inputId, previewId) {
+            document.getElementById(inputId).addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                const preview = document.getElementById(previewId);
+                
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.innerHTML = `<img src="${e.target.result}" style="max-width: 100px; max-height: 100px; border-radius: 5px;">`;
+                        preview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    preview.style.display = 'none';
+                }
+            });
+        }
 
-      // Favicon
-      if(state.faviconFile){ const favBuf = await state.faviconFile.arrayBuffer(); const favName = state.faviconFile.name.replace(/[^\w\.\-]/g,'_'); assets.file(favName, favBuf); data.faviconName = favName; }
+        handleFilePreview('logo', 'logoPreview');
+        handleFilePreview('favicon', 'faviconPreview');
+        handleFilePreview('mainMedia', 'mediaPreview');
 
-      // Logo
-      if(state.logoFile){ const lbuf = await state.logoFile.arrayBuffer(); const lname = state.logoFile.name.replace(/[^\w\.\-]/g,'_'); assets.file(lname, lbuf); data.logoName = lname; }
+        // Manejar múltiples imágenes del portafolio
+        document.getElementById('portfolioImages').addEventListener('change', function(e) {
+            const files = Array.from(e.target.files).slice(0, 10); // Máximo 10
+            const preview = document.getElementById('portfolioPreview');
+            
+            if (files.length > 0) {
+                let html = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px;">';
+                files.forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        html += `<img src="${e.target.result}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 5px;">`;
+                        preview.innerHTML = html + '</div>';
+                    };
+                    reader.readAsDataURL(file);
+                });
+                preview.style.display = 'block';
+            } else {
+                preview.style.display = 'none';
+            }
+        });
 
-      // Galería
-      data.galeriaNames = [];
-      for(const f of state.galeriaFiles){ const ab = await f.arrayBuffer(); const nn = f.name.replace(/[^\w\.\-]/g,'_'); assets.file(nn, ab); data.galeriaNames.push(nn); }
+        // Funciones para agregar/eliminar testimonios
+        function addTestimonial() {
+            const container = document.getElementById('testimonialsList');
+            const div = document.createElement('div');
+            div.className = 'testimonial-item';
+            div.innerHTML = `
+                <input type="text" placeholder="Nombre del cliente" class="list-input">
+                <textarea placeholder="Testimonio del cliente..." class="list-input"></textarea>
+                <button type="button" class="remove-item-btn" onclick="removeTestimonial(this)">Eliminar</button>
+            `;
+            container.appendChild(div);
+        }
 
-      const html = landingTemplate(data);
-      zip.file('index.html', html);
-      const out = await zip.generateAsync({type:'blob'});
-      saveAs(out, (data.title || data.siteName || 'landing') + '.zip');
-    }
+        function removeTestimonial(btn) {
+            btn.parentElement.remove();
+        }
 
-    function collect(){
-      const data = {
-        subtitle: $('#subtitle').value.trim(),
-        title: $('#title').value.trim(),
-        body: $('#body').value.trim(),
-        mediaType: $('#mediaType').value,
-        siteName: $('#siteName').value.trim(),
-        googleFont: $('#googleFont').value.trim(),
-        cssFont: $('#googleFont').value ? `'${$('#googleFont').value.split(':')[0].replace(/\+/g,' ')}', Poppins, sans-serif` : 'Poppins, sans-serif',
-        cBg: $('#hexBg').value || '#ffffff',
-        cFg: $('#hexFg').value || '#111111',
-        cLine: $('#hexLine').value || '#eaeaea',
-        cCard: $('#hexCard').value || '#fafafa',
-        cBrand: $('#hexBrand').value || '#00c389',
-        cCtaText: $('#hexCtaText').value || '#001b12',
-        cH1: '#0b0b0b', cH2:'#1a1a1a', cP:'#2a2a2a',
-        ctaText: $('#ctaText').value.trim() || 'Abrir',
-        ctaHref: $('#ctaHref').value.trim() || '#',
-        // switches
-        sProblema: $('#sProblema').checked,
-        sProceso: $('#sProceso').checked,
-        sRecibes: $('#sRecibes').checked,
-        sPortafolio: $('#sPortafolio').checked,
-        sTestimonios: $('#sTestimonios').checked,
-        sAgendar: $('#sAgendar').checked,
-        sFAQ: $('#sFAQ').checked,
-        // problema
-        pb1: $('#pb1').value.trim(), pb2: $('#pb2').value.trim(), pb3: $('#pb3').value.trim(),
-        // proceso
-        pr1: $('#pr1').value.trim(), pr2: $('#pr2').value.trim(), pr3: $('#pr3').value.trim(),
-        // recibes
-        recibes: $('#recibes').value,
-        // galería
-        galeriaNames: [],
-        // testimonios
-        t1n: $('#t1n').value.trim(), t1q: $('#t1q').value.trim(),
-        t2n: $('#t2n').value.trim(), t2q: $('#t2q').value.trim(),
-        t3n: $('#t3n').value.trim(), t3q: $('#t3q').value.trim(),
-        // agendar
-        calcode: $('#calcode').value.trim(),
-        // faq
-        fq1: $('#fq1').value.trim(), fa1: $('#fa1').value.trim(),
-        fq2: $('#fq2').value.trim(), fa2: $('#fa2').value.trim(),
-        fq3: $('#fq3').value.trim(), fa3: $('#fa3').value.trim(),
-        // seo + pixel
-        metaDesc: $('#metaDesc').value.trim(), fbpixel: $('#fbpixel').value
-      };
-      return data;
-    }
+        // Funciones para agregar/eliminar FAQs
+        function addFAQ() {
+            const container = document.getElementById('faqList');
+            const div = document.createElement('div');
+            div.className = 'faq-item';
+            div.innerHTML = `
+                <input type="text" placeholder="Pregunta" class="list-input">
+                <textarea placeholder="Respuesta..." class="list-input"></textarea>
+                <button type="button" class="remove-item-btn" onclick="removeFAQ(this)">Eliminar</button>
+            `;
+            container.appendChild(div);
+        }
 
-    async function preview(){
-      const data = collect();
-      // Proveer media temporal
-      let mediaHTML = '<div style="width:100%;height:320px;border:1px dashed #ccc;border-radius:12px;display:grid;place-items:center;color:#999">Sin media</div>';
-      if(state.mediaFile){
-        const url = URL.createObjectURL(state.mediaFile);
-        mediaHTML = data.mediaType==='video' ? `<video class="hero-media" src="${url}" autoplay muted playsinline loop></video>` : `<img class="hero-media" src="${url}" alt="media" />`;
-      }
-      const logoHTML = state.logoFile ? `<img class="logo" style="height:28px" src="${URL.createObjectURL(state.logoFile)}" alt="logo">` : '';
-      const fontTag = data.googleFont ? `<link href="https://fonts.googleapis.com/css2?family=${data.googleFont.replace(/ /g,'+')}\&display=swap" rel="stylesheet">` : '';
+        function removeFAQ(btn) {
+            btn.parentElement.remove();
+        }
 
-      const css = `:root{ --bg:${data.cBg}; --fg:${data.cFg}; --muted:#6b6b6b; --line:${data.cLine}; --brand:${data.cBrand}; --cta-text:${data.cCtaText}; --card:${data.cCard}; }
-        *{box-sizing:border-box}body{margin:0;font-family:${data.cssFont};background:var(--bg);color:var(--fg)}
-        .wrap{max-width:1100px;margin:0 auto;padding:24px}
-        header.site{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
-        .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center;min-height:64vh}
-        @media(max-width:960px){.hero{grid-template-columns:1fr;min-height:unset}}
-        .kicker{color:#666;font-size:12px;letter-spacing:.12em;text-transform:uppercase}
-        h1{margin:.2rem 0 0;letter-spacing:-.02em;font-size:clamp(28px,4.4vw,52px)}
-        p{line-height:1.65}
-        .cta{display:inline-flex;align-items:center;gap:10px;background:var(--brand);color:var(--cta-text);border:none;padding:12px 16px;border-radius:12px;font-weight:700;text-decoration:none}
-        .hero-media{width:100%;height:100%;object-fit:cover;border-radius:16px;border:1px solid var(--line)}
-        .section{margin-top:36px;border-top:1px solid var(--line);padding-top:24px}
-        ul{padding-left:18px}
-        .carousel{position:relative}
-        .carousel .viewport{height:420px}
-        .carousel .slide{display:none;height:100%}
-        .carousel .slide.active{display:block}
-        .carousel img{width:100%;height:100%;object-fit:cover;border-radius:12px;border:1px solid var(--line)}
-        .carousel .nav{position:absolute;top:50%;transform:translateY(-50%);border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 10px;cursor:pointer}
-        .carousel .prev{left:6px}.carousel .next{right:6px}
-        .testis{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
-        .testi{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:14px}
-      `;
+        // Función principal para generar la landing page
+        async function generateLanding() {
+            const btn = document.querySelector('.generate-btn');
+            btn.disabled = true;
+            btn.textContent = '⏳ Generando...';
 
-      const secciones = [
-        data.sProblema ? `<section class="section"><h2>Esto es para ti si</h2><ul>${[data.pb1,data.pb2,data.pb3].filter(Boolean).map(x=>`<li>${escapeHTML(x)}</li>`).join('')}</ul></section>` : '',
-        data.sProceso ? `<section class="section"><h2>Qué incluye el servicio</h2><ul>${[data.pr1,data.pr2,data.pr3].filter(Boolean).map(x=>`<li>${escapeHTML(x)}</li>`).join('')}</ul></section>` : '',
-        data.sRecibes ? `<section class="section"><h2>Qué recibirás</h2><ul>${(data.recibes||'').split(/\n+/).map(s=>s.trim()).filter(Boolean).map(x=>`<li>${escapeHTML(x)}</li>`).join('')}</ul></section>` : '',
-        data.sPortafolio && state.galeriaFiles.length ? (()=>{ const first = URL.createObjectURL(state.galeriaFiles[0]); return `<section class="section"><h2>Portafolio</h2><div class="carousel"><button class="nav prev">‹</button><div class="viewport"><div class="slide active"><img src="${first}"></div></div><button class="nav next">›</button></div></section>` })() : '',
-        data.sTestimonios ? (()=>{ const blocks = [[data.t1n,data.t1q],[data.t2n,data.t2q],[data.t3n,data.t3q]].filter(([n,q])=>n||q).map(([n,q])=>`<div class='testi'><p class='q'>“${escapeHTML(q||'')}”</p><p class='n'>${escapeHTML(n||'')}</p></div>`).join(''); return blocks? `<section class='section'><h2>Testimonios</h2><div class='testis'>${blocks}</div></section>`:''; })() : '',
-        data.sAgendar && data.calcode ? `<section class="section"><h2>Agenda tu sesión</h2>${data.calcode}</section>` : '',
-        data.sFAQ ? (()=>{ const qa = [[data.fq1,data.fa1],[data.fq2,data.fa2],[data.fq3,data.fa3]].filter(([q,a])=>q||a).map(([q,a])=>`<details><summary>${escapeHTML(q||'')}</summary><p>${escapeHTML(a||'')}</p></details>`).join(''); return qa? `<section class='section'><h2>Preguntas frecuentes</h2>${qa}</section>`:''; })() : ''
-      ].join('');
+            try {
+                // Recopilar todos los datos
+                const data = await collectFormData();
+                
+                // Generar HTML
+                generatedHTML = generateHTML(data);
+                
+                // Mostrar preview
+                document.getElementById('codePreview').textContent = generatedHTML;
+                document.getElementById('previewContainer').style.display = 'block';
+                
+                btn.textContent = '✅ ¡Generado!';
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.textContent = '🚀 Generar Landing Page';
+                }, 2000);
 
-      const html = `<!DOCTYPE html><html><head><meta charset="utf-8">${fontTag}<style>${css}</style></head><body>
-        <div class="wrap">
-          <header class="site"><div class="inline">${logoHTML}<div style="margin-left:8px;font-weight:700">${escapeHTML(data.siteName||'')}</div></div><a class="cta" href="${data.ctaHref}" target="_blank" rel="noopener">${escapeHTML(data.ctaText||'Abrir')}</a></header>
-          <section class="hero"><div>
-            <div class="kicker">${escapeHTML(data.subtitle||'')}</div>
-            <h1>${escapeHTML(data.title||'')}</h1>
-            <p>${escapeHTML(data.body||'')}</p>
-            <p><a class="cta" href="${data.ctaHref}" target="_blank" rel="noopener">${escapeHTML(data.ctaText||'Abrir')}</a></p>
-          </div><div>${mediaHTML}</div></section>
-          ${secciones}
+            } catch (error) {
+                console.error('Error:', error);
+                btn.textContent = '❌ Error';
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.textContent = '🚀 Generar Landing Page';
+                }, 2000);
+            }
+        }
+
+        // Recopilar datos del formulario
+        async function collectFormData() {
+            const data = {
+                siteName: document.getElementById('siteName').value || 'Mi Estudio Fotográfico',
+                subtitle: document.getElementById('subtitle').value,
+                title: document.getElementById('title').value,
+                description: document.getElementById('description').value,
+                receive: document.getElementById('receive').value,
+                facebookPixel: document.getElementById('facebookPixel').value,
+                calcomCode: document.getElementById('calcomCode').value,
+                colors: {
+                    primary: document.getElementById('primaryColorHex').value,
+                    secondary: document.getElementById('secondaryColorHex').value,
+                    text: document.getElementById('textColorHex').value
+                },
+                sections: {},
+                logo: null,
+                favicon: null,
+                mainMedia: null,
+                portfolioImages: [],
+                problemList: [],
+                processList: [],
+                testimonials: [],
+                faqs: []
+            };
+
+            // Verificar qué secciones incluir
+            checkboxes.forEach(checkbox => {
+                data.sections[checkbox.id] = checkbox.checked;
+            });
+
+            // Procesar archivos
+            if (document.getElementById('logo').files[0]) {
+                data.logo = await fileToBase64(document.getElementById('logo').files[0]);
+            }
+
+            if (document.getElementById('favicon').files[0]) {
+                data.favicon = await fileToBase64(document.getElementById('favicon').files[0]);
+            }
+
+            if (document.getElementById('mainMedia').files[0]) {
+                data.mainMedia = await fileToBase64(document.getElementById('mainMedia').files[0]);
+            }
+
+            // Procesar imágenes del portafolio
+            const portfolioFiles = Array.from(document.getElementById('portfolioImages').files).slice(0, 10);
+            for (let file of portfolioFiles) {
+                data.portfolioImages.push(await fileToBase64(file));
+            }
+
+            // Recopilar listas
+            document.querySelectorAll('#problemList .list-input').forEach(input => {
+                if (input.value.trim()) data.problemList.push(input.value.trim());
+            });
+
+            document.querySelectorAll('#processList .list-input').forEach(input => {
+                if (input.value.trim()) data.processList.push(input.value.trim());
+            });
+
+            // Recopilar testimonios
+            document.querySelectorAll('#testimonialsList .testimonial-item').forEach(item => {
+                const name = item.querySelector('input').value.trim();
+                const text = item.querySelector('textarea').value.trim();
+                if (name && text) {
+                    data.testimonials.push({ name, text });
+                }
+            });
+
+            // Recopilar FAQs
+            document.querySelectorAll('#faqList .faq-item').forEach(item => {
+                const question = item.querySelector('input').value.trim();
+                const answer = item.querySelector('textarea').value.trim();
+                if (question && answer) {
+                    data.faqs.push({ question, answer });
+                }
+            });
+
+            return data;
+        }
+
+        // Convertir archivo a base64
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        // Generar HTML de la landing page
+        function generateHTML(data) {
+            return `<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${data.siteName}</title>
+    ${data.favicon ? `<link rel="icon" type="image/x-icon" href="${data.favicon}">` : ''}
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    ${data.facebookPixel ? `
+    <!-- Facebook Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '${data.facebookPixel}');
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=${data.facebookPixel}&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Facebook Pixel Code -->` : ''}
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: ${data.colors.text};
+            background: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section {
+            padding: 80px 0;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, ${data.colors.primary} 0%, ${data.colors.secondary} 100%);
+            color: white;
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .hero-content .subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: white;
+            color: ${data.colors.primary};
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: transform 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+        }
+
+        .media-container {
+            margin-top: 50px;
+        }
+
+        .media-container img,
+        .media-container video {
+            max-width: 100%;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 50px;
+            color: ${data.colors.primary};
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+        }
+
+        .card h3 {
+            color: ${data.colors.primary};
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 50px;
+        }
+
+        .portfolio-item {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .portfolio-item:hover {
+            transform: scale(1.05);
+        }
+
+        .portfolio-item img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+
+        .testimonial {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border-left: 5px solid ${data.colors.primary};
+        }
+
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .testimonial-author {
+            font-weight: 600;
+            color: ${data.colors.primary};
+        }
+
+        .faq-item {
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .faq-question {
+            padding: 20px;
+            background: ${data.colors.primary};
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .faq-answer {
+            padding: 20px;
+            display: none;
+        }
+
+        .faq-answer.active {
+            display: block;
+        }
+
+        .logo {
+            max-height: 60px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                ${data.logo ? `<img src="${data.logo}" alt="Logo" class="logo">` : ''}
+                ${data.sections.includeSubtitle && data.subtitle ? `<div class="subtitle">${data.subtitle}</div>` : ''}
+                ${data.sections.includeTitle && data.title ? `<h1>${data.title}</h1>` : ''}
+                ${data.sections.includeDescription && data.description ? `<p>${data.description}</p>` : ''}
+                <a href="#contacto" class="btn">Contáctanos Ahora</a>
+                ${data.sections.includeMedia && data.mainMedia ? `
+                <div class="media-container">
+                    ${data.mainMedia.startsWith('data:video/') ? 
+                        `<video controls><source src="${data.mainMedia}" type="video/mp4"></video>` :
+                        `<img src="${data.mainMedia}" alt="Imagen principal">`
+                    }
+                </div>` : ''}
+            </div>
         </div>
-      </body></html>`;
-      $('#preview').srcdoc = html;
-    }
+    </section>
 
-    $('#btnPreview').addEventListener('click', preview);
-    $('#btnDownload').addEventListener('click', buildZip);
+    ${data.sections.includeProblem && data.problemList.length > 0 ? `
+    <!-- Problema Section -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Esto es para ti si:</h2>
+            <div class="grid-3">
+                ${data.problemList.map(item => `
+                <div class="card">
+                    <h3>✓</h3>
+                    <p>${item}</p>
+                </div>
+                `).join('')}
+            </div>
+        </div>
+    </section>` : ''}
 
-    // Auto preview inicial sin media
-    preview();
-  </script>
+    ${data.sections.includeProcess && data.processList.length > 0 ? `
+    <!-- Proceso Section -->
+    <section class="section" style="background: #f8f9fa;">
+        <div class="container">
+            <h2 class="section-title">Qué incluye nuestro servicio:</h2>
+            <div class="grid-3">
+                ${data.processList.map((item, index) => `
+                <div class="card">
+                    <h3>${index + 1}</h3>
+                    <p>${item}</p>
+                </div>
+                `).join('')}
+            </div>
+        </div>
+    </section>` : ''}
+
+    ${data.sections.includeReceive && data.receive ? `
+    <!-- Qué Recibirás Section -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Qué Recibirás</h2>
+            <div style="max-width: 800px; margin: 0 auto; text-align: left;">
+                <div style="background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                    ${data.receive.split('\n').map(line => `<p style="margin-bottom: 15px; font-size: 1.1rem;">${line}</p>`).join('')}
+                </div>
+            </div>
+        </div>
+    </section>` : ''}
+
+    ${data.sections.includePortfolio && data.portfolioImages.length > 0 ? `
+    <!-- Portafolio Section -->
+    <section class="section" style="background: #f8f9fa;">
+        <div class="container">
+            <h2 class="section-title">Nuestro Portafolio</h2>
+            <div class="portfolio-grid">
+                ${data.portfolioImages.map(img => `
+                <div class="portfolio-item">
+                    <img src="${img}" alt="Trabajo del portafolio">
+                </div>
+                `).join('')}
+            </div>
+        </div>
+    </section>` : ''}
+
+    ${data.sections.includeTestimonials && data.testimonials.length > 0 ? `
+    <!-- Testimonios Section -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Lo que dicen nuestros clientes</h2>
+            <div style="max-width: 800px; margin: 0 auto;">
+                ${data.testimonials.map(testimonial => `
+                <div class="testimonial">
+                    <div class="testimonial-text">"${testimonial.text}"</div>
+                    <div class="testimonial-author">- ${testimonial.name}</div>
+                </div>
+                `).join('')}
+            </div>
+        </div>
+    </section>` : ''}
+
+    ${data.sections.includeSchedule && data.calcomCode ? `
+    <!-- Agendar Section -->
+    <section class="section" style="background: #f8f9fa;" id="contacto">
+        <div class="container">
+            <h2 class="section-title">Agenda tu Sesión</h2>
+            <div style="max-width: 800px; margin: 0 auto;">
+                ${data.calcomCode}
+            </div>
+        </div>
+    </section>` : ''}
+
+    ${data.sections.includeFAQ && data.faqs.length > 0 ? `
+    <!-- FAQ Section -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Preguntas Frecuentes</h2>
+            <div style="max-width: 800px; margin: 0 auto;">
+                ${data.faqs.map((faq, index) => `
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(${index})">
+                        ${faq.question}
+                    </div>
+                    <div class="faq-answer" id="faq-${index}">
+                        <p>${faq.answer}</p>
+                    </div>
+                </div>
+                `).join('')}
+            </div>
+        </div>
+    </section>` : ''}
+
+    <script>
+        function toggleFAQ(index) {
+            const answer = document.getElementById('faq-' + index);
+            answer.classList.toggle('active');
+        }
+
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97b3130f02cbb526',t:'MTc1NzIxNTI3MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>`;
+        }
+
+        // Descargar HTML
+        function downloadHTML() {
+            const blob = new Blob([generatedHTML], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'landing-page.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
 </body>
 </html>

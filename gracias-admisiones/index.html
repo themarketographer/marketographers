@@ -1,251 +1,277 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>¡Llamada Agendada! - Marketographers</title>
-  <meta name="description" content="Tu llamada de admisiones está confirmada. Prepárate para una sesión 1:1 personalizada con Marketographers.">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Llamada Agendada! - Marketographers</title>
+    <meta name="description" content="Tu llamada de admisiones está confirmada. Prepárate para una sesión 1:1 personalizada con Marketographers.">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="¡Llamada Agendada! - Marketographers">
+    <meta property="og:description" content="Tu llamada de admisiones está confirmada. Prepárate para una sesión 1:1 personalizada.">
+    <meta property="og:type" content="website">
+    
+    <!-- Preconnect for fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --ink: #111;
+            --muted: #666;
+            --accent: #1DB954;
+            --glass: rgba(255, 255, 255, 0.6);
+            --brd: rgba(255, 255, 255, 0.45);
+        }
 
-  <!-- Open Graph -->
-  <meta property="og:title" content="¡Llamada Agendada! - Marketographers">
-  <meta property="og:description" content="Tu llamada de admisiones está confirmada. Prepárate para una sesión 1:1 personalizada.">
-  <meta property="og:type" content="website">
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  <!-- Poppins -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            letter-spacing: -0.01em;
+            line-height: 1.6;
+            color: var(--ink);
+        }
 
-  <style>
-    :root{
-      --ink:#111; --muted:#666; --accent:#1DB954;
-      --glass:rgba(255,255,255,.6); --brd:rgba(255,255,255,.45);
-    }
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{
-      font-family:'Poppins',-apple-system,BlinkMacSystemFont,sans-serif;
-      background:linear-gradient(135deg,#f8f9fa 0%,#e9ecef 100%);
-      min-height:100vh;display:flex;align-items:center;justify-content:center;
-      padding:16px;letter-spacing:-.01em;line-height:1.6;color:var(--ink)
-    }
-    body::before{
-      content:'';position:fixed;inset:0;opacity:.03;pointer-events:none;z-index:-1;
-      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")
-    }
-    .card{
-      background:var(--glass);backdrop-filter:blur(14px) saturate(140%);
-      border:1px solid var(--brd);border-radius:24px;
-      padding:40px 28px;max-width:720px;width:100%;
-      box-shadow:0 8px 32px rgba(0,0,0,.08),0 2px 8px rgba(0,0,0,.04);
-      animation:fadeUp .3s ease-out
-    }
-    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-    @media (prefers-reduced-motion:reduce){.card{animation:none}}
+        /* textura sutil */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: -1;
+        }
 
-    .logo{
-      display:block;margin:0 auto 28px;width:48px;height:48px;border-radius:50%;object-fit:cover
-    }
-    @media (max-width:768px){.logo{width:40px;height:40px}}
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(14px) saturate(140%);
+            border: 1px solid var(--brd);
+            border-radius: 24px;
+            padding: 48px 40px;
+            max-width: 720px;
+            width: 100%;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+            animation: fadeUp 300ms ease-out;
+        }
 
-    .title{font-size:1.9rem;font-weight:600;text-align:center;margin-bottom:12px;letter-spacing:-.02em}
-    .subtitle{font-size:1.05rem;color:var(--muted);text-align:center;margin-bottom:24px;font-weight:300}
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
 
-    .video-section{margin-bottom:20px}
-    .video-label{font-size:.9rem;font-weight:600;color:var(--ink);margin-bottom:10px;text-align:center}
+        @media (prefers-reduced-motion: reduce) { .card { animation: none; } }
 
-    .video-container{
-      position:relative;width:100%;height:0;padding-bottom:56.25%;
-      margin-bottom:12px;border-radius:14px;overflow:hidden;
-      box-shadow:0 4px 16px rgba(0,0,0,.1);background:#000;
-      touch-action:manipulation;
-    }
-    .video-container video{
-      position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000;
-    }
-    /* Botón de Play overlay */
-    .play-overlay{
-      position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-      background:linear-gradient(0deg,rgba(0,0,0,.35),rgba(0,0,0,.35));
-      cursor:pointer;transition:opacity .2s ease;
-    }
-    .play-overlay.is-hidden{opacity:0;pointer-events:none}
-    .play-btn{
-      display:inline-flex;align-items:center;gap:10px;
-      padding:12px 18px;border-radius:999px;border:1px solid rgba(255,255,255,.35);
-      background:rgba(255,255,255,.12);backdrop-filter:blur(8px);
-      font-weight:600;color:#fff;font-size:.95rem;user-select:none
-    }
-    .play-btn svg{width:18px;height:18px}
+        .logo {
+            display: block;
+            margin: 0 auto 32px;
+            width: 56px;   /* más pequeño */
+            height: 56px;  /* más pequeño */
+            border-radius: 50%;
+            object-fit: cover;
+        }
 
-    /* Controles flotantes que aparecen 3s si hay interacción */
-    .soft-controls{
-      position:absolute;left:12px;bottom:12px;display:flex;gap:8px;
-      opacity:0;transition:opacity .2s ease;pointer-events:none;
-    }
-    .soft-controls.visible{opacity:1;pointer-events:auto}
-    .soft-button{
-      padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.3);
-      background:rgba(255,255,255,.14);backdrop-filter:blur(8px);
-      color:#fff;font-size:.85rem;font-weight:600
-    }
+        .title {
+            font-size: 2rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
+        }
 
-    .primary-button{
-      display:flex;align-items:center;justify-content:center;width:100%;
-      background:var(--accent);color:#fff;text-decoration:none;padding:16px 24px;
-      border-radius:50px;font-weight:600;font-size:1rem;transition:all .2s ease;
-      margin-bottom:14px;height:54px;box-shadow:0 2px 8px rgba(29,185,84,.2)
-    }
-    .primary-button:hover{background:#1ed760;transform:translateY(-1px);box-shadow:0 4px 16px rgba(29,185,84,.3)}
-    .primary-button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+        .subtitle {
+            font-size: 1.125rem;
+            color: var(--muted);
+            text-align: center;
+            margin-bottom: 32px;
+            font-weight: 300;
+        }
 
-    .secondary-link{
-      display:block;text-align:center;color:var(--muted);text-decoration:none;
-      font-size:.9rem;margin-bottom:26px;transition:color .2s ease
-    }
-    .secondary-link:hover{color:var(--ink);text-decoration:underline}
-    .secondary-link:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+        .video-section { margin-bottom: 24px; }
 
-    .checklist{list-style:none;padding:0}
-    .checklist li{position:relative;padding-left:22px;margin-bottom:10px;font-size:.9rem;color:var(--muted)}
-    .checklist li::before{content:'•';position:absolute;left:0;color:var(--accent);font-weight:600}
+        .video-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 12px;
+            text-align: center;
+        }
 
-    /* Ajustes móviles: menos márgenes laterales */
-    @media (max-width:768px){
-      body{padding:8px}
-      .card{padding:28px 18px;margin:8px}
-      .title{font-size:1.6rem}
-      .subtitle{font-size:.98rem}
-    }
-  </style>
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%; /* 16:9 */
+            margin-bottom: 16px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            background: #000;
+        }
+
+        .video-container video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background: #000;
+        }
+
+        .primary-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;   /* texto bien centrado */
+            width: 100%;
+            height: 56px;
+            background: var(--accent);
+            color: #fff;
+            text-decoration: none;
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-align: center;
+            transition: all 200ms ease;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(29,185,84,0.2);
+        }
+        .primary-button:hover { background: #1ed760; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(29,185,84,0.3); }
+        .primary-button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+        .secondary-link {
+            display: block;
+            text-align: center;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.875rem;
+            margin-bottom: 32px;
+            transition: color 200ms ease;
+        }
+        .secondary-link:hover { color: var(--ink); text-decoration: underline; }
+        .secondary-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+        .checklist { list-style: none; padding: 0; }
+        .checklist li {
+            position: relative;
+            padding-left: 24px;
+            margin-bottom: 12px;
+            font-size: 0.875rem;
+            color: var(--muted);
+        }
+        .checklist li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* móvil: menos margen lateral y menos padding para que no se vea encajonado */
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .card { padding: 28px 16px; margin: 8px; }
+            .title { font-size: 1.75rem; }
+            .subtitle { font-size: 1rem; }
+            .logo { width: 48px; height: 48px; } /* aún más discreto en móvil */
+        }
+    </style>
 </head>
 <body>
-  <div class="card">
-    <!-- Logo -->
-    <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755921050/Marketographers_Blanco_F_N_rcimip.png"
-         alt="Marketographers Logo" class="logo"
-         onerror="this.style.display='none'; this.alt='Logo no disponible';" loading="lazy">
+    <div class="card">
+        <!-- Logo -->
+        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755921050/Marketographers_Blanco_F_N_rcimip.png" 
+             alt="Marketographers Logo" 
+             class="logo"
+             onerror="this.style.display='none'; this.alt='Logo no disponible';"
+             loading="lazy">
 
-    <!-- Header -->
-    <h1 class="title">¡Listo! Tu llamada de admisiones está agendada</h1>
-    <p class="subtitle">Disfrutarás de una sesión 1:1 para diagnosticar tu negocio fotográfico y confirmar si Marketographers es para ti.</p>
+        <!-- Header -->
+        <h1 class="title">¡Listo! Tu llamada de admisiones está agendada</h1>
+        <p class="subtitle">Disfrutarás de una sesión 1:1 para diagnosticar tu negocio fotográfico y confirmar si Marketographers es para ti.</p>
 
-    <!-- Video -->
-    <div class="video-section">
-      <div class="video-label">Mira esto antes de tu cita</div>
-      <div class="video-container" id="vc">
-        <video id="v"
-          playsinline webkit-playsinline x5-playsinline
-          preload="metadata"
-          disablepictureinpicture
-          poster=""
-        >
-          <!-- Forzamos MP4 en Cloudinary con transformación f_mp4 -->
-          <source src="https://res.cloudinary.com/dplhu2z6j/video/upload/f_mp4/IMG_7974_aln5hv.mp4" type="video/mp4">
-          Tu navegador no soporta el elemento de video.
-        </video>
-
-        <!-- Overlay Play -->
-        <div class="play-overlay" id="playOverlay" aria-label="Reproducir video">
-          <button class="play-btn" id="playBtn" type="button">
-            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M8 5v14l11-7-11-7z" fill="currentColor"/>
-            </svg>
-            Reproducir
-          </button>
+        <!-- Video Section -->
+        <div class="video-section">
+            <div class="video-label">Mira esto antes de tu cita</div>
+            <div class="video-container">
+                <!-- MP4 inline, sin salto a fullscreen -->
+                <video
+                    id="admissionsVideo"
+                    controls
+                    playsinline
+                    webkit-playsinline
+                    preload="metadata"
+                    poster=""
+                    disablepictureinpicture
+                    controlslist="nodownload noplaybackrate noremoteplayback">
+                    <source src="https://res.cloudinary.com/dplhu2z6j/video/upload/f_mp4,q_auto/v1758333054/IMG_7974_aln5hv.mp4" type="video/mp4">
+                    Tu navegador no soporta el elemento de video.
+                </video>
+            </div>
         </div>
 
-        <!-- Controles suaves -->
-        <div class="soft-controls" id="softCtrls" aria-hidden="true">
-          <button class="soft-button" id="pauseBtn" type="button">Pausar</button>
-          <button class="soft-button" id="muteBtn" type="button">Silenciar</button>
-        </div>
-      </div>
+        <!-- Primary Button -->
+        <a href="https://api.whatsapp.com/send?phone=+59169422335&text=%C2%A1Hola!%20Soy%20un%20futuro%20Marketographer%20y%20quiero%20confirmar%20mi%20llamada%20de%20admisiones." 
+           class="primary-button" 
+           target="_blank" 
+           rel="noopener noreferrer">
+            Confirmar mi llamada por WhatsApp
+        </a>
+
+        <!-- Secondary Link -->
+        <a href="https://cal.com/themarketographer/admisiones" 
+           class="secondary-link" 
+           target="_blank" 
+           rel="noopener noreferrer">
+            Necesito reagendar
+        </a>
+
+        <!-- Checklist -->
+        <ul class="checklist">
+            <li>📧 Revisa tu correo electrónico, ahí encontrarás el enlace de Zoom para conectarte.</li>
+            <li>📅 Confirma la fecha y hora en tu calendario personal para no olvidarte.</li>
+            <li>⏰ Te esperamos puntual. Tenemos 5 minutos de cortesía por si surge algún imprevisto.</li>
+            <li>🔄 Si necesitas cambiar la fecha, solo puedes reagendar una vez (¡así que elige bien!).</li>
+            <li>✨ Esta llamada nos ayuda a confirmar si somos el match perfecto para tu crecimiento.</li>
+        </ul>
     </div>
 
-    <!-- Acciones -->
-    <a href="https://api.whatsapp.com/send?phone=+59169422335&text=%C2%A1Hola!%20Soy%20un%20futuro%20Marketographer%20y%20quiero%20confirmar%20mi%20llamada%20de%20admisiones."
-       class="primary-button" target="_blank" rel="noopener noreferrer">
-      Confirmar mi llamada por WhatsApp
-    </a>
+    <script>
+        // Controles visibles solo para iniciar; luego se ocultan
+        (function () {
+            const v = document.getElementById('admissionsVideo');
 
-    <a href="https://cal.com/themarketographer/admisiones"
-       class="secondary-link" target="_blank" rel="noopener noreferrer">
-      Necesito reagendar
-    </a>
+            if (!v) return;
 
-    <ul class="checklist">
-      <li>📧 Revisa tu correo; ahí está el enlace de Zoom.</li>
-      <li>📅 Añade la cita a tu calendario.</li>
-      <li>⏰ Puntualidad: 5 minutos de cortesía.</li>
-      <li>🔄 Solo puedes reagendar una vez.</li>
-      <li>✨ Verificamos si somos el match correcto.</li>
-    </ul>
-  </div>
+            // Evita que intente forzar fullscreen en iOS si el navegador se pone creativo
+            v.setAttribute('playsinline', '');
+            v.setAttribute('webkit-playsinline', '');
 
-  <script>
-    (function(){
-      const v = document.getElementById('v');
-      const overlay = document.getElementById('playOverlay');
-      const playBtn = document.getElementById('playBtn');
-      const soft = document.getElementById('softCtrls');
-      const pauseBtn = document.getElementById('pauseBtn');
-      const muteBtn = document.getElementById('muteBtn');
-      let hideTimer = null;
+            // Al dar play: esconder controles
+            v.addEventListener('play', () => {
+                v.controls = false;
+            });
 
-      // Arranque: sin controles nativos para evitar fullscreen y limpieza visual
-      v.controls = false;
-      v.muted = false; // cambia a true si quieres autoplay silencioso
+            // Si el usuario pausa o termina: regresar controles
+            v.addEventListener('pause', () => { v.controls = true; });
+            v.addEventListener('ended', () => { v.controls = true; });
 
-      function showSoft() {
-        clearTimeout(hideTimer);
-        soft.classList.add('visible');
-        hideTimer = setTimeout(()=>soft.classList.remove('visible'), 3000);
-      }
-
-      function playInline(){
-        overlay.classList.add('is-hidden');
-        // playsinline + sin controls previene fullscreen en iOS
-        const p = v.play();
-        if (p && typeof p.catch === 'function'){
-          p.catch(()=>{ /* ignorar errores de reproducción bloqueada */ });
-        }
-        showSoft();
-      }
-
-      // Botón overlay
-      playBtn.addEventListener('click', playInline);
-
-      // Mostrar controles suaves en interacción
-      ['mousemove','touchstart','click','keydown'].forEach(evt=>{
-        v.addEventListener(evt, showSoft, {passive:true});
-      });
-
-      // Pausa
-      pauseBtn.addEventListener('click', ()=>{
-        if (v.paused){ v.play(); pauseBtn.textContent='Pausar'; }
-        else { v.pause(); pauseBtn.textContent='Reanudar'; }
-        showSoft();
-      });
-
-      // Mute
-      muteBtn.addEventListener('click', ()=>{
-        v.muted = !v.muted;
-        muteBtn.textContent = v.muted ? 'Activar sonido' : 'Silenciar';
-        showSoft();
-      });
-
-      // Si el usuario pausa con gesto del sistema, sincronizamos etiqueta
-      v.addEventListener('pause', ()=>{ pauseBtn.textContent='Reanudar'; });
-      v.addEventListener('play',  ()=>{ pauseBtn.textContent='Pausar'; });
-
-      // Evitar que el tap sobre el propio video pida fullscreen en algunos webviews
-      v.setAttribute('webkit-playsinline','');
-      v.setAttribute('playsinline','');
-      v.setAttribute('x5-playsinline','');
-
-      // Por si el navegador decide mostrar controles: los quitamos cuando empieza a reproducir
-      v.addEventListener('play', ()=>{ v.controls = false; }, {once:false});
-    })();
-  </script>
+            // Tap para pausar/reanudar cuando los controles están ocultos
+            v.addEventListener('click', () => {
+                if (!v.controls) {
+                    if (v.paused) v.play();
+                    else v.pause();
+                }
+            });
+        })();
+    </script>
 </body>
 </html>

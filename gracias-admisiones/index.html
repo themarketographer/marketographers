@@ -244,65 +244,98 @@
         </ul>
     </div>
 
-   <script>
-  (function () {
-    const v = document.getElementById('admissionsVideo');
-    if (!v) return;
+<script>
+(function () {
+  const v = document.getElementById('admissionsVideo');
+  if (!v) return;
 
-    // Siempre inline en iOS
-    v.setAttribute('playsinline', '');
-    v.setAttribute('webkit-playsinline', '');
+  // Inline en iOS, sin fullscreen forzado
+  v.setAttribute('playsinline', '');
+  v.setAttribute('webkit-playsinline', '');
+  v.setAttribute('disablepictureinpicture', '');
+  v.setAttribute('controlslist', 'nodownload noplaybackrate noremoteplayback');
 
-    // Controles visibles al inicio
+  // Controles visibles al inicio
+  v.controls = true;
+
+  // Capa invisible para capturar el PRIMER tap y evitar el botón nativo
+  const overlay = document.createElement('button');
+  overlay.type = 'button';
+  overlay.setAttribute('aria-label', 'Reproducir video');
+  Object.assign(overlay.style, {
+    position: 'absolute',
+    inset: '0',
+    width: '100%',
+    height: '100%',
+    background: 'transparent',
+    border: '0',
+    padding: '0',
+    margin: '0',
+    cursor: 'pointer',
+  });
+
+  // Inserta overlay justo encima del <video>
+  const container = v.parentElement;
+  if (container && getComputedStyle(container).position === 'static') {
+    container.style.position = 'relative';
+  }
+  container.appendChild(overlay);
+
+  let armed = false;
+
+  const firstPlay = (ev) => {
+    if (armed) return;
+    armed = true;
+
+    // Garantiza que el toque cuente como gesto de usuario
+    try { ev && ev.preventDefault && ev.preventDefault(); } catch {}
+
+    // Asegura controles visibles en el disparo de play
     v.controls = true;
-    v.addEventListener('loadedmetadata', () => { v.controls = true; });
 
-    let armed = false; // primer gesto del usuario ya ocurrió
+    // Dispara reproducción
+    const p = v.play();
 
-    // Primer gesto: intenta reproducir, NO ocultes controles aún
-    const armAndPlay = () => {
-      if (armed) return;
-      armed = true;
-      v.controls = true; // asegúrate de que el botón siga visible
-      const p = v.play();
-      if (p && typeof p.then === 'function') {
-        p.catch(() => {
-          // Si falla (autoplay policies), manten controles para el segundo intento
-          v.controls = true;
-          armed = false; // permite reintentar
-        });
-      }
+    // En cuanto el play se confirme, oculta controles y quita el overlay
+    const hideAndClean = () => {
+      v.controls = false;
+      // Remueve overlay para no estorbar los siguientes taps
+      if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
     };
 
-    v.addEventListener('touchstart', armAndPlay, { passive: true });
-    v.addEventListener('pointerdown', armAndPlay, { passive: true });
+    if (p && typeof p.then === 'function') {
+      p.then(() => {
+        // Pequeño frame para que iOS no “cancele” el play al esconder controles
+        requestAnimationFrame(hideAndClean);
+      }).catch(() => {
+        // Si algo falla, permite reintentar
+        armed = false;
+        v.controls = true;
+      });
+    } else {
+      // Fallback sin Promises
+      setTimeout(hideAndClean, 0);
+    }
+  };
 
-    // Solo oculta controles cuando REALMENTE está reproduciendo
-    const hideControlsSafely = () => {
-      // ya hay frames en curso
-      setTimeout(() => { 
-        // evitas parpadeo si pausa inmediato
-        if (!v.paused && v.currentTime > 0) v.controls = false; 
-      }, 200);
-    };
-    v.addEventListener('playing', hideControlsSafely);
+  // Maneja primer toque/clic
+  overlay.addEventListener('touchend', firstPlay, { passive: false });
+  overlay.addEventListener('pointerup', firstPlay, { passive: false });
+  overlay.addEventListener('click', firstPlay, { passive: false });
 
-    // Si pausa o termina, devuelve controles
-    v.addEventListener('pause', () => { v.controls = true; });
-    v.addEventListener('ended', () => { v.controls = true; });
+  // Seguridad extra: si ya está playing por otros motivos, esconde controles y remueve overlay
+  const onPlaying = () => {
+    if (!v.paused && v.currentTime > 0) {
+      v.controls = false;
+      if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    }
+  };
+  v.addEventListener('playing', onPlaying);
 
-    // Tap para toggle cuando los controles están ocultos
-    v.addEventListener('click', () => {
-      if (!v.controls) {
-        if (v.paused) {
-          const p = v.play();
-          if (p && typeof p.then === 'function') p.catch(() => { v.controls = true; });
-        } else {
-          v.pause();
-        }
-      }
-    });
-  })();
+  // Si pausa o termina, devuelve controles (para que el usuario no quede atrapado)
+  v.addEventListener('pause', () => { v.controls = true; });
+  v.addEventListener('ended', () => { v.controls = true; });
+})();
 </script>
 </body>
 </html>

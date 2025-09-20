@@ -244,47 +244,62 @@
         </ul>
     </div>
 
-    <script>
+   <script>
   (function () {
     const v = document.getElementById('admissionsVideo');
     if (!v) return;
 
-    // Garantiza inline en iOS
+    // Siempre inline en iOS
     v.setAttribute('playsinline', '');
     v.setAttribute('webkit-playsinline', '');
 
-    // Asegura controles visibles al inicio y tras cargar metadata
+    // Controles visibles al inicio
     v.controls = true;
     v.addEventListener('loadedmetadata', () => { v.controls = true; });
 
-    // iOS: primer toque inicia play con controles visibles
-    let firstUserGesture = false;
-    const kickstart = () => {
-      if (!firstUserGesture) {
-        firstUserGesture = true;
-        // No ocultes controles aún; deja que iOS procese el primer tap
-        // Luego intenta reproducir
-        if (v.paused) v.play().catch(() => {});
+    let armed = false; // primer gesto del usuario ya ocurrió
+
+    // Primer gesto: intenta reproducir, NO ocultes controles aún
+    const armAndPlay = () => {
+      if (armed) return;
+      armed = true;
+      v.controls = true; // asegúrate de que el botón siga visible
+      const p = v.play();
+      if (p && typeof p.then === 'function') {
+        p.catch(() => {
+          // Si falla (autoplay policies), manten controles para el segundo intento
+          v.controls = true;
+          armed = false; // permite reintentar
+        });
       }
     };
-    v.addEventListener('touchstart', kickstart, { passive: true });
-    v.addEventListener('pointerdown', kickstart, { passive: true });
 
-    // Cuando ya esté reproduciendo, ahora sí oculta controles con un leve delay
-    v.addEventListener('play', () => {
-      // Da tiempo a iOS de “enganchar” el play antes de ocultar
-      setTimeout(() => { v.controls = false; }, 400);
-    });
+    v.addEventListener('touchstart', armAndPlay, { passive: true });
+    v.addEventListener('pointerdown', armAndPlay, { passive: true });
 
-    // Si pausa o termina, devuelve controles para que el usuario no se quede atrapado
+    // Solo oculta controles cuando REALMENTE está reproduciendo
+    const hideControlsSafely = () => {
+      // ya hay frames en curso
+      setTimeout(() => { 
+        // evitas parpadeo si pausa inmediato
+        if (!v.paused && v.currentTime > 0) v.controls = false; 
+      }, 200);
+    };
+    v.addEventListener('playing', hideControlsSafely);
+
+    // Si pausa o termina, devuelve controles
     v.addEventListener('pause', () => { v.controls = true; });
     v.addEventListener('ended', () => { v.controls = true; });
 
-    // Tap sobre el video cuando controles están ocultos: toggle play/pause
+    // Tap para toggle cuando los controles están ocultos
     v.addEventListener('click', () => {
       if (!v.controls) {
-        if (v.paused) v.play().catch(() => {});
-        else v.pause();
+        if (v.paused) {
+          const p = v.play();
+          if (p && typeof p.then === 'function') p.catch(() => { v.controls = true; });
+        } else {
+          v.pause();
+        }
       }
     });
   })();

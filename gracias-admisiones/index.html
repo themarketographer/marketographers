@@ -135,15 +135,15 @@
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
         }
 
-        .video-container iframe {
+        .video-container video {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            object-fit: cover;
+            background: #000;
         }
-
-
 
         .primary-button {
             display: block;
@@ -251,19 +251,12 @@
         <div class="video-section">
             <div class="video-label">Mira esto antes de tu cita</div>
             <div class="video-container">
-                <!-- Replace {{VIDEO_URL}} with actual YouTube embed URL -->
-                <video 
-                    controls
-                    preload="metadata"
-                    style="width: 100%; height: 100%; object-fit: cover;"
-                    poster="">
-                    <source src="https://www.dropbox.com/scl/fi/z7eua8330076wopri95i1/VSL_Marketographers.mp4?rlkey=kujx1jfmri5bwiwheelz1jprc&st=irw7gfmx&raw=1" type="video/mp4">
+                <video controls preload="metadata" poster="">
+                    <source src="https://res.cloudinary.com/dplhu2z6j/video/upload/v1758333054/IMG_7974_aln5hv.mov" type="video/mp4">
                     Tu navegador no soporta el elemento de video.
                 </video>
             </div>
         </div>
-
-
 
         <!-- Primary Button -->
         <a href="https://api.whatsapp.com/send?phone=+59169422335&text=%C2%A1Hola!%20Soy%20un%20futuro%20Marketographer%20y%20quiero%20confirmar%20mi%20llamada%20de%20admisiones." 
@@ -290,5 +283,5 @@
             <li>✨ Esta llamada nos ayuda a confirmar si somos el match perfecto para tu crecimiento.</li>
         </ul>
     </div>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'981da23ee755b43a',t:'MTc1ODMzMjYyNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>

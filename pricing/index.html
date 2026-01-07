@@ -1,678 +1,457 @@
-<!doctype html>
-<html lang="es">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Presupuestador para Fotógrafos</title>
-  <meta name="description" content="Calcula punto de equilibrio, tarifas sugeridas, ahorro para equipo con inflación y presupuesto de ads. Todo en tiempo real." />
-  <meta property="og:title" content="Presupuestador para Fotógrafos" />
-  <meta property="og:description" content="Calcula tarifas, ahorro, y punto de equilibrio en minutos." />
-  <meta property="og:type" content="website" />
-  <meta property="og:image" content="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314903/Marketographers_Blanco_S_F_p1toov.png" />
-  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root{--bg:#000;--fg:#fff;--muted:#c7c7c7;--panel:#111;--panel2:#151515;--accent:#7dd3fc;--danger:#ef4444;--ok:#22c55e}
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{margin:0;background:var(--bg);color:var(--fg);font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial,'Noto Sans',sans-serif;letter-spacing:-0.03em;line-height:1.4}
-    a{color:var(--fg)}
-    .wrap{max-width:1180px;margin:0 auto;padding:20px}
-    header{display:flex;align-items:center;gap:16px;margin-bottom:16px}
-    header img.logo{height:36px;width:auto;opacity:0.9}
-    header h1{font-size:20px;margin:0;font-weight:600;letter-spacing:-0.02em}
-    .grid{display:grid;gap:12px}
-    @media(min-width:768px){.grid.two{grid-template-columns:1fr 1fr}}
-    @media(min-width:1024px){.grid.three{grid-template-columns:1fr 1fr 1fr}}
-    .card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid #222;border-radius:16px;padding:16px}
-    .card h2{margin:0 0 10px 0;font-size:16px;font-weight:600}
-    .row{display:flex;gap:8px;flex-wrap:wrap}
-    label{font-size:12px;color:var(--muted);display:block;margin-bottom:6px}
-    input,select,button{border-radius:12px;border:1px solid #333;background:#0c0c0c;color:var(--fg);padding:10px 12px;font-size:14px}
-    input:focus,select:focus,button:focus{outline:2px solid var(--accent);outline-offset:1px}
-    input[type=number]{width:140px}
-    .btn{cursor:pointer}
-    .btn.secondary{background:#111}
-    .btn.ghost{background:transparent;border-color:#444}
-    .btn.small{padding:6px 10px;font-size:12px;border-radius:10px}
-    .tag{font-size:12px;padding:6px 8px;border:1px solid #333;border-radius:999px;background:#0b0b0b;color:#bbb}
-    .totals{display:flex;gap:12px;flex-wrap:wrap}
-    .total{padding:10px 12px;border:1px solid #333;border-radius:12px;background:#0c0c0c}
-    .warn{color:var(--danger);font-size:12px}
-    .ok{color:var(--ok);font-size:12px}
-    table{width:100%;border-collapse:collapse}
-    th,td{border-bottom:1px solid #222;padding:8px;text-align:left;font-size:13px}
-    th{color:#ddd;font-weight:600}
-    td input{width:100%}
-    .right{text-align:right}
-    .chart{height:180px;border:1px solid #222;border-radius:12px;padding:10px;background:#0b0b0b}
-    .muted{color:#aaa}
-    .inline{display:inline-flex;align-items:center;gap:8px}
-    .range-row{display:flex;align-items:center;gap:10px}
-    input[type=range]{width:200px}
-    footer{margin:24px 0 8px;color:#808080;font-size:12px}
-
-    /* Steper */
-    .step{display:none}
-    .step.active{display:block}
-    .step-nav{display:flex;gap:8px;align-items:center;margin:8px 0}
-    .step-nav .next{margin-left:auto}
-  </style>
+<!DOCTYPE html>
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Marketographers - Marketing rebelde para fotógrafos</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#FFE600",
+                        "primary-hover": "#E5CE00",
+                        "dark-bg": "#050505",
+                        "card-bg": "#0F0F0F",
+                        "border-color": "#27272a",
+                        "text-gray": "#a1a1aa"
+                    },
+                    fontFamily: {
+                        "sans": ["Poppins", "sans-serif"],
+                    },
+                    letterSpacing: {
+                        "tightest": "-0.05em",
+                        "tighter": "-0.03em",
+                        "tight": "-0.02em",
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #050505;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .glass-panel {
+            background: rgba(15, 15, 15, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .rebel-gradient {
+            background: radial-gradient(circle at center, rgba(255, 230, 0, 0.15) 0%, rgba(5, 5, 5, 0) 70%);
+        }.hover-underline-animation {
+            display: inline-block;
+            position: relative;
+        }
+        .hover-underline-animation::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            transform: scaleX(0);
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: #FFE600;
+            transform-origin: bottom right;
+            transition: transform 0.25s ease-out;
+        }
+        .hover-underline-animation:hover::after {
+            transform: scaleX(1);
+            transform-origin: bottom left;
+        }
+    </style>
 </head>
-<body>
-  <a href="#main" class="tag" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden">Saltar al contenido</a>
-  <div class="wrap">
-    <header>
-      <img class="logo" src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314903/Marketographers_Blanco_S_F_p1toov.png" alt="Logo" />
-      <h1>Presupuestador para Fotógrafos</h1>
-      <span class="tag">Fondo negro, texto blanco, Poppins. Obvio.</span>
-    </header>
+<body class="overflow-x-hidden antialiased selection:bg-primary selection:text-black">
+<div class="relative flex min-h-screen w-full flex-col">
+<nav class="sticky top-0 z-50 w-full border-b border-white/10 bg-black/80 backdrop-blur-md">
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+<div class="flex h-20 items-center justify-between">
+<div class="flex items-center gap-3">
+<img alt="The Marketographers Logo" class="h-10 w-10 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfreGBgLZIkfNA0vkTalIXihAH5IkIi9QVdwJHuUP2LGSHKUMmkKDK59y4T-pNKmNPhF-BbsENAwr92IvBWxMiXGwhtyEe6kRP7ONt-d6uPsCnjEuhPg7sfkDvzbhyYaat-TskOy1HIQWBZE7qUqs-C4snnWAC74Vzg56jtr_2oxNKUCYtHZwx286Hs4WUMqbRVC2MzgCzkqp2sMCI_PNsBu5z9rarAF1YhyfgiEkO6pF7uLUASE-ZNnwpHjifAvktycCU4d4vOJg"/>
+<h2 class="text-lg font-bold tracking-tight text-white uppercase hidden sm:block">The Marketographers</h2>
+</div>
+<div class="flex items-center gap-6">
+<a class="hidden sm:block text-sm font-medium text-text-gray hover:text-white transition-colors hover-underline-animation" href="#why-trust">¿Por qué unirte?</a>
+<a class="hidden sm:block text-sm font-medium text-text-gray hover:text-white transition-colors hover-underline-animation" href="#about">El Fundador</a>
+<a class="flex items-center justify-center rounded-full bg-white px-6 py-2.5 text-sm font-bold text-black transition-transform hover:scale-105 hover:bg-primary border border-transparent hover:border-primary" href="https://nas.io/marketographers/">
+                            Unirme Ahora
+                        </a>
+</div>
+</div>
+</div>
+</nav>
+<section class="relative w-full pt-20 pb-16 lg:pt-32 lg:pb-24 overflow-hidden">
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-[1000px] h-[600px] rebel-gradient pointer-events-none z-0"></div>
+<div class="layout-container flex h-full grow flex-col relative z-10">
+<div class="px-4 md:px-10 flex flex-1 justify-center">
+<div class="layout-content-container flex flex-col max-w-[1000px] flex-1 text-center items-center">
+<div class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 mb-8 backdrop-blur-sm">
+<span class="size-2 rounded-full bg-primary animate-pulse shadow-[0_0_10px_#FFE600]"></span>
+<span class="text-xs font-bold text-primary uppercase tracking-widest">Solo para fotógrafos ambiciosos</span>
+</div>
+<h1 class="text-5xl md:text-7xl lg:text-8xl font-black tracking-tightest leading-[0.95] mb-8 uppercase text-white">
+                            Deja de ser un <br/>
+<span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-white/70">artista hambriento.</span>
+</h1>
+<p class="text-lg md:text-xl text-text-gray max-w-2xl leading-relaxed font-light mb-10">
+                            Las fotos bonitas no pagan las facturas. <span class="text-white font-medium">El marketing sí.</span> Te enseñamos el negocio de la fotografía sin rodeos, sin mierdas, y sin tácticas de 2010.
+                        </p>
+<div class="flex flex-col sm:flex-row gap-5 w-full justify-center">
+<a class="flex min-w-[200px] cursor-pointer items-center justify-center rounded-full h-14 px-8 bg-primary hover:bg-primary-hover transition-all text-black text-lg font-bold shadow-[0_0_20px_rgba(255,230,0,0.3)] hover:shadow-[0_0_30px_rgba(255,230,0,0.5)] transform hover:-translate-y-1" href="https://nas.io/marketographers/">
+                                Empezar a Facturar
+                            </a>
+<a class="flex min-w-[200px] cursor-pointer items-center justify-center rounded-full h-14 px-8 border border-white/20 bg-transparent hover:bg-white/10 transition-all text-white text-lg font-medium" href="#options">
+                                Explorar Opciones
+                            </a>
+</div>
+<div class="mt-12 flex items-center gap-4 text-sm text-text-gray">
+<div class="flex -space-x-3">
+<div class="size-10 rounded-full border-2 border-black bg-gray-800 bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD7Y9_IhNlhvzlBcAHL-0NNXBrJIsRNH4BZi98m0fdyBGuYoeN0nE84dQ8euCdReOjTTIDudggK0p7Kis9FIYhMcT2IwZIEjKLlv5RGyp54wKicysbBGgK1yCIdAfIue6-V8By-vF89So5ymES6xLCePFpIezikaUIo6lpWvIcu-wAsYQs4ZvAxUFV29x6QU9YL4WgyERl2h0TCmqpeu-dcTzGYF5vG9bXJmGUwTtJ6bvU2-9TOqZdEaPTxh4jnWl9sEf2LkU6xOnE")'></div>
+<div class="size-10 rounded-full border-2 border-black bg-gray-800 bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBpop4qfFC49aOri5gDav-rVjJvFKNjYK7qfe0-CE0ieaw0U75LtH9SXXGZ2VRRBJZwfu5Q6Bowv-mGiem3FlT7pY7KD2McrchmsuwXrpP9LilIgqa-_JfECKnRB6_j40Nf9hMrBKnoNwlGbG1iIxQKmV2m9zIqXTZzL0R5AH67N4KfC1aBYgaHEHLKA5kRKfkEfcN4giJcYRiBUJksI3E3l4F_Gg2d8s_rR5QArno7ismG2yJiePILDUCTr8hw_CY6sHhyvMsdw28")'></div>
+<div class="size-10 rounded-full border-2 border-black bg-gray-800 bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDGgJKdAC3X2psv1_iWCg6itRk0RgxHA6cf-SHfGWZyOAINNBP8cfdZ-oDo1KXzBsLcQxfoTh7N73C52DqiILgUEXPzDDKy7gdEkKrWVYuoNuWLIUh9YmnoZhH_gSmZhRyK83rqveS-G2FhvVBRwjgSmW_q-zg_3QjdExvCIxHEQbFYQi6JhQAI3nTWISfElN1Sm1phmMUDh9Le568YooSZxljBUC6gVG87tJOq5G4WZZEqOEa-f9CXxKvsSnYgQ50wOcja8k2nYo8")'></div>
+</div>
+<p>Únete a 500+ fotógrafos que sí venden.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="w-full py-20 bg-dark-bg border-t border-white/5" id="options">
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+<div class="text-center mb-16">
+<h2 class="text-3xl md:text-5xl font-black tracking-tighter mb-4 text-white uppercase">Elige tu maldito camino</h2>
+<p class="text-text-gray text-lg">El tiempo es dinero. Deja de desperdiciar ambos.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="group relative rounded-3xl bg-card-bg border border-white/10 p-8 hover:border-white/30 transition-all duration-300 flex flex-col h-full">
+<div class="mb-6">
+<div class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-6 text-white group-hover:bg-white group-hover:text-black transition-colors">
+<span class="material-symbols-outlined text-3xl">call</span>
+</div>
+<h3 class="text-2xl font-bold text-white mb-2">¿Dudas? Hablemos.</h3>
+<p class="text-text-gray text-sm leading-relaxed">
+                                Tienes miedo o dudas. Está bien. Agendemos una llamada y veamos si tienes lo que se necesita para entrar a la comunidad. Sin presión, solo la verdad.
+                            </p>
+</div>
+<div class="mt-auto pt-6">
+<button class="w-full rounded-xl bg-white/5 border border-white/10 py-4 text-white font-bold hover:bg-white hover:text-black transition-all">
+                                Agendar Llamada
+                            </button>
+</div>
+</div>
+<div class="group relative rounded-3xl bg-white border border-white p-8 transform md:-translate-y-6 hover:scale-[1.02] transition-all duration-300 shadow-[0_0_50px_rgba(255,255,255,0.1)] flex flex-col z-10 h-full">
+<div class="absolute top-0 right-0 bg-black text-primary text-xs font-bold px-4 py-2 rounded-bl-xl rounded-tr-2xl uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">local_fire_department</span> Más Popular
+                        </div>
+<div class="mb-6">
+<div class="w-14 h-14 rounded-2xl bg-black flex items-center justify-center mb-6 text-primary">
+<span class="material-symbols-outlined text-3xl">rocket_launch</span>
+</div>
+<h3 class="text-2xl font-bold text-black mb-2">Únete a la Tribu</h3>
+<p class="text-gray-600 text-sm leading-relaxed font-medium">
+                                Acceso instantáneo a la comunidad, los cursos, las llamadas en vivo y el network. Esto es para los que están listos para ejecutar YA.
+                            </p>
+</div>
+<ul class="space-y-4 mb-8">
+<li class="flex items-center gap-3 text-black text-sm font-bold"><span class="material-symbols-outlined text-lg text-primary bg-black rounded-full p-0.5">check</span> Coaching Semanal en Vivo</li>
+<li class="flex items-center gap-3 text-black text-sm font-bold"><span class="material-symbols-outlined text-lg text-primary bg-black rounded-full p-0.5">check</span> Grupo Exclusivo de WhatsApp</li>
+<li class="flex items-center gap-3 text-black text-sm font-bold"><span class="material-symbols-outlined text-lg text-primary bg-black rounded-full p-0.5">check</span> Librería Completa de Recursos</li>
+</ul>
+<div class="mt-auto pt-4">
+<a class="flex justify-center items-center w-full rounded-xl bg-black py-4 text-primary text-lg font-bold hover:bg-gray-900 transition-colors shadow-lg hover:shadow-xl" href="https://nas.io/marketographers/">
+                                Entrar a The Marketographers
+                            </a>
+</div>
+</div>
+<div class="group relative rounded-3xl bg-card-bg border border-white/5 p-8 opacity-70 hover:opacity-100 hover:border-red-500/30 transition-all duration-300 flex flex-col h-full grayscale hover:grayscale-0">
+<div class="mb-6">
+<div class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-6 text-text-gray group-hover:bg-red-900/20 group-hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined text-3xl">block</span>
+</div>
+<h3 class="text-2xl font-bold text-text-gray mb-2">No Hagas Nada</h3>
+<p class="text-text-gray text-sm leading-relaxed">
+                                Cierra esta pestaña. Vuelve a editar fotos para clientes que te pagan cacahuates. Quédate en tu zona de confort. No te juzgamos, pero seguirás quebrado.
+                            </p>
+</div>
+<div class="mt-auto pt-6">
+<button class="w-full rounded-xl bg-transparent border border-white/5 py-4 text-text-gray font-medium cursor-not-allowed hover:bg-white/5 hover:text-white transition-colors">
+                                Prefiero seguir estancado
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="py-16 border-y border-white/10 bg-black relative overflow-hidden" id="why-trust">
+<div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-x divide-white/5">
+<div class="px-4">
+<p class="text-4xl md:text-5xl font-black text-white mb-2">500+</p>
+<p class="text-xs text-text-gray uppercase tracking-widest font-bold">Miembros Activos</p>
+</div>
+<div class="px-4">
+<p class="text-4xl md:text-5xl font-black text-primary mb-2">$2M+</p>
+<p class="text-xs text-text-gray uppercase tracking-widest font-bold">Ingresos Generados</p>
+</div>
+<div class="px-4">
+<p class="text-4xl md:text-5xl font-black text-white mb-2">52</p>
+<p class="text-xs text-text-gray uppercase tracking-widest font-bold">Clases en Vivo/Año</p>
+</div>
+<div class="px-4">
+<p class="text-4xl md:text-5xl font-black text-white mb-2">24/7</p>
+<p class="text-xs text-text-gray uppercase tracking-widest font-bold">Soporte en la comunidad</p>
+</div>
+</div>
+</div>
+</section>
+<section class="py-24 bg-dark-bg">
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+<div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+<div class="max-w-2xl">
+<h2 class="text-3xl md:text-5xl font-black tracking-tighter text-white mb-6 uppercase leading-tight">Más que un curso. <br/><span class="text-primary">Es una sala de guerra.</span></h2>
+<p class="text-text-gray text-lg font-light">No hacemos contenido pregrabado de relleno que expira en un mes. Hacemos estrategias de combate en vivo adaptadas al mercado actual.</p>
+</div>
+<a class="text-white font-bold flex items-center gap-2 hover:gap-4 transition-all group px-6 py-3 border border-white/20 rounded-full hover:bg-white hover:text-black hover:border-white" href="https://nas.io/marketographers/">
+                        Ver currículum completo <span class="material-symbols-outlined group-hover:text-black">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 grid-rows-2 gap-6 h-auto md:h-[600px]">
+<div class="md:col-span-2 md:row-span-2 rounded-3xl bg-card-bg border border-white/10 overflow-hidden relative group">
+<div class="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent z-10"></div>
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105 opacity-50" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB7akwXXy7KhTgKpa4gpU9xTMm82s4rBnbnqDEAHipWl9e1PcJRzxmk-cHob7CIpmgs5H-Kts9Ymv_pjsFsIIS3_Q1eKPpOkp5qUSh-l7Db_jVA8AqC-TEUerKLRWUsJrm0_MSCtMdJntKBeirHJWyQPS-uvZuqXBOXrdkuZvLx08DcocjV-k_seocYi5kUVubY9tISkomixxbsP2rE2aHp11WTSag1xue0f5VQCUvlnVDOsn5RCLAP2tfcq4mFH0mFC1QEfGar144");'></div>
+<div class="absolute top-6 left-6 z-20">
+<div class="bg-primary text-black px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide flex items-center gap-2">
+<span class="block w-2 h-2 bg-black rounded-full animate-pulse"></span>
+                                En Vivo
+                            </div>
+</div>
+<div class="absolute bottom-0 left-0 p-8 z-20 w-full">
+<div class="bg-black/50 backdrop-blur-md p-6 rounded-2xl border border-white/10">
+<h3 class="text-2xl md:text-3xl font-bold text-white mb-2">Sesiones de Estrategia Semanal</h3>
+<p class="text-gray-300 max-w-lg text-sm md:text-base">Feedback en tiempo real sobre tu portafolio, precios y guiones de venta. Destrozamos lo que no funciona y lo reconstruimos en vivo todos los Martes.</p>
+</div>
+</div>
+</div>
+<div class="rounded-3xl bg-[#25D366]/5 border border-[#25D366]/20 p-0 relative overflow-hidden group">
+<div class="absolute inset-0 bg-cover bg-top transition-transform duration-700 group-hover:scale-110 opacity-30" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAr2TMrgHVkA7xqM2Y6FiPP68v7_WQDEwxYB3q6BUvX78hPUPrL59VDU_dGAO1S4yiQmeNKJB0sazy9ssn8tHz0U6FJoPSEL6hVeS8qWNIb6hkwv8ZDnXU7NJXFDiHLSQPyvwPfbJFu0JJkETlWX6jwPCvbeL1YTQto8S0YP0ebfMdj8yVZPMS-EIHnVn0Ko3vY7R1kJvJL7Cea1RPG0BvlDtzAFWl2gvfRJnd234HNdwISv3AFiW8W4HNeWBXGM8GIigkFKXkfAyQ");'></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent z-10"></div>
+<div class="relative z-20 h-full flex flex-col justify-end p-8">
+<span class="material-symbols-outlined text-4xl text-[#25D366] mb-3">chat</span>
+<h3 class="text-xl font-bold text-white mb-1">El Círculo Interno</h3>
+<p class="text-gray-400 text-xs">Grupo exclusivo de WhatsApp. Acceso directo a compañeros de alto nivel. Sin secretos.</p>
+</div>
+</div>
+<div class="rounded-3xl bg-card-bg border border-white/10 p-0 relative overflow-hidden group hover:border-primary/50 transition-colors">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-20 filter grayscale" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB6Ui0gsWhaAGGp3kU8T6XP8zGrKLQ6hSN_ZoNog_1XX57FeQ4J4FSCUC_VhxoAs_Jy0fitGJbgSjPwtc2MlPxhc6lHy_qwjw7PLVwsedrZZPp7JvicauVmdR_QiwPuZS_V5s1032pZFml_b6MW3QSd4kbr4vXWar7TTBBpTvMyqubhu2U8d5ygXFJQloAKaoihEqgo68WPbYtypN648s1aHHy3R_eT_Ch5p7GKafnanWjfma6p24RtLq0fMoUurMvJrM77WWL1xdQ");'></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black via-black/90 to-transparent z-10"></div>
+<div class="relative z-20 h-full flex flex-col justify-end p-8">
+<span class="material-symbols-outlined text-4xl text-primary mb-3">folder_open</span>
+<h3 class="text-xl font-bold text-white mb-1">La Bóveda</h3>
+<p class="text-gray-400 text-xs">Contratos, plantillas de email, calculadoras de precios. Roba nuestros sistemas probados.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="py-24 bg-black relative overflow-hidden border-t border-white/5" id="about">
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+<div class="flex flex-col lg:flex-row items-center gap-16">
+<div class="w-full lg:w-1/2 relative group">
+<div class="absolute -inset-4 bg-gradient-to-r from-primary to-purple-600 rounded-2xl blur-lg opacity-30 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+<div class="aspect-[4/5] rounded-2xl overflow-hidden relative border border-white/10 bg-card-bg">
+<div class="w-full h-full bg-cover bg-center grayscale group-hover:grayscale-0 transition-all duration-700" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDoYRrg2Iv37Vc6oIKBHdeoyrd4ViQtvqEj5VKXxn5NUFzENz5HpopwuCus_QlwY6tCMbZNHrj945rJbV2wOp68La3zr0kfVpkyL4kUZdxTm7QdUi1PHVtTXtzii8MresGvLOmbahcO9ELmo-85VgosbF8yskvPqLa2QqvxjRDJ_NQ5i7c5QmqVzdpCOThKLu1ziWuXhBvkn_wkC2PH26F364txc3xK95ZQPs_HluTzvKrMrVQrDU-WnhNkgWrhZwACD7W04iFV-i8");'></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
+<div class="absolute bottom-6 left-6">
+<h4 class="text-white text-2xl font-bold">Pablo Villarroel</h4>
+<p class="text-primary text-sm font-medium">Founder @ The Marketographers</p>
+</div>
+</div>
+<div class="absolute -top-6 -right-6 bg-white text-black p-4 rounded-xl shadow-[0_0_30px_rgba(255,255,255,0.2)] z-20 rotate-3 group-hover:rotate-6 transition-transform">
+<p class="text-4xl font-black leading-none text-center">10+</p>
+<p class="text-[10px] font-bold uppercase tracking-wider text-center mt-1">Años en el juego</p>
+</div>
+</div>
+<div class="w-full lg:w-1/2">
+<div class="flex items-center gap-3 mb-6">
+<div class="h-[1px] w-12 bg-primary"></div>
+<h2 class="text-sm font-bold text-primary uppercase tracking-widest">El Fundador</h2>
+</div>
+<h3 class="text-4xl md:text-6xl font-black text-white mb-8 leading-none">¿Quién diablos es <br/>Pablo Villarroel?</h3>
+<div class="space-y-6 text-text-gray text-lg leading-relaxed font-light">
+<p>
+                                No estoy aquí para ser tu amigo. Estoy aquí para ser el mentor que deseaba tener cuando estaba quebrado, tenía talento y no tenía ni idea.
+                            </p>
+<p>
+                                He construido un negocio de fotografía que funciona sin mí, he generado múltiples 6 cifras, y ahora estoy ayudando a otros a hacer lo mismo. No enseño teoría. Enseño lo que pone dinero en el banco.
+                            </p>
+<div class="mt-8 p-6 bg-white/5 border-l-4 border-primary rounded-r-xl">
+<p class="text-white font-medium italic text-xl">
+                                    "Si tus fotos son buenas pero tu cuenta bancaria está vacía, no tienes un problema de fotografía. Tienes un problema de marketing."
+                                </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="py-24 bg-dark-bg">
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+<h2 class="text-3xl md:text-5xl font-black text-white mb-16 text-center uppercase">No creas solo en <br/>nuestra palabra.</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-card-bg p-8 rounded-3xl border border-white/5 hover:border-white/20 transition-all hover:-translate-y-2 duration-300">
+<div class="flex text-primary mb-6 gap-1">
+<span class="material-symbols-outlined text-xl fill-current">star</span>
+<span class="material-symbols-outlined text-xl fill-current">star</span>
+<span class="material-symbols-outlined text-xl fill-current">star</span>
+<span class="material-symbols-outlined text-xl fill-current">star</span>
+<span class="material-symbols-outlined text-xl fill-current">star</span>
+</div>
+<p class="text-gray-300 mb-8 italic leading-relaxed">"Pablo es brutalmente honesto. Y eso es exactamente lo que necesitaba. Dupliqué mis tarifas y mis clientes ni siquiera parpadearon."</p>
+<div class="flex items-center gap-4 border-t border-white/5 pt-6">
+<div class="size-12 rounded-full bg-cover bg-center grayscale hover:grayscale-0 transition-all" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAJ2bLVf3W7IL5f2ahZOw-UMJ_-RvpZg58uXrbnlYsxrGKPZct40YfZtMQvplMMjJg90bc3mJibfUtrGbXT-bPC17oCRmbwoJJnrmpFoptdufMXcBVivpN-xcmLaqbRso_vSTBmLjQ1TUreHT_VvgXrBZaNOkOCZ44C_d2bozJke1YucEe47tKpHamlatx_7LfOlvjAGyk1Ul5-8y_caK8DVMGb13h5TbiDFbcqq2oL8mE0HbuoTKqiqrEqIuN5112LGfzoWrjnqL0")'></div>
+<div>
+<p class="text-white font-bold text-sm">Sarah Jenkins</p>
+<p class="text-text-gray text-xs">Fotógrafa de Bodas</p>
+</div>
+</div>
+</div>
+<div class="bg-card-bg p-8 rounded-3xl border border-white/5 hover:border-white/20 transition-all hover:-translate-y-2 duration-300 relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4 opacity-10">
+<span class="material-symbols-outlined text-6xl text-white">format_quote</span>
+</div>
+<div class="flex text-primary mb-6 gap-1">
+<span class="material-symbols-outlined text-xl fill-current">star</span>
+<span class="material-symbols-outlined text-xl fill-current">star</span>
+<span class="material-symbols-outlined text-xl fill-current">star</span>
+<span class="material-symbols-outlined text-xl fill-current">star</span>
+<span class="material-symbols-outlined text-xl fill-current">star</span>
+</div>
+<p class="text-gray-300 mb-8 italic leading-relaxed">"Solo el grupo de WhatsApp vale el precio. Tener una red de asesinos para rebotar ideas es un cheat code."</p>
+<div class="flex items-center gap-4 border-t border-white/5 pt-6">
+<div class="size-12 rounded-full bg-cover bg-center grayscale hover:grayscale-0 transition-all" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCnoFQ6FthX1x2a3oHlYb9kUDUEz194VdRWD7yqxb7wNU8d94d1UjYESBTfljzRHtaAjrR06SbWzoFBoKhvbDInUQIFEyg2GGTobt5prU8FdsC97loh_O6Fg9qhqkEzdSuquHnMBhN6fAZxNf6Vpr9XOcxK24gW3i6VYnh2voU1hAwes_VPMdJ_goD0qrEvegRkHOLsQWLtNyQ5X_wobnVDoGQpggynNT0eL5QeufJ-H-vkIdjzg21T2EAx1vMvWpLV3U9gqC4S1i8")'></div>
+<div>
+<p class="text-white font-bold text-sm">Marcus Chen</p>
+<p class="text-text-gray text-xs">Comercial</p>
+</div>
+</div>
+</div>
+<div class="bg-card-bg p-8 rounded-3xl border border-white/5 hover:border-white/20 transition-all hover:-translate-y-2 duration-300">
+<div class="flex text-primary mb-6 gap-1">
+<span class="material-symbols-outlined text-xl fill-current">star</span>
+<span class="material-symbols-outlined text-xl fill-current">star</span>
+<span class="material-symbols-outlined text-xl fill-current">star</span>
+<span class="material-symbols-outlined text-xl fill-current">star</span>
+<span class="material-symbols-outlined text-xl fill-current">star</span>
+</div>
+<p class="text-gray-300 mb-8 italic leading-relaxed">"Deja de pensarlo demasiado. Solo únete. El ROI de esta membresía es ridículo si realmente haces el trabajo."</p>
+<div class="flex items-center gap-4 border-t border-white/5 pt-6">
+<div class="size-12 rounded-full bg-cover bg-center grayscale hover:grayscale-0 transition-all" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAQupI6mhgpBD18gx6sMKnmN_qQi4p-gfFYoohNvRoqpOJubSspu3qmd9k0IqXt8kFcn4QsXOd0bEFp0qYmX0QcopmLLUjjBnkGivOyOu_ERg7Xhx5RK4abYSMWh7vJ3GHpvPXkUQ4XbRfQ2QYK-8-imcGXtH84DqYc81XsYjN018ZAZX6XGJep4bK93R3iEHbx46q156vXlEEbpzzIrBsMx7XSQuywe35Vv3uuMHLK2ITEZEBzgAmPFWVT7p9nUNCCNqkv2Nc2VVg")'></div>
+<div>
+<p class="text-white font-bold text-sm">Elena Rodriguez</p>
+<p class="text-text-gray text-xs">Moda</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="py-24 bg-black border-t border-white/10">
+<div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+<h2 class="text-3xl font-black text-white mb-12 text-center uppercase tracking-tight">Objeciones Frecuentes</h2>
+<div class="space-y-4">
+<details class="group bg-card-bg rounded-xl border border-white/5 open:border-primary/50 transition-all duration-300">
+<summary class="flex cursor-pointer items-center justify-between p-6 text-lg font-bold text-white select-none">
+                            Apenas estoy empezando, ¿es esto para mí?
+                            <span class="material-symbols-outlined transition-transform group-open:rotate-180 text-primary">expand_more</span>
+</summary>
+<div class="px-6 pb-6 text-text-gray leading-relaxed border-t border-white/5 pt-4 mt-2">
+                            Sí. De hecho, es mejor. Aún no has desarrollado malos hábitos. Te enseñaremos cómo construir un negocio rentable desde el primer día para que no pierdas años averiguándolo.
+                        </div>
+</details>
+<details class="group bg-card-bg rounded-xl border border-white/5 open:border-primary/50 transition-all duration-300">
+<summary class="flex cursor-pointer items-center justify-between p-6 text-lg font-bold text-white select-none">
+                            No tengo tiempo para otro curso.
+                            <span class="material-symbols-outlined transition-transform group-open:rotate-180 text-primary">expand_more</span>
+</summary>
+<div class="px-6 pb-6 text-text-gray leading-relaxed border-t border-white/5 pt-4 mt-2">
+                            Esto no es un curso que ves y olvidas. Es una comunidad y coaching continuo. Si no tienes 1 hora a la semana para mejorar tu negocio, no tienes un negocio, tienes un hobby caótico.
+                        </div>
+</details>
+<details class="group bg-card-bg rounded-xl border border-white/5 open:border-primary/50 transition-all duration-300">
+<summary class="flex cursor-pointer items-center justify-between p-6 text-lg font-bold text-white select-none">
+                            ¿Puedo cancelar si apesta?
+                            <span class="material-symbols-outlined transition-transform group-open:rotate-180 text-primary">expand_more</span>
+</summary>
+<div class="px-6 pb-6 text-text-gray leading-relaxed border-t border-white/5 pt-4 mt-2">
+                            Puedes cancelar en cualquier momento. Sin resentimientos. Pero si realmente aplicas lo que enseñamos, no querrás hacerlo.
+                        </div>
+</details>
+<details class="group bg-card-bg rounded-xl border border-white/5 open:border-primary/50 transition-all duration-300">
+<summary class="flex cursor-pointer items-center justify-between p-6 text-lg font-bold text-white select-none">
+                            ¿Es costoso?
+                            <span class="material-symbols-outlined transition-transform group-open:rotate-180 text-primary">expand_more</span>
+</summary>
+<div class="px-6 pb-6 text-text-gray leading-relaxed border-t border-white/5 pt-4 mt-2">
+                            ¿Caro comparado con qué? ¿Netflix? Sí. ¿Comparado con un título universitario que no te enseña nada sobre hacer dinero? Es prácticamente gratis. Un cliente reservado paga un año de membresía.
+                        </div>
+</details>
+</div>
+</div>
+</section>
+<section class="py-32 bg-primary text-black relative overflow-hidden flex items-center justify-center">
+<div class="absolute inset-0 z-0">
+<div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#000 1.5px, transparent 1.5px); background-size: 24px 24px;"></div>
+<div class="absolute inset-0 bg-gradient-to-b from-primary via-transparent to-primary opacity-50"></div>
+</div>
+<div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center relative z-10">
+<h2 class="text-5xl md:text-7xl font-black tracking-tighter mb-8 uppercase leading-[0.9]">Suficiente Charla.</h2>
+<p class="text-xl md:text-2xl font-bold mb-12 max-w-2xl mx-auto leading-snug">
+                    Tienes dos opciones: cerrar esta página y volver a tu vida anterior, o hacer clic en el botón y cambiar tu carrera para siempre.
+                </p>
+<div class="flex flex-col sm:flex-row justify-center gap-6">
+<a class="group flex min-w-[280px] cursor-pointer items-center justify-center rounded-full h-20 px-10 bg-black text-white hover:bg-white hover:text-black transition-all text-xl font-black shadow-2xl hover:shadow-[0_20px_40px_rgba(0,0,0,0.2)]" href="https://nas.io/marketographers/">
+                        UNIRME AHORA
+                        <span class="material-symbols-outlined ml-2 group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+</div>
+<div class="mt-8 flex items-center justify-center gap-2 text-sm font-bold opacity-70">
+<span class="material-symbols-outlined text-base">lock</span>
+                    Pago seguro vía Nas.io • Cancela cuando quieras
+                </div>
+</div>
+</section>
+<footer class="py-12 bg-black border-t border-white/10 text-sm">
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+<div class="flex items-center gap-3">
+<img alt="The Marketographers Logo" class="h-8 w-8 object-contain grayscale opacity-80 hover:grayscale-0 hover:opacity-100 transition-all" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAL6Qt_FyVX9m0-UDHePd6mXbztqYgHx_rm3upJ5nRHsrtzIv8mzaYfzD0NnActBucIaUL-6w8B4UzLkDjqvZ0dl0EgdIZQ-W4V1ZQT8aU0B77qW2Gub2f4NJhYk8S4IOprDS-WiT8Z34yTVz6GOKO4LvDlrU7mawmNIqiSqWbR6wPDyVgFcKwYLkORBKGHA_ME4IN8iptl8l8I5Gg078hcn71OC-5IGfbWx73YSp-TgyGdA5DDyhhUNjWMuA7CyqzUU5QenOyjrNs"/>
+<span class="font-bold text-white uppercase tracking-wider">The Marketographers</span>
+</div>
+<div class="flex gap-8 text-text-gray font-medium">
+<a class="hover:text-primary transition-colors hover:underline" href="#">Términos</a>
+<a class="hover:text-primary transition-colors hover:underline" href="#">Privacidad</a>
+<a class="hover:text-primary transition-colors hover:underline" href="#">Contacto</a>
+</div>
+<div class="text-text-gray opacity-50">
+                    © 2024 The Marketographers. All rights reserved.
+                </div>
+</div>
+</footer>
+</div>
 
-    <main id="main" class="grid">
-      <!-- 1 Datos personales -->
-      <section class="card step active" data-step="1">
-        <h2>1) Datos del fotógrafo</h2>
-        <div class="grid two">
-          <div>
-            <label>Nombre</label>
-            <input id="nombre" placeholder="Tu nombre" />
-          </div>
-          <div>
-            <label>Apellido</label>
-            <input id="apellido" placeholder="Tu apellido" />
-          </div>
-          <div>
-            <label>Nicho de fotografía</label>
-            <input id="nicho" placeholder="Bodas, producto, retrato…" />
-          </div>
-          <div>
-            <label>Edad</label>
-            <input id="edad" type="number" min="10" max="100" />
-          </div>
-          <div>
-            <label>País</label>
-            <select id="pais"></select>
-          </div>
-          <div>
-            <label>Años de experiencia</label>
-            <input id="experiencia" type="number" min="0" max="60" />
-          </div>
-        </div>
-        <div class="step-nav"><span class="tag">Paso 1 de 9</span><button class="btn next">Siguiente ➜</button></div>
-      </section>
-
-      <!-- 2 Moneda -->
-      <section class="card step" data-step="2">
-        <h2>2) Moneda</h2>
-        <div class="row">
-          <div class="inline">
-            <input type="radio" name="monedaTipo" id="monLocal" checked>
-            <label for="monLocal">Usar moneda local</label>
-          </div>
-          <div class="inline">
-            <input type="radio" name="monedaTipo" id="monUSD">
-            <label for="monUSD">Usar USD</label>
-          </div>
-          <div>
-            <label>Símbolo (editable)</label>
-            <input id="simbolo" value="$" />
-          </div>
-        </div>
-        <div class="muted" id="inflacionInfo">Inflación anual estimada: 5% (editable más abajo).</div>
-        <div class="step-nav"><button class="btn prev">⬅ Volver</button><span class="tag">Paso 2 de 9</span><button class="btn next">Siguiente ➜</button></div>
-      </section>
-
-      <!-- 3 Gastos personales -->
-      <section class="card step" data-step="3">
-        <h2>3) Gastos personales mensuales (Básicos)</h2>
-        <table id="tablaBasicos">
-          <thead>
-            <tr><th>Categoría</th><th>Descripción</th><th class="right">Monto mensual</th><th></th></tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-        <div class="row" style="margin-top:8px">
-          <button class="btn small" id="addBasico">+ Agregar fila</button>
-          <span class="muted">Incluye: Vivienda, Servicios, Alimentación, Salud, Transporte y Otros.</span>
-        </div>
-        <div class="totals" style="margin-top:10px">
-          <div class="total">Total básicos (mes): <span id="totalBasicosMes">$0</span></div>
-          <div class="total">Total básicos (año): <span id="totalBasicosAnio">$0</span></div>
-        </div>
-        <div class="step-nav"><button class="btn prev">⬅ Volver</button><span class="tag">Paso 3 de 9</span><button class="btn next">Siguiente ➜</button></div>
-      </section>
-
-      <!-- 4 Deseos -->
-      <section class="card step" data-step="4">
-        <h2>4) Gustos y entretenimiento (Deseos)</h2>
-        <table id="tablaDeseos">
-          <thead>
-            <tr><th>Categoría</th><th>Descripción</th><th class="right">Monto mensual</th><th></th></tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-        <div class="row" style="margin-top:8px">
-          <button class="btn small" id="addDeseo">+ Agregar fila</button>
-          <span class="muted">Incluye: Membresías, Streaming, Deporte, Ropa, Accesorios, Entretenimiento y Otros.</span>
-        </div>
-        <div class="totals" style="margin-top:10px">
-          <div class="total">Total deseos (mes): <span id="totalDeseosMes">$0</span></div>
-          <div class="total">Total deseos (año): <span id="totalDeseosAnio">$0</span></div>
-        </div>
-        <div class="step-nav"><button class="btn prev">⬅ Volver</button><span class="tag">Paso 4 de 9</span><button class="btn next">Siguiente ➜</button></div>
-      </section>
-
-      <!-- 5 Gastos empresa (nuevo) -->
-      <section class="card step" data-step="5">
-        <h2>5) Gastos de la empresa (mensuales)</h2>
-        <table id="tablaEmpresa">
-          <thead>
-            <tr><th>Categoría</th><th>Descripción</th><th class="right">Monto mensual</th><th></th></tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-        <div class="row" style="margin-top:8px">
-          <button class="btn small" id="addEmpresa">+ Agregar fila</button>
-          <span class="muted">Ejemplos: alquiler estudio, servicios, membresías, educación, software.</span>
-        </div>
-        <div class="totals" style="margin-top:10px">
-          <div class="total">Total empresa (mes): <span id="totalEmpresaMes">$0</span></div>
-          <div class="total">Total empresa (año): <span id="totalEmpresaAnio">$0</span></div>
-        </div>
-        <div class="step-nav"><button class="btn prev">⬅ Volver</button><span class="tag">Paso 5 de 9</span><button class="btn next">Siguiente ➜</button></div>
-      </section>
-
-      <!-- 6 Equipo inventario -->
-      <section class="card step" data-step="6">
-        <h2>6) Equipo (única vez) → Ahorro mensual para renovar (4 años + inflación)</h2>
-        <div class="row">
-          <div>
-            <label>Inflación anual % (según país, editable)</label>
-            <input id="inflacion" type="number" min="0" max="500" step="0.1" value="5" />
-          </div>
-        </div>
-        <table id="tablaEquipo">
-          <thead>
-            <tr><th>Categoría</th><th>Descripción</th><th class="right">Costo único</th><th></th></tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-        <div class="row" style="margin-top:8px">
-          <button class="btn small" id="addEquipo">+ Agregar fila</button>
-          <span class="muted">Vida útil: 4 años. Se proyecta reposición con inflación compuesta.</span>
-        </div>
-        <div class="totals" style="margin-top:10px">
-          <div class="total">Ahorro equipo (mes): <span id="ahorroMes">$0</span></div>
-          <div class="total">Reposición estimada a 4 años: <span id="reposicion">$0</span></div>
-        </div>
-        <div class="step-nav"><button class="btn prev">⬅ Volver</button><span class="tag">Paso 6 de 9</span><button class="btn next">Siguiente ➜</button></div>
-      </section>
-
-      <!-- 7 Nuevo equipo a comprar (cuotas) -->
-      <section class="card step" data-step="7">
-        <h2>7) Nuevo equipo (financiado)</h2>
-        <div class="grid three">
-          <div>
-            <label>Ítem</label>
-            <input id="neItem" placeholder="Lente Sigma 18-35 mm"/>
-          </div>
-          <div>
-            <label>Plazo (meses)</label>
-            <input id="neMeses" type="number" min="0" value="0"/>
-          </div>
-          <div>
-            <label>Precio</label>
-            <input id="nePrecio" type="number" min="0" step="0.01" placeholder="0"/>
-          </div>
-        </div>
-        <div class="totals" style="margin-top:10px">
-          <div class="total">Cuota mensual nuevo equipo: <span id="neCuota">$0</span></div>
-        </div>
-        <div class="step-nav"><button class="btn prev">⬅ Volver</button><span class="tag">Paso 7 de 9</span><button class="btn next">Siguiente ➜</button></div>
-      </section>
-
-      <!-- 8 Resumen y fondos -->
-      <section class="card step" data-step="8">
-        <h2>8) Resumen y fondos</h2>
-        <div class="grid two">
-          <div>
-            <div class="chart">
-              <svg id="barChart" width="100%" height="160" role="img" aria-label="Gráfico de barras de Básicos, Deseos y Ahorro"></svg>
-            </div>
-          </div>
-          <div>
-            <div class="range-row">
-              <label>% Ahorro</label>
-              <input id="pctAhorro" type="range" min="0" max="50" value="20">
-              <span id="pctAhorroLbl" class="tag">20%</span>
-            </div>
-            <div class="range-row">
-              <label>% Inversión</label>
-              <input id="pctInv" type="range" min="0" max="50" value="10">
-              <span id="pctInvLbl" class="tag">10%</span>
-            </div>
-            <div class="range-row">
-              <label>% Emergencia</label>
-              <input id="pctEmerg" type="range" min="0" max="50" value="10">
-              <span id="pctEmergLbl" class="tag">10%</span>
-            </div>
-            <div class="muted" id="asignacionInfo">Las reservas se aplican sobre el total de ingresos. Resultado siempre cierra en 100% sin magia negra.</div>
-            <div class="totals" style="margin-top:10px">
-              <div class="total">Total personales (mes): <span id="totalPersMes">$0</span></div>
-              <div class="total">Total empresa (mes): <span id="totalEmpMes">$0</span></div>
-              <div class="total">Base mensual (pers+empresa+ahorro equipo+cuota nuevo): <span id="baseMensual">$0</span></div>
-              <div class="total">Ingresos requeridos (100%): <span id="ingresosRequeridos">$0</span></div>
-            </div>
-          </div>
-        </div>
-        <div class="step-nav"><button class="btn prev">⬅ Volver</button><span class="tag">Paso 8 de 9</span><button class="btn next">Siguiente ➜</button></div>
-      </section>
-
-      <!-- 9 Cotizador y resultados -->
-      <section class="card step" data-step="9">
-        <h2>9) Cotizador y resultados</h2>
-        <div class="grid three">
-          <div>
-            <label>% a invertir en Ads</label>
-            <input id="pctAds" type="number" min="0" max="90" value="10" />
-          </div>
-          <div>
-            <label>Horas de trabajo por día</label>
-            <input id="horasDia" type="number" min="1" max="16" value="6" />
-          </div>
-          <div>
-            <label>Días de trabajo por semana</label>
-            <input id="diasSemana" type="number" min="1" max="7" value="5" />
-          </div>
-        </div>
-        <div class="totals" style="margin-top:10px">
-          <div class="total">Horas/mes aprox.: <span id="horasMes">0</span></div>
-          <div class="total">Tarifa hora mínima: <span id="horaMin">$0</span></div>
-          <div class="total">Tarifa hora estándar (+50%): <span id="horaStd">$0</span></div>
-          <div class="total">Tarifa hora ideal (+150%): <span id="horaIdeal">$0</span></div>
-          <div class="total">Presupuesto de Ads (mes): <span id="adsMes">$0</span></div>
-        </div>
-
-        <h3 style="margin-top:14px">Proyecto</h3>
-        <table id="tablaProyectos">
-          <thead>
-            <tr><th>Proyecto</th><th class="right">Horas</th><th class="right">Paquete mínimo</th><th class="right">Paquete estándar</th><th class="right">Paquete ideal</th><th class="right">Clientes equilibrio (mín/std/ideal)</th><th></th></tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-        <div class="row" style="margin-top:8px">
-          <span class="muted">Solo 1 proyecto permitido.</span>
-        </div>
-
-        <div class="totals" style="margin-top:14px">
-          <div class="total">Aviso: la versión completa en Excel mejorada está en la comunidad de Marketographers. Te invitamos a unirte.</div>
-        </div>
-      </section>
-
-    </main>
-
-    <footer>
-      Hecho para ahorrar dolores de cabeza. Si algo falla, probablemente era evitable.
-    </footer>
-  </div>
-
-  <script>
-    // Datos base
-    const paises = [
-      { name:'Argentina', currency:'ARS', symbol:'$' },
-      { name:'Bolivia', currency:'BOB', symbol:'Bs' },
-      { name:'Brasil', currency:'BRL', symbol:'R$' },
-      { name:'Chile', currency:'CLP', symbol:'$' },
-      { name:'Colombia', currency:'COP', symbol:'$' },
-      { name:'Costa Rica', currency:'CRC', symbol:'₡' },
-      { name:'Ecuador', currency:'USD', symbol:'$' },
-      { name:'El Salvador', currency:'USD', symbol:'$' },
-      { name:'España', currency:'EUR', symbol:'€' },
-      { name:'Guatemala', currency:'GTQ', symbol:'Q' },
-      { name:'Honduras', currency:'HNL', symbol:'L' },
-      { name:'México', currency:'MXN', symbol:'$' },
-      { name:'Nicaragua', currency:'NIO', symbol:'C$' },
-      { name:'Panamá', currency:'USD', symbol:'$' },
-      { name:'Paraguay', currency:'PYG', symbol:'₲' },
-      { name:'Perú', currency:'PEN', symbol:'S/' },
-      { name:'Rep. Dominicana', currency:'DOP', symbol:'RD$' },
-      { name:'Uruguay', currency:'UYU', symbol:'$' },
-      { name:'Venezuela', currency:'VES', symbol:'Bs.' },
-      { name:'Estados Unidos', currency:'USD', symbol:'$' },
-      { name:'Reino Unido', currency:'GBP', symbol:'£' },
-      { name:'Canadá', currency:'CAD', symbol:'$' }
-    ];
-
-    const inflacionPais = {
-      'Argentina': 140, 'Bolivia': 3, 'Brasil': 4.5, 'Chile': 4, 'Colombia': 8,
-      'Costa Rica': 4, 'Ecuador': 2, 'El Salvador': 3, 'España': 3.5, 'Guatemala': 5,
-      'Honduras': 5, 'México': 4.5, 'Nicaragua': 7, 'Panamá': 3, 'Paraguay': 4,
-      'Perú': 3.5, 'Rep. Dominicana': 4, 'Uruguay': 6, 'Venezuela': 200, 'Estados Unidos': 3.2,
-      'Reino Unido': 3.8, 'Canadá': 3.5
-    };
-
-    const categoriasBasicos = ['Vivienda','Servicios','Alimentación','Salud','Transporte','Otros'];
-    const categoriasDeseos = ['Membresías','Streaming','Deporte','Ropa','Accesorios','Entretenimiento','Otros'];
-    const categoriasEmpresa = ['Alquiler estudio','Servicios','Software','Membresías','Educación','Marketing','Otros'];
-    const categoriasEquipo = ['Cámara','Lentes','Luz LED','Flash','Trípode','Pedestal','Monturas','Filtros','Accesorios','Baterías','Mochila','Audio','Escritorio/Oficina','Electrónica','Otros'];
-
-    // Estado
-    const st = {
-      symbol:'$',
-      country:null,
-      currency:'',
-      inflacion:5,
-      basicos:[],
-      deseos:[],
-      empresa:[],
-      equipo:[],
-      pctAhorro:0.20,
-      pctInv:0.10,
-      pctEmerg:0.10,
-      pctAds:0.10,
-      horasDia:6,
-      diasSemana:5,
-      proyectos:[],
-      neMeses:0,
-      nePrecio:0
-    };
-
-    // Utilidades
-    function fmt(n){
-      const s = document.getElementById('simbolo')?.value || st.symbol || '$';
-      return s + ' ' + (isFinite(n)? n.toLocaleString(undefined,{maximumFractionDigits:2}) : '0');
-    }
-    function sum(arr, key){ return arr.reduce((a,b)=> a + (+b[key]||0), 0); }
-    function weeksPerMonth(){ return 4.33 }
-
-    // Helpers tablas
-    function addRow(tbody, row){
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>
-          <input list="${tbody.id}-cats" value="${row.categoria||''}" aria-label="Categoría" />
-          <datalist id="${tbody.id}-cats"></datalist>
-        </td>
-        <td><input value="${row.descripcion||''}" placeholder="Descripción" aria-label="Descripción"/></td>
-        <td class="right"><input type="number" min="0" step="0.01" value="${row.monto||row.costo||0}" aria-label="Monto"/></td>
-        <td class="right"><button class="btn small ghost">Eliminar</button></td>
-      `;
-      tbody.appendChild(tr);
-      tr.querySelector('button').addEventListener('click', ()=>{ tr.remove(); recalcAll(); saveLS(); });
-      tr.querySelectorAll('input').forEach(inp=> inp.addEventListener('input', ()=>{ recalcAll(); saveLS(); }));
-      return tr;
-    }
-    function seedTable(tbody, cats){
-      tbody.innerHTML='';
-      cats.forEach(c=> addRow(tbody, {categoria:c, descripcion:'', monto:0, costo:0}));
-      addRow(tbody, {categoria:'Otros', descripcion:'', monto:0, costo:0});
-      const dl = document.getElementById(`${tbody.id}-cats`);
-      if(dl) dl.innerHTML = cats.map(c=>`<option value="${c}"></option>`).join('');
-    }
-
-    // Inicialización
-    function init(){
-      const selPais = document.getElementById('pais');
-      paises.forEach(p=>{ const opt = document.createElement('option'); opt.value=p.name; opt.textContent=p.name; selPais.appendChild(opt); });
-      selPais.addEventListener('change', ()=>{
-        st.country = selPais.value;
-        const p = paises.find(x=>x.name===st.country);
-        if(p){ st.currency = p.currency; document.getElementById('simbolo').value = p.symbol; st.symbol=p.symbol; }
-        const inf = inflacionPais[st.country] ?? 5; st.inflacion = inf; document.getElementById('inflacion').value = inf;
-        document.getElementById('inflacionInfo').textContent = `Inflación anual estimada: ${inf}% (editable).`;
-        recalcAll(); saveLS();
-      });
-
-      document.getElementById('monLocal').addEventListener('change', ()=>{ if(document.getElementById('monLocal').checked){ const p=paises.find(x=>x.name===st.country); if(p){ document.getElementById('simbolo').value=p.symbol; st.symbol=p.symbol; } recalcAll(); saveLS(); }});
-      document.getElementById('monUSD').addEventListener('change', ()=>{ if(document.getElementById('monUSD').checked){ document.getElementById('simbolo').value='$'; st.symbol='$'; recalcAll(); saveLS(); }});
-      document.getElementById('simbolo').addEventListener('input', ()=>{ st.symbol=document.getElementById('simbolo').value; recalcAll(); saveLS(); });
-
-      // Tablas
-      seedTable(document.querySelector('#tablaBasicos tbody'), categoriasBasicos);
-      seedTable(document.querySelector('#tablaDeseos tbody'), categoriasDeseos);
-      seedTable(document.querySelector('#tablaEmpresa tbody'), categoriasEmpresa);
-      seedTable(document.querySelector('#tablaEquipo tbody'), categoriasEquipo);
-
-      document.getElementById('addBasico').addEventListener('click', ()=>{ addRow(document.querySelector('#tablaBasicos tbody'), {categoria:'Otros'}); });
-      document.getElementById('addDeseo').addEventListener('click', ()=>{ addRow(document.querySelector('#tablaDeseos tbody'), {categoria:'Otros'}); });
-      document.getElementById('addEmpresa').addEventListener('click', ()=>{ addRow(document.querySelector('#tablaEmpresa tbody'), {categoria:'Otros'}); });
-      document.getElementById('addEquipo').addEventListener('click', ()=>{ addRow(document.querySelector('#tablaEquipo tbody'), {categoria:'Otros'}); });
-
-      // Sliders fondos
-      const pctAhorro = document.getElementById('pctAhorro');
-      const pctInv = document.getElementById('pctInv');
-      const pctEmerg = document.getElementById('pctEmerg');
-      pctAhorro.addEventListener('input', ()=>{ document.getElementById('pctAhorroLbl').textContent = pctAhorro.value+'%'; recalcAll(); saveLS(); });
-      pctInv.addEventListener('input', ()=>{ document.getElementById('pctInvLbl').textContent = pctInv.value+'%'; recalcAll(); saveLS(); });
-      pctEmerg.addEventListener('input', ()=>{ document.getElementById('pctEmergLbl').textContent = pctEmerg.value+'%'; recalcAll(); saveLS(); });
-
-      // Cotizador
-      ;['pctAds','horasDia','diasSemana'].forEach(id=>{ document.getElementById(id).addEventListener('input', ()=>{ recalcAll(); saveLS(); }) });
-
-      // Datos personales
-      ;['nombre','apellido','nicho','edad','experiencia'].forEach(id=>{ document.getElementById(id).addEventListener('input', saveLS) });
-
-      // Proyecto único
-      addProyectoRow({nombre:'Sesión retrato', horas:5});
-
-      // Nuevo equipo financiado
-      ;['neMeses','nePrecio','neItem'].forEach(id=>{ const el=document.getElementById(id); if(el) el.addEventListener('input', ()=>{ recalcAll(); saveLS(); }); });
-
-      // Stepper
-      setupStepper();
-
-      loadLS();
-      recalcAll();
-    }
-
-    function setupStepper(){
-      const steps = [...document.querySelectorAll('.step')];
-      const show = i=>{ steps.forEach(s=> s.classList.remove('active')); const step = steps[i]; if(step) step.classList.add('active'); };
-      steps.forEach((s,idx)=>{
-        const n = s.querySelector('.next'); if(n) n.addEventListener('click', ()=> show(Math.min(idx+1, steps.length-1)));
-        const p = s.querySelector('.prev'); if(p) p.addEventListener('click', ()=> show(Math.max(idx-1, 0)));
-      });
-    }
-
-    function getTableData(tbody, isEquipo=false){
-      const rows = [...tbody.querySelectorAll('tr')];
-      return rows.map(tr=>{
-        const [cat, desc, val] = tr.querySelectorAll('input');
-        const num = +val.value || 0;
-        return isEquipo ? {categoria:cat.value, descripcion:desc.value, costo:num} : {categoria:cat.value, descripcion:desc.value, monto:num};
-      });
-    }
-
-    function recalcAll(){
-      // Recolectar
-      const basicos = st.basicos = getTableData(document.querySelector('#tablaBasicos tbody'));
-      const deseos = st.deseos = getTableData(document.querySelector('#tablaDeseos tbody'));
-      const empresa = st.empresa = getTableData(document.querySelector('#tablaEmpresa tbody'));
-      const equipo = st.equipo = getTableData(document.querySelector('#tablaEquipo tbody'), true);
-
-      const totalBasMes = sum(basicos,'monto');
-      const totalDesMes = sum(deseos,'monto');
-      const totalEmpMes = sum(empresa,'monto');
-
-      // Equipo → ahorro mensual con inflación compuesta
-      const inf = (+document.getElementById('inflacion').value || 0)/100;
-      const totalCostoEquipo = sum(equipo,'costo');
-      const reposicion = totalCostoEquipo * Math.pow(1+inf, 4);
-      const ahorroMensual = reposicion / 48; // 4 años * 12 meses
-
-      // Nuevo equipo financiado
-      const neMeses = +document.getElementById('neMeses').value || 0;
-      const nePrecio = +document.getElementById('nePrecio').value || 0;
-      const cuotaNE = neMeses>0 ? nePrecio/neMeses : 0;
-      document.getElementById('neCuota').textContent = fmt(cuotaNE);
-
-      // Totales visibles
-      document.getElementById('totalBasicosMes').textContent = fmt(totalBasMes);
-      document.getElementById('totalBasicosAnio').textContent = fmt(totalBasMes*12);
-      document.getElementById('totalDeseosMes').textContent = fmt(totalDesMes);
-      document.getElementById('totalDeseosAnio').textContent = fmt(totalDesMes*12);
-      document.getElementById('totalEmpresaMes').textContent = fmt(totalEmpMes);
-      document.getElementById('totalEmpresaAnio').textContent = fmt(totalEmpMes*12);
-      document.getElementById('reposicion').textContent = fmt(reposicion);
-      document.getElementById('ahorroMes').textContent = fmt(ahorroMensual);
-
-      // Base mensual
-      const totalPers = totalBasMes + totalDesMes;
-      document.getElementById('totalPersMes').textContent = fmt(totalPers);
-      document.getElementById('totalEmpMes').textContent = fmt(totalEmpMes);
-
-      const baseMensual = totalPers + totalEmpMes + ahorroMensual + cuotaNE;
-      document.getElementById('baseMensual').textContent = fmt(baseMensual);
-
-      // Sliders reservas
-      const pctAhorro = (+document.getElementById('pctAhorro').value || 0)/100;
-      const pctInv = (+document.getElementById('pctInv').value || 0)/100;
-      const pctEmerg = (+document.getElementById('pctEmerg').value || 0)/100;
-      const pctSuma = pctAhorro + pctInv + pctEmerg;
-      const info = document.getElementById('asignacionInfo');
-      if(pctSuma >= 0.95){ info.innerHTML = '<span class="warn">Tus fondos superan 95%. Sí, te pasaste. Ajusta porcentajes.</span>'; }
-      else info.textContent = 'Las reservas se aplican sobre el total de ingresos. Resultado siempre cierra en 100% sin magia negra.';
-
-      const divisor = Math.max(0.01, 1 - pctSuma); // evitar división por cero
-      const ingresosRequeridos = baseMensual / divisor;
-      document.getElementById('ingresosRequeridos').textContent = fmt(ingresosRequeridos);
-
-      drawBars(totalBasMes + totalDesMes, totalEmpMes, ahorroMensual + cuotaNE);
-
-      // Cotizador
-      const pctAds = (+document.getElementById('pctAds').value || 0)/100;
-      const horasDia = +document.getElementById('horasDia').value || 0;
-      const diasSemana = +document.getElementById('diasSemana').value || 0;
-      const horasMes = horasDia * diasSemana * weeksPerMonth();
-      document.getElementById('horasMes').textContent = isFinite(horasMes)? horasMes.toFixed(1) : '0';
-
-      let tarifaMin = horasMes>0 ? (ingresosRequeridos / horasMes) : 0;
-      const tarifaStd = tarifaMin * 1.5;
-      const tarifaIdeal = tarifaMin * 2.5; // +150%
-      document.getElementById('horaMin').textContent = fmt(tarifaMin);
-      document.getElementById('horaStd').textContent = fmt(tarifaStd);
-      document.getElementById('horaIdeal').textContent = fmt(tarifaIdeal);
-
-      const adsMes = ingresosRequeridos * pctAds;
-      document.getElementById('adsMes').textContent = fmt(adsMes);
-
-      // Proyectos (único)
-      const tbody = document.querySelector('#tablaProyectos tbody');
-      [...tbody.querySelectorAll('tr')].forEach(tr=>{
-        const hrs = +tr.querySelector('input[name=ph]').value || 0;
-        const pMin = hrs * tarifaMin;
-        const pStd = hrs * tarifaStd;
-        const pIdeal = hrs * tarifaIdeal;
-        tr.querySelector('.pmin').textContent = fmt(pMin);
-        tr.querySelector('.pstd').textContent = fmt(pStd);
-        tr.querySelector('.pideal').textContent = fmt(pIdeal);
-        // Punto de equilibrio: clientes necesarios (redondear hacia arriba)
-        const nMin = pMin>0 ? Math.ceil(ingresosRequeridos / pMin) : 0;
-        const nStd = pStd>0 ? Math.ceil(ingresosRequeridos / pStd) : 0;
-        const nIdeal = pIdeal>0 ? Math.ceil(ingresosRequeridos / pIdeal) : 0;
-        tr.querySelector('.peq').textContent = `${nMin} / ${nStd} / ${nIdeal}`;
-      });
-    }
-
-    function drawBars(pers, emp, aho){
-      const svg = document.getElementById('barChart');
-      if(!svg) return;
-      const w = svg.clientWidth || 300, h = 160, pad=30;
-      while(svg.firstChild) svg.removeChild(svg.firstChild);
-      const vals = [pers, emp, aho];
-      const labels = ['Personales','Empresa','Ahorro'];
-      const max = Math.max(1, ...vals);
-      const bw = (w - pad*2)/3*0.6;
-      vals.forEach((v,i)=>{
-        const x = pad + i*((w - pad*2)/3) + ((w - pad*2)/3 - bw)/2;
-        const bh = (h - pad*1.6) * (v/max);
-        const y = h - pad - bh;
-        const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
-        rect.setAttribute('x', x);
-        rect.setAttribute('y', y);
-        rect.setAttribute('width', bw);
-        rect.setAttribute('height', bh);
-        rect.setAttribute('fill', 'white');
-        rect.setAttribute('opacity', '0.9');
-        svg.appendChild(rect);
-        const text = document.createElementNS('http://www.w3.org/2000/svg','text');
-        text.setAttribute('x', x + bw/2); text.setAttribute('y', h-10); text.setAttribute('text-anchor','middle'); text.setAttribute('fill','#bbb'); text.setAttribute('font-size','12');
-        text.textContent = labels[i];
-        svg.appendChild(text);
-      });
-      const axis = document.createElementNS('http://www.w3.org/2000/svg','line');
-      axis.setAttribute('x1', pad); axis.setAttribute('x2', w-pad); axis.setAttribute('y1', h-pad); axis.setAttribute('y2', h-pad); axis.setAttribute('stroke','#333');
-      svg.appendChild(axis);
-    }
-
-    function addProyectoRow({nombre, horas}){
-      const tbody = document.querySelector('#tablaProyectos tbody');
-      tbody.innerHTML = '';// aseguramos solo 1
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td><input name="pn" value="${nombre||''}" /></td>
-        <td class="right"><input name="ph" type="number" min="0" step="0.1" value="${horas||0}" /></td>
-        <td class="right pmin">$0</td>
-        <td class="right pstd">$0</td>
-        <td class="right pideal">$0</td>
-        <td class="right peq">0 / 0 / 0</td>
-        <td class="right"></td>
-      `;
-      tbody.appendChild(tr);
-      tr.querySelectorAll('input').forEach(inp=> inp.addEventListener('input', ()=>{ recalcAll(); saveLS(); }));
-      recalcAll();
-    }
-
-    // Persistencia
-    function saveLS(){ try{ localStorage.setItem('pf-data', JSON.stringify(serialize())); }catch(e){} }
-    function loadLS(){ try{ const raw = localStorage.getItem('pf-data'); if(!raw) return; const d = JSON.parse(raw); deserialize(d); }catch(e){} }
-    function serialize(){
-      return {
-        nombre:document.getElementById('nombre').value,
-        apellido:document.getElementById('apellido').value,
-        nicho:document.getElementById('nicho').value,
-        edad:document.getElementById('edad').value,
-        pais:document.getElementById('pais').value,
-        experiencia:document.getElementById('experiencia').value,
-        simbolo:document.getElementById('simbolo').value,
-        inflacion:document.getElementById('inflacion').value,
-        pctAhorro:document.getElementById('pctAhorro').value,
-        pctInv:document.getElementById('pctInv').value,
-        pctEmerg:document.getElementById('pctEmerg').value,
-        pctAds:document.getElementById('pctAds').value,
-        horasDia:document.getElementById('horasDia').value,
-        diasSemana:document.getElementById('diasSemana').value,
-        basicos:getTableData(document.querySelector('#tablaBasicos tbody')),
-        deseos:getTableData(document.querySelector('#tablaDeseos tbody')),
-        empresa:getTableData(document.querySelector('#tablaEmpresa tbody')),
-        equipo:getTableData(document.querySelector('#tablaEquipo tbody'), true),
-        proyecto:[...document.querySelectorAll('#tablaProyectos tbody tr')].map(tr=>({
-          nombre: tr.querySelector('input[name=pn]').value,
-          horas: tr.querySelector('input[name=ph]').value
-        }))[0] || null,
-        neMeses:document.getElementById('neMeses').value,
-        nePrecio:document.getElementById('nePrecio').value,
-        neItem:document.getElementById('neItem').value
-      };
-    }
-    function deserialize(d){
-      if(!d) return;
-      ['nombre','apellido','nicho','edad','experiencia','simbolo','inflacion','pctAhorro','pctInv','pctEmerg','pctAds','horasDia','diasSemana','neMeses','nePrecio','neItem'].forEach(id=>{ if(d[id]!==undefined && document.getElementById(id)) document.getElementById(id).value = d[id]; });
-      if(d.pais){ document.getElementById('pais').value = d.pais; st.country=d.pais; }
-      if(d.basicos){ const tb = document.querySelector('#tablaBasicos tbody'); tb.innerHTML=''; d.basicos.forEach(r=> addRow(tb, r)); }
-      if(d.deseos){ const tb = document.querySelector('#tablaDeseos tbody'); tb.innerHTML=''; d.deseos.forEach(r=> addRow(tb, r)); }
-      if(d.empresa){ const tb = document.querySelector('#tablaEmpresa tbody'); tb.innerHTML=''; d.empresa.forEach(r=> addRow(tb, r)); }
-      if(d.equipo){ const tb = document.querySelector('#tablaEquipo tbody'); tb.innerHTML=''; d.equipo.forEach(r=> addRow(tb, r)); }
-      if(d.proyecto){ addProyectoRow({nombre:d.proyecto.nombre, horas:d.proyecto.horas}); }
-      document.getElementById('pctAhorroLbl').textContent = document.getElementById('pctAhorro').value+'%';
-      document.getElementById('pctInvLbl').textContent = document.getElementById('pctInv').value+'%';
-      document.getElementById('pctEmergLbl').textContent = document.getElementById('pctEmerg').value+'%';
-    }
-
-    // Arranque
-    window.addEventListener('DOMContentLoaded', init);
-  </script>
-</body>
-</html>
+</body></html>

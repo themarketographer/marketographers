@@ -1,162 +1,360 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Marketographers - Links</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            font-family: 'Poppins', sans-serif;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #f1f5f9 100%);
-            background-attachment: fixed;
-            min-height: 100vh;
-            position: relative;
-        }
-        
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.3) 1px, transparent 1px),
-                radial-gradient(circle at 75% 75%, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
-            background-size: 50px 50px, 30px 30px;
-            pointer-events: none;
-            z-index: -1;
-        }
-        
-        .link-button {
-            background: rgba(255, 255, 255, 0.8);
-            border: 1px solid rgba(226, 232, 240, 0.5);
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06), inset 0 -2px 4px rgba(255, 255, 255, 0.8);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .link-button:hover {
-            background: rgba(255, 255, 255, 0.95);
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08), inset 0 -1px 3px rgba(255, 255, 255, 0.9), 0 4px 12px rgba(0, 0, 0, 0.05);
-            border-color: rgba(203, 213, 225, 0.7);
-        }
-        
-        .logo-container {
-            background: white;
-            border: 1px solid #e2e8f0;
-        }
-        
-        .fade-in-up {
-            animation: fadeInUp 0.8s ease-out forwards;
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        
-        .fade-in-up-delay-1 {
-            animation: fadeInUp 0.8s ease-out 0.2s forwards;
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        
-        .fade-in-up-delay-2 {
-            animation: fadeInUp 0.8s ease-out 0.4s forwards;
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        
-        .fade-in-up-delay-3 {
-            animation: fadeInUp 0.8s ease-out 0.6s forwards;
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        
-        .fade-in-up-delay-4 {
-            animation: fadeInUp 0.8s ease-out 0.8s forwards;
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        
-        @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-    </style>
-</head>
-<body class="flex items-center justify-center p-6">
-    <div class="w-full max-w-sm">
-        <!-- Logo Container -->
-        <div class="text-center mb-12 fade-in-up">
-            <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1756354892/v3_1_1_p3ne1x.png" 
-                 alt="Marketographers Logo" 
-                 class="w-16 h-16 object-cover rounded-2xl shadow-sm border border-gray-200 mx-auto"
-                 onerror="this.src=''; this.alt='Logo no disponible'; this.style.display='none';">
-            <h1 class="text-2xl font-semibold text-gray-900 mt-4 mb-1">@themarketographer</h1>
-            <p class="text-gray-500 text-sm font-light">Marketing para Fotógrafos</p>
+<!doctype html>
+<html lang="es" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marketographers - Links</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; padding: 0; }
+    
+    :root {
+      --primary: #FACC15;
+      --bg: #0A0A0A;
+      --surface: #141414;
+      --text: #FAFAFA;
+      --text-muted: #A1A1AA;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 15px;
+      line-height: 1.6;
+      letter-spacing: -0.01em;
+    }
+    
+    .font-display { 
+      font-family: 'Poppins', sans-serif;
+      letter-spacing: -0.015em;
+    }
+    
+    html { scroll-behavior: smooth; }
+    
+    .glow-yellow {
+      box-shadow: 0 0 60px rgba(250, 204, 21, 0.3), 0 0 100px rgba(250, 204, 21, 0.1);
+    }
+    
+    .glow-subtle {
+      box-shadow: 0 0 40px rgba(250, 204, 21, 0.15);
+    }
+    
+    .text-glow {
+      text-shadow: 0 0 40px rgba(250, 204, 21, 0.5);
+    }
+    
+    .gradient-text {
+      background: linear-gradient(135deg, #FACC15 0%, #FDE68A 50%, #FACC15 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .noise-bg::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+    
+    .grid-pattern {
+      background-image: 
+        linear-gradient(rgba(250, 204, 21, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(250, 204, 21, 0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+    }
+    
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 40px rgba(250, 204, 21, 0.3); }
+      50% { box-shadow: 0 0 80px rgba(250, 204, 21, 0.5); }
+    }
+    
+    @keyframes slide-up {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes fade-in {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes scale-in {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    
+    .animate-float { animation: float 6s ease-in-out infinite; }
+    .animate-pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
+    .animate-slide-up { animation: slide-up 0.8s ease-out forwards; }
+    .animate-fade-in { animation: fade-in 1s ease-out forwards; }
+    .animate-scale-in { animation: scale-in 0.6s ease-out forwards; }
+    
+    .delay-100 { animation-delay: 0.1s; }
+    .delay-200 { animation-delay: 0.2s; }
+    .delay-300 { animation-delay: 0.3s; }
+    .delay-400 { animation-delay: 0.4s; }
+    .delay-500 { animation-delay: 0.5s; }
+    
+    .card-hover {
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .card-hover:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px rgba(250, 204, 21, 0.1);
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #FACC15 0%, #EAB308 100%);
+      color: #0A0A0A;
+      font-weight: 600;
+      padding: 14px 28px;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      letter-spacing: -0.01em;
+    }
+    
+    .btn-primary:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 40px rgba(250, 204, 21, 0.5);
+    }
+    
+    .btn-secondary {
+      border: 2px solid rgba(250, 204, 21, 0.3);
+      color: var(--text);
+      padding: 12px 24px;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      background: transparent;
+      cursor: pointer;
+      font-size: 14px;
+      letter-spacing: -0.01em;
+    }
+    
+    .btn-secondary:hover {
+      border-color: #FACC15;
+      background: rgba(250, 204, 21, 0.1);
+    }
+    
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: rgba(250, 204, 21, 0.3);
+      border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(250, 204, 21, 0.5);
+    }
+    
+    .faq-item {
+      border-bottom: 1px solid rgba(250, 204, 21, 0.1);
+    }
+    
+    .faq-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.4s ease;
+    }
+    
+    .faq-item.active .faq-content {
+      max-height: 500px;
+    }
+    
+    .faq-icon {
+      transition: transform 0.3s ease;
+    }
+    
+    .faq-item.active .faq-icon {
+      transform: rotate(45deg);
+    }
+
+    .testimonial-card {
+      background: linear-gradient(135deg, rgba(20, 20, 20, 0.8) 0%, rgba(30, 30, 30, 0.6) 100%);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(250, 204, 21, 0.1);
+    }
+    
+    .plan-featured {
+      background: linear-gradient(135deg, rgba(250, 204, 21, 0.1) 0%, rgba(20, 20, 20, 0.9) 100%);
+      border: 2px solid rgba(250, 204, 21, 0.5);
+    }
+    
+    .header-scrolled {
+      background: rgba(10, 10, 10, 0.95);
+      backdrop-filter: blur(20px);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Carousel styles */
+    .carousel-container {
+      overflow: hidden;
+      position: relative;
+    }
+
+    .carousel-wrapper {
+      display: flex;
+      transition: transform 0.5s ease-out;
+    }
+
+    .carousel-item {
+      min-width: 100%;
+      padding: 0 12px;
+    }
+
+    @media (min-width: 768px) {
+      .carousel-item {
+        min-width: calc(50% - 12px);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .carousel-item {
+        min-width: calc(33.333% - 12px);
+      }
+    }
+
+    .carousel-dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .carousel-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(250, 204, 21, 0.2);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+      padding: 0;
+    }
+
+    .carousel-dot.active {
+      background: #FACC15;
+      width: 28px;
+      border-radius: 5px;
+    }
+
+    .carousel-dot:hover {
+      background: rgba(250, 204, 21, 0.5);
+    }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full overflow-auto">
+  <div id="app-wrapper" class="w-full h-full noise-bg relative">
+   <div class="w-full h-full flex items-center justify-center grid-pattern overflow-hidden">
+    <div class="absolute top-1/4 left-10 w-72 h-72 bg-yellow-400/10 rounded-full blur-[100px] animate-float"></div>
+    <div class="absolute bottom-1/4 right-10 w-96 h-96 bg-yellow-400/5 rounded-full blur-[120px] animate-float delay-300"></div>
+    <div class="max-w-2xl w-full mx-auto px-6 text-center relative z-10"><!-- Heading -->
+     <h1 class="font-display text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-8 animate-slide-up"><span class="text-white">Elige tu</span> <span class="gradient-text text-glow">camino</span></h1><!-- Buttons -->
+     <div class="space-y-6 animate-slide-up delay-200 max-w-lg mx-auto"><!-- Button 1: Join Community --> <a href="https://nas.io/marketographers/" target="_blank" rel="noopener noreferrer" class="block">
+       <div class="card-hover rounded-2xl p-8 bg-gradient-to-br from-blue-500/30 to-blue-600/10 border-2 border-blue-400/50 hover:border-blue-300/80 transition-all group">
+        <div class="flex items-center justify-between gap-4">
+         <div class="text-left flex-1">
+          <div class="flex items-center gap-3 mb-2">
+           <div class="w-8 h-8 rounded-lg bg-blue-400/40 flex items-center justify-center">
+            <svg class="w-5 h-5 text-blue-300" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3.623a1 1 0 01-.986-1.164l1.423-5.355a6 6 0 016.15-3.986h3.585a6 6 0 016.15 3.986l1.423 5.355a1 1 0 01-.986 1.164z" />
+            </svg>
+           </div>
+           <h2 class="font-display text-lg md:text-xl font-bold text-white">Únete a la comunidad</h2>
+          </div>
+          <p class="text-blue-100/70 text-sm">Acceso a clases, recursos y +500 fotógrafos</p>
+         </div>
+         <div class="text-blue-300 group-hover:translate-x-2 transition-transform flex-shrink-0">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+          </svg>
+         </div>
         </div>
-
-        <!-- Links Container -->
-        <div class="space-y-4">
-            <!-- Marketographers Link -->
-            <a href="https://store.marketographers.com/comunidad" 
-               target="_blank" 
-               class="link-button block w-full p-6 rounded-2xl group fade-in-up-delay-1">
-                <div class="flex items-center">
-                    <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755921021/Negro_zzvz3m.jpg" 
-                         alt="Marketographers" 
-                         class="w-12 h-12 rounded-lg mr-4 flex-shrink-0 object-contain"
-                         onerror="this.src=''; this.alt='Icono no disponible'; this.style.display='none';">
-                    <div class="text-left">
-                        <h3 class="font-medium text-gray-900 mb-1">Únete a la comunidad de Marketographers</h3>
-                        <p class="text-xs text-gray-600 font-light">Cursos de marketing para fotógrafos</p>
-                    </div>
-                </div>
-            </a>
-
-            <!-- WhatsApp Link -->
-            <a href="https://nas.io/marketographers/forms/espera" 
-               target="_blank" 
-               class="link-button block w-full p-6 rounded-2xl group fade-in-up-delay-2">
-                <div class="flex items-center">
-                    <div class="w-12 h-12 rounded-lg mr-4 flex-shrink-0 bg-green-500 flex items-center justify-center">
-                        <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.785"/>
-                        </svg>
-                    </div>
-                    <div class="text-left">
-                        <h3 class="font-medium text-gray-900 mb-1">Únete a la lista de espera</h3>
-                        <p class="text-xs text-gray-600 font-light">Clases gratis, e información importante sobre la nueva versión de la comunidad</p>
-                    </div>
-                </div>
-            </a>
-
-            <!-- Nas.io Link -->
-            <a href="https://nas.io/referral?code=MOTION_MARKETING_PARA_FOTGRAFOS" 
-               target="_blank" 
-               class="link-button block w-full p-6 rounded-2xl group fade-in-up-delay-3">
-                <div class="flex items-center">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQj80pVtPMVp_xzHIffmRpbn-vXnvPlbU09h5KbSPnGaJg20_8NxXHrES_sPfHFuOxDuYs&usqp=CAU" 
-                         alt="Nas.io" 
-                         class="w-12 h-12 rounded-lg mr-4 flex-shrink-0"
-                         onerror="this.src=''; this.alt='Icono no disponible'; this.style.display='none';">
-                    <div class="text-left">
-                        <h3 class="font-medium text-gray-900 mb-1">Abre tu comunidad en Nas.io</h3>
-                        <p class="text-xs text-gray-600 font-light">Monetiza tu conocimiento y ten 5 dólares de regalo</p>
-                    </div>
-                </div>
-            </a>
+       </div></a> <!-- Button 2: Create Community --> <a href="https://nas.com/referral?code=MOTION_MARKETING_PARA_FOTGRAFOS" target="_blank" rel="noopener noreferrer" class="block">
+       <div class="card-hover rounded-2xl p-8 bg-gradient-to-br from-purple-600/30 to-pink-600/10 border-2 border-purple-400/50 hover:border-purple-300/80 transition-all group">
+        <div class="flex items-center justify-between gap-4">
+         <div class="text-left flex-1">
+          <div class="flex items-center gap-3 mb-2">
+           <div class="w-8 h-8 rounded-lg bg-purple-400/40 flex items-center justify-center">
+            <svg class="w-5 h-5 text-purple-300" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+            </svg>
+           </div>
+           <h2 class="font-display text-lg md:text-xl font-bold text-white">Crea tu comunidad</h2>
+          </div>
+          <p class="text-purple-100/70 text-sm">Herramientas de Nas.io para tu propio proyecto</p>
+         </div>
+         <div class="text-purple-300 group-hover:translate-x-2 transition-transform flex-shrink-0">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+          </svg>
+         </div>
         </div>
-
-        <!-- Footer -->
-        <div class="text-center mt-12 fade-in-up-delay-4">
-            <p class="text-gray-400 text-xs font-light">© 2025 Marketographers</p>
-        </div>
+       </div></a>
+     </div><!-- Footer text -->
+     <p class="text-zinc-500 text-xs mt-12 animate-fade-in delay-300">© 2025 Marketographers. Todos los derechos.</p>
     </div>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'973d2099053ed772',t:'MTc1NTk3ODUwNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+   </div>
+ 
+   </div>
+  </footer>
+  <script>
+    const defaultConfig = {};
+
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange: async (config) => {},
+        mapToCapabilities: (config) => ({
+          recolorables: [],
+          borderables: [],
+          fontEditable: undefined,
+          fontSizeable: undefined
+        }),
+        mapToEditPanelValues: (config) => new Map([])
+      });
+    }
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ecffa64a106d776',t:'MTc3NjMwODgyOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

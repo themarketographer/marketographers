@@ -300,6 +300,16 @@ src="https://www.facebook.com/tr?id=211990838551701&ev=PageView&noscript=1"
     .carousel-dot:hover {
       background: rgba(250, 204, 21, 0.5);
     }
+    /* Cal.com - no interceptar scroll táctil */
+    #my-cal-inline-admisiones iframe {
+      touch-action: pan-y !important;
+      display: block;
+      width: 100% !important;
+      border: none;
+    }
+    #my-cal-inline-admisiones {
+      touch-action: pan-y;
+    }
   </style>
   <style>body { box-sizing: border-box; }</style>
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
@@ -311,7 +321,7 @@ src="https://www.facebook.com/tr?id=211990838551701&ev=PageView&noscript=1"
      <nav class="flex items-center justify-between"><a href="#" class="flex items-center gap-3"> <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314903/Marketographers_Blanco_S_F_p1toov.png" alt="Marketographers" class="h-8 w-auto"> </a>
       <div class="hidden md:flex items-center gap-8"><a href="#problema" class="text-sm text-zinc-400 hover:text-white transition-colors">Problema</a> <a href="#proceso" class="text-sm text-zinc-400 hover:text-white transition-colors">Proceso</a> <a href="#planes" class="text-sm text-zinc-400 hover:text-white transition-colors">Planes</a> <a href="#testimonios" class="text-sm text-zinc-400 hover:text-white transition-colors">Testimonios</a>
       </div>
-      <div class="flex items-center gap-3"><a href="https://cal.com/themarketographer/reunion" target="_blank" rel="noopener noreferrer" class="btn-secondary text-xs py-2 px-4">Llamada</a> <a href="#planes" class="btn-primary text-xs py-2 px-4">Únete</a>
+      <div class="flex items-center gap-3"><a href="#llamada" class="btn-secondary text-xs py-2 px-4">Llamada</a> <a href="#planes" class="btn-primary text-xs py-2 px-4">Únete</a>
       </div>
      </nav>
     </div>
@@ -371,7 +381,7 @@ src="https://www.facebook.com/tr?id=211990838551701&ev=PageView&noscript=1"
         </svg>
        </div>
        <h3 class="font-display text-lg font-bold mb-2">1. Agenda tu llamada de admisiones</h3>
-       <p class="text-zinc-400 text-sm mb-4">Si tienes dudas, preguntas o quieres saber si esto es para ti. 15 minutos por Zoom.</p><a href="https://cal.com/themarketographer/admisiones" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-yellow-400 font-medium hover:gap-4 transition-all text-sm">Agendar llamada 
+       <p class="text-zinc-400 text-sm mb-4">Si tienes dudas, preguntas o quieres saber si esto es para ti. 15 minutos por Zoom.</p><a href="#llamada" class="inline-flex items-center gap-2 text-yellow-400 font-medium hover:gap-4 transition-all text-sm">Agendar llamada 
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
         </svg></a>
@@ -1108,9 +1118,26 @@ src="https://www.facebook.com/tr?id=211990838551701&ev=PageView&noscript=1"
      <div class="reveal">
       <h2 class="font-display text-2xl md:text-4xl font-bold mb-4">¿Listo para dejar de ser <span class="gradient-text">uno más?</span></h2>
       <p class="text-lg text-zinc-400 mb-8 text-sm">Tu cliente ideal está esperando. La pregunta es: ¿lo vas a dejar ir con otro?</p>
-      <div class="flex flex-col sm:flex-row items-center justify-center gap-3"><a href="#planes" class="btn-primary text-base px-10 py-3 glow-yellow">Únete a Marketographers</a> <a href="https://cal.com/themarketographer/reunion" target="_blank" rel="noopener noreferrer" class="btn-secondary text-base px-8 py-3">Agendar llamada</a>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-3"><a href="#planes" class="btn-primary text-base px-10 py-3 glow-yellow">Únete a Marketographers</a> <a href="#llamada" class="btn-secondary text-base px-8 py-3">Agendar llamada</a>
       </div>
       <p class="text-zinc-500 text-xs mt-6">+300 fotógrafos ya están adentro. ¿Y tú?</p>
+     </div>
+    </div>
+   </section><!-- Llamada Section -->
+   <section id="llamada" class="py-20 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-yellow-400/5 to-transparent"></div>
+    <div class="max-w-4xl mx-auto px-6 relative z-10">
+     <div class="text-center mb-12 reveal">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-yellow-400/30 bg-yellow-400/5 mb-3 text-sm">
+       <span class="text-yellow-400">¿Tienes dudas?</span>
+      </div>
+      <h2 class="font-display text-2xl md:text-4xl font-bold mb-3">Agenda tu <span class="gradient-text">llamada de admisiones</span></h2>
+      <p class="text-zinc-400 max-w-xl mx-auto text-sm">15 minutos por Zoom para resolver tus dudas y ver si la comunidad es lo que necesitas. Sin presión, sin pitch de ventas de gurú con lamborghini prestado.</p>
+     </div>
+     <div class="reveal">
+      <div class="rounded-3xl overflow-hidden border border-zinc-800 bg-zinc-900/50">
+       <div style="width:100%;overflow:hidden;min-height:700px;touch-action:pan-y;" id="my-cal-inline-admisiones"></div>
+      </div>
      </div>
     </div>
    </section><!-- Footer -->
@@ -1325,25 +1352,99 @@ src="https://www.facebook.com/tr?id=211990838551701&ev=PageView&noscript=1"
       });
     });
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cea8524353dc877',t:'MTc3MTIxODQzMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cea8524353dc877',t:'MTc3MTIxODQzMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><!-- Cal inline embed code begins -->
+<script type="text/javascript">
+  (function (C, A, L) { let p = function (a, ar) { a.q.push(ar); }; let d = C.document; C.Cal = C.Cal || function () { let cal = C.Cal; let ar = arguments; if (!cal.loaded) { cal.ns = {}; cal.q = cal.q || []; d.head.appendChild(d.createElement("script")).src = A; cal.loaded = true; } if (ar[0] === L) { const api = function () { p(api, arguments); }; const namespace = ar[1]; api.q = api.q || []; if(typeof namespace === "string"){cal.ns[namespace] = cal.ns[namespace] || api;p(cal.ns[namespace], ar);p(cal, ["initNamespace", namespace]);} else p(cal, ar); return;} p(cal, ar); }; })(window, "https://app.cal.com/embed/embed.js", "init");
+  Cal("init", "admisiones", {origin:"https://app.cal.com"});
+  Cal.ns.admisiones("inline", {
+    elementOrSelector:"#my-cal-inline-admisiones",
+    config: {"layout":"month_view","useSlotsViewOnSmallScreen":"true","theme":"light"},
+    calLink: "themarketographer/admisiones",
+  });
+  Cal.ns.admisiones("ui", {"theme":"light","cssVarsPerTheme":{"light":{"cal-brand":"#181818"},"dark":{"cal-brand":"#f8f8f8"}},"hideEventTypeDetails":false,"layout":"month_view"});
+</script>
+<!-- Cal inline embed code ends -->
+<script>
+  // Auto-resize Cal.com container when content height changes
+  (function() {
+    function setupCalResize() {
+      const container = document.getElementById('my-cal-inline-admisiones');
+      if (!container) return;
+
+      function adjustHeight() {
+        const iframe = container.querySelector('iframe');
+        if (!iframe) return;
+        try {
+          const innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+          const h = innerDoc.documentElement.scrollHeight || innerDoc.body.scrollHeight;
+          if (h && h > 100) {
+            container.style.minHeight = h + 'px';
+            iframe.style.height = h + 'px';
+          }
+        } catch(e) {
+          // cross-origin fallback: listen to postMessage from Cal
+        }
+      }
+
+      // Listen to Cal's own resize messages (they postMessage height changes)
+      window.addEventListener('message', function(e) {
+        if (!e.data || typeof e.data !== 'object') return;
+        // Cal sends { type: '__iFrameResize', ... } or height info
+        if (
+          e.data.type === '__iFrameResize' ||
+          e.data['cal.resize'] ||
+          (e.data.origHeight && e.data.scrollHeight)
+        ) {
+          const h = e.data.scrollHeight || e.data.origHeight || e.data.height;
+          if (h && h > 100) {
+            container.style.minHeight = (parseInt(h) + 20) + 'px';
+            const iframe = container.querySelector('iframe');
+            if (iframe) iframe.style.height = (parseInt(h) + 20) + 'px';
+          }
+        }
+        // iFrameResizer format used by Cal
+        if (typeof e.data === 'string' && e.data.indexOf('[iFrameSizer]') === 0) {
+          const parts = e.data.split(':');
+          if (parts[1]) {
+            const h = parseInt(parts[1]);
+            if (h > 100) {
+              container.style.minHeight = (h + 20) + 'px';
+              const iframe = container.querySelector('iframe');
+              if (iframe) iframe.style.height = (h + 20) + 'px';
+            }
+          }
+        }
+      });
+
+      // MutationObserver as fallback for when iframe appears
+      const mo = new MutationObserver(function() {
+        const iframe = container.querySelector('iframe');
+        if (iframe && !iframe._calObserved) {
+          iframe._calObserved = true;
+          iframe.addEventListener('load', adjustHeight);
+          // ResizeObserver on the iframe element itself
+          if (window.ResizeObserver) {
+            new ResizeObserver(function(entries) {
+              for (const entry of entries) {
+                const h = entry.contentRect.height;
+                if (h > 100) {
+                  container.style.minHeight = (h + 20) + 'px';
+                }
+              }
+            }).observe(iframe);
+          }
+          adjustHeight();
+        }
+      });
+      mo.observe(container, { childList: true, subtree: true });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', setupCalResize);
+    } else {
+      setupCalResize();
+    }
+  })();
+</script>
+</body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1135,8 +1135,10 @@ src="https://www.facebook.com/tr?id=211990838551701&ev=PageView&noscript=1"
       <p class="text-zinc-400 max-w-xl mx-auto text-sm">15 minutos por Zoom para resolver tus dudas y ver si la comunidad es lo que necesitas. Sin presión, sin pitch de ventas de gurú con lamborghini prestado.</p>
      </div>
      <div class="reveal">
-      <div class="rounded-3xl overflow-hidden border border-zinc-800 bg-zinc-900/50">
+      <div class="rounded-3xl overflow-hidden border border-zinc-800 bg-zinc-900/50" style="position:relative;">
        <div style="width:100%;overflow:hidden;min-height:700px;touch-action:pan-y;" id="my-cal-inline-admisiones"></div>
+       <!-- Capa transparente que intercepta swipes verticales y los pasa a la página -->
+       <div id="cal-touch-overlay" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:10;pointer-events:none;touch-action:pan-y;"></div>
       </div>
      </div>
     </div>
@@ -1365,86 +1367,95 @@ src="https://www.facebook.com/tr?id=211990838551701&ev=PageView&noscript=1"
 </script>
 <!-- Cal inline embed code ends -->
 <script>
-  // Auto-resize Cal.com container when content height changes
-  (function() {
-    function setupCalResize() {
-      const container = document.getElementById('my-cal-inline-admisiones');
-      if (!container) return;
+(function() {
+  function setupCal() {
+    var container = document.getElementById('my-cal-inline-admisiones');
+    var overlay = document.getElementById('cal-touch-overlay');
+    if (!container || !overlay) return;
 
-      function adjustHeight() {
-        const iframe = container.querySelector('iframe');
-        if (!iframe) return;
-        try {
-          const innerDoc = iframe.contentDocument || iframe.contentWindow.document;
-          const h = innerDoc.documentElement.scrollHeight || innerDoc.body.scrollHeight;
-          if (h && h > 100) {
-            container.style.minHeight = h + 'px';
-            iframe.style.height = h + 'px';
+    // --- Auto-resize via postMessage ---
+    window.addEventListener('message', function(e) {
+      if (!e.data || typeof e.data !== 'object') return;
+      var h = e.data.scrollHeight || e.data.origHeight || e.data.height;
+      if (h && h > 100) {
+        container.style.minHeight = (parseInt(h) + 20) + 'px';
+        var iframe = container.querySelector('iframe');
+        if (iframe) iframe.style.height = (parseInt(h) + 20) + 'px';
+      }
+      if (typeof e.data === 'string' && e.data.indexOf('[iFrameSizer]') === 0) {
+        var parts = e.data.split(':');
+        if (parts[1]) {
+          var h2 = parseInt(parts[1]);
+          if (h2 > 100) {
+            container.style.minHeight = (h2 + 20) + 'px';
+            var iframe2 = container.querySelector('iframe');
+            if (iframe2) iframe2.style.height = (h2 + 20) + 'px';
           }
-        } catch(e) {
-          // cross-origin fallback: listen to postMessage from Cal
         }
       }
+    });
 
-      // Listen to Cal's own resize messages (they postMessage height changes)
-      window.addEventListener('message', function(e) {
-        if (!e.data || typeof e.data !== 'object') return;
-        // Cal sends { type: '__iFrameResize', ... } or height info
-        if (
-          e.data.type === '__iFrameResize' ||
-          e.data['cal.resize'] ||
-          (e.data.origHeight && e.data.scrollHeight)
-        ) {
-          const h = e.data.scrollHeight || e.data.origHeight || e.data.height;
-          if (h && h > 100) {
-            container.style.minHeight = (parseInt(h) + 20) + 'px';
-            const iframe = container.querySelector('iframe');
-            if (iframe) iframe.style.height = (parseInt(h) + 20) + 'px';
-          }
+    // ResizeObserver fallback
+    if (window.ResizeObserver) {
+      new MutationObserver(function() {
+        var iframe = container.querySelector('iframe');
+        if (iframe && !iframe._ro) {
+          iframe._ro = true;
+          new ResizeObserver(function(entries) {
+            var h = entries[0].contentRect.height;
+            if (h > 100) container.style.minHeight = (h + 20) + 'px';
+          }).observe(iframe);
         }
-        // iFrameResizer format used by Cal
-        if (typeof e.data === 'string' && e.data.indexOf('[iFrameSizer]') === 0) {
-          const parts = e.data.split(':');
-          if (parts[1]) {
-            const h = parseInt(parts[1]);
-            if (h > 100) {
-              container.style.minHeight = (h + 20) + 'px';
-              const iframe = container.querySelector('iframe');
-              if (iframe) iframe.style.height = (h + 20) + 'px';
-            }
-          }
-        }
-      });
-
-      // MutationObserver as fallback for when iframe appears
-      const mo = new MutationObserver(function() {
-        const iframe = container.querySelector('iframe');
-        if (iframe && !iframe._calObserved) {
-          iframe._calObserved = true;
-          iframe.addEventListener('load', adjustHeight);
-          // ResizeObserver on the iframe element itself
-          if (window.ResizeObserver) {
-            new ResizeObserver(function(entries) {
-              for (const entry of entries) {
-                const h = entry.contentRect.height;
-                if (h > 100) {
-                  container.style.minHeight = (h + 20) + 'px';
-                }
-              }
-            }).observe(iframe);
-          }
-          adjustHeight();
-        }
-      });
-      mo.observe(container, { childList: true, subtree: true });
+      }).observe(container, { childList: true, subtree: true });
     }
 
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', setupCalResize);
-    } else {
-      setupCalResize();
-    }
-  })();
+    // --- Touch intercept ---
+    // La overlay tiene pointer-events:none normalmente.
+    // Cuando detectamos un swipe vertical, la activamos para bloquear el iframe
+    // y pasamos el scroll a window manualmente.
+    var touchStartY = 0;
+    var touchStartX = 0;
+    var isVertical = null;
+    var scrolling = false;
+
+    container.addEventListener('touchstart', function(e) {
+      touchStartY = e.touches[0].clientY;
+      touchStartX = e.touches[0].clientX;
+      isVertical = null;
+      scrolling = false;
+    }, { passive: true });
+
+    container.addEventListener('touchmove', function(e) {
+      var dy = e.touches[0].clientY - touchStartY;
+      var dx = e.touches[0].clientX - touchStartX;
+
+      if (isVertical === null) {
+        isVertical = Math.abs(dy) > Math.abs(dx);
+      }
+
+      if (isVertical) {
+        // Activar overlay para que el iframe no reciba más touches
+        overlay.style.pointerEvents = 'auto';
+        // Scroll manual de la página
+        window.scrollBy(0, -dy * 0.6);
+        touchStartY = e.touches[0].clientY;
+        scrolling = true;
+      }
+    }, { passive: true });
+
+    container.addEventListener('touchend', function() {
+      overlay.style.pointerEvents = 'none';
+      isVertical = null;
+      scrolling = false;
+    }, { passive: true });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupCal);
+  } else {
+    setupCal();
+  }
+})();
 </script>
 </body>
 </html>

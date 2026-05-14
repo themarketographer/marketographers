@@ -1,45 +1,18 @@
 <!doctype html>
 <html lang="es" class="h-full">
- <head>
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Marketographers - Comunidad de Marketing para Fotógrafos</title>
+  <title>Taller Gratuito de Ventas — The Marketographers</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <script src="/_sdk/element_sdk.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-  <!-- Cal.com element-click embed -->
-<script type="text/javascript">
-  (function (C, A, L) { let p = function (a, ar) { a.q.push(ar); }; let d = C.document; C.Cal = C.Cal || function () { let cal = C.Cal; let ar = arguments; if (!cal.loaded) { cal.ns = {}; cal.q = cal.q || []; d.head.appendChild(d.createElement("script")).src = A; cal.loaded = true; } if (ar[0] === L) { const api = function () { p(api, arguments); }; const namespace = ar[1]; api.q = api.q || []; if(typeof namespace === "string"){cal.ns[namespace] = cal.ns[namespace] || api;p(cal.ns[namespace], ar);p(cal, ["initNamespace", namespace]);} else p(cal, ar); return;} p(cal, ar); }; })(window, "https://app.cal.com/embed/embed.js", "init");
-  Cal("init", "admisiones", {origin:"https://app.cal.com"});
-  Cal.ns.admisiones("ui", {"cssVarsPerTheme":{"light":{"cal-brand":"#181818"},"dark":{"cal-brand":"#FACC15"}},"hideEventTypeDetails":false,"layout":"month_view","theme":"dark"});
-</script>
-<!-- End Cal.com embed -->
-
-  <!-- Meta Pixel Code -->
-<script>
-!function(f,b,e,v,n,t,s)
-{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];
-s.parentNode.insertBefore(t,s)}(window, document,'script',
-'https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', '211990838551701');
-fbq('track', 'PageView');
-</script>
-<noscript><img height="1" width="1" style="display:none"
-src="https://www.facebook.com/tr?id=211990838551701&ev=PageView&noscript=1"
-/></noscript>
-<!-- End Meta Pixel Code -->
-  
   <style>
     * { box-sizing: border-box; }
     html, body { height: 100%; margin: 0; padding: 0; }
-    
+
     :root {
       --primary: #FACC15;
       --bg: #0A0A0A;
@@ -47,7 +20,7 @@ src="https://www.facebook.com/tr?id=211990838551701&ev=PageView&noscript=1"
       --text: #FAFAFA;
       --text-muted: #A1A1AA;
     }
-    
+
     body {
       font-family: 'Poppins', sans-serif;
       background: var(--bg);
@@ -56,103 +29,91 @@ src="https://www.facebook.com/tr?id=211990838551701&ev=PageView&noscript=1"
       line-height: 1.6;
       letter-spacing: -0.01em;
     }
-    
-    .font-display { 
-      font-family: 'Poppins', sans-serif;
-      letter-spacing: -0.015em;
-    }
-    
+
     html { scroll-behavior: smooth; }
-    
+
     .glow-yellow {
       box-shadow: 0 0 60px rgba(250, 204, 21, 0.3), 0 0 100px rgba(250, 204, 21, 0.1);
     }
-    
-    .glow-subtle {
-      box-shadow: 0 0 40px rgba(250, 204, 21, 0.15);
-    }
-    
+
     .text-glow {
       text-shadow: 0 0 40px rgba(250, 204, 21, 0.5);
     }
-    
+
     .gradient-text {
       background: linear-gradient(135deg, #FACC15 0%, #FDE68A 50%, #FACC15 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
-    
+
     .noise-bg::before {
       content: '';
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       opacity: 0.03;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
       pointer-events: none;
     }
-    
+
     .grid-pattern {
-      background-image: 
+      background-image:
         linear-gradient(rgba(250, 204, 21, 0.03) 1px, transparent 1px),
         linear-gradient(90deg, rgba(250, 204, 21, 0.03) 1px, transparent 1px);
       background-size: 60px 60px;
     }
-    
+
     @keyframes float {
       0%, 100% { transform: translateY(0px); }
       50% { transform: translateY(-20px); }
     }
-    
+
     @keyframes pulse-glow {
       0%, 100% { box-shadow: 0 0 40px rgba(250, 204, 21, 0.3); }
-      50% { box-shadow: 0 0 80px rgba(250, 204, 21, 0.5); }
+      50% { box-shadow: 0 0 80px rgba(250, 204, 21, 0.6); }
     }
-    
+
     @keyframes slide-up {
       from { opacity: 0; transform: translateY(40px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    
+
     @keyframes fade-in {
       from { opacity: 0; }
       to { opacity: 1; }
     }
-    
-    @keyframes scale-in {
-      from { opacity: 0; transform: scale(0.9); }
-      to { opacity: 1; transform: scale(1); }
+
+    @keyframes countdown-pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
     }
-    
+
     .animate-float { animation: float 6s ease-in-out infinite; }
     .animate-pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
     .animate-slide-up { animation: slide-up 0.8s ease-out forwards; }
     .animate-fade-in { animation: fade-in 1s ease-out forwards; }
-    .animate-scale-in { animation: scale-in 0.6s ease-out forwards; }
-    
+
     .delay-100 { animation-delay: 0.1s; }
     .delay-200 { animation-delay: 0.2s; }
     .delay-300 { animation-delay: 0.3s; }
     .delay-400 { animation-delay: 0.4s; }
     .delay-500 { animation-delay: 0.5s; }
-    
+
     .card-hover {
       transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    
+
     .card-hover:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px rgba(250, 204, 21, 0.1);
+      transform: translateY(-6px);
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5), 0 0 40px rgba(250,204,21,0.1);
     }
-    
+
     .btn-primary {
       background: linear-gradient(135deg, #FACC15 0%, #EAB308 100%);
       color: #0A0A0A;
-      font-weight: 600;
-      padding: 14px 28px;
+      font-weight: 700;
+      padding: 13px 24px;
       border-radius: 12px;
       transition: all 0.3s ease;
       position: relative;
@@ -161,1177 +122,488 @@ src="https://www.facebook.com/tr?id=211990838551701&ev=PageView&noscript=1"
       cursor: pointer;
       font-size: 14px;
       letter-spacing: -0.01em;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      white-space: nowrap;
     }
-    
+
     .btn-primary:hover {
       transform: scale(1.05);
       box-shadow: 0 0 40px rgba(250, 204, 21, 0.5);
     }
-    
+
     .btn-secondary {
-      border: 2px solid rgba(250, 204, 21, 0.3);
+      border: 2px solid rgba(250, 204, 21, 0.4);
       color: var(--text);
-      padding: 12px 24px;
+      padding: 11px 22px;
       border-radius: 12px;
       transition: all 0.3s ease;
       backdrop-filter: blur(10px);
-      background: transparent;
+      background: rgba(250,204,21,0.05);
       cursor: pointer;
       font-size: 14px;
-      letter-spacing: -0.01em;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      white-space: nowrap;
     }
-    
+
     .btn-secondary:hover {
       border-color: #FACC15;
-      background: rgba(250, 204, 21, 0.1);
+      background: rgba(250, 204, 21, 0.12);
     }
-    
+
+    .btn-whatsapp {
+      background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+      color: #fff;
+      font-weight: 700;
+      padding: 13px 24px;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .btn-whatsapp:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 40px rgba(37,211,102,0.4);
+    }
+
     .reveal {
       opacity: 0;
       transform: translateY(30px);
       transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    
+
     .reveal.active {
       opacity: 1;
       transform: translateY(0);
     }
-    
-    ::-webkit-scrollbar {
-      width: 8px;
-    }
-    
-    ::-webkit-scrollbar-track {
-      background: var(--bg);
-    }
-    
-    ::-webkit-scrollbar-thumb {
-      background: rgba(250, 204, 21, 0.3);
-      border-radius: 4px;
-    }
-    
-    ::-webkit-scrollbar-thumb:hover {
-      background: rgba(250, 204, 21, 0.5);
-    }
-    
-    .faq-item {
-      border-bottom: 1px solid rgba(250, 204, 21, 0.1);
-    }
-    
-    .faq-content {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.4s ease, padding 0.4s ease;
-    }
-    
-    .faq-item.active .faq-content {
-      max-height: 500px;
-    }
-    
-    .faq-icon {
-      transition: transform 0.3s ease;
-    }
-    
-    .faq-item.active .faq-icon {
-      transform: rotate(45deg);
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: rgba(250,204,21,0.3); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(250,204,21,0.5); }
+
+    .countdown-box {
+      background: linear-gradient(135deg, rgba(250,204,21,0.08) 0%, rgba(20,20,20,0.9) 100%);
+      border: 1px solid rgba(250,204,21,0.2);
+      border-radius: 14px;
+      padding: 12px 14px;
+      text-align: center;
+      min-width: 60px;
+      width: 72px;
     }
 
-    .testimonial-card {
-      background: linear-gradient(135deg, rgba(20, 20, 20, 0.8) 0%, rgba(30, 30, 30, 0.6) 100%);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(250, 204, 21, 0.1);
-    }
-    
-    .plan-featured {
-      background: linear-gradient(135deg, rgba(250, 204, 21, 0.1) 0%, rgba(20, 20, 20, 0.9) 100%);
-      border: 2px solid rgba(250, 204, 21, 0.5);
-    }
-    
-    .header-scrolled {
-      background: rgba(10, 10, 10, 0.95);
-      backdrop-filter: blur(20px);
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+    @media (min-width: 480px) {
+      .countdown-box { padding: 14px 18px; width: 84px; }
     }
 
-    /* Carousel styles */
-    .carousel-container {
-      overflow: hidden;
-      position: relative;
+    .countdown-number {
+      font-size: 2rem;
+      font-weight: 800;
+      line-height: 1;
+      background: linear-gradient(135deg, #FACC15 0%, #FDE68A 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
-    .carousel-wrapper {
-      display: flex;
-      transition: transform 0.5s ease-out;
+    @media (min-width: 480px) {
+      .countdown-number { font-size: 2.5rem; }
     }
 
-    .carousel-item {
-      min-width: 100%;
-      padding: 0 12px;
+    .topic-card {
+      background: linear-gradient(135deg, rgba(20,20,20,0.9) 0%, rgba(30,30,30,0.7) 100%);
+      border: 1px solid rgba(250,204,21,0.12);
+      border-radius: 20px;
+      padding: 28px;
+      transition: all 0.4s ease;
     }
 
-    @media (min-width: 768px) {
-      .carousel-item {
-        min-width: calc(50% - 12px);
-      }
+    .topic-card:hover {
+      border-color: rgba(250,204,21,0.35);
+      background: linear-gradient(135deg, rgba(250,204,21,0.06) 0%, rgba(20,20,20,0.9) 100%);
     }
 
-    @media (min-width: 1024px) {
-      .carousel-item {
-        min-width: calc(33.333% - 12px);
-      }
+    .badge-free {
+      background: linear-gradient(135deg, rgba(250,204,21,0.15) 0%, rgba(250,204,21,0.05) 100%);
+      border: 1px solid rgba(250,204,21,0.4);
+      color: #FACC15;
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
     }
 
-    .carousel-dots {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      margin-top: 20px;
-    }
-
-    .carousel-dot {
-      width: 10px;
-      height: 10px;
+    .live-dot {
+      width: 8px; height: 8px;
       border-radius: 50%;
-      background: rgba(250, 204, 21, 0.2);
-      cursor: pointer;
-      transition: all 0.3s ease;
-      border: none;
-      padding: 0;
-    }
-
-    .carousel-dot.active {
       background: #FACC15;
-      width: 28px;
-      border-radius: 5px;
+      animation: pulse-glow 2s ease-in-out infinite;
     }
 
-    .carousel-dot:hover {
-      background: rgba(250, 204, 21, 0.5);
+    .header-scrolled {
+      background: rgba(10,10,10,0.95);
+      backdrop-filter: blur(20px);
+      box-shadow: 0 4px 30px rgba(0,0,0,0.3);
+    }
+
+    .cta-section {
+      background: linear-gradient(135deg, rgba(250,204,21,0.06) 0%, rgba(10,10,10,0) 50%, rgba(250,204,21,0.06) 100%);
+      border-top: 1px solid rgba(250,204,21,0.1);
+      border-bottom: 1px solid rgba(250,204,21,0.1);
     }
   </style>
-  <style>body { box-sizing: border-box; }</style>
-  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
- </head>
- <body class="h-full overflow-auto">
-  <div id="app-wrapper" class="w-full min-h-full noise-bg relative"><!-- Header -->
-   <header id="header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500">
-    <div class="max-w-7xl mx-auto px-6 py-4">
-     <nav class="flex items-center justify-between"><a href="#" class="flex items-center gap-3"> <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314903/Marketographers_Blanco_S_F_p1toov.png" alt="Marketographers" class="h-8 w-auto"> </a>
-      <div class="hidden md:flex items-center gap-8"><a href="#problema" class="text-sm text-zinc-400 hover:text-white transition-colors">Problema</a> <a href="#proceso" class="text-sm text-zinc-400 hover:text-white transition-colors">Proceso</a> <a href="#planes" class="text-sm text-zinc-400 hover:text-white transition-colors">Planes</a> <a href="#testimonios" class="text-sm text-zinc-400 hover:text-white transition-colors">Testimonios</a>
-      </div>
-      <div class="flex items-center gap-3"><button onclick="Cal.ns.admisiones('modal', {calLink: 'themarketographer/admisiones', config: {layout: 'month_view', useSlotsViewOnSmallScreen: 'true', theme: 'dark'}})" class="btn-secondary text-xs py-2 px-4 cursor-pointer">Llamada</button> <a href="#planes" class="btn-primary text-xs py-2 px-4">Únete</a>
-      </div>
-     </nav>
+</head>
+<body class="overflow-auto noise-bg relative">
+
+  <!-- Header -->
+  <header id="header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500">
+    <div class="max-w-6xl mx-auto px-6 py-4">
+      <nav class="flex items-center justify-between">
+        <a href="https://nas.io/marketographers" target="_blank" class="flex items-center gap-3">
+          <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314903/Marketographers_Blanco_S_F_p1toov.png" alt="Marketographers" class="h-8 w-auto">
+        </a>
+        <div class="flex items-center gap-3">
+          <span class="badge-free hidden sm:inline-flex">Gratis</span>
+          <a href="#registro" class="btn-primary" style="font-size:12px; padding: 9px 18px;">Reservar lugar</a>
+        </div>
+      </nav>
     </div>
-   </header><!-- Hero Section -->
-   <section class="relative min-h-screen flex items-center justify-center grid-pattern overflow-hidden pt-20">
+  </header>
+
+  <!-- Hero -->
+  <section class="relative min-h-screen flex items-center justify-center grid-pattern overflow-hidden pt-24 pb-16">
     <div class="absolute top-1/4 left-10 w-72 h-72 bg-yellow-400/10 rounded-full blur-[100px] animate-float"></div>
     <div class="absolute bottom-1/4 right-10 w-96 h-96 bg-yellow-400/5 rounded-full blur-[120px] animate-float delay-300"></div>
-    <div class="max-w-6xl mx-auto px-6 text-center relative z-10">
-     <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-yellow-400/30 bg-yellow-400/5 mb-6 animate-fade-in text-sm"><span class="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></span> <span class="text-yellow-400">Inscripciones abiertas a la comunidad</span>
-     </div>
-     <h1 id="hero-title" class="font-display text-3xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4 animate-slide-up">Tu cliente ideal ya eligió.<br><span class="gradient-text text-glow">Eligió al fotógrafo que sí sabe venderse.</span></h1>
-     <p id="hero-subtitle" class="text-lg md:text-xl text-zinc-400 max-w-3xl mx-auto mb-10 animate-slide-up delay-200">La única comunidad de marketing para fotógrafos que sí te ayuda a crecer.</p>
-     <div class="flex flex-col sm:flex-row items-center justify-center gap-4 animate-slide-up delay-300"><a href="#planes" id="cta-button" class="btn-primary text-base animate-pulse-glow">Únete a la comunidad</a>
-     </div><!-- Stats -->
-     <div class="grid grid-cols-3 gap-6 md:gap-12 mt-16 max-w-2xl mx-auto animate-slide-up delay-400 text-sm md:text-base">
-      <div class="text-center">
-       <div class="font-display text-2xl md:text-3xl font-bold gradient-text">
-        +500
-       </div>
-       <div class="text-xs md:text-sm text-zinc-500 mt-1">
-        Fotógrafos
-       </div>
+
+    <div class="max-w-5xl mx-auto px-6 text-center relative z-10">
+
+      <!-- Badge evento -->
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-yellow-400/30 bg-yellow-400/5 mb-6 animate-fade-in text-sm">
+        <span class="live-dot"></span>
+        <span class="text-yellow-400 font-medium">Taller gratuito · Domingo 24 de Mayo</span>
       </div>
-      <div class="text-center">
-       <div class="font-display text-2xl md:text-3xl font-bold gradient-text">
-        +17
-       </div>
-       <div class="text-xs md:text-sm text-zinc-500 mt-1">
-        Países
-       </div>
+
+      <!-- Headline -->
+      <h1 class="font-display text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-black leading-[1.05] mb-5 animate-slide-up" style="letter-spacing:-0.03em;">
+        Tienes buenas fotos.<br>
+        <span class="gradient-text text-glow">El problema es que<br>no sabes cobrar por tu trabajo.</span>
+      </h1>
+
+      <p class="text-lg md:text-xl text-zinc-400 max-w-3xl mx-auto mb-10 animate-slide-up delay-200 leading-relaxed">
+        Hay fotógrafos con peor equipo, peor edición y menos experiencia que tú, con más clientes y mejores precios. La diferencia está en saber qué vendes, cuánto vale y cómo explicarlo.
+      </p>
+
+      <!-- CTAs -->
+      <div class="flex flex-wrap items-center justify-center gap-3 animate-slide-up delay-300 mb-14">
+        <a href="https://nas.com/marketographers/events/taller-gratuito-ventas-para-fotografos" target="_blank" class="btn-primary animate-pulse-glow">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          Registrarse al evento
+        </a>
+        <a href="https://chat.whatsapp.com/Hskq4Mv0CpK3RxYR4gTIH1?mode=gi_t" target="_blank" class="btn-whatsapp">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+          </svg>
+          Unirme al grupo de WhatsApp
+        </a>
       </div>
-      <div class="text-center">
-       <div class="font-display text-2xl md:text-3xl font-bold gradient-text">
-        +50k
-       </div>
-       <div class="text-xs md:text-sm text-zinc-500 mt-1">
-        Dólares generados
-       </div>
+
+      <!-- Countdown -->
+      <div class="animate-slide-up delay-400">
+        <p class="text-zinc-500 text-sm mb-4 uppercase tracking-widest font-medium">El taller empieza en</p>
+        <div class="flex items-center justify-center gap-3 md:gap-5">
+          <div class="countdown-box">
+            <div class="countdown-number" id="days">00</div>
+            <div class="text-zinc-500 text-xs mt-1 font-medium uppercase tracking-wider">Días</div>
+          </div>
+          <span class="gradient-text text-3xl font-black">:</span>
+          <div class="countdown-box">
+            <div class="countdown-number" id="hours">00</div>
+            <div class="text-zinc-500 text-xs mt-1 font-medium uppercase tracking-wider">Horas</div>
+          </div>
+          <span class="gradient-text text-3xl font-black">:</span>
+          <div class="countdown-box">
+            <div class="countdown-number" id="minutes">00</div>
+            <div class="text-zinc-500 text-xs mt-1 font-medium uppercase tracking-wider">Minutos</div>
+          </div>
+          <span class="gradient-text text-3xl font-black">:</span>
+          <div class="countdown-box">
+            <div class="countdown-number" id="seconds">00</div>
+            <div class="text-zinc-500 text-xs mt-1 font-medium uppercase tracking-wider">Segundos</div>
+          </div>
+        </div>
       </div>
-     </div><!-- Video Section -->
-     <div class="mt-16 max-w-3xl mx-auto animate-slide-up delay-500">
-      <div class="relative rounded-2xl overflow-hidden border border-zinc-800 bg-zinc-900/50" style="padding-bottom: 56.25%;"><iframe id="hero-video" src="https://www.youtube-nocookie.com/embed/FE5oEd88x98?si=dZD0c_3lxe-aYTeW&amp;controls=0" class="absolute top-0 left-0 w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen> </iframe>
-      </div>
-     </div>
     </div>
-   </section><!-- 3 Options Section -->
-   <section class="py-20 relative">
-    <div class="max-w-6xl mx-auto px-6">
-     <div class="text-center mb-12 reveal">
-      <h2 class="font-display text-2xl md:text-4xl font-bold mb-3">Ahora tienes <span class="gradient-text">3 opciones:</span></h2>
-     </div>
-     <div class="grid md:grid-cols-3 gap-6">
-      <div class="card-hover rounded-2xl p-6 bg-gradient-to-b from-zinc-900 to-zinc-950 border border-zinc-800 reveal text-sm">
-       <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center mb-4 glow-subtle">
-        <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-        </svg>
-       </div>
-       <h3 class="font-display text-lg font-bold mb-2">1. Agenda tu llamada de admisiones</h3>
-       <p class="text-zinc-400 text-sm mb-4">Si tienes dudas, preguntas o quieres saber si esto es para ti. 15 minutos por Zoom.</p><button onclick="Cal.ns.admisiones('modal', {calLink: 'themarketographer/admisiones', config: {layout: 'month_view', useSlotsViewOnSmallScreen: 'true', theme: 'dark'}})" class="inline-flex items-center gap-2 text-yellow-400 font-medium hover:gap-4 transition-all text-sm cursor-pointer bg-transparent border-none p-0">Agendar llamada 
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-        </svg></button>
-      </div>
-      <div class="card-hover rounded-2xl p-6 plan-featured reveal delay-100 text-sm">
-       <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-yellow-400 text-black text-xs font-bold">
-        RECOMENDADO
-       </div>
-       <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center mb-4 animate-pulse-glow">
-        <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-        </svg>
-       </div>
-       <h3 class="font-display text-lg font-bold mb-2">2. Entra a la comunidad</h3>
-       <p class="text-zinc-400 mb-4">Si ya sabes que lo necesitas y quieres irte como gorda en tobogán, ve los planes y elige el que te quede.</p><a href="#planes" class="btn-primary inline-flex items-center gap-2 text-sm py-2 px-4">Ver planes 
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-        </svg></a>
-      </div>
-      <div class="card-hover rounded-2xl p-6 bg-gradient-to-b from-zinc-900 to-zinc-950 border border-zinc-800 reveal delay-200 text-sm">
-       <div class="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center mb-4">
-        <svg class="w-6 h-6 text-zinc-500" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-        </svg>
-       </div>
-       <h3 class="font-display text-lg font-bold mb-2 text-zinc-500">3. No hagas nadota</h3>
-       <p class="text-zinc-500">Puedes quedarte donde estás, quejandote de que no tienes clientes y haciendo descuentos.</p>
-      </div>
-     </div>
-    </div>
-   </section><!-- Problem Section -->
-   <section id="problema" class="py-20 relative overflow-hidden">
-    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-yellow-400/5 to-transparent"></div>
-    <div class="max-w-6xl mx-auto px-6 relative z-10">
-     <div class="grid lg:grid-cols-2 gap-12 items-center">
-      <div class="reveal">
-       <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-red-400/30 bg-red-400/5 mb-4 text-sm">
-        <span class="text-red-400">El verdadero problema</span>
-       </div>
-       <h2 class="font-display text-2xl md:text-4xl font-bold mb-4">El 95% de los fotógrafos <span class="text-red-400">fracasan</span> en sus primeros 3 años</h2>
-       <p class="text-zinc-400 mb-6 text-sm leading-relaxed">Y no es porque sean malos fotógrafos. Es porque nadie les enseñó a vender, a posicionarse, a crear una marca que atraiga clientes que paguen.</p>
-       <div class="space-y-3">
-        <div class="flex items-start gap-3">
-         <div class="w-7 h-7 rounded-lg bg-red-400/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-          <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-         </div>
-         <div>
-          <h4 class="font-semibold text-sm mb-0.5">Cobras poco porque no sabes venderte</h4>
-          <p class="text-zinc-500 text-xs">Tus fotos valen oro pero las vendes como chatarra.</p>
-         </div>
-        </div>
-        <div class="flex items-start gap-3">
-         <div class="w-7 h-7 rounded-lg bg-red-400/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-          <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-         </div>
-         <div>
-          <h4 class="font-semibold text-sm mb-0.5">Dependes del boca a boca</h4>
-          <p class="text-zinc-500 text-xs">Tu negocio está en manos de la suerte, no de una estrategia.</p>
-         </div>
-        </div>
-        <div class="flex items-start gap-3">
-         <div class="w-7 h-7 rounded-lg bg-red-400/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-          <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-         </div>
-         <div>
-          <h4 class="font-semibold text-sm mb-0.5">Editas solito hasta las 3am</h4>
-          <p class="text-zinc-500 text-xs">Trabajas más horas que un esclavo y ganas menos que un becario.</p>
-         </div>
-        </div>
-       </div>
-      </div>
-      <div class="reveal delay-200">
-       <div class="relative">
-        <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/20 to-transparent rounded-3xl blur-3xl"></div>
-        <div class="relative bg-gradient-to-br from-zinc-900 to-zinc-950 rounded-3xl p-6 border border-zinc-800">
-         <div class="grid grid-cols-2 gap-4">
-          <div class="text-center p-4 rounded-2xl bg-zinc-900/50">
-           <div class="font-display text-3xl font-bold text-red-400 mb-1">
-            95%
-           </div>
-           <p class="text-zinc-500 text-xs">Fracasan antes de 3 años</p>
-          </div>
-          <div class="text-center p-4 rounded-2xl bg-zinc-900/50">
-           <div class="font-display text-3xl font-bold text-yellow-400 mb-1">
-            $200
-           </div>
-           <p class="text-zinc-500 text-xs">Promedio que cobran</p>
-          </div>
-          <div class="text-center p-4 rounded-2xl bg-zinc-900/50">
-           <div class="font-display text-3xl font-bold text-red-400 mb-1">
-            60h
-           </div>
-           <p class="text-zinc-500 text-xs">Trabajan por semana</p>
-          </div>
-          <div class="text-center p-4 rounded-2xl bg-zinc-900/50">
-           <div class="font-display text-3xl font-bold text-yellow-400 mb-1">
-            0
-           </div>
-           <p class="text-zinc-500 text-xs">Estrategia de marketing</p>
-          </div>
-         </div>
-        </div>
-       </div>
-      </div>
-     </div>
-    </div>
-   </section><!-- Community Images Section -->
-   <section class="py-20 relative">
-    <div class="max-w-6xl mx-auto px-6">
-     <div class="grid md:grid-cols-2 gap-8">
-      <div class="reveal">
-       <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-yellow-400/30 bg-yellow-400/5 mb-4 text-xs">
-        <span class="text-yellow-400">Nuestras clases</span>
-       </div>
-       <h3 class="font-display text-2xl md:text-3xl font-bold mb-3">Clases en vivo por Zoom</h3>
-       <p class="text-zinc-400 text-sm mb-6">Nos vemos cada semana para resolver dudas y compartir estrategias que realmente funcionan.</p>
-       <div class="relative rounded-2xl overflow-hidden w-full aspect-square bg-gradient-to-br from-zinc-900 to-zinc-950 border border-zinc-800 flex items-center justify-center"><img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1771218778/Captura_clase_vzvoyr.jpg" alt="Clases en vivo" class="w-full h-full object-cover" loading="lazy" onerror="console.error('Image failed to load:', this.src); this.style.background='#18181b'; this.alt='Imagen no disponible';">
-       </div>
-      </div>
-      <div class="reveal delay-100">
-       <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-yellow-400/30 bg-yellow-400/5 mb-4 text-xs">
-        <span class="text-yellow-400">Cursos y recursos</span>
-       </div>
-       <h3 class="font-display text-2xl md:text-3xl font-bold mb-3">Todos los cursos disponibles</h3>
-       <p class="text-zinc-400 text-sm mb-6">Acceso a masterclasses, plantillas, libros y estrategias que funcionan en fotografía y marketing.</p>
-       <div class="relative rounded-2xl overflow-hidden w-full aspect-square bg-gradient-to-br from-zinc-900 to-zinc-950 border border-zinc-800 flex items-center justify-center"><img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1771217256/Incluye_todo_esto_penpvs.jpg" alt="Recursos y cursos" class="w-full h-full object-cover" loading="lazy" onerror="console.error('Image failed to load:', this.src); this.style.background='#18181b'; this.alt='Imagen no disponible';">
-       </div>
-      </div>
-     </div>
-    </div>
-   </section><!-- Process Section -->
-   <section id="proceso" class="py-20 relative">
-    <div class="max-w-6xl mx-auto px-6">
-     <div class="text-center mb-12 reveal">
-      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-yellow-400/30 bg-yellow-400/5 mb-3 text-sm">
-       <span class="text-yellow-400">Lo que incluye</span>
-      </div>
-      <h2 class="font-display text-2xl md:text-4xl font-bold mb-3">¿Qué incluye la <span class="gradient-text">membresía?</span></h2>
-      <p class="text-zinc-400 max-w-2xl mx-auto text-sm">Todo lo que necesitas para convertirte en un fotógrafo que vive de su arte.</p>
-     </div>
-     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <div class="card-hover rounded-2xl p-5 bg-gradient-to-b from-zinc-900 to-zinc-950 border border-zinc-800 reveal text-sm">
-       <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center mb-3">
-        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-        </svg>
-       </div>
-       <h3 class="font-display font-bold mb-2">Clases en vivo por Zoom</h3>
-       <p class="text-zinc-400 text-xs leading-relaxed">Todos los Martes y Jueves nos vemos por Zoom para resolver dudas y enseñarte estrategias nuevas.</p>
-      </div>
-      <div class="card-hover rounded-2xl p-5 bg-gradient-to-b from-zinc-900 to-zinc-950 border border-zinc-800 reveal delay-100 text-sm">
-       <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center mb-3">
-        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-        </svg>
-       </div>
-       <h3 class="font-display font-bold mb-2">Cursos y recursos</h3>
-       <p class="text-zinc-400 text-xs leading-relaxed">Plantillas, estrategias, libros y todo lo que necesitas.</p>
-      </div>
-      <div class="card-hover rounded-2xl p-5 bg-gradient-to-b from-zinc-900 to-zinc-950 border border-zinc-800 reveal delay-200 text-sm">
-       <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center mb-3">
-        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-        </svg>
-       </div>
-       <h3 class="font-display font-bold mb-2">Grupo exclusivo 24/7 en Whatsapp</h3>
-       <p class="text-zinc-400 text-xs leading-relaxed">Una familia que te va a apoyar en logros y cagadas.</p>
-      </div>
-      <div class="card-hover rounded-2xl p-5 bg-gradient-to-b from-zinc-900 to-zinc-950 border border-zinc-800 reveal delay-300 text-sm">
-       <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center mb-3">
-        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-        </svg>
-       </div>
-       <h3 class="font-display font-bold mb-2">Estrategias probadas</h3>
-       <p class="text-zinc-400 text-xs leading-relaxed">Métodos que ya han funcionado en +500 fotógrafos.</p>
-      </div>
-      <div class="card-hover rounded-2xl p-5 bg-gradient-to-b from-zinc-900 to-zinc-950 border border-zinc-800 reveal delay-400 text-sm">
-       <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center mb-3">
-        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
-        </svg>
-       </div>
-       <h3 class="font-display font-bold mb-2">Feedback honesto</h3>
-       <p class="text-zinc-400 text-xs leading-relaxed">100% honestidad, groserías y sin decirte lo que quieres escuchar.</p>
-      </div>
-      <div class="card-hover rounded-2xl p-5 bg-gradient-to-b from-zinc-900 to-zinc-950 border border-zinc-800 reveal delay-500 text-sm">
-       <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center mb-3">
-        <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-        </svg>
-       </div>
-       <h3 class="font-display font-bold mb-2">Resultados reales</h3>
-       <p class="text-zinc-400 text-xs leading-relaxed">+50k USD de facturación generada en la comunidad.</p>
-      </div>
-     </div>
-    </div>
-   </section><!-- Value Promise -->
-   <section class="py-20 relative overflow-hidden">
-    <div class="absolute inset-0 bg-gradient-to-r from-yellow-400/10 via-transparent to-yellow-400/10"></div>
-    <div class="max-w-4xl mx-auto px-6 text-center relative z-10">
-     <div class="reveal">
-      <h2 class="font-display text-2xl md:text-4xl font-bold mb-6">¡Hagamos mierda a <span class="gradient-text">tu competencia!</span></h2>
-      <p class="text-lg text-zinc-400 mb-6 text-sm">Todos nuestros casos de éxitos comparten algo en común:</p>
-      <p class="text-xl md:text-2xl font-display font-bold mb-8"><span class="gradient-text">Se quieren comer el puto mundo.</span><br><span class="text-zinc-300 text-base">Y por eso lo logran.</span></p>
-      <p class="text-base text-zinc-500 mb-8">¿Y tú? ¿Te quieres comer el mundo?</p><a href="#planes" class="btn-primary text-base inline-flex items-center gap-3">Quiero comerme el mundo 
-       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-       </svg></a>
-     </div>
-    </div>
-   </section><!-- Plans Section -->
-   <section id="planes" class="py-20 relative">
-    <div class="max-w-6xl mx-auto px-6">
-     <div class="text-center mb-12 reveal">
-      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-yellow-400/30 bg-yellow-400/5 mb-3 text-sm"><span class="text-yellow-400">Planes de membresía</span>
-      </div>
-      <h2 class="font-display text-2xl md:text-4xl font-bold mb-3">Elige tu <span class="gradient-text">membresía</span></h2>
-      <p class="text-zinc-400 max-w-2xl mx-auto text-sm">Tenemos planes para todos los bolsillos, y según el nivel de acceso que quieras tener.</p>
-     </div>
-     <div class="grid md:grid-cols-3 gap-6"><!-- Flow Plan -->
-      <div class="card-hover rounded-3xl p-6 bg-gradient-to-b from-zinc-900 to-zinc-950 border border-zinc-800 reveal">
-       <div class="mb-4">
-        <h3 class="font-display text-lg font-bold mb-1">Flow</h3>
-        <p class="text-zinc-500 text-xs">Para los que quieren probar • 182 cupos</p>
-       </div>
-       <div class="mb-4">
-        <span class="font-display text-3xl font-bold">$15</span> <span class="text-zinc-500 text-sm">/mes</span>
-       </div>
-       <ul class="space-y-2 mb-6 text-xs">
-        <li class="flex items-center gap-2 text-zinc-300">
-         <svg class="w-4 h-4 text-yellow-400 flex-shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-         </svg> Masterclases gratuitas</li>
-        <li class="flex items-center gap-2 text-zinc-300">
-         <svg class="w-4 h-4 text-yellow-400 flex-shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-         </svg> Newsletter semanal</li>
-        <li class="flex items-center gap-2 text-zinc-300">
-         <svg class="w-4 h-4 text-yellow-400 flex-shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-         </svg> Acceso limitado a cursos (no invitados especiales)</li>
-       </ul><a href="https://nas.io/es-mx/checkout-global?communityId=651b8edf31cdf8bd41bbf336&amp;communityCode=MARKETOGRAPHERS__2&amp;requestor=signupRequestor&amp;linkClicked=https%3A%2F%2Fnas.io%2Fes-mx%2Fmarketographers&amp;tierId=6921d8a0a7278acccb683a5d" target="_blank" rel="noopener noreferrer" class="w-full btn-secondary text-sm py-2">¡Únete ya!</a>
-      </div><!-- Motion Plan - Featured -->
-      <div class="card-hover rounded-3xl p-6 plan-featured relative reveal delay-100 transform md:scale-105 md:origin-center">
-       <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-black text-xs font-bold">
-        MÁS POPULAR
-       </div>
-       <div class="mb-4">
-        <h3 class="font-display text-lg font-bold mb-1">Motion</h3>
-        <p class="text-zinc-500 text-xs">Para los que van en serio • 36 cupos</p>
-       </div>
-       <div class="mb-4">
-        <span class="font-display text-3xl font-bold gradient-text">$30</span> <span class="text-zinc-500 text-sm">/mes</span>
-       </div>
-       <ul class="space-y-2 mb-6 text-xs">
-        <li class="flex items-center gap-2 text-zinc-300">
-         <svg class="w-4 h-4 text-yellow-400 flex-shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-         </svg> Masterclases gratuitas</li>
-        <li class="flex items-center gap-2 text-zinc-300">
-         <svg class="w-4 h-4 text-yellow-400 flex-shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-         </svg> Newsletter semanal</li>
-        <li class="flex items-center gap-2 text-zinc-300">
-         <svg class="w-4 h-4 text-yellow-400 flex-shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-         </svg> Acceso ilimitado a cursos</li>
-        <li class="flex items-center gap-2 text-zinc-300">
-         <svg class="w-4 h-4 text-yellow-400 flex-shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-         </svg> Clases en vivo por Zoom</li>
-        <li class="flex items-center gap-2 text-zinc-300">
-         <svg class="w-4 h-4 text-yellow-400 flex-shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-         </svg> Grupo de WhatsApp exclusivo</li>
-        <li class="flex items-center gap-2 text-zinc-300">
-         <svg class="w-4 h-4 text-yellow-400 flex-shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-         </svg> Recursos únicos y libros</li>
-       </ul><a href="https://nas.io/es-mx/checkout-global?communityId=651b8edf31cdf8bd41bbf336&amp;communityCode=MARKETOGRAPHERS__2&amp;requestor=signupRequestor&amp;linkClicked=https%3A%2F%2Fnas.io%2Fes-mx%2Fmarketographers&amp;tierId=690025802c8123e0f9b762ef" target="_blank" rel="noopener noreferrer" class="w-full btn-primary text-sm py-2">¡Únete ya!</a>
-      </div><!-- Focus Plan -->
-      <div class="card-hover rounded-3xl p-6 bg-gradient-to-b from-zinc-900 to-zinc-950 border border-zinc-800 reveal delay-200">
-       <div class="mb-4">
-        <h3 class="font-display text-lg font-bold mb-1">Focus</h3>
-        <p class="text-zinc-500 text-xs">Para los que quieren todo • 3 cupos</p>
-       </div>
-       <div class="mb-4">
-        <span class="font-display text-3xl font-bold">$100</span> <span class="text-zinc-500 text-sm">/mes</span>
-       </div>
-       <ul class="space-y-2 mb-6 text-xs">
-        <li class="flex items-center gap-2 text-zinc-300">
-         <svg class="w-4 h-4 text-yellow-400 flex-shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-         </svg> Masterclases gratuitas</li>
-        <li class="flex items-center gap-2 text-zinc-300">
-         <svg class="w-4 h-4 text-yellow-400 flex-shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-         </svg> Newsletter semanal</li>
-        <li class="flex items-center gap-2 text-zinc-300">
-         <svg class="w-4 h-4 text-yellow-400 flex-shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-         </svg> Acceso ilimitado a cursos</li>
-        <li class="flex items-center gap-2 text-zinc-300">
-         <svg class="w-4 h-4 text-yellow-400 flex-shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-         </svg> Clases en vivo por Zoom</li>
-        <li class="flex items-center gap-2 text-zinc-300">
-         <svg class="w-4 h-4 text-yellow-400 flex-shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-         </svg> Grupo de WhatsApp exclusivo</li>
-        <li class="flex items-center gap-2 text-zinc-300">
-         <svg class="w-4 h-4 text-yellow-400 flex-shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-         </svg> Recursos únicos y libros</li>
-        <li class="flex items-center gap-2 text-zinc-300">
-         <svg class="w-4 h-4 text-yellow-400 flex-shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-         </svg> 2 Sesiones 1 a 1 personalizadas al mes</li>
-       </ul><a href="https://nas.io/es-mx/checkout-global?communityId=651b8edf31cdf8bd41bbf336&amp;communityCode=MARKETOGRAPHERS__2&amp;requestor=signupRequestor&amp;linkClicked=https%3A%2F%2Fnas.io%2Fes-mx%2Fmarketographers&amp;tierId=6921d9032452a798a913b672" target="_blank" rel="noopener noreferrer" class="w-full btn-secondary text-sm py-2">Aprobación requerida</a>
-      </div>
-     </div>
-    </div>
-   </section><!-- About Section -->
-   <section id="about" class="py-20 relative overflow-hidden">
-    <div class="max-w-6xl mx-auto px-6">
-     <div class="grid lg:grid-cols-2 gap-8 items-center">
-      <div class="reveal">
-       <div class="relative">
-        <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/30 to-transparent rounded-3xl blur-3xl"></div>
-        <div class="relative w-64 h-64 md:w-72 md:h-72 mx-auto">
-         <div class="absolute inset-0 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-3xl rotate-6 glow-yellow"></div>
-         <div class="absolute inset-0 bg-gradient-to-br from-zinc-900 to-zinc-800 rounded-3xl overflow-hidden flex items-center justify-center"><img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1771217266/IMG_6859_1_1_ujmxsg.png" alt="Pablo" class="w-full h-full object-cover" loading="lazy" onerror="console.error('Image failed to load:', this.src); this.style.background='#18181b'; this.alt='Imagen no disponible';">
-         </div>
-        </div>
-       </div>
-      </div>
-      <div class="reveal delay-200">
-       <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-yellow-400/30 bg-yellow-400/5 mb-4 text-sm">
-        <span class="text-yellow-400">¿Quién es este loco?</span>
-       </div>
-       <h2 id="founder-name" class="font-display text-2xl md:text-3xl font-bold mb-4">Pablo Villarroel • @themarketographer</h2>
-       <p class="text-zinc-400 leading-relaxed mb-4 text-sm">Lic. en Marketing &amp; Publicidad, TEDx speaker, especialista en StoryTelling y Persuasión. Con más de 100k USD de facturac... bla bla bla... Ya te aburriste ¿no?.</p>
-       <p class="text-zinc-300 leading-relaxed mb-4 text-sm">Pues, lo de arriba es verdad. Pero lo único importante sobre mí es que no voy a dormir hasta que tú consigas dormir tranquilo.</p>
-       <p class="text-zinc-500 text-xs">(Por eso tengo esas ojeras)</p>
-      </div>
-     </div>
-    </div>
-   </section><!-- Testimonials Carousel -->
-   <section id="testimonios" class="py-20 relative">
-    <div class="max-w-6xl mx-auto px-6">
-     <div class="text-center mb-12 reveal">
-      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-yellow-400/30 bg-yellow-400/5 mb-3 text-sm">
-       <span class="text-yellow-400">Casos de éxito</span>
-      </div>
-      <h2 class="font-display text-2xl md:text-4xl font-bold mb-3">Marketographers que ya <span class="gradient-text">la están rompiendo.</span></h2>
-     </div>
-     <div class="carousel-container reveal">
-      <button id="carousel-prev" class="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-yellow-400/20 hover:bg-yellow-400/40 flex items-center justify-center transition-all text-yellow-400 hover:text-yellow-300 -ml-5 md:-ml-8">
-       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-       </svg></button> <button id="carousel-next" class="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-yellow-400/20 hover:bg-yellow-400/40 flex items-center justify-center transition-all text-yellow-400 hover:text-yellow-300 -mr-5 md:-mr-8">
-       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-       </svg></button>
-      <div class="carousel-wrapper" id="testimonials-wrapper"><!-- Testimonial 1 -->
-       <div class="carousel-item">
-        <div class="testimonial-card rounded-2xl p-5 h-full">
-         <div class="flex items-center gap-3 mb-3">
-          <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0"><img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1772843204/12_zrfwsh.jpg" alt="Stephany" class="w-full h-full object-cover" loading="lazy" onerror="console.error('Image failed to load:', this.src); this.style.background='#18181b';">
-          </div>
-          <div class="min-w-0">
-           <h4 class="font-semibold text-sm">Stephany Rodriguez</h4>
-           <p class="text-zinc-500 text-xs">Fotógrafa de Boudoir - Honduras</p>
-          </div>
-         </div>
-         <p class="text-zinc-300 text-xs leading-relaxed mb-3">"Gracias por toda la chamba que has hecho con esto! Estoy llorando de felicidad Donde estuviste toda mi vidaa?!"</p>
-         <div class="flex gap-1">
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-         </div>
-        </div>
-       </div><!-- Testimonial 2 -->
-       <div class="carousel-item">
-        <div class="testimonial-card rounded-2xl p-5 h-full">
-         <div class="flex items-center gap-3 mb-3">
-          <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0"><img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1772843220/Imagen_i0acjn.jpg" alt="Pablo" class="w-full h-full object-cover" loading="lazy" onerror="console.error('Image failed to load:', this.src); this.style.background='#18181b';">
-          </div>
-          <div class="min-w-0">
-           <h4 class="font-semibold text-sm">Daniela Munanatik</h4>
-           <p class="text-zinc-500 text-xs">Fotógrafa de Boudoir - México</p>
-          </div>
-         </div>
-         <p class="text-zinc-300 text-xs leading-relaxed mb-3">"Weeee...en la mini mentoría con Pablo me quedé así 🤯 cuando me di cuenta que mi propósito tenía parte de mis heridas y yo, CLAAAARO, tiene TODO SENTIDO y yo queeee boneetooo"</p>
-         <div class="flex gap-1">
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-         </div>
-        </div>
-       </div><!-- Testimonial 3 -->
-       <div class="carousel-item">
-        <div class="testimonial-card rounded-2xl p-5 h-full">
-         <div class="flex items-center gap-3 mb-3">
-          <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0"><img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1772843597/Captura_de_pantalla_2026-03-06_a_la_s_20.32.36_k46ylo.png" alt="Pablo" class="w-full h-full object-cover" loading="lazy" onerror="console.error('Image failed to load:', this.src); this.style.background='#18181b';">
-          </div>
-          <div class="min-w-0">
-           <h4 class="font-semibold text-sm">Carolina Rdz</h4>
-           <p class="text-zinc-500 text-xs">Fotógrafa de Newborn - México</p>
-          </div>
-         </div>
-         <p class="text-zinc-300 text-xs leading-relaxed mb-3">"Estamos veniendo todas las semanas, navidad, smash, nweborn, no puedo creer esto 🥹❤️‍🔥❤️‍🔥🥹❤️‍🔥"</p>
-         <div class="flex gap-1">
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-         </div>
-        </div>
-       </div><!-- Testimonial 4 -->
-       <div class="carousel-item">
-        <div class="testimonial-card rounded-2xl p-5 h-full">
-         <div class="flex items-center gap-3 mb-3">
-          <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0"><img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1772843806/Imagen_2_znlftq.jpg" alt="Pablo" class="w-full h-full object-cover" loading="lazy" onerror="console.error('Image failed to load:', this.src); this.style.background='#18181b';">
-          </div>
-          <div class="min-w-0">
-           <h4 class="font-semibold text-sm">Carlos Moya</h4>
-           <p class="text-zinc-500 text-xs">Fotógrafo de bodas - Ecuador</p>
-          </div>
-         </div>
-         <p class="text-zinc-300 text-xs leading-relaxed mb-3">"Acabo de cerrar una boda aplicando el método del Pro Pro Pro! Gracias por tus enseñanzas hermano! Dios te bendiga siempre! 🥹🙏🏻🙏"</p>
-         <div class="flex gap-1">
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-         </div>
-        </div>
-       </div><!-- Testimonial 5 -->
-       <div class="carousel-item">
-        <div class="testimonial-card rounded-2xl p-5 h-full">
-         <div class="flex items-center gap-3 mb-3">
-          <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0"><img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1772843594/Imagen_1_f5ilzm.jpg" alt="Pablo" class="w-full h-full object-cover" loading="lazy" onerror="console.error('Image failed to load:', this.src); this.style.background='#18181b';">
-          </div>
-          <div class="min-w-0">
-           <h4 class="font-semibold text-sm">Andrea Ríos</h4>
-           <p class="text-zinc-500 text-xs">Fotógrafa de familias y parejas - México</p>
-          </div>
-         </div>
-         <p class="text-zinc-300 text-xs leading-relaxed mb-3">"WUWUWUWUWUWU NO CHINGUEN! Llevo apenas 2 meses y esto me está cambiando la vida jajaja :)."</p>
-         <div class="flex gap-1">
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-         </div>
-        </div>
-       </div><!-- Testimonial 6 -->
-       <div class="carousel-item">
-        <div class="testimonial-card rounded-2xl p-5 h-full">
-         <div class="flex items-center gap-3 mb-3">
-          <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0"><img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1772843657/11_tkhi9g.jpg" alt="Pablo" class="w-full h-full object-cover" loading="lazy" onerror="console.error('Image failed to load:', this.src); this.style.background='#18181b';">
-          </div>
-          <div class="min-w-0">
-           <h4 class="font-semibold text-sm">Cristy Palacios</h4>
-           <p class="text-zinc-500 text-xs">Fotógrafa de perfil profesional - Méxicano</p>
-          </div>
-         </div>
-         <p class="text-zinc-300 text-xs leading-relaxed mb-3">"Es muchisima información demasiado valiosa. No me da la vida para entender, aplicar y disfrutar todo lo aprendido. Puro talento"</p>
-         <div class="flex gap-1">
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-         </div>
-        </div>
-       </div><!-- Testimonial 7 -->
-       <div class="carousel-item">
-        <div class="testimonial-card rounded-2xl p-5 h-full">
-         <div class="flex items-center gap-3 mb-3">
-          <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0"><img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1772843874/Imagen_3_g8cuew.jpg" alt="Pablo" class="w-full h-full object-cover" loading="lazy" onerror="console.error('Image failed to load:', this.src); this.style.background='#18181b';">
-          </div>
-          <div class="min-w-0">
-           <h4 class="font-semibold text-sm">Victor Villarroel</h4>
-           <p class="text-zinc-500 text-xs">Fotógrafo de bodas - Bolivia</p>
-          </div>
-         </div>
-         <p class="text-zinc-300 text-xs leading-relaxed mb-3">"Es increíble como he subido mis precios y la gente los esta pagando! Muero de la alegría!."</p>
-         <div class="flex gap-1">
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-         </div>
-        </div>
-       </div><!-- Testimonial 8 -->
-       <div class="carousel-item">
-        <div class="testimonial-card rounded-2xl p-5 h-full">
-         <div class="flex items-center gap-3 mb-3">
-          <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0"><img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1772843914/Imagen_4_nyriq2.jpg" alt="Pablo" class="w-full h-full object-cover" loading="lazy" onerror="console.error('Image failed to load:', this.src); this.style.background='#18181b';">
-          </div>
-          <div class="min-w-0">
-           <h4 class="font-semibold text-sm">Ricardo Araque</h4>
-           <p class="text-zinc-500 text-xs">Fotógrafo de cumpleaños - Venezuela</p>
-          </div>
-         </div>
-         <p class="text-zinc-300 text-xs leading-relaxed mb-3">"Solo hay que seguir al pie de la letra lo que Pablo enseña. Es brutal como mi forma de atender al cliente ha cambiado 🤯 Gracias a esto pude cerrar 3 ventas esta semana! Gracias Pablooo"</p>
-         <div class="flex gap-1">
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-         </div>
-        </div>
-       </div><!-- Testimonial 9 -->
-       <div class="carousel-item">
-        <div class="testimonial-card rounded-2xl p-5 h-full">
-         <div class="flex items-center gap-3 mb-3">
-          <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0"><img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1772843205/13_zulibg.jpg" alt="Pablo" class="w-full h-full object-cover" loading="lazy" onerror="console.error('Image failed to load:', this.src); this.style.background='#18181b';">
-          </div>
-          <div class="min-w-0">
-           <h4 class="font-semibold text-sm">Lucas Milde</h4>
-           <p class="text-zinc-500 text-xs">Fotógrafo publicitario - Argentina</p>
-          </div>
-         </div>
-         <p class="text-zinc-300 text-xs leading-relaxed mb-3">"Antes deentrar a la comunidad tenía 1 solo cliente, 2 meses después, al día de hoy... tengo que agendar para dentro de un mes porque no tengo un segundo de respiro 🤣"</p>
-         <div class="flex gap-1">
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-         </div>
-        </div>
-       </div><!-- Testimonial 10 -->
-       <div class="carousel-item">
-        <div class="testimonial-card rounded-2xl p-5 h-full">
-         <div class="flex items-center gap-3 mb-3">
-          <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0"><img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1772843970/Imagen_5_hit7q7.jpg" alt="Pablo" class="w-full h-full object-cover" loading="lazy" onerror="console.error('Image failed to load:', this.src); this.style.background='#18181b';">
-          </div>
-          <div class="min-w-0">
-           <h4 class="font-semibold text-sm">Jair Lidioma</h4>
-           <p class="text-zinc-500 text-xs">Fotógrafo de retrato - Ecuador</p>
-          </div>
-         </div>
-         <p class="text-zinc-300 text-xs leading-relaxed mb-3">"Gracias a las pocas estrategias que pude revisar que realmente son muchas jajaja pude cerrar una sesión grande de casi $300 sin negociar ni nada solo se acercó a mi estudio porque vio mi trabajo."</p>
-         <div class="flex gap-1">
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewbox="0 0 20 20">
-           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-         </div>
-        </div>
-       </div>
-      </div>
-     </div>
-     <div class="carousel-dots" id="carousel-dots"></div>
-    </div>
-   </section><!-- FAQ Section -->
-   <section id="faq" class="py-20 relative">
+  </section>
+
+  <!-- Horarios -->
+  <section class="py-16 relative">
     <div class="max-w-3xl mx-auto px-6">
-     <div class="text-center mb-12 reveal">
-      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-yellow-400/30 bg-yellow-400/5 mb-3 text-sm">
-       <span class="text-yellow-400">¿Tienes dudas?</span>
+      <div class="reveal text-center mb-10">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-yellow-400/30 bg-yellow-400/5 mb-3 text-sm">
+          <span class="text-yellow-400">¿A qué hora es en tu país?</span>
+        </div>
+        <h2 class="font-display text-2xl md:text-3xl font-bold">Domingo <span class="gradient-text">24 de Mayo</span></h2>
       </div>
-      <h2 class="font-display text-2xl md:text-4xl font-bold">Preguntas que ya respondí <span class="gradient-text">en stories</span></h2>
-     </div>
-     <div class="space-y-3 reveal">
-      <div class="faq-item rounded-2xl bg-zinc-900/50 border border-zinc-800 overflow-hidden"><button class="faq-toggle w-full p-5 text-left flex items-center justify-between gap-4 text-sm md:text-base"> <span class="font-semibold">¿Tienen garantía de devolución?</span> <span class="faq-icon w-7 h-7 rounded-full bg-yellow-400/20 flex items-center justify-center flex-shrink-0">
-         <svg class="w-3 h-3 text-yellow-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-         </svg></span> </button>
-       <div class="faq-content px-5">
-        <p class="text-zinc-400 pb-5 text-sm">JAJAJAJAJA. No. Aquí no devolvemos dinero porque sabemos que, si entras, vas a querer quedarte. Si pensabas a entrar para pedir una devolución probablemente es porque esperabas milagros sin mover un dedo, y para eso... mejor nadota.</p>
-       </div>
+
+      <div class="reveal grid grid-cols-2 gap-3">
+
+        <div class="rounded-2xl bg-zinc-900/70 border border-zinc-800 p-5 flex flex-col gap-3">
+          <div class="text-2xl leading-none">🇸🇻 🇭🇳 🇲🇽 🇨🇷</div>
+          <div class="font-black text-2xl gradient-text leading-none">18:00</div>
+          <div class="text-zinc-500 text-xs leading-relaxed">El Salvador · Honduras<br>México · Costa Rica</div>
+        </div>
+
+        <div class="rounded-2xl bg-zinc-900/70 border border-zinc-800 p-5 flex flex-col gap-3">
+          <div class="text-2xl leading-none">🇨🇴 🇵🇪 🇪🇨 🇵🇦</div>
+          <div class="font-black text-2xl gradient-text leading-none">19:00</div>
+          <div class="text-zinc-500 text-xs leading-relaxed">Colombia · Perú<br>Ecuador · Panamá</div>
+        </div>
+
+        <div class="rounded-2xl bg-zinc-900/70 border border-zinc-800 p-5 flex flex-col gap-3">
+          <div class="text-2xl leading-none">🇩🇴 🇧🇴 🇻🇪 🇵🇾</div>
+          <div class="font-black text-2xl gradient-text leading-none">20:00</div>
+          <div class="text-zinc-500 text-xs leading-relaxed">Rep. Dominicana · Bolivia<br>Venezuela · Paraguay</div>
+        </div>
+
+        <div class="rounded-2xl bg-zinc-900/70 border border-zinc-800 p-5 flex flex-col gap-3">
+          <div class="text-2xl leading-none">🇦🇷 🇨🇱 🇺🇾</div>
+          <div class="font-black text-2xl gradient-text leading-none">21:00</div>
+          <div class="text-zinc-500 text-xs leading-relaxed">Argentina · Chile<br>Uruguay</div>
+        </div>
+
       </div>
-      <div class="faq-item rounded-2xl bg-zinc-900/50 border border-zinc-800 overflow-hidden"><button class="faq-toggle w-full p-5 text-left flex items-center justify-between gap-4 text-sm md:text-base"> <span class="font-semibold">¿Cuánto tiempo tengo que dedicarle?</span> <span class="faq-icon w-7 h-7 rounded-full bg-yellow-400/20 flex items-center justify-center flex-shrink-0">
-         <svg class="w-3 h-3 text-yellow-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-         </svg></span> </button>
-       <div class="faq-content px-5">
-        <p class="text-zinc-400 pb-5 text-sm">Las clases en vivo son 2 veces por semana (2 - 3 horas). El resto del contenido lo puedes consumir a tu ritmo. El grupo está activo 24/7, pero tú decides cuánto participar.</p>
-       </div>
-      </div>
-      <div class="faq-item rounded-2xl bg-zinc-900/50 border border-zinc-800 overflow-hidden"><button class="faq-toggle w-full p-5 text-left flex items-center justify-between gap-4 text-sm md:text-base"> <span class="font-semibold">¿Cómo sé si esto es para mí?</span> <span class="faq-icon w-7 h-7 rounded-full bg-yellow-400/20 flex items-center justify-center flex-shrink-0">
-         <svg class="w-3 h-3 text-yellow-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-         </svg></span> </button>
-       <div class="faq-content px-5">
-        <p class="text-zinc-400 pb-5 text-sm">Si eres fotógrafo y quieres más clientes, más tiempo libre y dejar de vivir del "boca a boca", esto es para ti. Si te encanta rascarte las pelotas, coleccionar cursos como estampitas para nunca abrirlos, mejor ahórrate el dinero… o mándamelo directo, igual de inútil va a ser.</p>
-       </div>
-      </div>
-      <div class="faq-item rounded-2xl bg-zinc-900/50 border border-zinc-800 overflow-hidden"><button class="faq-toggle w-full p-5 text-left flex items-center justify-between gap-4 text-sm md:text-base"> <span class="font-semibold">¿Y si no sé nada de marketing?</span> <span class="faq-icon w-7 h-7 rounded-full bg-yellow-400/20 flex items-center justify-center flex-shrink-0">
-         <svg class="w-3 h-3 text-yellow-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-         </svg></span> </button>
-       <div class="faq-content px-5">
-        <p class="text-zinc-400 pb-5 text-sm">Mejor.Así no tienes que des-aprender pendejadas de gurús del markting que te dijeron que "el contenido de valor" o "hacer videos virales con IA" era la solución a todo. Si ya (crees que) sabes de marketing, te prometo solo una cosa: Te voy a derretir el cerebro con todo lo que en realidad no sabes.</p>
-       </div>
-      </div>
-      <div class="faq-item rounded-2xl bg-zinc-900/50 border border-zinc-800 overflow-hidden"><button class="faq-toggle w-full p-5 text-left flex items-center justify-between gap-4 text-sm md:text-base"> <span class="font-semibold">¿¿Y siempre dices groserías??</span> <span class="faq-icon w-7 h-7 rounded-full bg-yellow-400/20 flex items-center justify-center flex-shrink-0">
-         <svg class="w-3 h-3 text-yellow-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-         </svg></span> </button>
-       <div class="faq-content px-5">
-        <p class="text-zinc-400 pb-5 text-sm">Sí ¡Un chingo! Porque decir "cliente de mierda" es más potente que decir "cliente poco comprometido". Y si eso te ofende, vete a buscar otro curso gratis en Youtube de alguien que inicia sus videos con un "Holiii chicos y chicas ✨".</p>
-       </div>
-      </div>
-     </div>
+      <p class="text-center text-zinc-600 text-xs mt-4">El link de Zoom llega por el grupo de WhatsApp antes del evento.</p>
     </div>
-   </section><!-- Final CTA Section -->
-   <section class="py-20 relative overflow-hidden">
-    <div class="absolute inset-0 bg-gradient-to-t from-yellow-400/20 via-yellow-400/5 to-transparent"></div>
-    <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-yellow-400/20 rounded-full blur-[150px]"></div>
-    <div class="max-w-4xl mx-auto px-6 text-center relative z-10">
-     <div class="reveal">
-      <h2 class="font-display text-2xl md:text-4xl font-bold mb-4">¿Listo para dejar de ser <span class="gradient-text">uno más?</span></h2>
-      <p class="text-lg text-zinc-400 mb-8 text-sm">Tu cliente ideal está esperando. La pregunta es: ¿lo vas a dejar ir con otro?</p>
-      <div class="flex flex-col sm:flex-row items-center justify-center gap-3"><a href="#planes" class="btn-primary text-base px-10 py-3 glow-yellow">Únete a Marketographers</a> <button onclick="Cal.ns.admisiones('modal', {calLink: 'themarketographer/admisiones', config: {layout: 'month_view', useSlotsViewOnSmallScreen: 'true', theme: 'dark'}})" class="btn-secondary text-base px-8 py-3 cursor-pointer">Agendar llamada</button>
-      </div>
-      <p class="text-zinc-500 text-xs mt-6">+300 fotógrafos ya están adentro. ¿Y tú?</p>
-     </div>
-    </div>
-   </section><!-- Footer -->
-   <footer class="py-10 border-t border-zinc-800">
+  </section>
+
+  <!-- Qué vas a aprender -->
+  <section class="py-20 relative">
     <div class="max-w-6xl mx-auto px-6">
-     <div class="flex flex-col md:flex-row items-center justify-between gap-4 text-xs md:text-sm">
-      <div class="flex items-center gap-3"><img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314903/Marketographers_Blanco_S_F_p1toov.png" alt="Marketographers" class="h-8 w-auto"> <span class="font-display font-bold">The Marketographers</span>
+      <div class="text-center mb-12 reveal">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-yellow-400/30 bg-yellow-400/5 mb-3 text-sm">
+          <span class="text-yellow-400">Lo que cubrimos</span>
+        </div>
+        <h2 class="font-display text-2xl md:text-4xl font-bold mb-3">¿Qué vas a <span class="gradient-text">aprender?</span></h2>
+        <p class="text-zinc-400 max-w-xl mx-auto text-sm">Una sola sesión. Sin motivación de coach. Sin tips de Instagram. Solo estructura, fundamentos y pasos que puedes aplicar desde el día siguiente.</p>
       </div>
-      <div class="flex items-center gap-4 md:gap-6 text-zinc-500"><a href="https://nas.io/marketographers" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors">Comunidad</a> <a href="https://www.instagram.com/themarketographer" class="hover:text-white transition-colors">Instagram</a> <a href="https://chat.whatsapp.com/H87amNgVpRr0g2habJsfjd" class="hover:text-white transition-colors">Whatsapp</a>
+
+      <div class="grid md:grid-cols-3 gap-5">
+        <!-- Bloque 1 -->
+        <div class="topic-card reveal card-hover">
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-400/20 to-yellow-600/10 border border-yellow-400/20 flex items-center justify-center mb-5 text-xl font-black gradient-text">01</div>
+          <h3 class="font-display font-bold text-lg mb-3">El Pro Pro Pro</h3>
+          <p class="text-zinc-400 text-sm leading-relaxed">
+            El método para encontrar qué problema resuelves de verdad — no "hago fotos", eso no es un problema, es un producto. Sin esto, todo lo demás es disparar sin apuntar.
+          </p>
+          <div class="mt-5 pt-5 border-t border-zinc-800">
+            <p class="text-zinc-600 text-xs italic">El problema que tu cliente pagaría lo que sea por resolver.</p>
+          </div>
+        </div>
+
+        <!-- Bloque 2 -->
+        <div class="topic-card reveal card-hover delay-100" style="border-color: rgba(250,204,21,0.2);">
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-400/20 to-yellow-600/10 border border-yellow-400/20 flex items-center justify-center mb-5 text-xl font-black gradient-text">02</div>
+          <h3 class="font-display font-bold text-lg mb-3">El precio correcto</h3>
+          <p class="text-zinc-400 text-sm leading-relaxed">
+            Cómo calcular cuánto cobrar basado en tus costos reales — no en lo que cobra el fotógrafo de la esquina. El que copia precios está jugando con reglas de otro.
+          </p>
+          <div class="mt-5 pt-5 border-t border-zinc-800">
+            <p class="text-zinc-600 text-xs italic">Para que nunca más bajes el precio porque "no sabes si vale".</p>
+          </div>
+        </div>
+
+        <!-- Bloque 3 -->
+        <div class="topic-card reveal card-hover delay-200">
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-400/20 to-yellow-600/10 border border-yellow-400/20 flex items-center justify-center mb-5 text-xl font-black gradient-text">03</div>
+          <h3 class="font-display font-bold text-lg mb-3">Valor, no precio</h3>
+          <p class="text-zinc-400 text-sm leading-relaxed">
+            Cómo explicarle al cliente lo que haces para que vea la inversión y no el gasto. Mientras sigas vendiendo fotos en vez de resultados, el precio siempre va a ser el problema.
+          </p>
+          <div class="mt-5 pt-5 border-t border-zinc-800">
+            <p class="text-zinc-600 text-xs italic">Para que "está caro" deje de ser el final de la conversación.</p>
+          </div>
+        </div>
       </div>
-      <p class="text-zinc-600 text-xs">© 2026 The Marketographers. Todos los derechos reservados.</p>
-     </div>
+
+      <!-- Regalo en vivo -->
+      <div class="reveal mt-6 rounded-2xl border border-yellow-400/20 bg-gradient-to-br from-yellow-400/5 to-transparent p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+        <div class="text-3xl shrink-0">🎁</div>
+        <div>
+          <p class="font-bold text-base text-white mb-1">Regalo para los que estén en vivo y se queden al final</p>
+          <p class="text-zinc-400 text-sm leading-relaxed">Los que lleguen puntual y aguanten hasta el cierre se llevan algo que no vamos a anunciar antes. Si te vas antes de que termine, no cuenta.</p>
+        </div>
+      </div>
     </div>
-   </footer>
-  </div>
+  </section>
+
+  <!-- Para quién es -->
+  <section class="py-16 relative">
+    <div class="absolute inset-0 bg-gradient-to-r from-yellow-400/5 via-transparent to-yellow-400/5"></div>
+    <div class="max-w-4xl mx-auto px-6 relative z-10">
+      <div class="reveal text-center mb-10">
+        <h2 class="font-display text-2xl md:text-4xl font-bold mb-3">¿Para quién es <span class="gradient-text">este taller?</span></h2>
+      </div>
+      <div class="reveal grid md:grid-cols-3 gap-4">
+        <div class="rounded-2xl bg-zinc-900/60 border border-zinc-800 p-6 card-hover">
+          <div class="text-2xl mb-3">📨</div>
+          <p class="text-sm text-zinc-300 leading-relaxed">Para el fotógrafo que manda cotizaciones y escucha silencio del otro lado.</p>
+        </div>
+        <div class="rounded-2xl bg-zinc-900/60 border border-zinc-800 p-6 card-hover">
+          <div class="text-2xl mb-3">💸</div>
+          <p class="text-sm text-zinc-300 leading-relaxed">Para el que baja el precio cada vez que el cliente dice "está caro" porque no sabe cómo responder de otra forma.</p>
+        </div>
+        <div class="rounded-2xl bg-zinc-900/60 border border-zinc-800 p-6 card-hover">
+          <div class="text-2xl mb-3">😤</div>
+          <p class="text-sm text-zinc-300 leading-relaxed">Para el que lleva meses trabajando duro, entregando bien — y aún así termina el mes preguntándose por qué no le alcanza.</p>
+        </div>
+      </div>
+      <p class="reveal text-center text-zinc-500 text-sm mt-6">Si ninguna de estas tres te suena familiar, cierra esto. Aquí no hay nada para ti.</p>
+    </div>
+  </section>
+
+  <!-- Quién da el taller -->
+  <section class="py-20 relative">
+    <div class="max-w-5xl mx-auto px-6">
+      <div class="reveal grid md:grid-cols-2 gap-10 items-center">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-yellow-400/30 bg-yellow-400/5 mb-4 text-xs">
+            <span class="text-yellow-400">Quién da el taller</span>
+          </div>
+          <h2 class="font-display text-2xl md:text-4xl font-bold mb-4">Pablo Villarroel<br><span class="gradient-text">The Marketographer</span></h2>
+          <p class="text-zinc-400 text-sm leading-relaxed mb-4">
+            Fotógrafo comercial, TEDx Speaker y fundador de The Marketographers — la única comunidad de marketing para fotógrafos de habla hispana que habla de dinero, clientes y ventas en vez de ojo fotográfico y esencia creativa.
+          </p>
+          <p class="text-zinc-400 text-sm leading-relaxed mb-6">
+            3 años, 150 miembros activos, 17 países. Este taller es una muestra de lo que hacemos cada semana adentro.
+          </p>
+          <div class="flex gap-4 text-center">
+            <div class="rounded-xl bg-zinc-900 border border-zinc-800 px-5 py-3">
+              <div class="font-black text-xl gradient-text">+17</div>
+              <div class="text-zinc-500 text-xs mt-1">Países</div>
+            </div>
+            <div class="rounded-xl bg-zinc-900 border border-zinc-800 px-5 py-3">
+              <div class="font-black text-xl gradient-text">3 años</div>
+              <div class="text-zinc-500 text-xs mt-1">Activa</div>
+            </div>
+            <div class="rounded-xl bg-zinc-900 border border-zinc-800 px-5 py-3">
+              <div class="font-black text-xl gradient-text">150+</div>
+              <div class="text-zinc-500 text-xs mt-1">Miembros</div>
+            </div>
+          </div>
+        </div>
+        <div class="relative">
+          <div class="absolute inset-0 bg-yellow-400/10 rounded-3xl blur-3xl"></div>
+          <div class="relative rounded-2xl overflow-hidden border border-zinc-800 bg-zinc-900 aspect-square flex items-center justify-center">
+            <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1771217266/IMG_6859_1_1_ujmxsg.png" alt="Pablo Villarroel" class="w-full h-full object-cover" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\'text-center p-10\'><div class=\'text-6xl mb-4\'>📸</div><p class=\'text-zinc-500 text-sm\'>The Marketographer</p></div>'">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Final / Registro -->
+  <section id="registro" class="py-20 cta-section relative">
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-yellow-400/8 rounded-full blur-[120px]"></div>
+    <div class="max-w-3xl mx-auto px-6 text-center relative z-10">
+      <div class="reveal">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-yellow-400/30 bg-yellow-400/5 mb-5 text-sm">
+          <span class="live-dot"></span>
+          <span class="text-yellow-400 font-medium">Domingo 24 de Mayo · Gratis</span>
+        </div>
+        <h2 class="font-display text-3xl sm:text-4xl md:text-5xl font-black mb-5" style="letter-spacing:-0.03em;">
+          Para de regalar<br><span class="gradient-text text-glow">tu trabajo.</span>
+        </h2>
+        <p class="text-zinc-400 text-base mb-10 max-w-xl mx-auto leading-relaxed">
+          Reserva tu lugar en el evento de Nas y únete al grupo de WhatsApp donde mandamos el link de Zoom antes del taller.
+        </p>
+        <div class="flex flex-wrap items-center justify-center gap-3">
+          <a href="https://nas.com/marketographers/events/taller-gratuito-ventas-para-fotografos" target="_blank" class="btn-primary animate-pulse-glow">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            Registrarse al evento
+          </a>
+          <a href="https://chat.whatsapp.com/Hskq4Mv0CpK3RxYR4gTIH1?mode=gi_t" target="_blank" class="btn-whatsapp">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+            </svg>
+            Grupo de WhatsApp
+          </a>
+        </div>
+        <p class="text-zinc-600 text-xs mt-5">El taller empieza puntual. El link llega por el grupo de WhatsApp.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-8 border-t border-zinc-900">
+    <div class="max-w-6xl mx-auto px-6 text-center">
+      <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314903/Marketographers_Blanco_S_F_p1toov.png" alt="Marketographers" class="h-6 w-auto mx-auto mb-3 opacity-40">
+      <p class="text-zinc-700 text-xs">© 2025 The Marketographers. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
   <script>
-    const defaultConfig = {
-      hero_title: 'Tu cliente ideal está trabajando con otro fotógrafo que sí sabe de marketing.',
-      hero_subtitle: '¿Vas a seguir viviendo del "boca a boca" o te vas a poner los pantalones con tu negocio?',
-      cta_text: 'Únete a la comunidad',
-      founder_name: 'Pablo Villarroel',
-      video_url: 'https://www.youtube.com/embed/-hzyPg-rIoA?si=BpvIEOAmAQAfI7X6'
-    };
+    // Countdown — Target: Sunday May 24 2026 at 20:00 GMT-4
+    const eventDate = new Date('2026-05-24T20:00:00-04:00');
 
-    if (window.elementSdk) {
-      window.elementSdk.init({
-        defaultConfig,
-        onConfigChange: async (config) => {
-          const heroTitleEl = document.getElementById('hero-title');
-          if (heroTitleEl) {
-            heroTitleEl.innerHTML = `${config.hero_title || defaultConfig.hero_title}<br><span class="gradient-text text-glow">otro fotógrafo que sí sabe de marketing.</span>`;
-          }
-          
-          const heroSubtitleEl = document.getElementById('hero-subtitle');
-          if (heroSubtitleEl) {
-            heroSubtitleEl.textContent = config.hero_subtitle || defaultConfig.hero_subtitle;
-          }
-          
-          const ctaButton = document.getElementById('cta-button');
-          if (ctaButton) {
-            ctaButton.textContent = config.cta_text || defaultConfig.cta_text;
-          }
-          
-          const founderName = document.getElementById('founder-name');
-          if (founderName) {
-            founderName.textContent = config.founder_name || defaultConfig.founder_name;
-          }
+    function updateCountdown() {
+      const now = new Date();
+      const diff = eventDate - now;
 
-          const videoFrame = document.getElementById('hero-video');
-          if (videoFrame) {
-            videoFrame.src = config.video_url || defaultConfig.video_url;
-          }
-        },
-        mapToCapabilities: (config) => ({
-          recolorables: [],
-          borderables: [],
-          fontEditable: undefined,
-          fontSizeable: undefined
-        }),
-        mapToEditPanelValues: (config) => new Map([
-          ['hero_title', config.hero_title || defaultConfig.hero_title],
-          ['hero_subtitle', config.hero_subtitle || defaultConfig.hero_subtitle],
-          ['cta_text', config.cta_text || defaultConfig.cta_text],
-          ['founder_name', config.founder_name || defaultConfig.founder_name],
-          ['video_url', config.video_url || defaultConfig.video_url]
-        ])
-      });
+      if (diff <= 0) {
+        document.getElementById('days').textContent = '00';
+        document.getElementById('hours').textContent = '00';
+        document.getElementById('minutes').textContent = '00';
+        document.getElementById('seconds').textContent = '00';
+        return;
+      }
+
+      const days    = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours   = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      document.getElementById('days').textContent    = String(days).padStart(2, '0');
+      document.getElementById('hours').textContent   = String(hours).padStart(2, '0');
+      document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+      document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
     }
 
-    // Scroll reveal
-    const observerOptions = {
-      threshold: 0.1,
-      rootMargin: '0px 0px -50px 0px'
-    };
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
 
+    // Scroll reveal
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('active');
-        }
+        if (entry.isIntersecting) entry.target.classList.add('active');
       });
-    }, observerOptions);
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
 
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-    // Header scroll effect
+    // Header scroll
     const header = document.getElementById('header');
     window.addEventListener('scroll', () => {
-      if (window.scrollY > 100) {
-        header.classList.add('header-scrolled');
-      } else {
-        header.classList.remove('header-scrolled');
-      }
-    });
-
-    // FAQ accordion
-    document.querySelectorAll('.faq-toggle').forEach(toggle => {
-      toggle.addEventListener('click', () => {
-        const item = toggle.closest('.faq-item');
-        const isActive = item.classList.contains('active');
-        
-        document.querySelectorAll('.faq-item').forEach(faq => {
-          faq.classList.remove('active');
-        });
-        
-        if (!isActive) {
-          item.classList.add('active');
-        }
-      });
-    });
-
-    // Testimonials Carousel with autoplay
-    const wrapper = document.getElementById('testimonials-wrapper');
-    const dotsContainer = document.getElementById('carousel-dots');
-    const prevBtn = document.getElementById('carousel-prev');
-    const nextBtn = document.getElementById('carousel-next');
-    
-    let currentIndex = 0;
-    const itemsPerView = window.innerWidth >= 1024 ? 3 : window.innerWidth >= 768 ? 2 : 1;
-    const totalItems = document.querySelectorAll('.carousel-item').length;
-    const totalSlides = Math.ceil(totalItems / itemsPerView);
-    let autoplayInterval;
-
-    function createDots() {
-      dotsContainer.innerHTML = '';
-      for (let i = 0; i < totalSlides; i++) {
-        const dot = document.createElement('button');
-        dot.className = `carousel-dot ${i === 0 ? 'active' : ''}`;
-        dot.addEventListener('click', () => {
-          clearInterval(autoplayInterval);
-          goToSlide(i);
-          startAutoplay();
-        });
-        dotsContainer.appendChild(dot);
-      }
-    }
-
-    function updateCarousel() {
-      const offset = -(currentIndex * (100 / itemsPerView));
-      wrapper.style.transform = `translateX(${offset}%)`;
-      
-      document.querySelectorAll('.carousel-dot').forEach((dot, i) => {
-        dot.classList.toggle('active', i === currentIndex);
-      });
-    }
-
-    function goToSlide(index) {
-      currentIndex = Math.max(0, Math.min(index, totalSlides - 1));
-      updateCarousel();
-    }
-
-    function nextSlide() {
-      currentIndex = (currentIndex + 1) % totalSlides;
-      updateCarousel();
-    }
-
-    function prevSlide() {
-      currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
-      updateCarousel();
-    }
-
-    function startAutoplay() {
-      autoplayInterval = setInterval(nextSlide, 5000);
-    }
-
-    // Button controls
-    nextBtn.addEventListener('click', () => {
-      clearInterval(autoplayInterval);
-      nextSlide();
-      startAutoplay();
-    });
-
-    prevBtn.addEventListener('click', () => {
-      clearInterval(autoplayInterval);
-      prevSlide();
-      startAutoplay();
-    });
-
-    // Touch/swipe support
-    let touchStartX = 0;
-    wrapper.addEventListener('touchstart', (e) => {
-      touchStartX = e.touches[0].clientX;
-      clearInterval(autoplayInterval);
-    });
-
-    wrapper.addEventListener('touchend', (e) => {
-      const touchEndX = e.changedTouches[0].clientX;
-      if (touchStartX - touchEndX > 50) {
-        nextSlide();
-      } else if (touchEndX - touchStartX > 50) {
-        prevSlide();
-      }
-      startAutoplay();
-    });
-
-    createDots();
-    startAutoplay();
-
-    // Smooth scroll for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        if (this.getAttribute('href') !== '#') {
-          e.preventDefault();
-          const target = document.querySelector(this.getAttribute('href'));
-          if (target) {
-            target.scrollIntoView({
-              behavior: 'smooth',
-              block: 'start'
-            });
-          }
-        }
-      });
+      header.classList.toggle('header-scrolled', window.scrollY > 80);
     });
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cea8524353dc877',t:'MTc3MTIxODQzMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>

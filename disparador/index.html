@@ -102,6 +102,9 @@
     font-size:.8rem; cursor:pointer;
   }
   .ctrl-btn[aria-pressed="false"]{ color:var(--muted); border-color:rgba(255,255,255,.08); }
+  .ctrl-btn.active{ background:var(--gold); color:#141310; border-color:var(--gold); font-weight:800; }
+  .ctrl-btn:disabled{ opacity:.4; cursor:not-allowed; }
+  .mode-switch{ display:flex; gap:6px; }
   .switch{ display:flex; align-items:center; gap:7px; color:var(--cream); font-weight:700; cursor:pointer; user-select:none; }
   .switch input{ accent-color:var(--gold); width:16px; height:16px; cursor:pointer; }
   .deck-counter{ color:var(--muted); font-weight:600; }
@@ -278,12 +281,16 @@
     </header>
 
     <div class="control-bar">
+      <div class="mode-switch" role="group" aria-label="Banco de temas">
+        <button id="modeRandomBtn" class="ctrl-btn active" type="button" aria-pressed="true">🎲 Random</button>
+        <button id="modeNetworkingBtn" class="ctrl-btn" type="button" aria-pressed="false">💼 Networking</button>
+      </div>
       <button id="soundToggle" class="ctrl-btn" type="button" aria-pressed="true">🔊 Sonido</button>
       <label class="switch">
         <input type="checkbox" id="hardModeToggle">
         <span>Modo difícil</span>
       </label>
-      <span class="deck-counter" id="deckCounter">Fichas en la máquina: 30/30</span>
+      <span class="deck-counter" id="deckCounter">Random — Fichas: 32/32</span>
     </div>
 
     <!-- IDLE -->
@@ -370,7 +377,169 @@
   // ---------------------------------------------------------------
   // DATOS — banco de temas
   // ---------------------------------------------------------------
-  var TOPICS = [
+  var TOPICS_RANDOM = [
+    { tema:"El café que no despierta", fichas:[
+        "La cafeína actúa bloqueando los receptores de adenosina, la señal que tu cerebro manda cuando necesita descansar. Te tapa el aviso de cansancio en vez de darte energía nueva.",
+        "El efecto tarda entre 20 y 30 minutos en subir y hasta 6 horas en bajar a la mitad — por eso el café de las 5pm sabotea el sueño de las 11pm sin que lo notes."
+      ], pregunta:"¿Vos sos de café antes de las 10am o de café todo el día sin culpa?" },
+
+    { tema:"El perro que te ama", fichas:[
+        "Un científico soviético, Dmitri Belyaev, agarró zorros salvajes de Siberia y dejó reproducirse solo a los más tranquilos con humanos. En unas 30 generaciones, los zorros empezaron a ladrar, mover la cola y tener orejas caídas — rasgos que nadie eligió a propósito, vinieron pegados a la mansedumbre.",
+        "Eso sugiere que el perro moderno es un efecto secundario de domesticar la agresividad, mucho más que un invento planeado desde cero."
+      ], pregunta:"¿Tenés mascota o sos más de admirar la de los demás desde lejos?" },
+
+    { tema:"El algoritmo que no suelta", fichas:[
+        "Netflix reemplazó el botón de 'seguir viendo' por el autoplay porque cada decisión que le pide a tu cerebro es una oportunidad de que digas 'ya fue, me voy a dormir'. Sacarte la decisión de encima es la estrategia completa.",
+        "TikTok usa el mismo truco con el scroll infinito: nunca hay un final natural donde el cerebro diga 'listo, terminé'."
+      ], pregunta:"¿Cuál fue la última serie que viste completa en un fin de semana sin haberlo planeado?" },
+
+    { tema:"Hablar del clima", fichas:[
+        "Hablar del clima con un desconocido es matemática social pura: es de los pocos temas que casi nadie puede tomarse a mal, todos lo viven al mismo tiempo, y no revela nada personal tuyo. Bajo riesgo, alto rendimiento.",
+        "Por eso sobrevive como ice-breaker hace siglos, en cualquier idioma y cualquier cultura."
+      ], pregunta:"¿Cuál es el clima ideal para vos: calor seco, frío con manta, o lluvia para quedarte en cama?" },
+
+    { tema:"El sueño que se te escapa", fichas:[
+        "Durante el sueño REM, el hipocampo — la zona que arma recuerdos a largo plazo — trabaja distinto que despierto y graba con menos fuerza. Por eso el sueño más intenso de tu vida se te escapa diez minutos después de despertarte.",
+        "Si te despertás en medio de un sueño lo recordás mejor: las siestas cortas dejan sueños más vívidos que dormir toda la noche derecho."
+      ], pregunta:"¿Te acordás de algún sueño recurrente que hayas tenido de chico?" },
+
+    { tema:"El otro carril, más rápido", fichas:[
+        "En el tráfico, tu cerebro cuenta los autos que te pasan a vos pero no cuenta los que vos pasás a ellos — por eso sentís que el otro carril siempre avanza más rápido, aunque en promedio avancen igual. Se llama sesgo de comparación asimétrica.",
+        "Pasa lo mismo en la fila del súper: la fila de al lado siempre parece la ganadora hasta que te cambiás, y entonces la ganadora pasa a ser la que dejaste."
+      ], pregunta:"¿Sos de cambiarte de fila o de quedarte fiel hasta el final aunque sea la más lenta?" },
+
+    { tema:"El chisme que nos une", fichas:[
+        "El antropólogo Robin Dunbar tiene una teoría fuerte: el chisme funciona como el pegamento social que reemplazó al 'espulgarse' que hacen los monos entre ellos. Hablar de quién hizo qué mantiene el grupo unido sin tener que tocarse todo el día.",
+        "Según su cálculo, cerca del 65% de toda conversación humana espontánea es sobre otras personas — no sobre trabajo, ni clima, ni ideas."
+      ], pregunta:"¿Sos de escuchar el chisme calladito o de preguntar '¿y después qué pasó?'?" },
+
+    { tema:"El horóscopo que siempre acierta", fichas:[
+        "En 1948, el psicólogo Bertram Forer le dio a sus alumnos un 'test de personalidad' — pero les entregó a todos exactamente el mismo texto genérico. El 90% dijo que la descripción los representaba a la perfección. Se llama Efecto Barnum: frases lo bastante ambiguas encajan con cualquiera.",
+        "Es la misma razón por la que el horóscopo del diario le queda bien a millones de personas del mismo signo el mismo día."
+      ], pregunta:"¿Leés tu horóscopo aunque no le creas del todo?" },
+
+    { tema:"El tacón que era de guerra", fichas:[
+        "El tacón alto no nació para estilizar la pierna: lo usaban jinetes persas alrededor del año 1500 para que el pie no se resbalara del estribo al galopar. Era equipo militar.",
+        "Cuando la moda cruzó a Europa, la aristocracia lo adoptó como símbolo de estatus — cuanto más alto el tacón, menos necesitabas caminar o trabajar. Recién en el siglo XVIII pasó a asociarse con las mujeres."
+      ], pregunta:"¿Tenés algo en tu ropero que compraste más por estatus que por comodidad?" },
+
+    { tema:"El doble check azul", fichas:[
+        "El doble check azul de WhatsApp confirma que el otro leyó tu mensaje y decidió no contestar todavía — información que antes de los 2010s simplemente no existía, y que generó una ansiedad social nueva.",
+        "Por eso hay gente que apaga la confirmación de lectura: prefieren leer en privado, sin que el otro sepa que ya lo hicieron."
+      ], pregunta:"¿Sos de apagar el doble check o te da igual que sepan que leíste?" },
+
+    { tema:"El miedo a volar", fichas:[
+        "Estadísticamente tenés más probabilidad de morir manejando hasta el aeropuerto que en el vuelo en sí — la aviación comercial es de los medios de transporte más seguros que existen por kilómetro recorrido.",
+        "El cerebro prioriza la sensación de control por encima del cálculo de probabilidades. Manejando el auto sentís que decidís vos; en el avión no decidís nada — y esa sensación pesa más que cualquier estadística."
+      ], pregunta:"¿Te da nervios volar o sos de dormirte antes de despegar?" },
+
+    { tema:"Las plantas anti-ansiedad", fichas:[
+        "Durante la pandemia las ventas de plantas de interior explotaron en casi todo el mundo. La horticultura terapéutica tiene estudios que muestran que cuidar una planta baja medibles de cortisol, la hormona del estrés — mucho más que un tema de decoración.",
+        "La teoría es simple: una planta te devuelve sensación de control y rutina cuando todo lo demás se siente impredecible — regarla depende 100% de vos."
+      ], pregunta:"¿Tenés mano verde o sos asesino serial de suculentas?" },
+
+    { tema:"El videojuego de la infancia", fichas:[
+        "Los videojuegos de la infancia generan más nostalgia que casi cualquier otro medio porque combinan dos cosas a la vez: memoria emocional y memoria muscular — tu mano todavía recuerda el patrón de botones aunque tu cabeza no.",
+        "Por eso escuchar la música de un juego viejo te puede transportar más rápido que ver una foto de la misma época."
+      ], pregunta:"¿Cuál fue el primer videojuego que jugaste tantas veces que te lo sabés de memoria?" },
+
+    { tema:"La plata y la felicidad", fichas:[
+        "El economista Daniel Kahneman, premio Nobel, encontró que el bienestar emocional día a día sube con el ingreso, pero mucho más lento después de cierto punto.",
+        "Una revisión posterior (Killingsworth, 2021) matizó eso: para la mayoría sigue subiendo, solo que más despacio — salvo para el grupo ya infeliz, a quienes más plata no les cambia el humor para nada."
+      ], pregunta:"Si ganaras la lotería mañana, ¿lo primero que harías sería contárselo a alguien o quedártelo callado un tiempo?" },
+
+    { tema:"Dejar todo para después", fichas:[
+        "Procrastinar es una decisión química: tu cerebro le da más peso al malestar inmediato de empezar algo difícil que al beneficio futuro de tenerlo terminado. Elegís el alivio de ahora aunque sepas que va a costar más caro después.",
+        "Los estudios de autocontrol muestran que la gente que menos procrastina simplemente tiene menos fricción para empezar (planificación previa, ambiente ordenado) — la disciplina es diseño aplicado, más que un rasgo de personalidad."
+      ], pregunta:"¿Sos de terminar todo con anticipación o de la adrenalina del último momento?" },
+
+    { tema:"El picante que duele bien", fichas:[
+        "La capsaicina del picante activa dolor real: los mismos receptores que el calor físico. Tu cuerpo responde liberando endorfinas para calmar ese dolor — la misma química que corriendo o riéndote.",
+        "Por eso hay gente que se vuelve adicta al picante: no busca el ardor en sí, busca el subidón que viene después del ardor."
+      ], pregunta:"¿Aguantás picante o llorás con la pimienta común?" },
+
+    { tema:"La canción pegada en la cabeza", fichas:[
+        "Se llama 'earworm' y le pasa más a las personas con más experiencia musical, no menos — cuanto más entrenado tiene el cerebro para predecir patrones melódicos, más fácil se le queda una canción trabada en loop.",
+        "Las canciones más pegajosas suelen tener un pequeño quiebre en el patrón esperado que el cerebro intenta 'resolver' una y otra vez sin lograrlo del todo."
+      ], pregunta:"¿Cuál es la última canción que se te quedó pegada sin que la eligieras vos?" },
+
+    { tema:"Tocar madera", fichas:[
+        "Las supersticiones sobreviven porque el cerebro prefiere sentir algo de control sobre el azar, aunque sea un gesto sin efecto real — los psicólogos lo llaman 'pensamiento mágico' y aparece hasta en gente que se dice 100% racional.",
+        "Curiosamente, estudios de deporte muestran que los rituales sí mejoran el rendimiento: bajan la ansiedad antes de un momento tenso, aunque no cambien la suerte en sí."
+      ], pregunta:"¿Tenés algún ritual o superstición que hacés aunque sepas que no cambia nada?" },
+
+    { tema:"El celular antes de dormir", fichas:[
+        "La luz azul le dice a tu cerebro que todavía es de día, porque frena la producción de melatonina — la hormona que avisa que es hora de dormir. Te retrasa el reloj biológico de forma literal, mucho más allá de simplemente entretenerte hasta tarde.",
+        "El mismo efecto lo tiene la luz blanca fría de una heladera abierta a medianoche."
+      ], pregunta:"¿Sos de celular hasta quedarte dormido o de dejarlo lejos de la cama?" },
+
+    { tema:"El robot que da miedo", fichas:[
+        "Existe un fenómeno llamado 'valle inquietante': cuanto más se parece un robot o animación a un humano real sin serlo del todo, más rechazo genera — el punto justo entre 'casi humano' y 'humano' es el más incómodo de todos.",
+        "Por eso Pixar hace personajes con ojos gigantes y proporciones exageradas: acercarse demasiado al realismo hubiera generado repulsión en vez de ternura."
+      ], pregunta:"¿Te dan curiosidad o desconfianza los avances de inteligencia artificial?" },
+
+    { tema:"Mirar las estrellas", fichas:[
+        "La fascinación humana por el espacio tiene una explicación simple: es lo único que se puede ver a simple vista de algo que está a años luz — estás mirando luz que salió hace siglos, antes de que existieras.",
+        "Cuando mirás una estrella, en muchos casos esa estrella ya dejó de existir: solo ves su último mensaje, en camino desde hace miles de años."
+      ], pregunta:"¿Alguna vez viste un cielo tan estrellado que te quedaste en silencio mirándolo?" },
+
+    { tema:"El tatuaje de los 20", fichas:[
+        "Las encuestas sobre arrepentimiento de tatuajes son consistentes: el motivo número uno es haberlo hecho pensando en otra persona — una pareja, una etapa. El tatuaje sobrevive a la relación que lo motivó.",
+        "La mayoría igual sostiene el tatuaje con orgullo, aunque hoy elegiría otro diseño: lo ven como una foto congelada de quién eran en ese momento."
+      ], pregunta:"¿Tenés algún tatuaje, o algo que te tatuarías mañana mismo si no doliera?" },
+
+    { tema:"La canción que no admitís", fichas:[
+        "La culpa que sentís por disfrutar un 'guilty pleasure' musical viene de asociar ese gusto con un estatus social que no querés proyectar — el miedo a lo que piensen de vos por escucharla, no la canción en sí.",
+        "La gente más segura de sí misma admite sus guilty pleasures más rápido: cuanto menos necesitás la aprobación ajena, menos culpa por el gusto raro."
+      ], pregunta:"¿Cuál es la canción que subís de volumen solo cuando estás solo en el auto?" },
+
+    { tema:"El café que se enfría", fichas:[
+        "El café pierde compuestos aromáticos volátiles a medida que se enfría, así que el último sorbo literalmente sabe distinto al primero — más que un tema de distracción, es química pura.",
+        "Es tan universal que hay diseño de tazas dedicado a resolverlo: tazas con calentador incorporado, doble pared térmica, tapas que retienen el vapor."
+      ], pregunta:"¿Te tomás el café de un tirón o siempre termina helado en algún rincón?" },
+
+    { tema:"Dulce o picante", fichas:[
+        "La preferencia por lo dulce viene de un instinto evolutivo antiguo: el azúcar significaba fruta madura y calorías seguras. Gustar del picante, en cambio, es un gusto aprendido — ningún bebé nace pidiendo chile.",
+        "Por eso casi todas las culturas tienen postres dulces desde la infancia, mientras el picante extremo casi siempre se aprende de adulto, a fuerza de exposición repetida."
+      ], pregunta:"¿Sos de cerrar la comida con algo dulce sí o sí, o podés pasar sin postre?" },
+
+    { tema:"El déjà vu que no se explica", fichas:[
+        "Una de las teorías con más peso sobre el déjà vu dice que es un pequeño desfasaje entre dos rutas de procesamiento de la memoria: una parte del cerebro registra la escena como 'ya vivida' una fracción de segundo antes de que la otra termine de percibirla en tiempo real, y el cerebro interpreta ese desfasaje como un recuerdo.",
+        "Le pasa más seguido a la gente joven y viajada que a los adultos mayores, lo cual apoya la idea de que tiene que ver con la velocidad con la que el cerebro compara escenas nuevas contra su banco de memoria — no con nada paranormal."
+      ], pregunta:"¿Te acordás de la última vez que sentiste un déjà vu tan fuerte que tuviste que parar lo que estabas haciendo?" },
+
+    { tema:"El tupper sospechoso", fichas:[
+        "Casi todas las heladeras del mundo tienen un tupper con algo de hace más de una semana que nadie se anima a abrir — en inglés hasta hay un término coloquial para eso: 'science experiment'.",
+        "La razón es psicológica: tirar comida activa una culpa fuerte relacionada con el desperdicio, así que se prefiere posponer la decisión indefinidamente antes que tirarla directamente."
+      ], pregunta:"¿Tenés algo sospechoso en tu heladera ahora mismo que preferís no revisar?" },
+
+    { tema:"El silencio en el ascensor", fichas:[
+        "El silencio entre desconocidos en un espacio cerrado se siente más largo de lo que realmente dura — estudios de percepción del tiempo muestran que la incomodidad social 'estira' el tiempo subjetivo.",
+        "En el ascensor, mirar el celular es la forma socialmente aceptada de evitar sostener contacto visual con un desconocido en un espacio tan chico — más que por algo urgente que realmente esté pasando."
+      ], pregunta:"¿Sos de romper el silencio en el ascensor o de aguantar mirando los números subir?" },
+
+    { tema:"El bostezo contagioso", fichas:[
+        "Bostezar es contagioso incluso entre especies distintas: los perros bostezan cuando ven bostezar a su dueño humano, algo que se relaciona con la misma empatía neuronal de las neuronas espejo.",
+        "Cuanto más cercana emocionalmente es la relación con la persona, más fácil te contagia el bostezo — a un desconocido te contagia menos que a tu pareja o mejor amigo."
+      ], pregunta:"¿Te contagia el bostezo apenas ves a alguien bostezar?" },
+
+    { tema:"El barrio que ya no es", fichas:[
+        "La nostalgia por 'cómo era el barrio antes' tiene nombre: sesgo de declive — el cerebro tiende a recordar el pasado como mejor de lo que objetivamente fue, sobre todo en cosas ligadas a la infancia.",
+        "Este sesgo se repite generación tras generación: cada generación jura que 'antes todo era mejor', incluida la generación anterior a la tuya diciendo lo mismo de la suya."
+      ], pregunta:"¿Qué cambió en tu barrio de la infancia que todavía te choca cuando volvés?" },
+
+    { tema:"El pasto recién cortado", fichas:[
+        "Cuando se corta una hoja, algunas plantas liberan compuestos volátiles — el famoso 'olor a pasto recién cortado' — que funcionan como señal de alarma química hacia el resto de la planta y hacia plantas vecinas.",
+        "Es una respuesta de estrés medible y real, aunque distinta al dolor que sentimos los humanos — las plantas no tienen sistema nervioso para procesarlo de la misma forma."
+      ], pregunta:"¿Te generaría culpa saber que cortar el pasto manda una señal de alarma a las plantas de alrededor?" },
+
+    { tema:"Reírte de tu propio chiste", fichas:[
+        "Reírte de tu propio chiste antes de terminar de contarlo cumple una función social real: la risa avisa a los demás 'esto es zona segura, relájense', mucho más que celebrar el chiste en sí.",
+        "El 80% de la risa cotidiana ocurre en medio de charlas comunes, como puntuación social ('¿viste?', 'jaja sí'), sin que haya necesariamente un chiste de por medio."
+      ], pregunta:"¿Sos de reírte antes de terminar el chiste o de aguantar la cara seria hasta el final?" }
+  ];
+
+  var TOPICS_NETWORKING = [
     { tema:"La semana laboral de 4 días", fichas:[
         "Islandia hizo entre 2015 y 2019 una de las pruebas más grandes del mundo de semana de 4 días con el mismo sueldo, con cerca del 1% de su fuerza laboral. El resultado llevó a que hoy la mayoría de los trabajadores islandeses ya tenga jornadas reducidas o el derecho a negociarlas.",
         "La productividad se sostuvo en la mayoría de los equipos, y en varios subió: el tiempo se comprime y sobra menos espacio para la procrastinación entre tarea y tarea."
@@ -522,6 +691,9 @@
       ], pregunta:"¿Te cuesta más decir el precio, o sostener el silencio después de decirlo?" }
   ];
 
+  var TOPICS = TOPICS_RANDOM;
+  var currentMode = 'random';
+
   var DURATIONS = [90,105,120,135,150,165,180];
 
   // ---------------------------------------------------------------
@@ -552,11 +724,16 @@
   var deckCounterEl = document.getElementById('deckCounter');
   var toastEl = document.getElementById('toast');
   var flashEl = document.getElementById('flash');
+  var modeRandomBtn = document.getElementById('modeRandomBtn');
+  var modeNetworkingBtn = document.getElementById('modeNetworkingBtn');
 
   function goTo(name){
     Object.keys(screens).forEach(function(k){
       screens[k].classList.toggle('hidden', k !== name);
     });
+    var lock = (name === 'spin' || name === 'count' || name === 'run');
+    modeRandomBtn.disabled = lock;
+    modeNetworkingBtn.disabled = lock;
   }
 
   function shuffle(arr){
@@ -568,9 +745,25 @@
   }
 
   function updateDeckCounter(){
-    deckCounterEl.textContent = 'Fichas en la máquina: ' + deckRemaining.length + '/' + TOPICS.length;
+    var label = currentMode === 'random' ? 'Random' : 'Networking';
+    deckCounterEl.textContent = label + ' — Fichas: ' + deckRemaining.length + '/' + TOPICS.length;
   }
   updateDeckCounter();
+
+  function setMode(mode){
+    if(mode === currentMode) return;
+    currentMode = mode;
+    TOPICS = (mode === 'random') ? TOPICS_RANDOM : TOPICS_NETWORKING;
+    deckRemaining = shuffle(TOPICS.slice());
+    updateDeckCounter();
+    modeRandomBtn.classList.toggle('active', mode === 'random');
+    modeRandomBtn.setAttribute('aria-pressed', String(mode === 'random'));
+    modeNetworkingBtn.classList.toggle('active', mode === 'networking');
+    modeNetworkingBtn.setAttribute('aria-pressed', String(mode === 'networking'));
+  }
+
+  modeRandomBtn.addEventListener('click', function(){ setMode('random'); });
+  modeNetworkingBtn.addEventListener('click', function(){ setMode('networking'); });
 
   function showToast(msg){
     toastEl.textContent = msg;

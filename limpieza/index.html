@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Limpieza IG · The Marketographer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#151210;
+    --panel:#1E1A16;
+    --panel2:#26211C;
+    --line:#3A332C;
+    --ink:#F2EDE4;
+    --ink-dim:#A89F92;
+    --gold:#E8B34B;
+    --gold-deep:#B8862E;
+    --ok:#8FBF7F;
+    --warn:#E8B34B;
+    --danger:#E06D5A;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{font-size:16px}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Space Grotesk',system-ui,sans-serif;
+    line-height:1.55;
+    padding:0 16px 80px;
+  }
+  .wrap{max-width:860px;margin:0 auto}
+  header{padding:40px 0 24px;border-bottom:1px solid var(--line);margin-bottom:28px}
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--gold);margin-bottom:10px;
+  }
+  h1{font-size:clamp(1.6rem,4vw,2.3rem);font-weight:700;letter-spacing:-.01em}
+  h1 span{color:var(--gold)}
+  .sub{color:var(--ink-dim);margin-top:8px;max-width:56ch}
+  .card{
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px;margin-bottom:20px;
+  }
+  .card h2{
+    font-size:1.05rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:10px;
+  }
+  .step-tag{
+    font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--bg);
+    background:var(--gold);border-radius:6px;padding:2px 8px;letter-spacing:.08em;
+  }
+  details{border:1px solid var(--line);border-radius:10px;background:var(--panel2);margin-top:8px}
+  summary{cursor:pointer;padding:12px 16px;font-weight:500;color:var(--gold);list-style:none}
+  summary::-webkit-details-marker{display:none}
+  summary::before{content:"+ ";font-family:'IBM Plex Mono',monospace}
+  details[open] summary::before{content:"– "}
+  details .inner{padding:0 16px 16px;color:var(--ink-dim);font-size:.92rem}
+  details ol{padding-left:20px;display:grid;gap:6px;margin-top:6px}
+  .drop{
+    border:2px dashed var(--line);border-radius:12px;padding:28px;text-align:center;
+    color:var(--ink-dim);cursor:pointer;transition:border-color .2s,background .2s;margin-top:14px;
+  }
+  .drop:hover,.drop.over{border-color:var(--gold);background:rgba(232,179,75,.05)}
+  .drop strong{color:var(--ink)}
+  input[type=file]{display:none}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px}
+  .stat{
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px 18px;
+  }
+  .stat .n{font-size:1.7rem;font-weight:700;font-variant-numeric:tabular-nums}
+  .stat .l{font-size:.78rem;color:var(--ink-dim);letter-spacing:.04em;text-transform:uppercase;font-family:'IBM Plex Mono',monospace}
+  .stat.gold .n{color:var(--gold)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:640px){.grid2{grid-template-columns:1fr}}
+  label{display:block;font-size:.8rem;color:var(--ink-dim);margin-bottom:5px;font-family:'IBM Plex Mono',monospace;letter-spacing:.05em}
+  input[type=date],input[type=number],input[type=search],textarea{
+    width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:9px;
+    color:var(--ink);padding:10px 12px;font-family:'Space Grotesk',sans-serif;font-size:.95rem;
+  }
+  input:focus,textarea:focus{outline:2px solid var(--gold);outline-offset:1px;border-color:var(--gold)}
+  textarea{min-height:84px;resize:vertical;font-family:'IBM Plex Mono',monospace;font-size:.85rem}
+  .check{display:flex;align-items:center;gap:10px;margin-top:14px;color:var(--ink-dim);font-size:.92rem;cursor:pointer}
+  .check input{width:18px;height:18px;accent-color:var(--gold);cursor:pointer}
+  button{
+    font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.95rem;
+    border:none;border-radius:10px;padding:12px 20px;cursor:pointer;transition:transform .08s,opacity .2s;
+  }
+  button:active{transform:scale(.98)}
+  .btn-gold{background:var(--gold);color:var(--bg)}
+  .btn-gold:hover{background:var(--gold-deep)}
+  .btn-ghost{background:transparent;color:var(--ink-dim);border:1px solid var(--line)}
+  .btn-ghost:hover{color:var(--danger);border-color:var(--danger)}
+  /* ── Fotómetro: medidor de acciones diarias ── */
+  .meter-card{background:linear-gradient(180deg,var(--panel) 0%,#1a1511 100%)}
+  .meter{position:relative;margin:18px 0 6px}
+  .meter-scale{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--ink-dim);margin-bottom:6px}
+  .meter-track{
+    position:relative;height:14px;border-radius:7px;overflow:hidden;
+    background:linear-gradient(90deg,var(--ok) 0%,var(--ok) 40%,var(--warn) 40%,var(--warn) 66%,var(--danger) 66%,var(--danger) 100%);
+    opacity:.28;
+  }
+  .meter-needle{
+    position:absolute;top:-7px;width:3px;height:28px;background:var(--ink);
+    border-radius:2px;transition:left .35s cubic-bezier(.2,.8,.3,1);box-shadow:0 0 8px rgba(242,237,228,.5);
+  }
+  .meter-ticks{position:absolute;inset:0;display:flex;justify-content:space-between;padding:0 1px}
+  .meter-ticks i{width:1px;background:rgba(242,237,228,.25);height:14px}
+  .meter-read{font-family:'IBM Plex Mono',monospace;font-size:.85rem;margin-top:12px}
+  .meter-read b{font-size:1.3rem;color:var(--gold)}
+  .meter-msg{font-size:.88rem;margin-top:6px;color:var(--ink-dim)}
+  .meter-msg.warn{color:var(--warn)}
+  .meter-msg.danger{color:var(--danger);font-weight:500}
+  /* lote */
+  .batch-head{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin-bottom:14px}
+  .batch-head .field{flex:1;min-width:130px}
+  ul.batch{list-style:none;display:grid;gap:8px}
+  ul.batch li{
+    display:flex;align-items:center;gap:12px;background:var(--panel2);
+    border:1px solid var(--line);border-radius:10px;padding:10px 14px;
+  }
+  ul.batch li.done{opacity:.42}
+  ul.batch li.done .uname{text-decoration:line-through}
+  ul.batch input[type=checkbox]{width:20px;height:20px;accent-color:var(--gold);cursor:pointer;flex-shrink:0}
+  .uname{font-weight:500;word-break:break-all}
+  .udate{font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--ink-dim);margin-left:auto;flex-shrink:0}
+  .ulink{
+    color:var(--gold);font-size:.8rem;text-decoration:none;border:1px solid var(--gold);
+    border-radius:7px;padding:4px 10px;flex-shrink:0;white-space:nowrap;
+  }
+  .ulink:hover{background:var(--gold);color:var(--bg)}
+  .chip{
+    font-family:'IBM Plex Mono',monospace;font-size:.62rem;color:var(--danger);
+    border:1px solid var(--danger);border-radius:5px;padding:1px 6px;flex-shrink:0;
+  }
+  .progress-wrap{margin-top:8px}
+  .pbar{height:10px;border-radius:5px;background:var(--panel2);overflow:hidden;border:1px solid var(--line)}
+  .pbar i{display:block;height:100%;background:var(--gold);border-radius:5px;transition:width .4s}
+  .ptext{font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--ink-dim);margin-top:6px}
+  /* ── Detector de ráfagas ── */
+  .chart-scroll{overflow-x:auto;padding-bottom:8px;margin-top:14px}
+  .chart{display:flex;align-items:flex-end;gap:3px;height:150px;min-width:min-content}
+  .bar-col{display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0}
+  .bar{width:14px;border-radius:3px 3px 0 0;background:var(--line);transition:height .3s;min-height:2px}
+  .bar.hot{background:var(--danger);box-shadow:0 0 10px rgba(224,109,90,.4)}
+  .bar-lbl{font-family:'IBM Plex Mono',monospace;font-size:.55rem;color:var(--ink-dim);writing-mode:vertical-rl;transform:rotate(180deg);height:44px;overflow:hidden}
+  .burst-list{display:grid;gap:10px;margin-top:16px}
+  .burst{
+    display:flex;flex-wrap:wrap;align-items:center;gap:12px;background:var(--panel2);
+    border:1px solid var(--danger);border-radius:10px;padding:12px 16px;
+  }
+  .burst .b-range{font-weight:500}
+  .burst .b-count{font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--danger)}
+  .burst button{margin-left:auto;background:var(--danger);color:var(--bg);padding:8px 14px;font-size:.85rem}
+  .burst button:hover{opacity:.85}
+  .burst.applied{border-color:var(--gold)}
+  .burst.applied button{background:var(--gold)}
+  .hidden{display:none}
+  .note{font-size:.85rem;color:var(--ink-dim);margin-top:10px}
+  .toast{
+    position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+    background:var(--panel2);border:1px solid var(--gold);color:var(--ink);
+    padding:10px 18px;border-radius:10px;font-size:.9rem;opacity:0;pointer-events:none;transition:opacity .3s;z-index:50;
+  }
+  .toast.show{opacity:1}
+  .foot{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-top:8px}
+  @media (prefers-reduced-motion: reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">The Marketographer · Cuarto oscuro</div>
+    <h1>Limpieza de seguidores <span>@themarketographer</span></h1>
+    <p class="sub">Identifica los seguidores fantasma de la era Hiketop+, protege a tu gente y elimina por lotes diarios dentro de los límites seguros de Instagram.</p>
+  </header>
+
+  <!-- PASO 1 -->
+  <section class="card" id="cardSetup">
+    <h2><span class="step-tag">PASO 1</span> Carga tu exportación oficial de Instagram</h2>
+    <p class="note">Esta herramienta trabaja solo con el archivo oficial que Instagram te entrega. Nunca pide tu contraseña y nunca toca tu cuenta, por eso es segura.</p>
+    <details>
+      <summary>Cómo descargar tu lista de seguidores (2 a 15 min de espera)</summary>
+      <div class="inner">
+        <ol>
+          <li>Abre Instagram y ve a tu perfil, luego al menú (☰) y entra a <b>Centro de cuentas</b>.</li>
+          <li>Entra a <b>Tu información y permisos</b> → <b>Descargar tu información</b>.</li>
+          <li>Elige <b>Descargar o transferir información</b> y selecciona tu cuenta @themarketographer.</li>
+          <li>Elige <b>Parte de tu información</b> y marca únicamente <b>Seguidores y seguidos</b>.</li>
+          <li>Descarga en el dispositivo. Intervalo: <b>Desde el principio</b>. Formato: <b>JSON</b>. Calidad de medios: baja (da igual, solo queremos texto).</li>
+          <li>Instagram te enviará un ZIP. Dentro está la carpeta <b>connections/followers_and_following</b> con los archivos <b>followers_1.json</b> (puede haber varios: followers_2, followers_3...).</li>
+          <li>Arrastra aquí todos los archivos followers_*.json a la vez.</li>
+        </ol>
+      </div>
+    </details>
+    <div class="drop" id="drop" tabindex="0" role="button" aria-label="Cargar archivos JSON de seguidores">
+      <strong>Arrastra tus followers_*.json aquí</strong><br>o toca para elegirlos desde tu dispositivo
+    </div>
+    <input type="file" id="fileInput" accept=".json,application/json" multiple>
+  </section>
+
+  <!-- STATS -->
+  <div class="stats hidden" id="stats">
+    <div class="stat"><div class="n" id="stTotal">0</div><div class="l">Seguidores</div></div>
+    <div class="stat gold"><div class="n" id="stTarget">0</div><div class="l">En la mira</div></div>
+    <div class="stat"><div class="n" id="stSafe">0</div><div class="l">Protegidos</div></div>
+    <div class="stat"><div class="n" id="stDone">0</div><div class="l">Eliminados</div></div>
+  </div>
+
+  <!-- DETECTOR DE RÁFAGAS -->
+  <section class="card hidden" id="cardBursts">
+    <h2><span class="step-tag">RADAR</span> Detector de ráfagas Hiketop+</h2>
+    <p class="note">Cada barra es un mes de tu historia como cuenta. La altura indica cuántos seguidores ganaste ese mes. Los meses rojos contienen días con picos anormales (muchos follows de golpe comparados con tu ritmo natural), la firma típica de las apps de follow por follow. No necesitas recordar fechas: el archivo las recuerda por ti.</p>
+    <div class="chart-scroll"><div class="chart" id="chart"></div></div>
+    <div class="burst-list" id="burstList"></div>
+  </section>
+
+  <!-- PASO 2 -->
+  <section class="card hidden" id="cardFilter">
+    <h2><span class="step-tag">PASO 2</span> Define a quién limpiar</h2>
+    <div class="grid2">
+      <div>
+        <label for="dateFrom">Me siguieron desde</label>
+        <input type="date" id="dateFrom">
+      </div>
+      <div>
+        <label for="dateTo">Hasta</label>
+        <input type="date" id="dateTo">
+      </div>
+    </div>
+    <p class="note">Ajusta el rango a la época en que usaste Hiketop+. La fecha en que cada cuenta te siguió viene en la exportación, así que el filtro es exacto.</p>
+    <label class="check"><input type="checkbox" id="onlySus"> Priorizar solo cuentas con pinta de bot (4+ dígitos en el usuario, nombres genéricos)</label>
+    <div style="margin-top:16px">
+      <label for="whitelist">Lista blanca (usuarios que jamás se tocan, uno por línea o separados por comas)</label>
+      <textarea id="whitelist" placeholder="mama_ejemplo&#10;hermana_ejemplo&#10;mejoramigo"></textarea>
+    </div>
+  </section>
+
+  <!-- FOTÓMETRO -->
+  <section class="card meter-card hidden" id="cardMeter">
+    <h2><span class="step-tag">LÍMITE</span> Fotómetro de acciones de hoy</h2>
+    <p class="note">Instagram bloquea temporalmente las cuentas que eliminan seguidores demasiado rápido. Como en una foto, la exposición correcta está en el centro: la zona verde llega hasta 60 eliminaciones al día, la ámbar hasta 100, y pasar de ahí es quemar la toma.</p>
+    <div class="meter">
+      <div class="meter-scale"><span>0</span><span>30</span><span>60</span><span>100</span><span>150</span></div>
+      <div class="meter-track"><div class="meter-ticks"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+      <div class="meter-needle" id="needle" style="left:0%"></div>
+    </div>
+    <div class="meter-read">Hoy: <b id="todayCount">0</b> eliminaciones marcadas</div>
+    <div class="meter-msg" id="meterMsg">Exposición correcta. Puedes seguir con calma, deja pasar unos minutos entre cada una.</div>
+  </section>
+
+  <!-- PASO 3 -->
+  <section class="card hidden" id="cardBatch">
+    <h2><span class="step-tag">PASO 3</span> Lote del día</h2>
+    <div class="batch-head">
+      <div class="field">
+        <label for="batchSize">Tamaño del lote</label>
+        <input type="number" id="batchSize" min="5" max="150" value="60">
+      </div>
+      <div class="field">
+        <label for="searchBox">Buscar usuario</label>
+        <input type="search" id="searchBox" placeholder="usuario...">
+      </div>
+      <button class="btn-gold" id="genBatch">Generar lote</button>
+    </div>
+    <p class="note">Flujo: abre el perfil con el botón dorado, en Instagram toca los tres puntos y elige <b>Eliminar seguidor</b> (la persona nunca recibe aviso), vuelve aquí y marca la casilla. La herramienta lleva la cuenta y guarda tu avance.</p>
+    <ul class="batch" id="batchList"></ul>
+    <div class="progress-wrap">
+      <div class="pbar"><i id="pfill" style="width:0%"></i></div>
+      <div class="ptext" id="ptext">0% de la limpieza completada</div>
+    </div>
+    <div class="foot">
+      <span class="note" id="saveState">Progreso guardado ✓</span>
+      <button class="btn-ghost" id="resetBtn">Reiniciar todo</button>
+    </div>
+  </section>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  const KEY='ig_cleanup_v1';
+  let state={followers:[],whitelist:[],from:'',to:'',onlySus:false,batchSize:60,daily:{},batch:[]};
+  let memoryOnly=false;
+
+  // ── persistencia: window.storage → localStorage → memoria ──
+  async function save(){
+    const raw=JSON.stringify(state);
+    try{
+      if(window.storage){ const r=await window.storage.set(KEY,raw); if(r){flagSaved(true);return;} }
+    }catch(e){}
+    try{ localStorage.setItem(KEY,raw); flagSaved(true); return; }catch(e){}
+    memoryOnly=true; flagSaved(false);
+  }
+  async function load(){
+    try{
+      if(window.storage){ const r=await window.storage.get(KEY); if(r&&r.value){return JSON.parse(r.value);} }
+    }catch(e){}
+    try{ const raw=localStorage.getItem(KEY); if(raw) return JSON.parse(raw); }catch(e){}
+    return null;
+  }
+  let saveTimer=null;
+  function queueSave(){ clearTimeout(saveTimer); saveTimer=setTimeout(save,600); }
+  function flagSaved(ok){
+    const el=document.getElementById('saveState');
+    el.textContent= ok?'Progreso guardado ✓':'Sin almacenamiento persistente: exporta antes de cerrar';
+    el.style.color= ok?'var(--ink-dim)':'var(--danger)';
+  }
+
+  // ── utilidades ──
+  const $=id=>document.getElementById(id);
+  function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2600); }
+  function today(){ return new Date().toISOString().slice(0,10); }
+  function fmtDate(ts){ return new Date(ts*1000).toLocaleDateString('es-BO',{year:'numeric',month:'short',day:'numeric'}); }
+  function isSuspicious(u){
+    const digits=(u.match(/\d/g)||[]).length;
+    if(digits>=4) return true;
+    if(/\d{3,}$/.test(u)&&u.length>=14) return true;
+    if(/^(user|insta|follow|real|official)[._\d]/i.test(u)) return true;
+    return false;
+  }
+  function parseWhitelist(txt){
+    return txt.split(/[\n,;\s]+/).map(s=>s.trim().replace(/^@/,'').toLowerCase()).filter(Boolean);
+  }
+
+  // ── parseo del export de Instagram ──
+  function extractFollowers(json){
+    let arr=[];
+    if(Array.isArray(json)) arr=json;
+    else if(json&&Array.isArray(json.relationships_followers)) arr=json.relationships_followers;
+    const out=[];
+    for(const item of arr){
+      const sld=item.string_list_data&&item.string_list_data[0];
+      if(sld&&sld.value) out.push({u:sld.value,t:sld.timestamp||0,r:0});
+    }
+    return out;
+  }
+  async function handleFiles(files){
+    let added=0, all=new Map(state.followers.map(f=>[f.u,f]));
+    for(const f of files){
+      try{
+        const json=JSON.parse(await f.text());
+        for(const fo of extractFollowers(json)){
+          if(!all.has(fo.u)){ all.set(fo.u,{...fo,s:isSuspicious(fo.u)?1:0}); added++; }
+        }
+      }catch(e){ toast('No pude leer '+f.name+'. Verifica que sea el JSON del export.'); }
+    }
+    if(added===0&&all.size===0){ toast('No encontré seguidores en esos archivos.'); return; }
+    state.followers=[...all.values()].sort((a,b)=>a.t-b.t);
+    toast(added+' seguidores cargados. Total: '+state.followers.length);
+    revealTools(); refresh(); queueSave();
+  }
+
+  // ── filtro objetivo ──
+  function targetList(){
+    const wl=new Set(state.whitelist);
+    const from=state.from?Date.parse(state.from)/1000:0;
+    const to=state.to?Date.parse(state.to)/1000+86399:Infinity;
+    return state.followers.filter(f=>
+      !wl.has(f.u.toLowerCase()) &&
+      f.t>=from && f.t<=to &&
+      (!state.onlySus||f.s===1)
+    );
+  }
+
+  // ── render ──
+  function refresh(){
+    const tgt=targetList();
+    const done=state.followers.filter(f=>f.r===1).length;
+    $('stTotal').textContent=state.followers.length.toLocaleString('es');
+    $('stTarget').textContent=tgt.filter(f=>!f.r).length.toLocaleString('es');
+    $('stSafe').textContent=state.whitelist.length.toLocaleString('es');
+    $('stDone').textContent=done.toLocaleString('es');
+    const totalPlanned=tgt.length||1;
+    const pct=Math.min(100,Math.round(tgt.filter(f=>f.r).length/totalPlanned*100));
+    $('pfill').style.width=pct+'%';
+    $('ptext').textContent=pct+'% de la limpieza completada ('+tgt.filter(f=>f.r).length+' de '+tgt.length+' objetivos)';
+    renderMeter();
+    renderBatch();
+    renderBursts();
+  }
+
+  function renderMeter(){
+    const n=state.daily[today()]||0;
+    $('todayCount').textContent=n;
+    const pos=Math.min(100,(n/150)*100);
+    $('needle').style.left='calc('+pos+'% - 1px)';
+    const msg=$('meterMsg');
+    if(n<60){ msg.className='meter-msg'; msg.textContent='Exposición correcta. Puedes seguir con calma, deja pasar unos minutos entre cada una.'; }
+    else if(n<=100){ msg.className='meter-msg warn'; msg.textContent='Zona ámbar. Baja el ritmo: espaciar las eliminaciones en varias horas reduce el riesgo de bloqueo.'; }
+    else{ msg.className='meter-msg danger'; msg.textContent='Zona de bloqueo. Para aquí y retoma mañana. Tu cuenta ya tuvo historial con apps de terceros y conviene cuidarla el doble.'; }
+  }
+
+  function renderBatch(){
+    const list=$('batchList'); list.innerHTML='';
+    const q=$('searchBox').value.trim().toLowerCase();
+    let items=state.batch.map(u=>state.followers.find(f=>f.u===u)).filter(Boolean);
+    if(q) items=items.filter(f=>f.u.toLowerCase().includes(q));
+    if(items.length===0){
+      const li=document.createElement('li');
+      li.innerHTML='<span class="note">Genera un lote para empezar la sesión de hoy.</span>';
+      list.appendChild(li); return;
+    }
+    for(const f of items){
+      const li=document.createElement('li'); if(f.r)li.classList.add('done');
+      const cb=document.createElement('input'); cb.type='checkbox'; cb.checked=!!f.r;
+      cb.setAttribute('aria-label','Marcar '+f.u+' como eliminado');
+      cb.addEventListener('change',()=>{
+        f.r=cb.checked?1:0;
+        const d=today();
+        state.daily[d]=Math.max(0,(state.daily[d]||0)+(cb.checked?1:-1));
+        refresh(); queueSave();
+      });
+      const name=document.createElement('span'); name.className='uname'; name.textContent='@'+f.u;
+      li.appendChild(cb); li.appendChild(name);
+      if(f.s){ const chip=document.createElement('span'); chip.className='chip'; chip.textContent='BOT?'; li.appendChild(chip); }
+      const dt=document.createElement('span'); dt.className='udate'; dt.textContent=f.t?fmtDate(f.t):'';
+      const a=document.createElement('a'); a.className='ulink'; a.textContent='Abrir perfil';
+      a.href='https://instagram.com/'+encodeURIComponent(f.u); a.target='_blank'; a.rel='noopener noreferrer';
+      li.appendChild(dt); li.appendChild(a);
+      list.appendChild(li);
+    }
+  }
+
+  function generateBatch(){
+    const size=Math.max(5,Math.min(150,parseInt($('batchSize').value)||60));
+    state.batchSize=size;
+    const pend=targetList().filter(f=>!f.r);
+    pend.sort((a,b)=> (b.s-a.s) || (a.t-b.t));
+    state.batch=pend.slice(0,size).map(f=>f.u);
+    if(state.batch.length===0) toast('No quedan objetivos con los filtros actuales. Misión cumplida o filtros muy estrictos.');
+    else toast('Lote de '+state.batch.length+' cuentas listo.');
+    refresh(); queueSave();
+  }
+
+  // ── detector de ráfagas ──
+  function dayKey(ts){ return new Date(ts*1000).toISOString().slice(0,10); }
+  function monthKey(ts){ return new Date(ts*1000).toISOString().slice(0,7); }
+  function median(arr){ const s=[...arr].sort((a,b)=>a-b); const m=Math.floor(s.length/2); return s.length?(s.length%2?s[m]:(s[m-1]+s[m])/2):0; }
+
+  function detectBursts(){
+    const daily=new Map();
+    for(const f of state.followers){ if(!f.t)continue; const k=dayKey(f.t); daily.set(k,(daily.get(k)||0)+1); }
+    if(daily.size===0) return {ranges:[],hotDays:new Set(),daily};
+    const base=median([...daily.values()]);
+    const threshold=Math.max(10,Math.round(base*6));
+    const hot=[...daily.entries()].filter(([,c])=>c>=threshold).map(([d])=>d).sort();
+    // agrupar días calientes cercanos (hasta 21 días de separación) en un solo rango
+    const ranges=[];
+    for(const d of hot){
+      const last=ranges[ranges.length-1];
+      if(last && (Date.parse(d)-Date.parse(last.to))/86400000<=21){ last.to=d; }
+      else ranges.push({from:d,to:d});
+    }
+    for(const r of ranges){
+      const a=Date.parse(r.from)/1000, b=Date.parse(r.to)/1000+86399;
+      r.count=state.followers.filter(f=>f.t>=a&&f.t<=b).length;
+    }
+    ranges.sort((x,y)=>y.count-x.count);
+    return {ranges,hotDays:new Set(hot),daily,threshold};
+  }
+
+  function renderBursts(){
+    if(state.followers.length===0)return;
+    const {ranges,hotDays}=detectBursts();
+    // gráfico mensual
+    const monthly=new Map();
+    for(const f of state.followers){ if(!f.t)continue; const k=monthKey(f.t); monthly.set(k,(monthly.get(k)||0)+1); }
+    const hotMonths=new Set([...hotDays].map(d=>d.slice(0,7)));
+    const keys=[...monthly.keys()].sort();
+    const maxV=Math.max(...monthly.values(),1);
+    const chart=$('chart'); chart.innerHTML='';
+    for(const k of keys){
+      const v=monthly.get(k);
+      const col=document.createElement('div'); col.className='bar-col';
+      const bar=document.createElement('div'); bar.className='bar'+(hotMonths.has(k)?' hot':'');
+      bar.style.height=Math.max(2,Math.round(v/maxV*100))+'px';
+      bar.title=k+': '+v+' seguidores nuevos';
+      const lbl=document.createElement('span'); lbl.className='bar-lbl'; lbl.textContent=k;
+      col.appendChild(bar); col.appendChild(lbl); chart.appendChild(col);
+    }
+    // lista de rangos sospechosos
+    const list=$('burstList'); list.innerHTML='';
+    if(ranges.length===0){
+      const p=document.createElement('p'); p.className='note';
+      p.textContent='No detecté picos anormales frente a tu ritmo natural de crecimiento. Puedes usar el filtro "solo cuentas con pinta de bot" del Paso 2, o definir el rango a mano.';
+      list.appendChild(p); return;
+    }
+    const fmt=d=>new Date(d+'T12:00:00').toLocaleDateString('es-BO',{year:'numeric',month:'short',day:'numeric'});
+    ranges.forEach((r,i)=>{
+      const div=document.createElement('div'); div.className='burst'; div.dataset.i=i;
+      const pad=d=>d; // el rango exacto ya viene del archivo
+      div.innerHTML='<span class="b-range">'+fmt(r.from)+' → '+fmt(r.to)+'</span>'+
+                    '<span class="b-count">'+r.count.toLocaleString('es')+' seguidores en ráfaga</span>';
+      const btn=document.createElement('button'); btn.textContent='Usar este rango';
+      btn.addEventListener('click',()=>{
+        // margen de 1 día a cada lado para no dejar rezagados en el borde
+        const from=new Date(Date.parse(r.from)-86400000).toISOString().slice(0,10);
+        const to=new Date(Date.parse(r.to)+86400000).toISOString().slice(0,10);
+        state.from=from; state.to=to;
+        $('dateFrom').value=from; $('dateTo').value=to;
+        document.querySelectorAll('.burst').forEach(b=>b.classList.remove('applied'));
+        div.classList.add('applied');
+        refresh(); queueSave();
+        toast('Rango aplicado. Revisa el contador "En la mira" y genera tu lote.');
+        $('cardFilter').scrollIntoView({behavior:'smooth'});
+      });
+      div.appendChild(btn); list.appendChild(div);
+    });
+  }
+
+  function revealTools(){
+    ['stats','cardBursts','cardFilter','cardMeter','cardBatch'].forEach(id=>$(id).classList.remove('hidden'));
+  }
+
+  // ── eventos ──
+  const drop=$('drop'), fi=$('fileInput');
+  drop.addEventListener('click',()=>fi.click());
+  drop.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')fi.click();});
+  fi.addEventListener('change',()=>handleFiles([...fi.files]));
+  ['dragover','dragenter'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('over');}));
+  ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('over');}));
+  drop.addEventListener('drop',e=>handleFiles([...e.dataTransfer.files]));
+
+  $('dateFrom').addEventListener('change',e=>{state.from=e.target.value;refresh();queueSave();});
+  $('dateTo').addEventListener('change',e=>{state.to=e.target.value;refresh();queueSave();});
+  $('onlySus').addEventListener('change',e=>{state.onlySus=e.target.checked;refresh();queueSave();});
+  $('whitelist').addEventListener('input',e=>{state.whitelist=parseWhitelist(e.target.value);refresh();queueSave();});
+  $('genBatch').addEventListener('click',generateBatch);
+  $('searchBox').addEventListener('input',renderBatch);
+  $('resetBtn').addEventListener('click',async()=>{
+    if(!confirm('Esto borra todo el progreso guardado de esta herramienta (tu Instagram queda intacto). ¿Continuar?'))return;
+    state={followers:[],whitelist:[],from:'',to:'',onlySus:false,batchSize:60,daily:{},batch:[]};
+    try{ if(window.storage) await window.storage.delete(KEY); }catch(e){}
+    try{ localStorage.removeItem(KEY); }catch(e){}
+    location.reload();
+  });
+
+  // ── init ──
+  (async function init(){
+    const saved=await load();
+    if(saved&&saved.followers&&saved.followers.length){
+      state=saved;
+      $('dateFrom').value=state.from||''; $('dateTo').value=state.to||'';
+      $('onlySus').checked=!!state.onlySus; $('batchSize').value=state.batchSize||60;
+      $('whitelist').value=(state.whitelist||[]).join('\n');
+      revealTools(); refresh();
+      toast('Sesión anterior recuperada: '+state.followers.length+' seguidores en memoria.');
+    }
+  })();
+})();
+</script>
+</body>
+</html>

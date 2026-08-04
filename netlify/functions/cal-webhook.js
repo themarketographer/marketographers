@@ -193,6 +193,20 @@ exports.handler = async (event) => {
     return { statusCode: 200, body: 'Evento ignorado (no es BOOKING_CREATED)' };
   }
 
+  // Solo nos interesan las reservas del tipo de evento "admisiones"
+  // (https://cal.com/themarketographer/admisiones). Cualquier otro
+  // tipo de evento que tengas en Cal.com se ignora acá.
+  const eventSlug = (
+    payload.payload?.eventType?.slug ||
+    payload.payload?.type ||
+    ''
+  ).toLowerCase();
+
+  if (eventSlug !== 'admisiones') {
+    console.log(`Reserva ignorada: es del tipo de evento "${eventSlug}", no "admisiones".`);
+    return { statusCode: 200, body: `Evento ignorado (tipo de evento: ${eventSlug || 'desconocido'})` };
+  }
+
   try {
     const attendee = payload.payload?.attendees?.[0] || {};
     const email = attendee.email || null;

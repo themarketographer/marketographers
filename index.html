@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta name="facebook-domain-verification" content="4vyg010991vuqqub44ildk7sstsyhd" />
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Marketographers | Marketing para fotógrafos - Pablo Villarroel</title>
@@ -476,7 +475,37 @@ t.src=v;s=b.getElementsByTagName(e)[0];
 s.parentNode.insertBefore(t,s)}(window, document,'script',
 'https://connect.facebook.net/en_US/fbevents.js');
 fbq('init', '467504537642622');
-fbq('track', 'PageView');
+
+// ---- Helpers para deduplicar Pixel + Conversions API (mismo event_id) ----
+function makeEventId(prefix){
+  return prefix + '_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);
+}
+function getCookie(name){
+  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+  return match ? match[2] : null;
+}
+function sendCapiEvent(eventName, eventId){
+  try{
+    fetch('/.netlify/functions/capi', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        event_name: eventName,
+        event_id: eventId,
+        event_source_url: window.location.href,
+        fbp: getCookie('_fbp'),
+        fbc: getCookie('_fbc')
+      })
+    }).catch(()=>{});
+  }catch(e){}
+}
+function trackBoth(eventName){
+  const id = makeEventId(eventName.toLowerCase());
+  fbq('track', eventName, {}, {eventID:id});
+  sendCapiEvent(eventName, id);
+}
+
+trackBoth('PageView');
 </script>
 <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=467504537642622&ev=PageView&noscript=1"/></noscript>
 
@@ -829,7 +858,7 @@ fbq('track', 'PageView');
   const observer = new IntersectionObserver((entries)=>{
     entries.forEach(entry=>{
       if(entry.isIntersecting && !viewContentFired){
-        fbq('track', 'ViewContent');
+        trackBoth('ViewContent');
         viewContentFired = true;
         observer.disconnect();
       }
@@ -842,10 +871,10 @@ fbq('track', 'PageView');
     const link = e.target.closest('a');
     if(!link || !link.href) return;
     if(link.href.includes('api.whatsapp.com') || link.href.includes('wa.me') || link.href.includes('chat.whatsapp.com')){
-      fbq('track', 'Lead');
+      trackBoth('Lead');
     }
     if(link.href.includes('nas.com') || link.href.includes('nas.io')){
-      fbq('track', 'InitiateCheckout');
+      trackBoth('InitiateCheckout');
     }
   });
 </script>

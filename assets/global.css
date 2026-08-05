@@ -81,7 +81,8 @@ header{
   border-bottom:1px solid rgba(20,20,20,.08);
 }
 .nav{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;}
-.logo{font-weight:800;font-size:18px;letter-spacing:-.02em;}
+.logo{display:flex;align-items:center;font-weight:800;font-size:18px;letter-spacing:-.02em;}
+.logo img{height:32px;width:auto;display:block;}
 .nav-actions{display:flex;gap:10px;align-items:center;}
 .nav-actions .btn{padding:11px 20px;font-size:14px;}
 

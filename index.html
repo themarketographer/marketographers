@@ -44,66 +44,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
+<link rel="stylesheet" href="/assets/global.css">
 <style>
-  :root{
-    --cream:#faf9f6;
-    --cream-alt:#f1efe9;
-    --ink:#141414;
-    --gold:#F5B729;
-    --red:#C23B26;
-    --muted:#68655f;
-    --white:#ffffff;
-    --radius-pill:100px;
-    --max:1120px;
-  }
-  *{margin:0;padding:0;box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
-  body{
-    font-family:'Poppins',sans-serif;
-    background-color:var(--cream);
-    background-image:radial-gradient(rgba(20,20,20,.08) 1.4px, transparent 1.4px);
-    background-size:26px 26px;
-    color:var(--ink);
-    line-height:1.5;
-    -webkit-font-smoothing:antialiased;
-  }
-  img{max-width:100%;display:block;}
-  a{text-decoration:none;color:inherit;}
-  .wrap{max-width:var(--max);margin:0 auto;padding:0 24px;}
-  .eyebrow{
-    font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
-    color:var(--gold);
-  }
-  .eyebrow-red{color:var(--red);}
-  h1,h2,h3{font-weight:800;line-height:1.08;letter-spacing:-0.02em;}
-  .btn{
-    display:inline-flex;align-items:center;gap:8px;
-    padding:16px 30px;border-radius:var(--radius-pill);
-    font-weight:600;font-size:15px;cursor:pointer;border:none;
-    transition:transform .15s ease, opacity .15s ease;
-  }
-  .btn:hover{transform:translateY(-2px);}
-  .btn-dark{background:var(--ink);color:var(--cream);}
-  .btn-gold{background:var(--gold);color:var(--ink);}
-  .btn-outline{background:transparent;color:var(--ink);border:1.5px solid var(--ink);}
-  .btn-whatsapp{background:#25D366;color:#fff;}
-  section{padding:96px 0;}
-  .bg-alt{
-    background-color:var(--cream-alt);
-    background-image:radial-gradient(rgba(20,20,20,.09) 1.4px, transparent 1.4px);
-    background-size:26px 26px;
-  }
-
-  /* Header */
-  header{
-    position:sticky;top:0;z-index:50;
-    background:rgba(250,249,246,.92);backdrop-filter:blur(8px);
-    border-bottom:1px solid rgba(20,20,20,.08);
-  }
-  .nav{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;}
-  .logo{font-weight:800;font-size:18px;letter-spacing:-.02em;}
-  .nav-actions{display:flex;gap:10px;align-items:center;}
-  .nav-actions .btn{padding:11px 20px;font-size:14px;}
+  /* Estilos propios de la home: tokens, reset, botones, header y
+     secciones base ya viven en /assets/global.css. Acá solo queda
+     lo que es exclusivo de esta página (hero, tarjetas, carrusel). */
 
   /* Hero */
   .hero{padding:88px 0 56px;text-align:center;}
@@ -511,7 +456,7 @@ trackBoth('PageView');
 
 <header>
   <div class="nav wrap">
-    <div class="logo">The Marketographers</div>
+    <a class="logo" href="/">The Marketographers</a>
     <div class="nav-actions">
       <a class="btn btn-whatsapp" href="https://api.whatsapp.com/send?phone=+59169422335&text=%C2%A1Hola%2C%20Pablo!%20Vi%20tu%20p%C3%A1gina%20y%20quiero%20m%C3%A1s%20info%20de%20la%20membres%C3%ADa%20de%20marketing%20para%20fot%C3%B3grafos" target="_blank" rel="noopener">WhatsApp</a>
       <a class="btn btn-gold" href="#planes">Únete</a>
@@ -754,6 +699,7 @@ trackBoth('PageView');
 <footer>
   <div class="wrap">
     <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1755314903/Marketographers_Blanco_S_F_p1toov.png" alt="The Marketographers" style="filter:invert(1);opacity:.85;" loading="lazy">
+    <p style="margin-bottom:10px;"><a href="/blog/" style="text-decoration:underline;opacity:.85;">Blog</a></p>
     <p>© 2026 The Marketographers. Todos los putos derechos reservados.</p>
   </div>
 </footer>

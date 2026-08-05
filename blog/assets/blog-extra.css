@@ -1,0 +1,85 @@
+/* =========================================================
+   BLOG-ONLY STYLES — The Marketographers
+   Complementa a /assets/global.css. Cargar ambos en cada página
+   del blog, en este orden: primero global.css, después este.
+   ========================================================= */
+
+/* Cabecera de sección del blog (listado) */
+.blog-hero{padding:64px 0 40px;text-align:center;}
+.blog-hero h1{font-size:clamp(32px,5vw,54px);max-width:760px;margin:16px auto 0;}
+.blog-hero p.lead{max-width:520px;margin:18px auto 0;color:var(--muted);font-size:16px;}
+
+/* Grid de artículos */
+.blog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:48px;}
+.blog-card{
+  background:var(--white);border-radius:24px;overflow:hidden;
+  box-shadow:0 14px 34px -26px rgba(20,20,20,.35);
+  transition:transform .3s ease, box-shadow .3s ease;
+  display:flex;flex-direction:column;
+}
+.blog-card:hover{transform:translateY(-6px);box-shadow:0 22px 40px -20px rgba(20,20,20,.3);}
+.blog-card img{width:100%;aspect-ratio:16/10;object-fit:cover;}
+.blog-card-body{padding:24px;display:flex;flex-direction:column;flex:1;}
+.blog-card .tag{
+  font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--red);background:rgba(194,59,38,.12);
+  padding:6px 14px;border-radius:999px;display:inline-block;width:fit-content;
+}
+.blog-card h3{font-size:19px;margin-top:14px;}
+.blog-card p{color:var(--muted);font-size:14px;margin-top:8px;flex:1;}
+.blog-card .meta{font-size:12.5px;color:var(--muted);margin-top:16px;font-weight:600;}
+.blog-card .read-more{margin-top:14px;font-weight:700;font-size:14px;color:var(--ink);}
+.blog-card .read-more::after{content:" →";}
+
+/* Artículo individual */
+.article-hero{padding:56px 0 32px;}
+.article-hero .eyebrow{display:block;text-align:center;}
+.article-hero h1{font-size:clamp(30px,5vw,48px);text-align:center;margin:16px auto 0;max-width:760px;}
+.article-meta{
+  display:flex;justify-content:center;gap:18px;flex-wrap:wrap;
+  margin-top:22px;font-size:13.5px;color:var(--muted);font-weight:600;
+}
+.article-cover{
+  max-width:900px;margin:40px auto 0;border-radius:20px;overflow:hidden;
+  box-shadow:0 30px 60px -20px rgba(20,20,20,.25);aspect-ratio:16/9;
+}
+.article-cover img{width:100%;height:100%;object-fit:cover;}
+
+.article-body{padding:48px 0 24px;}
+.article-body p{margin-bottom:20px;font-size:17px;color:var(--ink);}
+.article-body h2{font-size:clamp(24px,3.5vw,32px);margin:44px 0 18px;}
+.article-body h3{font-size:20px;margin:32px 0 14px;}
+.article-body ul,.article-body ol{margin:0 0 20px 22px;font-size:17px;}
+.article-body li{margin-bottom:10px;}
+.article-body blockquote{
+  border-left:4px solid var(--gold);padding:4px 24px;margin:32px 0;
+  font-size:19px;font-weight:600;font-style:italic;color:var(--ink);
+}
+.article-body a{color:var(--red);font-weight:600;text-decoration:underline;text-decoration-color:rgba(194,59,38,.35);}
+.article-body strong{font-weight:700;}
+.article-body img{border-radius:16px;margin:32px 0;}
+
+.article-cta{
+  max-width:var(--max-article);margin:56px auto 0;padding:36px;border-radius:24px;
+  background:var(--ink);color:var(--cream);text-align:center;
+}
+.article-cta h3{font-size:22px;color:var(--cream);}
+.article-cta p{color:rgba(250,249,246,.75);margin-top:10px;font-size:15px;}
+.article-cta .btn{margin-top:20px;}
+
+.share-row{display:flex;gap:12px;justify-content:center;margin-top:32px;}
+.share-row a{
+  width:40px;height:40px;border-radius:50%;background:var(--cream-alt);
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .15s ease;
+}
+.share-row a:hover{transform:translateY(-2px);}
+.share-row svg{width:18px;height:18px;}
+
+@media (max-width:860px){
+  .blog-grid{grid-template-columns:1fr 1fr;}
+}
+@media (max-width:640px){
+  .blog-grid{grid-template-columns:1fr;}
+  .article-meta{gap:10px;}
+}

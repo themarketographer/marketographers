@@ -1,0 +1,112 @@
+/* =========================================================
+   GLOBAL STYLES — The Marketographers
+   Fuente única de verdad para toda la identidad visual del sitio:
+   paleta cream/ink/gold/red, tipografía Poppins, botones píldora,
+   header y footer. Se enlaza con <link> en cada página del sitio.
+   Lo que es específico de una sola sección (blog, home, etc.) vive
+   en un CSS aparte que se carga además de este.
+   No requiere build ni compilador, funciona directo en Netlify.
+   ========================================================= */
+
+:root{
+  --cream:#faf9f6;
+  --cream-alt:#f1efe9;
+  --ink:#141414;
+  --gold:#F5B729;
+  --red:#C23B26;
+  --muted:#68655f;
+  --white:#ffffff;
+  --radius-pill:100px;
+  --max:1120px;
+  --max-article:720px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Poppins',sans-serif;
+  background-color:var(--cream);
+  background-image:radial-gradient(rgba(20,20,20,.08) 1.4px, transparent 1.4px);
+  background-size:26px 26px;
+  color:var(--ink);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+img{max-width:100%;display:block;}
+a{text-decoration:none;color:inherit;}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 24px;}
+.wrap-article{max-width:var(--max-article);margin:0 auto;padding:0 24px;}
+
+.eyebrow{
+  font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--gold);
+}
+.eyebrow-red{color:var(--red);}
+h1,h2,h3{font-weight:800;line-height:1.15;letter-spacing:-0.02em;}
+
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:16px 30px;border-radius:var(--radius-pill);
+  font-weight:600;font-size:15px;cursor:pointer;border:none;
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.btn:hover{transform:translateY(-2px);}
+.btn-dark{background:linear-gradient(135deg, var(--ink), #2b2b2b);color:var(--cream);box-shadow:0 8px 22px rgba(20,20,20,.28);}
+.btn-dark:hover{box-shadow:0 12px 30px rgba(20,20,20,.35);}
+.btn-gold{background:linear-gradient(135deg, var(--gold), #e0a61f);color:var(--ink);box-shadow:0 8px 22px rgba(245,183,41,.35);}
+.btn-gold:hover{box-shadow:0 12px 30px rgba(245,183,41,.45);}
+.btn-outline{background:transparent;color:var(--ink);border:1.5px solid var(--ink);}
+.btn-whatsapp{background:linear-gradient(135deg, #25D366, #128C7E);color:#fff;box-shadow:0 8px 22px rgba(37,211,102,.35);}
+.btn-whatsapp:hover{box-shadow:0 12px 30px rgba(37,211,102,.45);}
+
+/* Tarjeta glass, el mismo tratamiento que en /gracias */
+.card-glass{
+  background:rgba(255,255,255,.6);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-radius:25px;
+  border:1px solid rgba(20,20,20,.08);
+  box-shadow:0 20px 40px rgba(20,20,20,.08), inset 0 1px 0 rgba(255,255,255,.6);
+}
+
+section{padding:72px 0;}
+.bg-alt{
+  background-color:var(--cream-alt);
+  background-image:radial-gradient(rgba(20,20,20,.09) 1.4px, transparent 1.4px);
+  background-size:26px 26px;
+}
+
+/* Header, igual en todas las páginas del sitio */
+header{
+  position:sticky;top:0;z-index:50;
+  background:rgba(250,249,246,.92);backdrop-filter:blur(8px);
+  border-bottom:1px solid rgba(20,20,20,.08);
+}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;}
+.logo{font-weight:800;font-size:18px;letter-spacing:-.02em;}
+.nav-actions{display:flex;gap:10px;align-items:center;}
+.nav-actions .btn{padding:11px 20px;font-size:14px;}
+
+/* Footer, igual en todas las páginas del sitio */
+footer{background:var(--ink);color:var(--cream);padding:48px 0;text-align:center;}
+footer img{margin:0 auto 14px;height:32px;filter:invert(1);opacity:.85;}
+footer p{font-size:13px;color:rgba(250,249,246,.6);}
+footer a{text-decoration:underline;opacity:.85;}
+
+/* Placeholder genérico para imágenes por reemplazar, usado en
+   cualquier página mientras no hay foto final */
+.img-placeholder{
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  background:repeating-linear-gradient(135deg, rgba(20,20,20,.06) 0 10px, rgba(20,20,20,.02) 10px 20px);
+  border:2px dashed rgba(20,20,20,.35);
+  color:var(--muted);font-size:12px;font-weight:600;line-height:1.5;padding:16px;
+}
+.img-placeholder .ph-tag{
+  display:block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--red);font-weight:800;margin-bottom:6px;
+}
+
+/* Tarjetas genéricas reutilizables (stat, feature, problema) */
+.card-shadow{box-shadow:0 14px 34px -26px rgba(20,20,20,.35);}
+
+@media (max-width:640px){
+  section{padding:56px 0;}
+}

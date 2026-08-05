@@ -5,15 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Limpieza IG · The Marketographer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/global.css">
 <style>
   :root{
-    --bg:#151210;--panel:#1E1A16;--panel2:#26211C;--line:#3A332C;
-    --ink:#F2EDE4;--ink-dim:#A89F92;--gold:#E8B34B;--gold-deep:#B8862E;
-    --ok:#8FBF7F;--warn:#E8B34B;--danger:#E06D5A;--blue:#7FA8D9;--radius:14px;
+    --bg:#faf9f6;--panel:#ffffff;--panel2:#f1efe9;--line:rgba(20,20,20,.12);
+    --ink:#141414;--ink-dim:#68655f;--gold:#F5B729;--gold-deep:#C98E1C;
+    --ok:#4F9C5A;--warn:#C98E1C;--danger:#C23B26;--blue:#3E6FA0;--radius:14px;
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--bg);color:var(--ink);font-family:'Space Grotesk',system-ui,sans-serif;line-height:1.55;padding:0 16px 80px}
+  body{background-color:var(--bg);background-image:radial-gradient(rgba(20,20,20,.08) 1.4px, transparent 1.4px);background-size:26px 26px;color:var(--ink);font-family:'Poppins',system-ui,sans-serif;line-height:1.55;padding:0 16px 80px}
   .wrap{max-width:920px;margin:0 auto}
   header{padding:40px 0 24px;border-bottom:1px solid var(--line);margin-bottom:26px}
   .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
@@ -59,7 +60,7 @@
   .check{display:flex;align-items:center;gap:10px;margin-top:14px;color:var(--ink-dim);font-size:.92rem;cursor:pointer}
   .check input{width:18px;height:18px;accent-color:var(--gold);cursor:pointer;flex-shrink:0}
   label{display:block;font-size:.78rem;color:var(--ink-dim);margin:14px 0 5px;font-family:'IBM Plex Mono',monospace;letter-spacing:.05em}
-  textarea,input[type=number],input[type=search],select{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:9px;color:var(--ink);padding:10px 12px;font-size:.95rem;font-family:'Space Grotesk',sans-serif}
+  textarea,input[type=number],input[type=search],select{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:9px;color:var(--ink);padding:10px 12px;font-size:.95rem;font-family:'Poppins',sans-serif}
   textarea{min-height:70px;resize:vertical;font-family:'IBM Plex Mono',monospace;font-size:.85rem}
   input:focus,textarea:focus,select:focus{outline:2px solid var(--gold);outline-offset:1px}
   .verify-out{font-family:'IBM Plex Mono',monospace;font-size:.82rem;margin-top:8px;min-height:1.2em}
@@ -72,7 +73,7 @@
   .meter-msg{font-size:.88rem;margin-top:6px;color:var(--ink-dim)}
   .meter-msg.warn{color:var(--warn)}
   .meter-msg.danger{color:var(--danger);font-weight:500}
-  button{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.95rem;border:none;border-radius:10px;padding:12px 20px;cursor:pointer}
+  button{font-family:'Poppins',sans-serif;font-weight:700;font-size:.95rem;border:none;border-radius:10px;padding:12px 20px;cursor:pointer}
   button:active{transform:scale(.98)}
   .btn-gold{background:var(--gold);color:var(--bg)}
   .btn-gold:hover{background:var(--gold-deep)}

@@ -14,22 +14,25 @@
     <!-- Preconnect for fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --ink: #111;
-            --muted: #666;
-            --accent: #1DB954;
+            --ink: #141414;
+            --muted: #68655f;
+            --accent: #25D366;
+            --gold: #F5B729;
             --glass: rgba(255, 255, 255, 0.6);
-            --brd: rgba(255, 255, 255, 0.45);
+            --brd: rgba(20, 20, 20, 0.08);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            background-color: #faf9f6;
+            background-image: radial-gradient(rgba(20,20,20,.08) 1.4px, transparent 1.4px);
+            background-size: 26px 26px;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -38,17 +41,6 @@
             letter-spacing: -0.01em;
             line-height: 1.6;
             color: var(--ink);
-        }
-
-        /* textura sutil */
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            opacity: 0.03;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-            pointer-events: none;
-            z-index: -1;
         }
 
         .card {
@@ -81,7 +73,7 @@
 
         .title {
             font-size: 2rem;
-            font-weight: 600;
+            font-weight: 800;
             text-align: center;
             margin-bottom: 16px;
             letter-spacing: -0.02em;
@@ -132,7 +124,7 @@
             justify-content: center;   /* texto bien centrado */
             width: 100%;
             height: 56px;
-            background: var(--accent);
+            background: linear-gradient(135deg, #25D366, #128C7E);
             color: #fff;
             text-decoration: none;
             padding: 16px 32px;
@@ -142,9 +134,9 @@
             text-align: center;
             transition: all 200ms ease;
             margin-bottom: 16px;
-            box-shadow: 0 2px 8px rgba(29,185,84,0.2);
+            box-shadow: 0 2px 8px rgba(37,211,102,0.2);
         }
-        .primary-button:hover { background: #1ed760; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(29,185,84,0.3); }
+        .primary-button:hover { background: #1fbd5a; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(37,211,102,0.3); }
         .primary-button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
         .secondary-link {

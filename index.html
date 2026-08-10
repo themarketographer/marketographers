@@ -813,7 +813,7 @@ trackBoth('PageView');
   }, {threshold:0.4});
   if(planesSection) observer.observe(planesSection);
 
-    // ---- Meta Pixel: Lead (grupo WhatsApp gratuito), Contact (chat directo WhatsApp) e InitiateCheckout (Nas.io) ----
+      // ---- Meta Pixel: Lead (grupo WhatsApp gratuito), Contact (chat directo WhatsApp), ClickCheckoutLanding (clic a Nas.io, evento propio, no compite con el InitiateCheckout/Purchase nativo de Nas.io) ----
   document.addEventListener('click', (e)=>{
     const link = e.target.closest('a');
     if(!link || !link.href) return;
@@ -823,7 +823,7 @@ trackBoth('PageView');
             trackBoth('Contact');
     }
     if(link.href.includes('nas.com') || link.href.includes('nas.io')){
-      trackBoth('InitiateCheckout');
+      trackBoth('ClickCheckoutLanding');
     }
   });
 </script>

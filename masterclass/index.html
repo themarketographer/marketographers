@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- ============================================================
+     EDITAR CADA VEZ QUE CAMBIES DE EVENTO: estas cuatro líneas
+     de arriba son las únicas que tienes que tocar en el <head>.
+     ============================================================ -->
+<title>Masterclass gratuita: Ventas para fotógrafos | The Marketographers</title>
+<meta name="description" content="Masterclass gratuita en vivo. Sábado 29 de agosto, 20:00 (GMT-4). Aprende a vender tu trabajo como fotógrafo sin depender del boca a boca.">
+<meta property="og:title" content="Masterclass gratuita: Ventas para fotógrafos">
+<meta property="og:description" content="Sábado 29 de agosto, 20:00 (GMT-4). Cupos limitados.">
+<meta property="og:image" content="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1785200397/Banner_z6b496.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" type="image/png" href="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1755314903/Marketographers_Blanco_S_F_p1toov.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Misma hoja de estilos que usa el resto del sitio. Fuente única
+     de verdad de la marca: paleta, tipografía, header, footer, botones. -->
+<link rel="stylesheet" href="https://marketographers.com/assets/global.css">
+
+<style>
+  /* Todo lo de acá abajo es exclusivo de esta landing de evento.
+     Los tokens de color, tipografía, header y footer ya vienen
+     de global.css, así que no se redefinen acá. */
+
+  .hero{padding:88px 0 40px;text-align:center;}
+  @keyframes fade-up{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+  .hero .eyebrow{animation:fade-up .7s cubic-bezier(.22,1,.36,1) both;}
+  .hero h1{animation:fade-up .8s cubic-bezier(.22,1,.36,1) .08s both; font-size:44px; margin:18px auto 16px; max-width:760px;}
+  .hero p.lead{animation:fade-up .8s cubic-bezier(.22,1,.36,1) .18s both; max-width:560px; margin:0 auto 34px; color:var(--muted); font-size:17px;}
+  .hero-cta{animation:fade-up .8s cubic-bezier(.22,1,.36,1) .28s both;}
+
+  /* Tarjeta con los datos del evento, mismo lenguaje visual que el
+     popup de Cal que te muestra "Qué / Cuándo / Quién", pero con
+     tu marca en vez de la de Cal.com */
+  .event-card{
+    max-width:520px; margin:40px auto 0; padding:28px 32px;
+    text-align:left;
+  }
+  .event-card .row{display:flex; gap:18px; padding:14px 0; border-bottom:1px solid rgba(20,20,20,.08);}
+  .event-card .row:last-child{border-bottom:none;}
+  .event-card .label{width:90px; flex-shrink:0; font-weight:700; font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; padding-top:2px;}
+  .event-card .value{font-weight:600; font-size:16px;}
+
+  /* Bloque de confirmación con el botón de WhatsApp. Arranca
+     oculto, se revela cuando Cal confirma el registro. */
+  #post-registro{
+    display:none;
+    max-width:480px; margin:56px auto 0; padding:36px 32px;
+    text-align:center;
+  }
+  #post-registro .check{
+    width:52px; height:52px; border-radius:50%;
+    background:linear-gradient(135deg, var(--gold), #e0a61f);
+    display:flex; align-items:center; justify-content:center;
+    margin:0 auto 18px; font-size:26px; color:var(--ink);
+  }
+  #post-registro h3{font-size:22px; margin-bottom:10px;}
+  #post-registro p{color:var(--muted); font-size:15px; margin-bottom:24px; line-height:1.5;}
+
+  section.info{padding:56px 0 88px; text-align:center;}
+  section.info h2{font-size:26px; margin-bottom:12px;}
+  section.info p{color:var(--muted); max-width:480px; margin:0 auto; font-size:15px;}
+
+  @media (max-width:640px){
+    .hero{padding:64px 0 32px;}
+    .hero h1{font-size:32px;}
+    .event-card, #post-registro{padding:24px 22px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav wrap">
+    <a class="logo" href="https://marketographers.com">
+      <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314905/Marketographers_Negro_S_F_tgh9z2.png" alt="The Marketographers">
+    </a>
+    <div class="nav-actions">
+      <a class="btn btn-whatsapp" href="https://api.whatsapp.com/send?phone=+59169422335&text=%C2%A1Hola%2C%20Pablo!%20Vi%20la%20masterclass%20y%20tengo%20una%20duda" target="_blank" rel="noopener">WhatsApp</a>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+
+    <!-- EDITAR: texto del badge, normalmente "cupos limitados" o "en vivo" -->
+    <p class="eyebrow">· Masterclass gratuita, cupos limitados ·</p>
+
+    <!-- EDITAR: título del evento -->
+    <h1>Ventas para fotógrafos: <mark>cómo cobrar lo que vales</mark></h1>
+
+    <!-- EDITAR: bajada corta -->
+    <p class="lead">Una clase en vivo para dejar de competir por precio y empezar a cerrar clientes que sí valoran tu trabajo.</p>
+
+    <div class="hero-cta">
+      <button
+        class="btn btn-gold"
+        data-cal-link="ventas-para-fotografos"
+        data-cal-namespace="ventas-para-fotografos"
+        data-cal-config='{"layout":"month_view","useSlotsViewOnSmallScreen":"true","theme":"light"}'
+      >
+        Registrarme al evento →
+      </button>
+    </div>
+
+    <div class="event-card card-glass card-shadow">
+      <div class="row">
+        <div class="label">Qué</div>
+        <!-- EDITAR: título del evento (repetido acá para que se lea sin abrir el popup) -->
+        <div class="value">Masterclass gratuita: Ventas para fotógrafos</div>
+      </div>
+      <div class="row">
+        <div class="label">Cuándo</div>
+        <!-- EDITAR: fecha y hora -->
+        <div class="value">Sábado 29 de agosto, 20:00 (GMT-4)</div>
+      </div>
+      <div class="row">
+        <div class="label">Dónde</div>
+        <div class="value">En vivo por Zoom, el link llega por WhatsApp</div>
+      </div>
+    </div>
+
+    <!-- Este bloque arranca oculto. El script de más abajo lo
+         revela apenas Cal confirma que la persona se registró. -->
+    <div id="post-registro" class="card-glass card-shadow">
+      <div class="check">✓</div>
+      <h3>Ya estás registrado</h3>
+      <p>Te mandé la confirmación a tu correo. Únete al grupo de WhatsApp del evento para que no se te pierda el link de Zoom y avisos de último minuto.</p>
+      <!-- EDITAR: link del grupo de WhatsApp específico de este evento -->
+      <a class="btn btn-whatsapp" href="https://chat.whatsapp.com/TU_LINK_AQUI" target="_blank" rel="noopener">
+        Únete al grupo de WhatsApp →
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<section class="info bg-alt">
+  <div class="wrap">
+    <h2>¿Qué te vas a llevar?</h2>
+    <p>Una hora de contenido directo, sin relleno, para que salgas con al menos una cosa que puedas aplicar en tu próxima cotización.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314903/Marketographers_Blanco_S_F_p1toov.png" alt="The Marketographers">
+    <p>© 2026 The Marketographers. Todos los putos derechos reservados.</p>
+  </div>
+</footer>
+
+<!-- Cal element-click embed code begins -->
+<script type="text/javascript">
+  (function (C, A, L) { let p = function (a, ar) { a.q.push(ar); }; let d = C.document; C.Cal = C.Cal || function () { let cal = C.Cal; let ar = arguments; if (!cal.loaded) { cal.ns = {}; cal.q = cal.q || []; d.head.appendChild(d.createElement("script")).src = A; cal.loaded = true; } if (ar[0] === L) { const api = function () { p(api, arguments); }; const namespace = ar[1]; api.q = api.q || []; if(typeof namespace === "string"){cal.ns[namespace] = cal.ns[namespace] || api;p(cal.ns[namespace], ar);p(cal, ["initNamespace", namespace]);} else p(cal, ar); return;} p(cal, ar); }; })(window, "https://app.cal.com/embed/embed.js", "init");
+
+  Cal("init", "ventas-para-fotografos", {origin:"https://app.cal.com"});
+  Cal.config = Cal.config || {};
+  Cal.config.forwardQueryParams = true;
+
+  Cal.ns["ventas-para-fotografos"]("ui", {"theme":"light","cssVarsPerTheme":{"light":{"cal-brand":"#F5B729"},"dark":{"cal-brand":"#F5B729"}},"hideEventTypeDetails":false,"layout":"month_view"});
+
+  // Apenas Cal confirma el registro, se revela la tarjeta de WhatsApp
+  // y la página baja sola hasta ella para que nadie la pase de largo.
+  Cal.ns["ventas-para-fotografos"]("on", {
+    action: "bookingSuccessfulV2",
+    callback: function () {
+      var bloque = document.getElementById("post-registro");
+      bloque.style.display = "block";
+      bloque.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  });
+</script>
+<!-- Cal element-click embed code ends -->
+
+</body>
+</html>

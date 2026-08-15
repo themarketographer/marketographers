@@ -184,6 +184,14 @@
       console.log("Cal evento detectado:", e.detail.type, e.detail);
     }
   });
+
+  // Segundo espia, mas profundo: escucha directamente el mensaje
+  // crudo que el iframe le manda a la pagina, sin pasar por el
+  // sistema de namespaces de Cal. Esto muestra TODO sin importar
+  // si el wrapper de Cal.ns lo esta filtrando o no.
+  window.addEventListener("message", function (event) {
+    console.log("postMessage crudo recibido:", event.data);
+  });
 </script>
 <!-- Cal element-click embed code ends -->
 

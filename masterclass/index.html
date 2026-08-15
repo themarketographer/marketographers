@@ -22,16 +22,31 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-<!-- Misma hoja de estilos que usa el resto del sitio. Fuente unica
-     de verdad de la marca: paleta, tipografia, header, footer, botones. -->
+<!-- Misma hoja de estilos que usa el resto del sitio. -->
 <link rel="stylesheet" href="https://marketographers.com/assets/global.css">
+
+<!-- Mismo Pixel principal de siempre. Ademas del PageView estandar,
+     dispara un evento personalizado (ViewMasterclassLanding) para
+     poder armar campanas y publicos separados de esta pagina en
+     particular, sin mezclarlos con las visitas a la landing general. -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '467504537642622');
+fbq('track', 'PageView');
+fbq('trackCustom', 'ViewMasterclassLanding');
+</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=467504537642622&ev=PageView&noscript=1"/></noscript>
 
 <style>
   /* Todo lo de aca abajo es exclusivo de esta landing de evento.
      Los tokens de color, tipografia, header y footer ya vienen
      de global.css, asi que no se redefinen aca. */
 
-  .hero{padding:88px 0 88px; text-align:center; min-height:70vh; display:flex; align-items:center;}
+  .hero{padding:88px 0 88px; text-align:center;}
   .hero .wrap{width:100%;}
 
   @keyframes fade-up{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
@@ -41,7 +56,7 @@
   .hero p.lead{max-width:560px; margin:0 auto 34px; color:var(--muted); font-size:17px;}
 
   /* Tarjeta con los datos del evento, mismo lenguaje visual que el
-     popup de Cal que te muestra "Que / Cuando / Quien", pero con
+     popup de Cal que muestra "Que / Cuando / Quien", pero con
      tu marca en vez de la de Cal.com */
   .event-card{
     max-width:520px; margin:40px auto 0; padding:28px 32px;
@@ -52,20 +67,19 @@
   .event-card .label{width:90px; flex-shrink:0; font-weight:700; font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; padding-top:2px;}
   .event-card .value{font-weight:600; font-size:16px;}
 
-  /* Estado de agradecimiento. Arranca oculto y reemplaza por
-     completo al estado de registro cuando Cal confirma la reserva. */
-  #estado-despues{display:none;}
-  #estado-despues .check{
-    width:56px; height:56px; border-radius:50%;
-    background:linear-gradient(135deg, var(--gold), #e0a61f);
-    display:flex; align-items:center; justify-content:center;
-    margin:0 auto 22px; font-size:28px; color:var(--ink);
+  /* Bloque de WhatsApp, visible desde el inicio, siempre. No depende
+     de ningun evento de Cal porque confirmamos que no hay ninguno
+     confiable para este tipo de evento con cupos. */
+  .whatsapp-block{
+    max-width:480px; margin:32px auto 0; padding:28px 32px;
+    text-align:center;
   }
+  .whatsapp-block p{color:var(--muted); font-size:14px; margin-bottom:18px; line-height:1.5;}
 
   @media (max-width:640px){
     .hero{padding:56px 0;}
     .hero h1{font-size:32px;}
-    .event-card{padding:24px 22px;}
+    .event-card, .whatsapp-block{padding:24px 22px;}
   }
 </style>
 </head>
@@ -82,9 +96,7 @@
 <section class="hero">
   <div class="wrap">
 
-    <!-- ESTADO 1: antes de registrarse. Se oculta por completo
-         apenas Cal confirma la reserva. -->
-    <div id="estado-antes" class="fade-in">
+    <div class="fade-in">
 
       <!-- EDITAR: texto del badge, normalmente "cupos limitados" o "en vivo" -->
       <p class="eyebrow">· Masterclass gratuita, cupos limitados ·</p>
@@ -121,19 +133,17 @@
         </div>
       </div>
 
-    </div>
+      <!-- Siempre visible, sin logica de mostrar/ocultar. Confirmamos
+           con pruebas reales que no existe una senal confiable del
+           lado del navegador para este tipo de evento con cupos. -->
+      <div class="whatsapp-block card-glass card-shadow">
+        <p>Una vez que te registres arriba, únete al grupo de WhatsApp del evento para que no se te pierda el link de Zoom y avisos de último minuto.</p>
+        <!-- EDITAR: link del grupo de WhatsApp especifico de este evento -->
+        <a class="btn btn-whatsapp" href="https://chat.whatsapp.com/Hskq4Mv0CpK3RxYR4gTIH1?s=cl&p=i&ilr=2" target="_blank" rel="noopener">
+          Únete al grupo de WhatsApp →
+        </a>
+      </div>
 
-    <!-- ESTADO 2: despues de registrarse. Reemplaza por completo
-         al estado 1, como una thank you page real. -->
-    <div id="estado-despues">
-      <div class="check">✓</div>
-      <p class="eyebrow">· Ya estás adentro ·</p>
-      <h1>Registro confirmado</h1>
-      <p class="lead">Te mandé la confirmación a tu correo. Únete al grupo de WhatsApp del evento para que no se te pierda el link de Zoom y avisos de último minuto.</p>
-      <!-- EDITAR: link del grupo de WhatsApp especifico de este evento -->
-      <a class="btn btn-whatsapp" href="https://chat.whatsapp.com/Hskq4Mv0CpK3RxYR4gTIH1?s=cl&p=i&ilr=2" target="_blank" rel="noopener">
-        Únete al grupo de WhatsApp →
-      </a>
     </div>
 
   </div>
@@ -162,36 +172,6 @@
   Cal.config.forwardQueryParams = true;
 
   Cal.ns["ventas-para-fotografos"]("ui", {"theme":"light","cssVarsPerTheme":{"light":{"cal-brand":"#F5B729"},"dark":{"cal-brand":"#F5B729"}},"hideEventTypeDetails":false,"layout":"month_view"});
-
-  // Apenas Cal confirma el registro, se intercambia el contenido
-  // completo del hero, como una thank you page real.
-  Cal.ns["ventas-para-fotografos"]("on", {
-    action: "bookingSuccessfulV2",
-    callback: function () {
-      console.log("Cal: bookingSuccessfulV2 disparado, se muestra el estado de agradecimiento");
-      document.getElementById("estado-antes").style.display = "none";
-      document.getElementById("estado-despues").style.display = "block";
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  });
-
-  // Listener "espia", solo para diagnostico. Registra en la consola
-  // TODO lo que Cal dispare, tenga el nombre que tenga. Una vez que
-  // confirmemos que el flujo funciona, este bloque se puede borrar.
-  Cal.ns["ventas-para-fotografos"]("on", {
-    action: "*",
-    callback: function (e) {
-      console.log("Cal evento detectado:", e.detail.type, e.detail);
-    }
-  });
-
-  // Segundo espia, mas profundo: escucha directamente el mensaje
-  // crudo que el iframe le manda a la pagina, sin pasar por el
-  // sistema de namespaces de Cal. Esto muestra TODO sin importar
-  // si el wrapper de Cal.ns lo esta filtrando o no.
-  window.addEventListener("message", function (event) {
-    console.log("postMessage crudo recibido:", event.data);
-  });
 </script>
 <!-- Cal element-click embed code ends -->
 

@@ -19,7 +19,7 @@ exports.handler = async (event) => {
 
   try {
     const body = JSON.parse(event.body || '{}');
-    const { event_name, event_id, event_source_url, fbp, fbc } = body;
+    const { event_name, event_id, event_source_url, fbp, fbc, custom_data } = body;
 
     if (!event_name || !event_id) {
       return { statusCode: 400, body: JSON.stringify({ error: 'Falta event_name o event_id' }) };
@@ -47,6 +47,7 @@ exports.handler = async (event) => {
           event_source_url,
           action_source: 'website',
           user_data: userData,
+          ...(custom_data ? { custom_data } : {}),
         },
       ],
     };

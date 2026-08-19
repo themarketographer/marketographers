@@ -25,19 +25,64 @@
 <!-- Misma hoja de estilos que usa el resto del sitio. -->
 <link rel="stylesheet" href="https://marketographers.com/assets/global.css">
 
-<!-- Mismo Pixel principal de siempre. Ademas del PageView estandar,
-     dispara un evento personalizado (ViewMasterclassLanding) para
-     poder armar campanas y publicos separados de esta pagina en
-     particular, sin mezclarlos con las visitas a la landing general. -->
+<!-- Mismo Pixel principal de siempre, con el mismo patrón anti-duplicados que usa
+     la landing principal: autoConfig apagado (si no, Meta detecta automáticamente
+     clics y los cuenta aparte de los eventos manuales de acá abajo, duplicando
+     señal) y cada evento viaja por Pixel + Conversions API con el mismo event_id,
+     así Meta descarta la copia repetida en vez de contar dos veces.
+     Además del PageView estándar, dispara un evento personalizado
+     (ViewMasterclassLanding) para poder armar campañas y públicos separados de
+     esta página, sin mezclarlos con las visitas a la landing general. -->
 <script>
 !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
 n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
 n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
 t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
 document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('set', 'autoConfig', false, '467504537642622');
 fbq('init', '467504537642622');
-fbq('track', 'PageView');
-fbq('trackCustom', 'ViewMasterclassLanding');
+
+function makeEventId(prefix){
+  return prefix + '_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);
+}
+function getCookie(name){
+  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+  return match ? match[2] : null;
+}
+function sendCapiEvent(eventName, eventId, customData){
+  try{
+    fetch('/.netlify/functions/capi', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        event_name: eventName,
+        event_id: eventId,
+        event_source_url: window.location.href,
+        custom_data: customData || undefined,
+        fbp: getCookie('_fbp'),
+        fbc: getCookie('_fbc')
+      })
+    }).catch(()=>{});
+  }catch(e){}
+}
+function trackBoth(eventName, params){
+  const id = makeEventId(eventName.toLowerCase());
+  fbq('track', eventName, params || {}, {eventID:id});
+  sendCapiEvent(eventName, id, params);
+}
+// Igual que trackBoth pero para eventos que NO son del catálogo estándar de Meta
+// (fbq('track', ...) con un nombre no estándar dispara una advertencia en consola
+// y Meta lo trata distinto en reportes). ViewMasterclassLanding es un evento propio
+// a propósito, para no mezclar esta audiencia con el ViewContent genérico de la
+// landing principal ni con el de los posts del blog.
+function trackCustomBoth(eventName, params){
+  const id = makeEventId(eventName.toLowerCase());
+  fbq('trackCustom', eventName, params || {}, {eventID:id});
+  sendCapiEvent(eventName, id, params);
+}
+
+trackBoth('PageView');
+trackCustomBoth('ViewMasterclassLanding');
 </script>
 <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=467504537642622&ev=PageView&noscript=1"/></noscript>
 
@@ -174,6 +219,26 @@ fbq('trackCustom', 'ViewMasterclassLanding');
   Cal.ns["ventas-para-fotografos"]("ui", {"theme":"light","cssVarsPerTheme":{"light":{"cal-brand":"#F5B729"},"dark":{"cal-brand":"#F5B729"}},"hideEventTypeDetails":false,"layout":"month_view"});
 </script>
 <!-- Cal element-click embed code ends -->
+
+<!-- Meta Pixel: clics, no confirmaciones. La confirmación real de la reserva
+     (cuando alguien efectivamente agenda) la manda el webhook de Cal.com desde
+     el servidor (netlify/functions/cal-webhook.js), una sola vez por reserva.
+     Si acá también disparáramos un evento al confirmar la reserva sin compartir
+     el mismo event_id con el webhook, Meta contaría la misma persona dos veces:
+     una por el navegador y otra por el servidor. Por eso acá solo se mide la
+     intención de clic (abrir el widget), nunca la reserva confirmada. -->
+<script>
+  document.addEventListener('click', (e)=>{
+    const link = e.target.closest('a, button');
+    if(!link) return;
+    if(link.href && link.href.includes('chat.whatsapp.com')){
+      trackBoth('Lead');
+    }
+    if(link.dataset && link.dataset.calLink){
+      trackCustomBoth('ClickRegisterMasterclass');
+    }
+  });
+</script>
 
 </body>
 </html>

@@ -1,14 +1,18 @@
 // netlify/functions/cal-webhook.js
 //
 // Qué hace este archivo, en orden:
-// 1. Recibe el POST que Cal.com manda cada vez que alguien agenda una llamada.
+// 1. Recibe el POST que Cal.com manda cada vez que alguien agenda un evento.
 // 2. Verifica que el aviso venga realmente de Cal.com (usando CALCOM_WEBHOOK_SECRET).
-// 3. Saca el correo, nombre y teléfono de quien agendó.
-// 4. Los hashea (SHA256), porque Meta nunca acepta datos personales en texto plano.
-// 5. Busca la audiencia "Agendaron llamada de admisiones - Marketographers" en Meta;
-//    si no existe todavía, la crea.
-// 6. Agrega a esa persona a la audiencia.
-// 7. Manda el evento de conversión a la Conversions API de Meta (CAPI).
+// 3. Mira de qué tipo de evento de Cal.com se trata (admisiones o masterclass) y
+//    elige la audiencia y el evento de conversión que le corresponden, en
+//    EVENT_TYPE_CONFIG. Un tipo de evento que no esté ahí se ignora, no se mezcla.
+// 4. Saca el correo, nombre y teléfono de quien agendó.
+// 5. Los hashea (SHA256), porque Meta nunca acepta datos personales en texto plano.
+// 6. Busca la audiencia que corresponde en Meta; si no existe todavía, la crea.
+// 7. Agrega a esa persona a la audiencia.
+// 8. Manda el evento de conversión a la Conversions API de Meta (CAPI), con un
+//    event_id con prefijo por tipo de evento para que nunca compita en el
+//    dedup con el de otro embudo.
 //
 // Variables de entorno que esta función necesita (ya las pusiste en Netlify):
 //   META_ACCESS_TOKEN       -> token del Usuario del Sistema "Netlify Cal Webhook"
@@ -19,7 +23,26 @@
 const crypto = require('crypto');
 
 const GRAPH_API_VERSION = 'v21.0';
-const AUDIENCE_NAME = 'Agendaron llamada de admisiones - Marketographers';
+
+// Cada tipo de evento de Cal.com que nos interesa tiene su propia audiencia y su
+// propio evento de conversión, para no mezclar en un mismo balde a alguien que
+// agendó una llamada de ventas 1 a 1 con alguien que se registró a una
+// masterclass gratuita: son intenciones de compra distintas y Meta optimiza
+// mejor cuando el evento refleja eso.
+const EVENT_TYPE_CONFIG = {
+  admisiones: {
+    audienceName: 'Agendaron llamada de admisiones - Marketographers',
+    audienceDescription: 'Gente que agendó llamada de admisiones vía Cal.com (creada automáticamente)',
+    eventName: 'Lead',
+    eventIdPrefix: 'admisiones',
+  },
+  'ventas-para-fotografos': {
+    audienceName: 'Registraron masterclass - Marketographers',
+    audienceDescription: 'Gente que se registró a la masterclass gratuita vía Cal.com (creada automáticamente)',
+    eventName: 'CompleteRegistration',
+    eventIdPrefix: 'masterclass',
+  },
+};
 
 // ---------- Utilidades ----------
 
@@ -52,7 +75,7 @@ function isValidSignature(rawBody, signatureHeader, secret) {
 
 // ---------- Llamadas a la API de Meta ----------
 
-async function findOrCreateAudience(adAccountId, accessToken) {
+async function findOrCreateAudience(adAccountId, accessToken, audienceName, audienceDescription) {
   // 1. Buscar si ya existe una audiencia con este nombre exacto.
   const searchUrl = `https://graph.facebook.com/${GRAPH_API_VERSION}/act_${adAccountId}/customaudiences?fields=id,name&limit=200&access_token=${accessToken}`;
   const searchRes = await fetch(searchUrl);
@@ -62,7 +85,7 @@ async function findOrCreateAudience(adAccountId, accessToken) {
     throw new Error(`Error buscando audiencias: ${JSON.stringify(searchData.error)}`);
   }
 
-  const existing = (searchData.data || []).find((aud) => aud.name === AUDIENCE_NAME);
+  const existing = (searchData.data || []).find((aud) => aud.name === audienceName);
   if (existing) {
     return existing.id;
   }
@@ -73,9 +96,9 @@ async function findOrCreateAudience(adAccountId, accessToken) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      name: AUDIENCE_NAME,
+      name: audienceName,
       subtype: 'CUSTOM',
-      description: 'Gente que agendó llamada de admisiones vía Cal.com (creada automáticamente)',
+      description: audienceDescription,
       customer_file_source: 'USER_PROVIDED_ONLY',
       access_token: accessToken,
     }),
@@ -128,7 +151,7 @@ async function addUserToAudience(audienceId, hashedEmail, hashedPhone, accessTok
   return data;
 }
 
-async function sendConversionEvent({ pixelId, accessToken, hashedEmail, hashedPhone, eventTime, eventId }) {
+async function sendConversionEvent({ pixelId, accessToken, hashedEmail, hashedPhone, eventTime, eventId, eventName }) {
   const url = `https://graph.facebook.com/${GRAPH_API_VERSION}/${pixelId}/events`;
 
   const userData = {};
@@ -141,7 +164,7 @@ async function sendConversionEvent({ pixelId, accessToken, hashedEmail, hashedPh
     body: JSON.stringify({
       data: [
         {
-          event_name: 'Lead',
+          event_name: eventName,
           event_time: eventTime,
           event_id: eventId, // evita duplicados si el pixel del navegador también mandó este evento
           action_source: 'system_generated',
@@ -193,17 +216,19 @@ exports.handler = async (event) => {
     return { statusCode: 200, body: 'Evento ignorado (no es BOOKING_CREATED)' };
   }
 
-  // Solo nos interesan las reservas del tipo de evento "admisiones"
-  // (https://cal.com/themarketographer/admisiones). Cualquier otro
-  // tipo de evento que tengas en Cal.com se ignora acá.
+  // Solo nos interesan las reservas de los tipos de evento que tenemos mapeados
+  // en EVENT_TYPE_CONFIG (hoy: "admisiones" y "ventas-para-fotografos"). Si en
+  // Cal.com se crea un tipo de evento nuevo y no se agrega acá, se ignora en vez
+  // de mezclarse por accidente con una audiencia que no le corresponde.
   const eventSlug = (
     payload.payload?.eventType?.slug ||
     payload.payload?.type ||
     ''
   ).toLowerCase();
 
-  if (eventSlug !== 'admisiones') {
-    console.log(`Reserva ignorada: es del tipo de evento "${eventSlug}", no "admisiones".`);
+  const eventConfig = EVENT_TYPE_CONFIG[eventSlug];
+  if (!eventConfig) {
+    console.log(`Reserva ignorada: el tipo de evento "${eventSlug}" no está mapeado en EVENT_TYPE_CONFIG.`);
     return { statusCode: 200, body: `Evento ignorado (tipo de evento: ${eventSlug || 'desconocido'})` };
   }
 
@@ -223,20 +248,28 @@ exports.handler = async (event) => {
       return { statusCode: 200, body: 'Sin datos de contacto, nada que hacer' };
     }
 
-    // 2. Encontrar o crear la audiencia.
-    const audienceId = await findOrCreateAudience(META_AD_ACCOUNT_ID, META_ACCESS_TOKEN);
+    // 2. Encontrar o crear la audiencia que corresponde a este tipo de evento.
+    const audienceId = await findOrCreateAudience(
+      META_AD_ACCOUNT_ID,
+      META_ACCESS_TOKEN,
+      eventConfig.audienceName,
+      eventConfig.audienceDescription
+    );
 
     // 3. Agregar a la persona a la audiencia.
     await addUserToAudience(audienceId, hashedEmail, hashedPhone, META_ACCESS_TOKEN);
 
-    // 4. Mandar el evento de conversión server-side.
+    // 4. Mandar el evento de conversión server-side. El event_id lleva un prefijo
+    // distinto por tipo de evento (admisiones_ / masterclass_) para que nunca
+    // pueda pisarse con el de otro embudo aunque el bookingUid coincidiera.
     await sendConversionEvent({
       pixelId: META_PIXEL_ID,
       accessToken: META_ACCESS_TOKEN,
       hashedEmail,
       hashedPhone,
       eventTime,
-      eventId: bookingUid,
+      eventId: `${eventConfig.eventIdPrefix}_${bookingUid}`,
+      eventName: eventConfig.eventName,
     });
 
     return {

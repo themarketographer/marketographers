@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Marketographers | Marketing para fotógrafos - Pablo Villarroel</title>
-<meta name="description" content="La comunidad de marketing para fotógrafos más activa del mundo. Clases en vivo 2x por semana, cursos ilimitados y una comunidad que te empuja a vender mejor tu trabajo.">
+<meta name="description" content="La comunidad de marketing para fotógrafos más activa del mundo. Clases en vivo 2x por semana y una comunidad que te empuja a vender mejor tu trabajo.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://marketographers.com/">
 
@@ -34,9 +34,48 @@
   "@type": "EducationalOrganization",
   "name": "The Marketographers",
   "url": "https://marketographers.com/",
-  "founder": { "@type": "Person", "name": "Pablo Villarroel" },
+  "founder": { "@type": "Person", "name": "Pablo Villarroel", "url": "https://marketographers.com/#pablo" },
   "description": "Comunidad de marketing para fotógrafos con clases en vivo, cursos y mentoría.",
-  "sameAs": []
+  "sameAs": [
+    "https://www.instagram.com/themarketographer/",
+    "https://www.tiktok.com/@themarketographer",
+    "https://chat.whatsapp.com/H87amNgVpRr0g2habJsfjd"
+  ]
+}
+</script>
+
+<!-- JSON-LD: FAQPage. Mismas preguntas y respuestas visibles en la sección de FAQ, palabra por palabra, para que coincidan con lo que Google y las IAs indexan del HTML visible. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "¿Tienen garantía de devolución?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No. Aquí no devolvemos dinero porque sabemos que, si entras, vas a querer quedarte. Si pensabas entrar para pedir una devolución probablemente es porque esperabas milagros sin mover un dedo." }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Cuánto tiempo tengo que dedicarle?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Las clases en vivo son 2 veces por semana (2-3 horas). El resto del contenido lo puedes consumir a tu ritmo. El grupo está activo 24/7, pero tú decides cuánto participar." }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Cómo sé si esto es para mí?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Si eres fotógrafo y quieres más clientes, más tiempo libre y dejar de vivir del boca a boca, esto es para ti." }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Y si no sé nada de marketing?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Mejor. Así no tienes que desaprender cosas que te dijeron gurús del marketing sobre 'contenido de valor' o 'videos virales con IA'." }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Y siempre dices groserías?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Sí, bastante. Porque decir 'cliente de mierda' es más potente que decir 'cliente poco comprometido'." }
+    }
+  ]
 }
 </script>
 
@@ -430,7 +469,7 @@ function getCookie(name){
   const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
   return match ? match[2] : null;
 }
-function sendCapiEvent(eventName, eventId){
+function sendCapiEvent(eventName, eventId, customData){
   try{
     fetch('/.netlify/functions/capi', {
       method:'POST',
@@ -439,16 +478,17 @@ function sendCapiEvent(eventName, eventId){
         event_name: eventName,
         event_id: eventId,
         event_source_url: window.location.href,
+        custom_data: customData || undefined,
         fbp: getCookie('_fbp'),
         fbc: getCookie('_fbc')
       })
     }).catch(()=>{});
   }catch(e){}
 }
-function trackBoth(eventName){
+function trackBoth(eventName, params){
   const id = makeEventId(eventName.toLowerCase());
-  fbq('track', eventName, {}, {eventID:id});
-  sendCapiEvent(eventName, id);
+  fbq('track', eventName, params || {}, {eventID:id});
+  sendCapiEvent(eventName, id, params);
 }
 
 trackBoth('PageView');

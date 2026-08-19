@@ -50,6 +50,54 @@
 </head>
 <body>
 
+<!-- Meta Pixel. Mismo ID y mismo patrón anti-duplicados que el resto del sitio
+     (autoConfig apagado + Pixel/CAPI con el mismo event_id). Antes de este
+     cambio el blog no tenía pixel: las visitas y los clics acá no se medían. -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('set', 'autoConfig', false, '467504537642622');
+fbq('init', '467504537642622');
+
+function makeEventId(prefix){
+  return prefix + '_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);
+}
+function getCookie(name){
+  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+  return match ? match[2] : null;
+}
+function sendCapiEvent(eventName, eventId, customData){
+  try{
+    fetch('/.netlify/functions/capi', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        event_name: eventName,
+        event_id: eventId,
+        event_source_url: window.location.href,
+        custom_data: customData || undefined,
+        fbp: getCookie('_fbp'),
+        fbc: getCookie('_fbc')
+      })
+    }).catch(()=>{});
+  }catch(e){}
+}
+function trackBoth(eventName, params){
+  const id = makeEventId(eventName.toLowerCase());
+  fbq('track', eventName, params || {}, {eventID:id});
+  sendCapiEvent(eventName, id, params);
+}
+
+trackBoth('PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=467504537642622&ev=PageView&noscript=1"/></noscript>
+
 <header>
   <div class="nav wrap">
     <a class="logo" href="/"><img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314905/Marketographers_Negro_S_F_tgh9z2.png" alt="The Marketographers"></a>
@@ -88,6 +136,61 @@
         </div>
       </a>
 
+      <a class="blog-card" href="/blog/cuanto-cobrar-fotografia-2026/">
+        <div class="img-placeholder" style="aspect-ratio:16/9;"><span class="ph-tag">Imagen por reemplazar</span></div>
+        <div class="blog-card-body">
+          <span class="tag">Precio y ventas</span>
+          <h3>Cuánto deberías cobrar por una sesión de fotos en 2026</h3>
+          <p>Una forma simple de calcular tu tarifa real, sin copiar el precio de otro ni quedarte corto.</p>
+          <span class="meta">Pablo Villarroel · 6 min de lectura</span>
+          <span class="read-more">Leer artículo</span>
+        </div>
+      </a>
+
+      <a class="blog-card" href="/blog/boca-a-boca-no-es-estrategia/">
+        <div class="img-placeholder" style="aspect-ratio:16/9;"><span class="ph-tag">Imagen por reemplazar</span></div>
+        <div class="blog-card-body">
+          <span class="tag">Posicionamiento</span>
+          <h3>Por qué el boca a boca no es una estrategia de marketing</h3>
+          <p>Vivir del boca a boca no es tener un negocio, es tener suerte con fecha de vencimiento.</p>
+          <span class="meta">Pablo Villarroel · 5 min de lectura</span>
+          <span class="read-more">Leer artículo</span>
+        </div>
+      </a>
+
+      <a class="blog-card" href="/blog/como-conseguir-clientes-sin-ads/">
+        <div class="img-placeholder" style="aspect-ratio:16/9;"><span class="ph-tag">Imagen por reemplazar</span></div>
+        <div class="blog-card-body">
+          <span class="tag">Captación de clientes</span>
+          <h3>Cómo conseguir clientes de fotografía sin gastar en anuncios (todavía)</h3>
+          <p>Antes de poner un peso en publicidad, hay trabajo gratis que la mayoría se salta.</p>
+          <span class="meta">Pablo Villarroel · 6 min de lectura</span>
+          <span class="read-more">Leer artículo</span>
+        </div>
+      </a>
+
+      <a class="blog-card" href="/blog/error-portafolio-fotografos/">
+        <div class="img-placeholder" style="aspect-ratio:16/9;"><span class="ph-tag">Imagen por reemplazar</span></div>
+        <div class="blog-card-body">
+          <span class="tag">Marca personal</span>
+          <h3>El error que comete el 95% de los fotógrafos al armar su portafolio</h3>
+          <p>Un portafolio que le habla a todos es un portafolio que no convence a nadie.</p>
+          <span class="meta">Pablo Villarroel · 5 min de lectura</span>
+          <span class="read-more">Leer artículo</span>
+        </div>
+      </a>
+
+      <a class="blog-card" href="/blog/objeciones-de-precio-fotografos/">
+        <div class="img-placeholder" style="aspect-ratio:16/9;"><span class="ph-tag">Imagen por reemplazar</span></div>
+        <div class="blog-card-body">
+          <span class="tag">Precio y ventas</span>
+          <h3>Cómo responder cuando un cliente te dice que estás caro</h3>
+          <p>"Está caro" casi nunca es sobre el precio. Cómo responder sin bajar tu tarifa.</p>
+          <span class="meta">Pablo Villarroel · 5 min de lectura</span>
+          <span class="read-more">Leer artículo</span>
+        </div>
+      </a>
+
     </div>
   </div>
 </section>
@@ -98,6 +201,25 @@
     <p>© 2026 The Marketographers. Todos los putos derechos reservados.</p>
   </div>
 </footer>
+
+<!-- Mismo mapeo de eventos de clic que usa la landing principal: chat.whatsapp.com
+     (grupo gratuito) = Lead, api.whatsapp.com/wa.me (chat directo) = Contact,
+     nas.com/nas.io (checkout) = ClickCheckoutLanding. Un solo listener delegado,
+     no uno por botón, para no arriesgar registrarlo dos veces por error. -->
+<script>
+  document.addEventListener('click', (e)=>{
+    const link = e.target.closest('a');
+    if(!link || !link.href) return;
+    if(link.href.includes('chat.whatsapp.com')){
+      trackBoth('Lead');
+    } else if(link.href.includes('api.whatsapp.com') || link.href.includes('wa.me')){
+      trackBoth('Contact');
+    }
+    if(link.href.includes('nas.com') || link.href.includes('nas.io')){
+      trackBoth('ClickCheckoutLanding');
+    }
+  });
+</script>
 
 </body>
 </html>

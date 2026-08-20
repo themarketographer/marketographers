@@ -101,15 +101,15 @@ export function builderReducer(state, action) {
             if (b.id !== blockId) return b
             const nextProps = { ...b.props, ...props }
             const schema = BLOCK_SCHEMA[b.type]
-            const repeatableField = schema.fields.find((f) => f.type === 'repeatable')
-            if (repeatableField && repeatableField.countField in props) {
-              const count = props[repeatableField.countField]
-              nextProps[repeatableField.key] = resizeRepeatable(
-                b.props[repeatableField.key],
-                count,
-                repeatableField.default,
-              )
-            }
+            // Un bloque puede tener más de un campo repeatable/imageList con
+            // su propio countField (ej. Precios: planes y características),
+            // así que hay que revisar todos, no solo el primero.
+            schema.fields
+              .filter((f) => (f.type === 'repeatable' || f.type === 'imageList') && f.countField in props)
+              .forEach((f) => {
+                const count = props[f.countField]
+                nextProps[f.key] = resizeRepeatable(b.props[f.key], count, f.type === 'imageList' ? '' : f.default)
+              })
             return { ...b, props: nextProps }
           }),
         },

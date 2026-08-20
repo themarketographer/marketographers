@@ -35,7 +35,14 @@ export default function HeroBlock({ props, variant, previewMode }) {
     </div>
   )
 
-  const imageCol = (
+  const imageCol = props.bgImageUrl ? (
+    <img
+      src={props.bgImageUrl}
+      alt=""
+      className={`h-48 object-cover ${isMobile ? 'w-full' : 'flex-1'}`}
+      style={{ borderRadius: 'var(--radius)', filter: `brightness(${100 - props.bgDarken}%)` }}
+    />
+  ) : (
     <div
       className={`flex h-48 items-center justify-center text-sm opacity-60 ${isMobile ? 'w-full' : 'flex-1'}`}
       style={{ background: 'var(--color-primary)', color: 'var(--color-bg)', borderRadius: 'var(--radius)' }}

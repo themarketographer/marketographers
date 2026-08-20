@@ -1,4 +1,5 @@
 import { renderEmphasis } from '../../utils/textEmphasis'
+import ImageOrPlaceholder from './ImageOrPlaceholder'
 
 export default function AboutBlock({ props, previewMode }) {
   const isMobile = previewMode === 'mobile'
@@ -6,10 +7,17 @@ export default function AboutBlock({ props, previewMode }) {
   if (props.photoAsBackground) {
     return (
       <div
-        className="flex min-h-[220px] items-end p-8"
-        style={{ background: 'var(--color-primary)', borderRadius: 'var(--radius)' }}
+        className="relative flex min-h-[220px] items-end overflow-hidden p-8"
+        style={{ borderRadius: 'var(--radius)' }}
       >
-        <div className="max-w-lg">
+        <ImageOrPlaceholder
+          url={props.photoImageUrl}
+          alt="Foto de sobre mí"
+          className="absolute inset-0 h-full w-full"
+          style={{ background: props.photoImageUrl ? undefined : 'var(--color-primary)' }}
+        />
+        <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.35)' }} />
+        <div className="relative max-w-lg">
           <h2 className="text-2xl font-bold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--color-bg)' }}>
             {renderEmphasis(props.title)}
           </h2>
@@ -23,7 +31,7 @@ export default function AboutBlock({ props, previewMode }) {
 
   return (
     <div className={`flex gap-6 p-10 ${isMobile ? 'flex-col items-start' : 'items-center'}`}>
-      <div className="h-24 w-24 shrink-0 rounded-full bg-black/10" />
+      <ImageOrPlaceholder url={props.photoImageUrl} alt="Foto de sobre mí" className="h-24 w-24 shrink-0 rounded-full" />
       <div>
         <h2 className="text-2xl font-bold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--color-text)' }}>
           {renderEmphasis(props.title)}

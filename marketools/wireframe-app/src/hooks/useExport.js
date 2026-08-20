@@ -18,11 +18,46 @@ function visibleFields(schema, props) {
 function formatPropValue(field, value) {
   if (field.type === 'toggle') return value ? 'sí' : 'no'
   if (field.type === 'repeatable') return value.map((v, i) => `\n     ${i + 1}. ${v}`).join('')
+  if (field.type === 'image') return value || '(sin link de imagen todavía)'
+  if (field.type === 'imageList') {
+    return value.map((v, i) => `\n     ${i + 1}. ${v || '(sin link de imagen todavía)'}`).join('')
+  }
   if (field.type === 'select') {
     const opt = field.options?.find((o) => o.value === value)
     return opt ? opt.label : value
   }
   return value || '(vacío)'
+}
+
+// Junta todos los links de imagen (Cloudinary u otra URL) de todos los
+// bloques, en el orden en que aparecen en el canvas, con un nombre claro
+// para cada uno — así el prompt ya trae las imágenes puestas y ordenadas
+// en vez de que el modelo tenga que inventar de dónde sacarlas.
+function buildImageAssetsSection(blocks) {
+  const rows = []
+  blocks.forEach((block, blockIndex) => {
+    const schema = BLOCK_SCHEMA[block.type]
+    visibleFields(schema, block.props).forEach((field) => {
+      if (field.type === 'image') {
+        const url = block.props[field.key]
+        if (url) rows.push(`${rows.length + 1}. ${schema.label} #${blockIndex + 1} — ${field.label}: ${url}`)
+      } else if (field.type === 'imageList') {
+        const urls = block.props[field.key] || []
+        urls.forEach((url, i) => {
+          if (url) rows.push(`${rows.length + 1}. ${schema.label} #${blockIndex + 1} — ${field.label} (${i + 1}): ${url}`)
+        })
+      }
+    })
+  })
+  if (rows.length === 0) return null
+  return [
+    '## Imágenes (usar estos links tal cual, en este orden, para cada elemento)',
+    'Cada imagen de abajo ya tiene su link real (Cloudinary u otro hosting). Usalas exactamente en el `src`',
+    'del elemento que indica su nombre — no inventes ni reemplaces estos links por placeholders.',
+    '',
+    ...rows,
+    '',
+  ].join('\n')
 }
 
 function animationLine(block) {
@@ -119,6 +154,9 @@ function buildMasterPromptSection(state, trackingConfig) {
   if (hasVideo) {
     lines.push('## Regla de video', VIDEO_RULE, '')
   }
+
+  const imageAssets = buildImageAssetsSection(blocks)
+  if (imageAssets) lines.push(imageAssets, '')
 
   blocks.forEach((block, i) => {
     const schema = BLOCK_SCHEMA[block.type]

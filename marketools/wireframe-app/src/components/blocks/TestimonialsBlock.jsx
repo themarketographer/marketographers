@@ -1,4 +1,5 @@
 import { renderEmphasis } from '../../utils/textEmphasis'
+import ImageOrPlaceholder from './ImageOrPlaceholder'
 
 export default function TestimonialsBlock({ props, variant, previewMode }) {
   const isMobile = previewMode === 'mobile'
@@ -41,7 +42,13 @@ export default function TestimonialsBlock({ props, variant, previewMode }) {
               className="min-w-0 shrink-0 border border-black/10 p-4"
               style={{ borderRadius: 'var(--radius)', width: variant === 'carrusel-flechas' ? 240 : '100%' }}
             >
-              {props.showPhoto && <div className="mb-2 h-10 w-10 rounded-full bg-black/10" />}
+              {props.showPhoto && (
+                <ImageOrPlaceholder
+                  url={props.photos[i]}
+                  alt={`Foto del testimonio ${i + 1}`}
+                  className="mb-2 h-10 w-10 rounded-full"
+                />
+              )}
               <p className="text-sm opacity-80" style={{ color: 'var(--color-text)' }}>
                 {renderEmphasis(`[Testimonio ${i + 1}]`)}
               </p>

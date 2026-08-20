@@ -119,7 +119,8 @@ export const BLOCK_SCHEMA = {
     label: 'Header',
     variants: null,
     fields: [
-      { key: 'logo', label: 'Logo / nombre', type: 'text', default: '[Nombre del estudio]' },
+      { key: 'logo', label: 'Logo / nombre (texto)', type: 'text', default: '[Nombre del estudio]' },
+      { key: 'logoImageUrl', label: 'Logo (imagen)', type: 'image', placeholder: 'Link de Cloudinary del logo — si lo cargás, reemplaza al texto', default: '' },
       { key: 'links', label: 'Links del menú', type: 'text', default: 'Inicio, Portafolio, Precios, Contacto', placeholder: 'Separados por coma' },
       {
         key: 'behavior',
@@ -150,6 +151,7 @@ export const BLOCK_SCHEMA = {
         { value: 'solid', label: 'Color sólido' },
         { value: 'gradient', label: 'Degradado' },
       ], default: 'image' },
+      { key: 'bgImageUrl', label: 'Imagen de fondo', type: 'image', placeholder: 'Link de Cloudinary de la imagen de fondo', default: '', showIf: (p) => p.bgType === 'image' || p.bgType === 'video' },
       { key: 'bgDarken', label: 'Oscurecido de fondo (%)', type: 'number', min: 0, max: 100, default: 30 },
       {
         key: 'mobileImagePosition',
@@ -204,6 +206,7 @@ export const BLOCK_SCHEMA = {
     fields: [
       { key: 'title', label: 'Título', type: 'text', default: '[Trabajos recientes]' },
       { key: 'pieceCount', label: 'Número de piezas', type: 'number', min: 3, max: 12, default: 6 },
+      { key: 'pieces', label: 'Imágenes (en el orden en que van)', type: 'imageList', countField: 'pieceCount' },
     ],
   },
 
@@ -241,6 +244,7 @@ export const BLOCK_SCHEMA = {
       { key: 'title', label: 'Título', type: 'text', default: '[Lo que dicen mis clientes]' },
       { key: 'count', label: 'Cantidad de testimonios', type: 'number', min: 1, max: 12, default: 3 },
       { key: 'showPhoto', label: 'Mostrar foto', type: 'toggle', default: true },
+      { key: 'photos', label: 'Fotos (en el orden en que van)', type: 'imageList', countField: 'count', showIf: (p) => p.showPhoto },
       {
         key: 'embedCode',
         label: 'Código/ID del widget externo',
@@ -305,6 +309,7 @@ export const BLOCK_SCHEMA = {
     fields: [
       { key: 'title', label: 'Título', type: 'text', default: '[Quién soy]' },
       { key: 'bio', label: 'Bio', type: 'textarea', default: '[Tu historia, experiencia y por qué trabajas en esto]' },
+      { key: 'photoImageUrl', label: 'Foto', type: 'image', placeholder: 'Link de Cloudinary de tu foto', default: '' },
       { key: 'photoAsBackground', label: 'Usar la foto como fondo de la sección', type: 'toggle', default: false },
     ],
   },
@@ -446,6 +451,7 @@ export const BLOCK_SCHEMA = {
     fields: [
       { key: 'caption', label: 'Texto pequeño', type: 'text', default: '[Como se vio en / trabajé con]' },
       { key: 'logoCount', label: 'Cantidad de logos', type: 'number', min: 2, max: 8, default: 5 },
+      { key: 'logos', label: 'Logos (en el orden en que van)', type: 'imageList', countField: 'logoCount' },
     ],
   },
 
@@ -470,7 +476,8 @@ export const BLOCK_SCHEMA = {
     label: 'Footer',
     variants: null,
     fields: [
-      { key: 'logo', label: 'Logo', type: 'text', default: '[Nombre del estudio]' },
+      { key: 'logo', label: 'Logo / nombre (texto)', type: 'text', default: '[Nombre del estudio]' },
+      { key: 'logoImageUrl', label: 'Logo (imagen)', type: 'image', placeholder: 'Link de Cloudinary del logo — si lo cargás, reemplaza al texto', default: '' },
       { key: 'socials', label: 'Redes', type: 'text', default: '[Instagram, WhatsApp, etc.]' },
       { key: 'links', label: 'Links', type: 'text', default: '[Privacidad, contacto]' },
     ],
@@ -511,9 +518,9 @@ export function buildDefaultProps(type) {
   if (!schema) throw new Error(`Tipo de bloque desconocido: ${type}`)
   const props = {}
   for (const field of schema.fields) {
-    if (field.type === 'repeatable') {
+    if (field.type === 'repeatable' || field.type === 'imageList') {
       const count = props[field.countField] ?? field.default
-      props[field.key] = Array.from({ length: count }, () => field.default)
+      props[field.key] = Array.from({ length: count }, () => (field.type === 'imageList' ? '' : field.default))
     } else {
       props[field.key] = field.default
     }

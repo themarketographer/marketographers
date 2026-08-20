@@ -1,4 +1,5 @@
 import { renderEmphasis } from '../../utils/textEmphasis'
+import ImageOrPlaceholder from './ImageOrPlaceholder'
 
 export default function PortfolioBlock({ props, variant, previewMode }) {
   const isMobile = previewMode === 'mobile'
@@ -16,9 +17,11 @@ export default function PortfolioBlock({ props, variant, previewMode }) {
       {variant === 'carrusel' ? (
         <div className="flex gap-3 overflow-x-auto pb-2">
           {pieces.map((_, i) => (
-            <div
+            <ImageOrPlaceholder
               key={i}
-              className="h-32 w-48 shrink-0 bg-black/10"
+              url={props.pieces[i]}
+              alt={`Pieza ${i + 1} del portafolio`}
+              className="h-32 w-48 shrink-0"
               style={{ borderRadius: 'var(--radius)' }}
             />
           ))}
@@ -26,7 +29,13 @@ export default function PortfolioBlock({ props, variant, previewMode }) {
       ) : (
         <div className="grid gap-3" style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}>
           {pieces.map((_, i) => (
-            <div key={i} className="aspect-square min-w-0 bg-black/10" style={{ borderRadius: 'var(--radius)' }} />
+            <ImageOrPlaceholder
+              key={i}
+              url={props.pieces[i]}
+              alt={`Pieza ${i + 1} del portafolio`}
+              className="aspect-square min-w-0"
+              style={{ borderRadius: 'var(--radius)' }}
+            />
           ))}
         </div>
       )}

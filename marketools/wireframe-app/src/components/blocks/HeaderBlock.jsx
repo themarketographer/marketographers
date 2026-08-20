@@ -16,9 +16,13 @@ export default function HeaderBlock({ props, previewMode }) {
         borderBottom: '1px solid rgba(0,0,0,0.08)',
       }}
     >
-      <span className="font-bold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--color-text)' }}>
-        {props.logo}
-      </span>
+      {props.logoImageUrl ? (
+        <img src={props.logoImageUrl} alt={props.logo} className="h-8 max-w-[140px] object-contain" />
+      ) : (
+        <span className="font-bold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--color-text)' }}>
+          {props.logo}
+        </span>
+      )}
       {!isMobile && (
         <nav className="flex gap-5 text-sm opacity-80" style={{ color: 'var(--color-text)' }}>
           {links.map((l, i) => (

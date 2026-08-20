@@ -8,6 +8,8 @@ import ButtonGroupField from './fields/ButtonGroupField'
 import SliderField from './fields/SliderField'
 import ToggleField from './fields/ToggleField'
 import RepeatableListField from './fields/RepeatableListField'
+import ImageField from './fields/ImageField'
+import ImageListField from './fields/ImageListField'
 import ColorField from './fields/ColorField'
 
 // Los selects con pocas opciones se ven mejor (y son más rápidos de tocar)
@@ -21,7 +23,14 @@ function FieldComponent({ field, value, onChange }) {
     const Component = field.options.length <= BUTTON_GROUP_MAX_OPTIONS ? ButtonGroupField : SelectField
     return <Component field={field} value={value} onChange={onChange} />
   }
-  const Component = { text: TextField, textarea: TextAreaField, toggle: ToggleField, repeatable: RepeatableListField }[field.type]
+  const Component = {
+    text: TextField,
+    textarea: TextAreaField,
+    toggle: ToggleField,
+    repeatable: RepeatableListField,
+    image: ImageField,
+    imageList: ImageListField,
+  }[field.type]
   return <Component field={field} value={value} onChange={onChange} />
 }
 

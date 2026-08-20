@@ -6,6 +6,10 @@ import { getResponsiveNote } from '../data/responsiveNotes'
 import { buildTrackingSection, TRACKING_REMINDER_NO_PIXEL, TRACKING_REMINDER_WITH_PIXEL } from '../data/trackingCopy'
 import { STANDARD_EVENTS } from '../data/standardEvents'
 import { buildPixelSnippet, buildGa4Snippet } from '../data/trackingSnippets'
+import { parseRow } from '../utils/parseRow'
+
+const VIDEO_RULE =
+  'Aplica a todo bloque con un clip (VSL, Video destacado): el video arranca solo cuando entra en el viewport (IntersectionObserver, threshold 0.2) y se pausa al salir. Si el navegador bloquea el autoplay, arranca con el primer toque/clic del usuario. Documentado una sola vez acá — no repetir esta lógica bloque por bloque.'
 
 function visibleFields(schema, props) {
   return schema.fields.filter((f) => !f.showIf || f.showIf(props))
@@ -56,9 +60,38 @@ function eventLineForRow(rowKey, trackingConfig) {
   return `Evento de este botón: \`${entry.value}\` (evento personalizado, snake_case).`
 }
 
+// Precios: cada plan (tarjetas o tabla comparativa) ya tiene su propio
+// nombre/precio/moneda cargado en props.tiers — el export lee eso solo en
+// vez de pedirle al alumno que tipee value/currency a mano por cada botón
+// en el formulario de tracking.
+function pricingTierLines(block) {
+  if (block.type !== 'pricing') return []
+  if (!['tarjetas-precio-exacto', 'tabla-comparativa'].includes(block.variant)) return []
+  return block.props.tiers.map((raw, i) => {
+    const [name, price, currency] = parseRow(raw, 3)
+    return `Evento del plan "${name || `Plan ${i + 1}`}": \`InitiateCheckout\` con value=${price || '(sin precio cargado)'}, currency=${currency || '(sin moneda cargada)'} — tomado directo del plan, no lo tipees a mano.`
+  })
+}
+
+// Addons: cada extra trae su propio evento en la 4ta columna de la fila
+// ("Título | Texto | Texto del botón | evento"), porque cada botón de add-on
+// necesita su propio evento de tracking (se agregan al pedido, no compiten
+// entre sí como los planes de Precios).
+function addonsEventLines(block) {
+  if (block.type !== 'addons') return []
+  return block.props.extras
+    .map((raw, i) => {
+      const [title, , , event] = parseRow(raw, 4)
+      if (!event) return null
+      return `Evento del extra "${title || `Extra ${i + 1}`}": \`${event}\`.`
+    })
+    .filter(Boolean)
+}
+
 function buildMasterPromptSection(state, trackingConfig) {
   const { blocks } = state.canvas
   const { theme } = state
+  const hasVideo = blocks.some((b) => b.type === 'videoBanda' || b.type === 'vsl')
 
   const lines = [
     '# PROMPT PARA GENERAR EL HTML DE LA LANDING',
@@ -82,6 +115,10 @@ function buildMasterPromptSection(state, trackingConfig) {
     '- Texto entre ^^así^^ es una "palabra clave" con efecto glow: color de acento + resplandor (text-shadow) alrededor del texto.',
     '',
   ]
+
+  if (hasVideo) {
+    lines.push('## Regla de video', VIDEO_RULE, '')
+  }
 
   blocks.forEach((block, i) => {
     const schema = BLOCK_SCHEMA[block.type]
@@ -107,6 +144,9 @@ function buildMasterPromptSection(state, trackingConfig) {
         if (line) lines.push(`   - ${line}`)
       })
     }
+    pricingTierLines(block).forEach((line) => lines.push(`   - ${line}`))
+    addonsEventLines(block).forEach((line) => lines.push(`   - ${line}`))
+
     lines.push('')
   })
 

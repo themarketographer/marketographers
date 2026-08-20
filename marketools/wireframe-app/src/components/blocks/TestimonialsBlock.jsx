@@ -5,6 +5,25 @@ export default function TestimonialsBlock({ props, variant, previewMode }) {
   const items = Array.from({ length: props.count })
   const columns = isMobile ? 1 : 3
 
+  if (variant === 'embed-widget') {
+    return (
+      <div className="p-10">
+        <h2
+          className="mb-6 text-center text-2xl font-bold"
+          style={{ fontFamily: 'var(--font-heading)', color: 'var(--color-text)' }}
+        >
+          {renderEmphasis(props.title)}
+        </h2>
+        <div
+          className="mx-auto flex h-40 max-w-lg items-center justify-center border border-dashed text-sm opacity-60"
+          style={{ borderRadius: 'var(--radius)', borderColor: 'var(--color-text)', color: 'var(--color-text)' }}
+        >
+          [widget: {props.embedCode || 'sin ID/código todavía'}]
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="p-10">
       <h2

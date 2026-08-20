@@ -11,8 +11,8 @@ export const RESPONSIVE_NOTES = {
   portfolio: 'Mobile: grid pasa de 3 columnas a 1-2; carrusel muestra una pieza casi completa por vez. Desktop: grid completo o carrusel con varias piezas visibles.',
   vsl: 'Mobile: reproductor a ancho completo, controles simplificados. Desktop: reproductor centrado con ancho máximo.',
   testimonials: 'Mobile: grid pasa a 1 columna o el carrusel se desliza con el dedo (swipe). Desktop: grid en 3 columnas o carrusel con flechas visibles.',
-  pricing: 'Mobile: tarjetas apiladas verticalmente, la destacada va primera. Desktop: tarjetas en fila, la destacada centrada y más alta.',
-  faq: 'Mobile: acordeón a ancho completo. Desktop: acordeón centrado con ancho máximo (~640px).',
+  pricing: 'Mobile: tarjetas apiladas verticalmente (o tabla comparativa con scroll horizontal), la destacada va primera. Desktop: tarjetas en fila, o tabla completa sin scroll, la destacada centrada y más alta.',
+  faq: 'Mobile: acordeón a ancho completo; en la variante columna fija, la columna pasa a estar arriba (no fija) y el acordeón debajo. Desktop: acordeón centrado con ancho máximo (~640px), o columna fija al costado mientras se scrollea el acordeón.',
   about: 'Mobile: foto arriba, texto debajo. Desktop: foto y texto lado a lado.',
   finalCta: 'Mobile: botón a ancho completo. Desktop: botón de ancho fijo, centrado.',
   footer: 'Mobile: links apilados verticalmente. Desktop: links en fila.',
@@ -20,6 +20,8 @@ export const RESPONSIVE_NOTES = {
   stats: 'Mobile: números apilados en 1-2 columnas. Desktop: todos los números en una fila.',
   guarantee: 'Mobile: ícono/sello arriba, texto debajo, centrado. Desktop: ícono al costado del texto.',
   leadMagnet: 'Mobile: input y botón apilados, ambos a ancho completo. Desktop: input y botón en una misma fila.',
+  pullQuote: 'Mobile: tipografía de la frase baja de tamaño para no partir línea. Desktop: tamaño completo, ancho máximo de lectura.',
+  embed: 'Mobile: el contenedor del widget ocupa el ancho completo. Desktop: ancho máximo centrado, igual que el resto de las secciones de texto.',
 }
 
 export function getResponsiveNote(type) {

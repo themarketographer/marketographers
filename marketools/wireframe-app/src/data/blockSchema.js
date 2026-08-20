@@ -1,4 +1,4 @@
-// Catálogo declarativo de los 12 tipos de bloque. El panel de propiedades y
+// Catálogo declarativo de los tipos de bloque. El panel de propiedades y
 // los valores por defecto se derivan de este objeto en vez de tener un
 // formulario hardcodeado por tipo de bloque.
 //
@@ -6,18 +6,25 @@
 //   text, textarea, select, number, toggle, repeatable
 // `repeatable` usa `countField` para saber cuántos items debe tener el
 // array (se ajusta solo cuando ese número cambia, sin perder lo escrito).
+// Los items de `repeatable` son un string por fila; cuando la fila necesita
+// más de un dato (ej. "ícono | título | texto"), se codifica separado por
+// `|` y el bloque lo parsea al renderizar — mismo patrón que ya usa
+// Estadísticas. `RepeatableListField` ya trae botones ↑↓ para reordenar
+// filas, así que cualquier bloque que use `repeatable` permite reordenar
+// sus elementos internos sin código extra.
 // `showIf(props)` es opcional: si devuelve false, el campo no se renderiza
 // en el panel (se usa para las sub-opciones de la acción del botón).
 //
 // Texto con énfasis: los campos de texto aceptan una sintaxis liviana tipo
 // markdown para negrita/itálica/subrayado (**negrita**, *itálica*,
-// __subrayado__), que los bloques renderizan formateada. No es un editor
-// WYSIWYG — se explica en el placeholder de cada campo relevante.
+// __subrayado__), tipografía elegante (~~así~~) y glow (^^así^^), que los
+// bloques renderizan formateada. No es un editor WYSIWYG — se explica en el
+// placeholder de cada campo relevante.
 
 // Sub-schema reutilizable para botones que necesitan una acción real
-// (WhatsApp con número y mensaje prellenado, o agenda de Cal.com/Calendly
-// con link y modo de apertura). Se agrega a continuación del campo de texto
-// del botón en cada bloque que tiene un CTA.
+// (WhatsApp con número y mensaje prellenado, agenda de Cal.com/Calendly,
+// bajar a una sección, o ir a otra URL). Se agrega a continuación del campo
+// de texto del botón en cada bloque que tiene un CTA.
 function ctaActionFields(prefix = '') {
   const key = (k) => (prefix ? `${prefix}${k[0].toUpperCase()}${k.slice(1)}` : k)
   return [
@@ -212,38 +219,83 @@ export const BLOCK_SCHEMA = {
     ],
   },
 
+  videoBanda: {
+    label: 'Video destacado',
+    variants: null,
+    fields: [
+      { key: 'clip', label: 'Video (URL o descripción)', type: 'text', default: '[URL del clip o descripción de qué se muestra]' },
+      { key: 'caption', label: 'Texto de pie (opcional)', type: 'text', default: '' },
+    ],
+  },
+
   testimonials: {
     label: 'Testimonios',
-    variants: ['grid-estatico', 'carrusel-flechas'],
-    variantLabels: { 'grid-estatico': 'Grid estático', 'carrusel-flechas': 'Carrusel con flechas y swipe' },
+    variants: ['grid-estatico', 'carrusel-flechas', 'embed-widget'],
+    variantLabels: {
+      'grid-estatico': 'Grid estático',
+      'carrusel-flechas': 'Carrusel con flechas y swipe',
+      'embed-widget': 'Widget embebido (reseñas externas)',
+    },
     defaultVariant: 'grid-estatico',
     fields: [
       { key: 'title', label: 'Título', type: 'text', default: '[Lo que dicen mis clientes]' },
       { key: 'count', label: 'Cantidad de testimonios', type: 'number', min: 1, max: 12, default: 3 },
       { key: 'showPhoto', label: 'Mostrar foto', type: 'toggle', default: true },
+      {
+        key: 'embedCode',
+        label: 'Código/ID del widget externo',
+        type: 'text',
+        default: '',
+        placeholder: 'Ej: ID de Google Reviews, Elfsight o Trustindex',
+      },
     ],
   },
 
   pricing: {
     label: 'Precios',
-    variants: ['rango-precio', 'tarjetas-precio-exacto'],
-    variantLabels: { 'rango-precio': 'Rango de precio', 'tarjetas-precio-exacto': 'Tarjetas con precio exacto' },
+    variants: ['rango-precio', 'tarjetas-precio-exacto', 'tabla-comparativa'],
+    variantLabels: {
+      'rango-precio': 'Rango de precio',
+      'tarjetas-precio-exacto': 'Tarjetas con precio exacto',
+      'tabla-comparativa': 'Tabla comparativa',
+    },
     defaultVariant: 'rango-precio',
     fields: [
       { key: 'title', label: 'Título', type: 'text', default: '[Planes y precios]' },
       { key: 'planCount', label: 'Cantidad de planes', type: 'number', min: 1, max: 4, default: 3 },
+      {
+        key: 'tiers',
+        label: 'Planes (nombre, precio, moneda)',
+        type: 'repeatable',
+        countField: 'planCount',
+        default: '[Plan] | [$X] | USD',
+        placeholder: 'Nombre | Precio | Moneda (ISO, ej. USD)',
+      },
       { key: 'highlightedPlan', label: 'Plan destacado', type: 'toggle', default: false },
+      { key: 'featureCount', label: 'Características (tabla comparativa)', type: 'number', min: 3, max: 8, default: 5 },
+      {
+        key: 'features',
+        label: 'Características (tabla comparativa)',
+        type: 'repeatable',
+        countField: 'featureCount',
+        default: '[Característica incluida]',
+      },
       ...ctaActionFields('plan'),
     ],
   },
 
   faq: {
     label: 'FAQ',
-    variants: null,
+    variants: ['acordeon-ancho', 'columna-fija'],
+    variantLabels: { 'acordeon-ancho': 'Acordeón a ancho completo', 'columna-fija': 'Columna fija + acordeón' },
+    defaultVariant: 'acordeon-ancho',
     fields: [
       { key: 'title', label: 'Título', type: 'text', default: '[Preguntas frecuentes]' },
       { key: 'questionCount', label: 'Cantidad de preguntas', type: 'number', min: 2, max: 10, default: 5 },
       { key: 'openByDefault', label: 'Acordeón abierto por defecto', type: 'toggle', default: false },
+      { key: 'intro', label: 'Intro (columna fija)', type: 'textarea', default: '[Texto corto de apoyo, visible solo en la variante columna fija]' },
+      { key: 'ctaText', label: 'Texto del botón (columna fija)', type: 'text', default: 'Escribime' },
+      ...ctaActionFields(),
     ],
   },
 
@@ -254,6 +306,98 @@ export const BLOCK_SCHEMA = {
       { key: 'title', label: 'Título', type: 'text', default: '[Quién soy]' },
       { key: 'bio', label: 'Bio', type: 'textarea', default: '[Tu historia, experiencia y por qué trabajas en esto]' },
       { key: 'photoAsBackground', label: 'Usar la foto como fondo de la sección', type: 'toggle', default: false },
+    ],
+  },
+
+  exclusividad: {
+    label: 'Exclusividad',
+    variants: null,
+    fields: [
+      { key: 'title', label: 'Título', type: 'text', default: '[Por qué este servicio es distinto]' },
+      { key: 'body', label: 'Texto', type: 'textarea', default: '[Explicá qué te hace distinto — remarcá el beneficio clave con ~~así~~ o ^^así^^]' },
+      { key: 'ctaText', label: 'Texto del CTA', type: 'text', default: 'Quiero saber más' },
+      ...ctaActionFields(),
+    ],
+  },
+
+  guarantee: {
+    label: 'Garantía (simple)',
+    variants: null,
+    fields: [
+      { key: 'title', label: 'Título', type: 'text', default: '[Tu garantía o sello de confianza]' },
+      { key: 'body', label: 'Descripción', type: 'textarea', default: '[Explicá qué garantizás y por qué el cliente no arriesga nada]' },
+    ],
+  },
+
+  pullQuote: {
+    label: 'Cita destacada',
+    variants: null,
+    fields: [
+      { key: 'quote', label: 'Frase', type: 'textarea', default: '[Una sola frase textual de un cliente, corta y contundente]' },
+      { key: 'author', label: 'Nombre', type: 'text', default: '[Nombre del cliente]' },
+      { key: 'role', label: 'Rol / contexto (opcional)', type: 'text', default: '' },
+    ],
+  },
+
+  embed: {
+    label: 'Embed genérico',
+    variants: null,
+    fields: [
+      { key: 'title', label: 'Título (opcional)', type: 'text', default: '' },
+      {
+        key: 'embedCode',
+        label: 'Código o URL a embeber',
+        type: 'text',
+        default: '',
+        placeholder: 'Ej: snippet de Cal.com, feed de Instagram, mapa, widget de reseñas',
+      },
+      { key: 'heightHint', label: 'Alto aproximado (px)', type: 'number', min: 150, max: 800, default: 350 },
+    ],
+  },
+
+  garantias: {
+    label: 'Garantías (tarjetas)',
+    variants: null,
+    fields: [
+      { key: 'title', label: 'Título', type: 'text', default: '[Por qué podés confiar]' },
+      { key: 'cardCount', label: 'Cantidad de tarjetas', type: 'number', min: 2, max: 4, default: 3 },
+      {
+        key: 'cards',
+        label: 'Tarjetas',
+        type: 'repeatable',
+        countField: 'cardCount',
+        default: '✓ | [Título de la garantía] | [Explicación breve]',
+        placeholder: 'Ícono | Título | Texto',
+      },
+    ],
+  },
+
+  addons: {
+    label: 'Extras / Add-ons',
+    variants: null,
+    fields: [
+      { key: 'title', label: 'Título', type: 'text', default: '[Sumá esto a tu paquete]' },
+      { key: 'extraCount', label: 'Cantidad de extras', type: 'number', min: 1, max: 6, default: 3 },
+      {
+        key: 'extras',
+        label: 'Extras',
+        type: 'repeatable',
+        countField: 'extraCount',
+        default: '[Nombre del extra] | [Qué incluye] | Agregar | evento_extra',
+        placeholder: 'Título | Texto | Texto del botón | evento de tracking (opcional, snake_case)',
+      },
+    ],
+  },
+
+  proximosPasos: {
+    label: 'Próximos pasos',
+    variants: null,
+    fields: [
+      { key: 'title', label: 'Título', type: 'text', default: '[Qué pasa después de que me escribís]' },
+      { key: 'stepCount', label: 'Cantidad de pasos', type: 'number', min: 2, max: 4, default: 3 },
+      { key: 'steps', label: 'Pasos', type: 'repeatable', countField: 'stepCount', default: '[Descripción de este paso]' },
+      { key: 'ctaText', label: 'Texto del CTA final', type: 'text', default: 'Empezar ahora' },
+      ...ctaActionFields(),
     ],
   },
 
@@ -268,13 +412,31 @@ export const BLOCK_SCHEMA = {
     ],
   },
 
-  footer: {
-    label: 'Footer',
+  formasPago: {
+    label: 'Formas de pago',
     variants: null,
     fields: [
-      { key: 'logo', label: 'Logo', type: 'text', default: '[Nombre del estudio]' },
-      { key: 'socials', label: 'Redes', type: 'text', default: '[Instagram, WhatsApp, etc.]' },
-      { key: 'links', label: 'Links', type: 'text', default: '[Privacidad, contacto]' },
+      { key: 'title', label: 'Título', type: 'text', default: '[Cómo podés pagar]' },
+      { key: 'modeCount', label: 'Cantidad de modalidades', type: 'number', min: 2, max: 3, default: 2 },
+      {
+        key: 'modes',
+        label: 'Modalidades',
+        type: 'repeatable',
+        countField: 'modeCount',
+        default: '[Modalidad de pago] | [Detalle destacado]',
+        placeholder: 'Modalidad | Detalle destacado',
+      },
+    ],
+  },
+
+  leadMagnet: {
+    label: 'Newsletter / Lead magnet',
+    variants: null,
+    fields: [
+      { key: 'title', label: 'Título', type: 'text', default: '[Descargá la guía gratuita]' },
+      { key: 'body', label: 'Descripción', type: 'textarea', default: '[Qué recibe la persona al dejar su email]' },
+      { key: 'inputPlaceholder', label: 'Placeholder del campo de email', type: 'text', default: 'Tu email' },
+      { key: 'buttonText', label: 'Texto del botón', type: 'text', default: 'Quiero la guía' },
     ],
   },
 
@@ -304,38 +466,44 @@ export const BLOCK_SCHEMA = {
     ],
   },
 
-  guarantee: {
-    label: 'Garantía',
+  footer: {
+    label: 'Footer',
     variants: null,
     fields: [
-      { key: 'title', label: 'Título', type: 'text', default: '[Tu garantía o sello de confianza]' },
-      { key: 'body', label: 'Descripción', type: 'textarea', default: '[Explicá qué garantizás y por qué el cliente no arriesga nada]' },
-    ],
-  },
-
-  leadMagnet: {
-    label: 'Newsletter / Lead magnet',
-    variants: null,
-    fields: [
-      { key: 'title', label: 'Título', type: 'text', default: '[Descargá la guía gratuita]' },
-      { key: 'body', label: 'Descripción', type: 'textarea', default: '[Qué recibe la persona al dejar su email]' },
-      { key: 'inputPlaceholder', label: 'Placeholder del campo de email', type: 'text', default: 'Tu email' },
-      { key: 'buttonText', label: 'Texto del botón', type: 'text', default: 'Quiero la guía' },
+      { key: 'logo', label: 'Logo', type: 'text', default: '[Nombre del estudio]' },
+      { key: 'socials', label: 'Redes', type: 'text', default: '[Instagram, WhatsApp, etc.]' },
+      { key: 'links', label: 'Links', type: 'text', default: '[Privacidad, contacto]' },
     ],
   },
 }
 
 export const BLOCK_TYPES = Object.keys(BLOCK_SCHEMA)
 
-// Tipos de bloque que tienen al menos un botón con acción real (WhatsApp o
-// Cal.com), usados por el formulario de configuración de tracking al
-// exportar para saber qué botones ofrecer.
+// Agrupa los bloques por función para la paleta (secciones colapsables) —
+// mismo orden en que un fotógrafo pensaría su landing de arriba a abajo.
+export const BLOCK_GROUPS = [
+  { id: 'estructura', label: 'Estructura', types: ['header', 'footer'] },
+  { id: 'apertura', label: 'Apertura', types: ['hero', 'vsl', 'videoBanda'] },
+  { id: 'argumento', label: 'Argumento de venta', types: ['problem', 'process', 'promise', 'exclusividad'] },
+  { id: 'prueba-social', label: 'Prueba social', types: ['portfolio', 'testimonials', 'trustBar', 'stats', 'pullQuote', 'about'] },
+  { id: 'confianza', label: 'Confianza', types: ['guarantee', 'garantias'] },
+  { id: 'precios', label: 'Precios y oferta', types: ['pricing', 'addons', 'formasPago'] },
+  { id: 'conversion', label: 'Conversión', types: ['finalCta', 'proximosPasos', 'leadMagnet', 'faq'] },
+  { id: 'otros', label: 'Otros', types: ['embed'] },
+]
+
+// Tipos de bloque que tienen al menos un botón con acción real (WhatsApp,
+// Cal.com, scroll o URL), usados por el formulario de configuración de
+// tracking al exportar para saber qué botones ofrecer.
 export const CTA_ACTION_PREFIXES = {
   header: [''],
   hero: [''],
   vsl: [''],
   finalCta: [''],
   pricing: ['plan'],
+  faq: [''],
+  exclusividad: [''],
+  proximosPasos: [''],
 }
 
 export function buildDefaultProps(type) {

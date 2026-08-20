@@ -22,6 +22,14 @@ export const ANIMATION_SUGGESTIONS = {
   stats: 'Stagger fade-up de cada número; si el desarrollador puede animar el conteo (de 0 al valor final) en ~1s, mejor — si no, el fade-up solo también funciona.',
   guarantee: 'Fade-up simple del bloque completo, con el ícono/sello apareciendo con un leve pop (escala 0.9 -> 1).',
   leadMagnet: 'Fade-up del bloque completo; el input y el botón tienen un foco/hover sutil, sin animación de scroll adicional.',
+  videoBanda: 'Fade-in del reproductor al entrar en viewport. Ver "regla de video" al final del prompt: el clip arranca/pausa solo según si está visible.',
+  exclusividad: 'Fade-up del título y el texto; la palabra clave remarcada (~~así~~/^^así^^) puede tener un leve delay para que se note al final.',
+  garantias: 'Stagger fade-up de cada tarjeta, con el ícono apareciendo con un leve pop (escala 0.9 -> 1).',
+  addons: 'Stagger fade-up de cada tarjeta de extra, mismo timing que Garantías para que se sientan de la misma familia.',
+  proximosPasos: 'Stagger fade-up de cada paso en orden (100-150ms de diferencia), igual criterio que Proceso — acá describe qué pasa después del contacto, no el servicio.',
+  formasPago: 'Fade-up simple de las tarjetas, sin stagger — se leen como opciones equivalentes, no como una secuencia.',
+  pullQuote: 'Fade-in simple de la frase completa, sin desplazamiento — es una pausa de lectura, no necesita movimiento.',
+  embed: 'Fade-in simple del contenedor al entrar en viewport; si el widget tiene su propia animación de carga, no agregar una encima.',
 }
 
 export function getAnimationSuggestion(type) {

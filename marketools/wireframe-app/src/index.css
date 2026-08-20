@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+:root {
+  --app-bg: #faf9f6;
+  --app-ink: #141414;
+  --app-accent: #f5b729;
+  --app-accent-ink: #141414;
+  --app-muted: #68655f;
+  --app-border: rgba(20, 20, 20, 0.12);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: #ffffff;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.font-heading-app {
+  font-family: 'Poppins', system-ui, sans-serif;
+}
+
+/* Estilo de palabra clave: dos marcadores independientes, usables juntos en
+   el mismo texto — ~~así~~ para tipografía elegante, ^^así^^ para glow. */
+.kw-elegant {
+  font-family: var(--font-heading);
+  font-style: italic;
+  color: var(--color-accent);
+}
+.kw-glow {
+  color: var(--color-accent);
+  text-shadow: 0 0 10px color-mix(in srgb, var(--color-accent) 70%, transparent), 0 0 2px var(--color-accent);
+}
+
+/* Animaciones de entrada, usadas por la pestaña Animación tanto para el
+   preview en vivo sobre el bloque seleccionado como conceptualmente en el
+   export (los nombres coinciden con data/animationOptions.js). */
+@keyframes preview-fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes preview-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes preview-zoom-in {
+  from { opacity: 0; transform: scale(0.94); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes preview-slide-left {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes preview-slide-right {
+  from { opacity: 0; transform: translateX(-40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.preview-anim-fade-up { animation: preview-fade-up 700ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.preview-anim-fade-in { animation: preview-fade-in 700ms ease both; }
+.preview-anim-zoom-in { animation: preview-zoom-in 700ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.preview-anim-slide-left { animation: preview-slide-left 700ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.preview-anim-slide-right { animation: preview-slide-right 700ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* Escala de texto (theme.fontScale), aplicada solo dentro del canvas — ver
+   Canvas.jsx, que pone data-font-scale + --font-scale en el contenedor de la
+   landing. Reescala las utilidades de Tailwind que usan los bloques, sin
+   tener que tocar cada componente para agregar tamaños personalizables. */
+[data-font-scale] .text-xs {
+  font-size: calc(0.75rem * var(--font-scale, 1));
+}
+[data-font-scale] .text-sm {
+  font-size: calc(0.875rem * var(--font-scale, 1));
+}
+[data-font-scale] .text-base {
+  font-size: calc(1rem * var(--font-scale, 1));
+}
+[data-font-scale] .text-lg {
+  font-size: calc(1.125rem * var(--font-scale, 1));
+}
+[data-font-scale] .text-xl {
+  font-size: calc(1.25rem * var(--font-scale, 1));
+}
+[data-font-scale] .text-2xl {
+  font-size: calc(1.5rem * var(--font-scale, 1));
+}
+[data-font-scale] .text-3xl {
+  font-size: calc(1.875rem * var(--font-scale, 1));
+}
+[data-font-scale] .text-4xl {
+  font-size: calc(2.25rem * var(--font-scale, 1));
+}

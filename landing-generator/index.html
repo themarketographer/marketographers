@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Landing Page</title>
+    <style>
+        body {font-family: Arial, sans-serif; margin:0; background:#f5f5f5;}
+        .container {max-width: 1000px; margin:auto; padding:20px;}
+        fieldset {margin-bottom:20px; border:1px solid #ccc;}
+        label {display:block; margin-bottom:8px;}
+        input[type="text"], textarea {width:100%; padding:8px; margin-top:4px; box-sizing:border-box;}
+        input[type="file"] {margin-top:4px;}
+        .optional {display:none; margin-top:10px;}
+        .actions {display:flex; gap:10px; margin-top:10px;}
+        iframe {width:100%; height:600px; border:1px solid #ccc; margin-top:20px; background:white;}
+        .color-wrapper{display:flex; align-items:center; gap:10px;}
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <h1>Generador de Landing Page</h1>
+    <form id="lpForm">
+        <fieldset>
+            <legend>Datos generales</legend>
+            <label>Nombre del sitio
+                <input type="text" id="siteName" required>
+            </label>
+            <label>Subtítulo
+                <input type="text" id="subtitle">
+            </label>
+            <label>Título
+                <input type="text" id="title" required>
+            </label>
+            <label>Descripción
+                <textarea id="description"></textarea>
+            </label>
+            <label>Logo (PNG)
+                <input type="file" id="logo" accept="image/png">
+            </label>
+            <label>Favicon (PNG)
+                <input type="file" id="favicon" accept="image/png">
+            </label>
+            <div class="color-wrapper">
+                <label>Color de marca
+                    <input type="color" id="brandColor" value="#000000">
+                </label>
+                <input type="text" id="colorHex" value="#000000">
+            </div>
+            <label>Pixel de Facebook (ID)
+                <input type="text" id="pixel">
+            </label>
+            <label>Hero (imagen o video)
+                <input type="file" id="hero" accept="image/*,video/*">
+            </label>
+        </fieldset>
+
+        <fieldset>
+            <legend>Secciones opcionales</legend>
+            <label><input type="checkbox" id="sectionProblema"> Problema (3 ítems)</label>
+            <div class="optional" data-section="problema">
+                <input type="text" class="prob-item" placeholder="Problema 1">
+                <input type="text" class="prob-item" placeholder="Problema 2">
+                <input type="text" class="prob-item" placeholder="Problema 3">
+            </div>
+
+            <label><input type="checkbox" id="sectionProceso"> Proceso (3 pasos)</label>
+            <div class="optional" data-section="proceso">
+                <input type="text" class="proc-item" placeholder="Paso 1">
+                <input type="text" class="proc-item" placeholder="Paso 2">
+                <input type="text" class="proc-item" placeholder="Paso 3">
+            </div>
+
+            <label><input type="checkbox" id="sectionRecibiras"> Qué recibirás</label>
+            <div class="optional" data-section="recibiras">
+                <textarea id="recibirasText" placeholder="Describe lo que recibirán"></textarea>
+            </div>
+
+            <label><input type="checkbox" id="sectionPortafolio"> Portafolio en carrusel (hasta 10 imágenes)</label>
+            <div class="optional" data-section="portafolio">
+                <input type="file" id="portfolioImages" accept="image/*" multiple>
+            </div>
+
+            <label><input type="checkbox" id="sectionTestimonios"> Testimonios (3)</label>
+            <div class="optional" data-section="testimonios">
+                <input type="text" class="test-nombre" placeholder="Nombre 1">
+                <textarea class="test-texto" placeholder="Testimonio 1"></textarea>
+                <input type="text" class="test-nombre" placeholder="Nombre 2">
+                <textarea class="test-texto" placeholder="Testimonio 2"></textarea>
+                <input type="text" class="test-nombre" placeholder="Nombre 3">
+                <textarea class="test-texto" placeholder="Testimonio 3"></textarea>
+            </div>
+
+            <label><input type="checkbox" id="sectionAgendar"> Agendar (Cal.com)</label>
+            <div class="optional" data-section="agendar">
+                <input type="text" id="calUrl" placeholder="https://cal.com/usuario/enlace">
+            </div>
+
+            <label><input type="checkbox" id="sectionFaq"> Preguntas frecuentes (4)</label>
+            <div class="optional" data-section="faq">
+                <input type="text" class="faq-q" placeholder="Pregunta 1">
+                <textarea class="faq-a" placeholder="Respuesta 1"></textarea>
+                <input type="text" class="faq-q" placeholder="Pregunta 2">
+                <textarea class="faq-a" placeholder="Respuesta 2"></textarea>
+                <input type="text" class="faq-q" placeholder="Pregunta 3">
+                <textarea class="faq-a" placeholder="Respuesta 3"></textarea>
+                <input type="text" class="faq-q" placeholder="Pregunta 4">
+                <textarea class="faq-a" placeholder="Respuesta 4"></textarea>
+            </div>
+        </fieldset>
+
+        <div class="actions">
+            <button type="button" id="previewBtn">Previsualizar</button>
+            <button type="reset" id="resetBtn">Resetear</button>
+            <button type="button" id="downloadBtn">Descargar ZIP</button>
+        </div>
+    </form>
+    <iframe id="previewFrame"></iframe>
+</div>
+<script>
+// toggle optional sections
+ document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+    cb.addEventListener('change', () => {
+        const key = cb.id.replace('section','').toLowerCase();
+        const sec = document.querySelector(`.optional[data-section="${key}"]`);
+        if (sec) sec.style.display = cb.checked ? 'block' : 'none';
+    });
+ });
+// color sync
+const brandColor = document.getElementById('brandColor');
+const colorHex = document.getElementById('colorHex');
+brandColor.addEventListener('input', ()=>{ colorHex.value = brandColor.value; });
+colorHex.addEventListener('input', ()=>{
+    if(/^#([0-9a-f]{3}){1,2}$/i.test(colorHex.value)) brandColor.value = colorHex.value;
+});
+
+function collectData(){
+    const data = {
+        siteName: document.getElementById('siteName').value,
+        subtitle: document.getElementById('subtitle').value,
+        title: document.getElementById('title').value,
+        description: document.getElementById('description').value,
+        pixel: document.getElementById('pixel').value,
+        brandColor: colorHex.value || '#000000',
+        logoFile: document.getElementById('logo').files[0],
+        faviconFile: document.getElementById('favicon').files[0],
+        heroFile: document.getElementById('hero').files[0]
+    };
+    if(document.getElementById('sectionProblema').checked){
+        data.problema = Array.from(document.querySelectorAll('.prob-item')).map(i=>i.value).filter(Boolean);
+    }
+    if(document.getElementById('sectionProceso').checked){
+        data.proceso = Array.from(document.querySelectorAll('.proc-item')).map(i=>i.value).filter(Boolean);
+    }
+    if(document.getElementById('sectionRecibiras').checked){
+        data.recibiras = document.getElementById('recibirasText').value;
+    }
+    if(document.getElementById('sectionPortafolio').checked){
+        data.portfolio = Array.from(document.getElementById('portfolioImages').files).slice(0,10);
+    }
+    if(document.getElementById('sectionTestimonios').checked){
+        const nombres = Array.from(document.querySelectorAll('.test-nombre'));
+        const textos = Array.from(document.querySelectorAll('.test-texto'));
+        data.testimonios = [];
+        for(let i=0;i<3;i++){
+            if(nombres[i].value && textos[i].value){
+                data.testimonios.push({nombre:nombres[i].value, texto:textos[i].value});
+            }
+        }
+    }
+    if(document.getElementById('sectionAgendar').checked){
+        data.calUrl = document.getElementById('calUrl').value;
+    }
+    if(document.getElementById('sectionFaq').checked){
+        const qs = Array.from(document.querySelectorAll('.faq-q'));
+        const as = Array.from(document.querySelectorAll('.faq-a'));
+        data.faq = [];
+        for(let i=0;i<4;i++){
+            if(qs[i].value && as[i].value){
+                data.faq.push({q:qs[i].value,a:as[i].value});
+            }
+        }
+    }
+    return data;
+}
+
+function buildHtml(data, paths){
+    const pixel = data.pixel ? `<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${data.pixel}');fbq('track','PageView');<\/script><noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=${data.pixel}&ev=PageView&noscript=1"/></noscript>`:'';
+    const hero = data.heroFile ? (data.heroFile.type.startsWith('video') ? `<video src="${paths.hero}" autoplay muted loop playsinline style="max-width:100%;height:auto;"></video>` : `<img src="${paths.hero}" alt="" style="max-width:100%;height:auto;">`) : '';
+    const problema = data.problema?`<section id="problema"><h2>Problema</h2><ul>${data.problema.map(p=>`<li>${p}</li>`).join('')}</ul></section>`:'';
+    const proceso = data.proceso?`<section id="proceso"><h2>Proceso</h2><ol>${data.proceso.map(p=>`<li>${p}</li>`).join('')}</ol></section>`:'';
+    const recibiras = data.recibiras?`<section id="recibiras"><h2>Qué recibirás</h2><p>${data.recibiras}</p></section>`:'';
+    const portafolio = data.portfolio?`<section id="portafolio"><h2>Portafolio</h2><div class="carousel">${paths.portfolio.map(p=>`<img src="${p}" style="max-width:300px;border-radius:8px;">`).join('')}</div></section>`:'';
+    const testimonios = data.testimonios?`<section id="testimonios"><h2>Testimonios</h2>${data.testimonios.map(t=>`<blockquote><p>${t.texto}</p><footer>${t.nombre}</footer></blockquote>`).join('')}</section>`:'';
+    const agendar = data.calUrl?`<section id="agendar"><h2>Agenda</h2><iframe src="${data.calUrl}" style="width:100%;height:600px;border:0;"></iframe></section>`:'';
+    const faq = data.faq?`<section id="faq"><h2>Preguntas frecuentes</h2>${data.faq.map(f=>`<details><summary>${f.q}</summary><p>${f.a}</p></details>`).join('')}</section>`:'';
+    return `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>${data.siteName}</title>${paths.favicon?`<link rel="icon" type="image/png" href="${paths.favicon}">`:''}<style>:root{--brand:${data.brandColor};}body{font-family:Arial,sans-serif;margin:0;line-height:1.6;}header{text-align:center;background:var(--brand);color:#fff;padding:40px;}header img.logo{max-width:120px;}section{padding:40px;margin:auto;max-width:900px;} .carousel{display:flex;overflow-x:auto;gap:10px;} blockquote{border-left:4px solid var(--brand);margin:20px 0;padding-left:16px;}@media(max-width:600px){header{padding:20px;}section{padding:20px;}}</style>${pixel}</head><body><header>${paths.logo?`<img src="${paths.logo}" class="logo" alt="logo">`:''}${data.subtitle?`<h2>${data.subtitle}</h2>`:''}<h1>${data.title}</h1><p>${data.description}</p>${hero}</header>${problema}${proceso}${recibiras}${portafolio}${testimonios}${agendar}${faq}</body></html>`;
+}
+
+function preview(){
+    const data = collectData();
+    const paths = {};
+    if(data.logoFile) paths.logo = URL.createObjectURL(data.logoFile);
+    if(data.faviconFile) paths.favicon = URL.createObjectURL(data.faviconFile);
+    if(data.heroFile) paths.hero = URL.createObjectURL(data.heroFile);
+    if(data.portfolio) paths.portfolio = data.portfolio.map(f=>URL.createObjectURL(f));
+    const html = buildHtml(data, paths);
+    document.getElementById('previewFrame').srcdoc = html;
+}
+
+async function download(){
+    const data = collectData();
+    const zip = new JSZip();
+    const assets = zip.folder('assets');
+    const paths = {};
+    const sanitize = s=>s.toLowerCase().replace(/[^a-z0-9\.]/g,'-');
+    if(data.logoFile){
+        const name = 'logo-'+sanitize(data.logoFile.name);
+        assets.file(name, data.logoFile);
+        paths.logo = 'assets/'+name;
+    }
+    if(data.faviconFile){
+        const name = 'favicon-'+sanitize(data.faviconFile.name);
+        assets.file(name, data.faviconFile);
+        paths.favicon = 'assets/'+name;
+    }
+    if(data.heroFile){
+        const name = 'hero-'+sanitize(data.heroFile.name);
+        assets.file(name, data.heroFile);
+        paths.hero = 'assets/'+name;
+    }
+    if(data.portfolio){
+        paths.portfolio = [];
+        data.portfolio.forEach((file,i)=>{
+            const name = `portfolio-${i}-`+sanitize(file.name);
+            assets.file(name,file);
+            paths.portfolio.push('assets/'+name);
+        });
+    }
+    const html = buildHtml(data, paths);
+    zip.file('index.html', html);
+    const blob = await zip.generateAsync({type:'blob'});
+    saveAs(blob, (data.siteName || 'landing')+'.zip');
+}
+
+document.getElementById('previewBtn').addEventListener('click', preview);
+document.getElementById('downloadBtn').addEventListener('click', download);
+document.getElementById('resetBtn').addEventListener('click', ()=>{document.getElementById('previewFrame').srcdoc='';});
+</script>
+</body>
+</html>

@@ -12,3 +12,9 @@
 - [Cómo conseguir clientes de fotografía sin gastar en anuncios](https://marketographers.com/blog/como-conseguir-clientes-sin-ads/)
 - [El error que comete el 95% de los fotógrafos al armar su portafolio](https://marketographers.com/blog/error-portafolio-fotografos/)
 - [Cómo responder cuando un cliente te dice que estás caro](https://marketographers.com/blog/objeciones-de-precio-fotografos/)
+
+## MarkeTools (herramientas gratuitas)
+
+- [MarkeTools](https://marketographers.com/marketools/): índice de herramientas gratuitas para fotógrafos, sin registro.
+- [Generador de Wireframes](https://marketographers.com/marketools/wireframe/): arma la estructura de una landing page antes de diseñarla.
+- [Generador de Links de WhatsApp](https://marketographers.com/marketools/link-wpp/): crea links wa.me personalizados con mensaje precargado, nombre del cliente y QR.

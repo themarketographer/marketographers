@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generador de links de WhatsApp | MarkeTools</title>
+<meta name="description" content="Crea tu link personalizado de WhatsApp (wa.me) con mensaje precargado. Previsualiza cómo se ve en el celular antes de compartirlo.">
+<style>
+  :root{
+    --yellow:#ffc629;
+    --black:#111111;
+    --gray-bg:#f6f5f1;
+    --gray-line:#e2e0d8;
+    --gray-text:#5b5952;
+    --wa-green:#25d366;
+    --wa-bubble:#d9fdd3;
+    --wa-header:#075e54;
+    --wa-chatbg:#e5ddd3;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+    background:
+      radial-gradient(circle, #dedad0 1px, transparent 1px) 0 0/22px 22px,
+      var(--gray-bg);
+    color:var(--black);
+    min-height:100vh;
+  }
+  header.top{
+    padding:28px 24px 8px;
+    text-align:center;
+  }
+  header.top a{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    text-decoration:none;
+    color:var(--black);
+    font-weight:700;
+    font-size:14px;
+    letter-spacing:.02em;
+  }
+  header.top a span.dot{
+    width:8px;height:8px;border-radius:50%;background:var(--yellow);display:inline-block;
+  }
+  h1.page-title{
+    text-align:center;
+    font-size:clamp(28px,4vw,42px);
+    margin:8px auto 6px;
+    max-width:720px;
+    line-height:1.15;
+  }
+  h1.page-title mark{
+    background:var(--yellow);
+    padding:0 8px;
+    border-radius:4px;
+  }
+  p.subtitle{
+    text-align:center;
+    color:var(--gray-text);
+    max-width:560px;
+    margin:0 auto 36px;
+    font-size:16px;
+  }
+  .wrap{
+    max-width:1080px;
+    margin:0 auto;
+    padding:0 20px 60px;
+    display:grid;
+    grid-template-columns:1fr 380px;
+    gap:36px;
+    align-items:start;
+  }
+  @media (max-width:860px){
+    .wrap{grid-template-columns:1fr; }
+    .phone-col{order:-1; margin-bottom:8px;}
+  }
+
+  .card{
+    background:#fff;
+    border:1px solid var(--gray-line);
+    border-radius:16px;
+    padding:28px;
+  }
+  fieldset{border:0;padding:0;margin:0 0 20px;}
+  legend{font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--gray-text);margin-bottom:10px;}
+  label{display:block;font-weight:600;font-size:14px;margin-bottom:6px;}
+  .hint{font-weight:400;color:var(--gray-text);font-size:12.5px;margin-top:4px;}
+  input[type="text"], textarea, select{
+    width:100%;
+    padding:12px 14px;
+    border:1.5px solid var(--gray-line);
+    border-radius:10px;
+    font-size:15px;
+    font-family:inherit;
+    background:#fcfbf9;
+    transition:border-color .15s;
+  }
+  input[type="text"]:focus, textarea:focus, select:focus{
+    outline:none;
+    border-color:var(--black);
+    background:#fff;
+  }
+  textarea{resize:vertical;min-height:110px;line-height:1.4;}
+  .phone-row{display:flex;gap:8px;}
+  .phone-row select{flex:0 0 130px;}
+  .phone-row input{flex:1;}
+  .field{margin-bottom:18px;}
+  .char-count{text-align:right;font-size:12px;color:var(--gray-text);margin-top:4px;}
+  .char-count.over{color:#c0392b;font-weight:700;}
+
+  .quick-msgs{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+  .quick-msgs button{
+    border:1.5px solid var(--gray-line);
+    background:#fff;
+    border-radius:20px;
+    padding:6px 14px;
+    font-size:12.5px;
+    cursor:pointer;
+    font-family:inherit;
+    transition:.15s;
+  }
+  .quick-msgs button:hover{border-color:var(--black);background:var(--gray-bg);}
+
+  .error-msg{
+    display:none;
+    background:#fdeaea;
+    border:1px solid #f3b9b9;
+    color:#a12626;
+    padding:10px 14px;
+    border-radius:10px;
+    font-size:13.5px;
+    margin-bottom:16px;
+  }
+  .error-msg.show{display:block;}
+
+  .link-box{
+    display:flex;
+    gap:10px;
+    margin-top:8px;
+  }
+  .link-box input{
+    flex:1;
+    background:var(--gray-bg);
+    font-size:13.5px;
+    color:var(--gray-text);
+    border-color:var(--gray-line);
+  }
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    border:none;
+    border-radius:10px;
+    padding:13px 20px;
+    font-weight:700;
+    font-size:14.5px;
+    cursor:pointer;
+    font-family:inherit;
+    white-space:nowrap;
+    transition:transform .1s, opacity .15s;
+  }
+  .btn:active{transform:scale(0.97);}
+  .btn-primary{background:var(--black);color:#fff;}
+  .btn-primary:hover{opacity:.88;}
+  .btn-secondary{background:var(--yellow);color:var(--black);}
+  .btn-secondary:hover{opacity:.88;}
+  .btn-ghost{background:#fff;border:1.5px solid var(--gray-line);color:var(--black);}
+  .btn-ghost:hover{border-color:var(--black);}
+  .btn-wa{background:var(--wa-green);color:#fff;width:100%;padding:15px;font-size:15px;margin-top:10px;}
+  .btn-wa:hover{opacity:.9;}
+  .actions-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;}
+
+  .result-block{margin-top:26px;padding-top:22px;border-top:1px dashed var(--gray-line);}
+  .result-block h3{margin:0 0 4px;font-size:15px;}
+  .result-block p.small{color:var(--gray-text);font-size:12.5px;margin:0 0 4px;}
+
+  .qr-wrap{display:flex;align-items:center;gap:16px;margin-top:14px;flex-wrap:wrap;}
+  #qrcode{background:#fff;padding:10px;border-radius:10px;border:1px solid var(--gray-line);}
+  #qrcode img{display:block;}
+
+  /* ---- Phone mockup ---- */
+  .phone-col{
+    position:sticky;
+    top:24px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .phone-label{
+    font-size:12px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--gray-text);
+    margin-bottom:14px;
+  }
+  .phone{
+    width:290px;
+    height:592px;
+    background:#0b0b0b;
+    border-radius:44px;
+    padding:14px;
+    box-shadow:0 20px 45px -12px rgba(0,0,0,.35), 0 0 0 2px #1c1c1c inset;
+    position:relative;
+  }
+  .phone::before{
+    content:"";
+    position:absolute;
+    top:14px; left:50%;
+    transform:translateX(-50%);
+    width:120px; height:22px;
+    background:#0b0b0b;
+    border-radius:0 0 16px 16px;
+    z-index:5;
+  }
+  .screen{
+    width:100%;height:100%;
+    background:var(--wa-chatbg);
+    border-radius:30px;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    position:relative;
+  }
+  .wa-status{
+    background:var(--wa-header);
+    color:#fff;
+    font-size:11px;
+    padding:8px 18px 2px;
+    display:flex;
+    justify-content:space-between;
+  }
+  .wa-header{
+    background:var(--wa-header);
+    color:#fff;
+    padding:8px 12px 12px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .wa-header .back{font-size:20px;}
+  .wa-avatar{
+    width:36px;height:36px;border-radius:50%;
+    background:var(--yellow);
+    color:var(--black);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:14px;
+    flex-shrink:0;
+    overflow:hidden;
+  }
+  .wa-header .who{flex:1;min-width:0;}
+  .wa-header .name{font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .wa-header .status{font-size:11px;opacity:.85;}
+  .wa-header .icons{display:flex;gap:14px;font-size:16px;opacity:.9;}
+  .wa-body{
+    flex:1;
+    padding:14px 10px;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-end;
+    background-image:
+      radial-gradient(circle at 15% 20%, rgba(255,255,255,.35) 0, transparent 55%),
+      radial-gradient(circle at 85% 70%, rgba(255,255,255,.25) 0, transparent 55%);
+  }
+  .day-chip{
+    align-self:center;
+    background:#e2f2fb;
+    color:#5c6a72;
+    font-size:11px;
+    padding:4px 10px;
+    border-radius:8px;
+    margin-bottom:14px;
+  }
+  .bubble{
+    max-width:82%;
+    align-self:flex-end;
+    background:var(--wa-bubble);
+    padding:7px 9px 8px 9px;
+    border-radius:8px 2px 8px 8px;
+    font-size:13.5px;
+    line-height:1.35;
+    color:#111;
+    box-shadow:0 1px 1px rgba(0,0,0,.08);
+    white-space:pre-wrap;
+    word-break:break-word;
+    position:relative;
+  }
+  .bubble .meta{
+    display:flex;
+    justify-content:flex-end;
+    align-items:center;
+    gap:3px;
+    font-size:10px;
+    color:#667781;
+    margin-top:3px;
+  }
+  .bubble .meta svg{width:14px;height:10px;}
+  .bubble.placeholder{color:#8a8f8c;font-style:italic;}
+  .wa-inputbar{
+    background:#f0f0f0;
+    padding:8px 10px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .wa-inputbar .fake-input{
+    flex:1;
+    background:#fff;
+    border-radius:20px;
+    padding:9px 14px;
+    font-size:12.5px;
+    color:#9a9a9a;
+  }
+  .wa-inputbar .mic{
+    width:34px;height:34px;border-radius:50%;
+    background:var(--wa-green);
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-size:15px;
+    flex-shrink:0;
+  }
+
+  footer.foot{
+    text-align:center;
+    padding:20px;
+    color:var(--gray-text);
+    font-size:12.5px;
+  }
+  footer.foot a{color:var(--black);}
+
+  .toast{
+    position:fixed;
+    bottom:24px;
+    left:50%;
+    transform:translateX(-50%) translateY(20px);
+    background:var(--black);
+    color:#fff;
+    padding:12px 20px;
+    border-radius:10px;
+    font-size:13.5px;
+    opacity:0;
+    pointer-events:none;
+    transition:.25s;
+    z-index:50;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a href="/"><span class="dot"></span> The Marketographers</a>
+</header>
+
+<h1 class="page-title">Tu link de WhatsApp, <mark>listo para pegar en bio</mark></h1>
+<p class="subtitle">Arma el link con tu número y un mensaje precargado. Ve la preview en el celular antes de compartirlo en tus redes, tarjeta o QR.</p>
+
+<div class="wrap">
+  <div class="card">
+    <div class="error-msg" id="errorMsg"></div>
+
+    <fieldset>
+      <legend>Datos del negocio</legend>
+      <div class="field">
+        <label for="bizName">Nombre a mostrar</label>
+        <input type="text" id="bizName" placeholder="Estudio Graphica" maxlength="30">
+        <div class="hint">Solo es para la preview del celular, no se incluye en el link.</div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Número de WhatsApp</legend>
+      <div class="field">
+        <label for="phone">Código de país + número</label>
+        <div class="phone-row">
+          <select id="countryCode">
+            <option value="591">🇧🇴 +591 Bolivia</option>
+            <option value="54">🇦🇷 +54 Argentina</option>
+            <option value="56">🇨🇱 +56 Chile</option>
+            <option value="57">🇨🇴 +57 Colombia</option>
+            <option value="52">🇲🇽 +52 México</option>
+            <option value="51">🇵🇪 +51 Perú</option>
+            <option value="598">🇺🇾 +598 Uruguay</option>
+            <option value="58">🇻🇪 +58 Venezuela</option>
+            <option value="34">🇪🇸 +34 España</option>
+            <option value="1">🇺🇸 +1 EE. UU.</option>
+            <option value="other">🌎 Otro código</option>
+          </select>
+          <input type="text" id="phone" placeholder="69422335" inputmode="numeric">
+        </div>
+        <div class="hint" id="phoneHint">Sin espacios, sin +, sin el 0 inicial. Ej: 69422335</div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Mensaje precargado</legend>
+      <div class="field">
+        <label for="message">Qué va a ver la persona al abrir el chat</label>
+        <textarea id="message" maxlength="300" placeholder="Hola! Vi tu perfil y quiero cotizar una sesión de fotos 📸">Hola! Vi tu perfil y quiero cotizar una sesión de fotos 📸</textarea>
+        <div class="char-count" id="charCount">0 / 300</div>
+        <div class="quick-msgs">
+          <button type="button" data-msg="Hola! Quiero cotizar una sesión de fotos 📸">Cotizar sesión</button>
+          <button type="button" data-msg="Hola! Vi tu portafolio y me encantó, ¿tienen disponibilidad este mes?">Consultar disponibilidad</button>
+          <button type="button" data-msg="Hola! Quiero más información sobre el plan mensual de contenido">Plan mensual</button>
+          <button type="button" data-msg="Hola! Vengo de Instagram, ¿podemos hablar?">Vengo de Instagram</button>
+        </div>
+      </div>
+    </fieldset>
+
+    <div class="result-block">
+      <h3>Tu link</h3>
+      <p class="small">Se genera automáticamente mientras completas el formulario.</p>
+      <div class="link-box">
+        <input type="text" id="linkOutput" readonly value="">
+        <button class="btn btn-ghost" id="copyBtn" type="button">Copiar</button>
+      </div>
+      <div class="actions-row">
+        <button class="btn btn-secondary" id="qrBtn" type="button">Generar QR</button>
+        <a class="btn btn-ghost" id="testBtn" href="#" target="_blank" rel="noopener">Probar link ↗</a>
+      </div>
+      <div class="qr-wrap" id="qrWrap" style="display:none;">
+        <div id="qrcode"></div>
+        <div>
+          <p class="small" style="margin-bottom:8px;">Escanéalo con tu celular o descárgalo para imprimir en una tarjeta, vitrina o historia.</p>
+          <button class="btn btn-ghost" id="downloadQrBtn" type="button">Descargar PNG</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="phone-col">
+    <div class="phone-label">Así se ve en WhatsApp</div>
+    <div class="phone">
+      <div class="screen">
+        <div class="wa-status"><span>9:41</span><span>●●● 📶 🔋</span></div>
+        <div class="wa-header">
+          <span class="back">‹</span>
+          <div class="wa-avatar" id="avatarInitial">EG</div>
+          <div class="who">
+            <div class="name" id="previewName">Estudio Graphica</div>
+            <div class="status">en línea</div>
+          </div>
+          <div class="icons">📹 📞</div>
+        </div>
+        <div class="wa-body">
+          <div class="day-chip">Hoy</div>
+          <div class="bubble" id="previewBubble">Hola! Vi tu perfil y quiero cotizar una sesión de fotos 📸
+            <div class="meta">
+              <span id="previewTime">9:41</span>
+              <svg viewBox="0 0 16 11" fill="#53bdeb"><path d="M11.071.653a.457.457 0 0 0-.304-.102.493.493 0 0 0-.381.178l-6.19 7.636-2.405-2.272a.463.463 0 0 0-.336-.146.457.457 0 0 0-.336.146l-.62.638a.457.457 0 0 0 0 .667l3.286 3.104c.09.09.204.146.336.146a.5.5 0 0 0 .336-.146l6.9-8.5a.457.457 0 0 0-.083-.667z"/><path d="M15.071.653a.457.457 0 0 0-.304-.102.493.493 0 0 0-.381.178l-6.19 7.636-.564-.533-.657.81 1.09 1.03c.09.09.204.146.336.146a.5.5 0 0 0 .336-.146l6.9-8.5a.457.457 0 0 0-.083-.667z"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="wa-inputbar">
+          <div class="fake-input">Mensaje</div>
+          <div class="mic">🎤</div>
+        </div>
+      </div>
+    </div>
+    <a class="btn btn-wa" id="waBtn" href="#" target="_blank" rel="noopener" style="margin-top:20px;width:290px;">💬 Abrir en WhatsApp</a>
+  </div>
+</div>
+
+<footer class="foot">
+  MarkeTool de <a href="/">The Marketographers</a> — generador local, tu número no se guarda en ningún servidor.
+</footer>
+
+<div class="toast" id="toast">Link copiado ✅</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+(function(){
+  const bizName = document.getElementById('bizName');
+  const countryCode = document.getElementById('countryCode');
+  const phone = document.getElementById('phone');
+  const message = document.getElementById('message');
+  const charCount = document.getElementById('charCount');
+  const linkOutput = document.getElementById('linkOutput');
+  const errorMsg = document.getElementById('errorMsg');
+  const previewName = document.getElementById('previewName');
+  const avatarInitial = document.getElementById('avatarInitial');
+  const previewBubble = document.getElementById('previewBubble');
+  const previewTime = document.getElementById('previewTime');
+  const testBtn = document.getElementById('testBtn');
+  const waBtn = document.getElementById('waBtn');
+  const qrWrap = document.getElementById('qrWrap');
+  const qrDiv = document.getElementById('qrcode');
+  let qrObj = null;
+
+  function initials(name){
+    const parts = name.trim().split(/\s+/).filter(Boolean);
+    if(!parts.length) return 'EG';
+    if(parts.length === 1) return parts[0].slice(0,2).toUpperCase();
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+
+  function now(){
+    const d = new Date();
+    let h = d.getHours(), m = d.getMinutes();
+    const ampm = h >= 12 ? 'p.m.' : 'a.m.';
+    h = h % 12; if(h === 0) h = 12;
+    return h + ':' + String(m).padStart(2,'0') + ' ' + ampm;
+  }
+
+  function cleanPhone(raw){
+    return raw.replace(/[^0-9]/g, '');
+  }
+
+  function buildLink(){
+    const cc = countryCode.value === 'other' ? '' : countryCode.value;
+    const num = cleanPhone(phone.value);
+    const fullNumber = cc + num;
+    const msg = message.value;
+
+    errorMsg.classList.remove('show');
+
+    if(!num){
+      linkOutput.value = '';
+      testBtn.href = '#';
+      waBtn.href = '#';
+      return;
+    }
+    if(num.length < 6){
+      errorMsg.textContent = 'Ese número se ve muy corto, revisa que esté completo (sin el 0 inicial).';
+      errorMsg.classList.add('show');
+    }
+
+    const url = 'https://wa.me/' + fullNumber + (msg ? ('?text=' + encodeURIComponent(msg)) : '');
+    linkOutput.value = url;
+    testBtn.href = url;
+    waBtn.href = url;
+    return url;
+  }
+
+  function updatePreview(){
+    const name = bizName.value.trim() || 'Tu negocio';
+    previewName.textContent = name;
+    avatarInitial.textContent = initials(name);
+    previewBubble.childNodes[0].nodeValue = message.value || '';
+    if(!message.value){
+      previewBubble.classList.add('placeholder');
+      previewBubble.childNodes[0].nodeValue = 'Escribe tu mensaje para verlo aquí...';
+    } else {
+      previewBubble.classList.remove('placeholder');
+    }
+    previewTime.textContent = now();
+
+    const len = message.value.length;
+    charCount.textContent = len + ' / 300';
+    charCount.classList.toggle('over', len > 280);
+  }
+
+  function refresh(){
+    buildLink();
+    updatePreview();
+  }
+
+  [bizName, countryCode, phone, message].forEach(el => {
+    el.addEventListener('input', refresh);
+    el.addEventListener('change', refresh);
+  });
+
+  document.querySelectorAll('.quick-msgs button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      message.value = btn.dataset.msg;
+      refresh();
+    });
+  });
+
+  document.getElementById('copyBtn').addEventListener('click', () => {
+    if(!linkOutput.value) return;
+    navigator.clipboard.writeText(linkOutput.value).then(() => {
+      const toast = document.getElementById('toast');
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 1800);
+    }).catch(() => {
+      linkOutput.select();
+      document.execCommand('copy');
+    });
+  });
+
+  document.getElementById('qrBtn').addEventListener('click', () => {
+    const url = buildLink();
+    if(!url){
+      errorMsg.textContent = 'Primero completa el número de WhatsApp.';
+      errorMsg.classList.add('show');
+      return;
+    }
+    qrDiv.innerHTML = '';
+    qrObj = new QRCode(qrDiv, {
+      text: url,
+      width: 160,
+      height: 160,
+      colorDark: '#111111',
+      colorLight: '#ffffff'
+    });
+    qrWrap.style.display = 'flex';
+  });
+
+  document.getElementById('downloadQrBtn').addEventListener('click', () => {
+    const img = qrDiv.querySelector('img');
+    const canvas = qrDiv.querySelector('canvas');
+    const src = img ? img.src : (canvas ? canvas.toDataURL('image/png') : null);
+    if(!src) return;
+    const a = document.createElement('a');
+    a.href = src;
+    a.download = 'qr-whatsapp.png';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  });
+
+  refresh();
+})();
+</script>
+</body>
+</html>

@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /marketools/wireframe-app/
 
 Sitemap: https://marketographers.com/sitemap.xml

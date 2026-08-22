@@ -84,12 +84,6 @@
   @keyframes blob-float{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-30px,26px) scale(1.08);}}
   @media (prefers-reduced-motion: reduce){.blob{animation:none;}}
 
-  /* Breadcrumb */
-  .crumbs{position:relative;z-index:1;padding:18px 0 0;font-size:12.5px;color:var(--muted);font-weight:600;}
-  .crumbs a{color:var(--muted);}
-  .crumbs a:hover{color:var(--ink);text-decoration:underline;}
-  .crumbs .sep{margin:0 6px;opacity:.5;}
-
   /* Hero */
   .tool-hero{position:relative;z-index:1;padding:36px 0 20px;text-align:center;}
   @keyframes fade-up{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
@@ -373,10 +367,6 @@ trackBoth('PageView');
   </div>
 </header>
 
-<div class="wrap">
-  <p class="crumbs"><a href="/">Inicio</a><span class="sep">/</span><a href="/#planes">MarkeTools</a><span class="sep">/</span>Generador de links de WhatsApp</p>
-</div>
-
 <section class="tool-hero">
   <div class="wrap">
     <p class="eyebrow">· MarkeTools · Gratis, sin registro ·</p>
@@ -522,7 +512,7 @@ trackBoth('PageView');
   </div>
 </section>
 
-<section class="community-cta">
+<section class="community-cta" id="communityCta">
   <div class="wrap">
     <div class="community-card glass-dark reveal">
       <p class="eyebrow">The Marketographers</p>
@@ -668,6 +658,10 @@ trackBoth('PageView');
     }catch(e){
       linkOutput.select();
       document.execCommand('copy');
+    }
+    const community = document.getElementById('communityCta');
+    if(community){
+      setTimeout(()=>{ community.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 450);
     }
   });
 

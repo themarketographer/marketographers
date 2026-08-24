@@ -1,0 +1,30 @@
+// Diferencias celular (375px) vs escritorio (1440px) por tipo de bloque, para el punto 4 del prompt
+// maestro (brief, sección 8.2). Es texto fijo por tipo, NO se deriva del
+// toggle visual de preview — ver nota en Preview/ResponsiveToggle.jsx.
+
+export const RESPONSIVE_NOTES = {
+  header: 'Mobile: se oculta el menú de links y queda solo el logo + botón (o un ícono de menú hamburguesa si hay muchos links). Desktop: logo, links y botón en una sola fila.',
+  hero: 'Mobile: el texto se apila sobre el fondo (no al costado), CTA a ancho completo. Desktop: texto y fondo lado a lado según la variante elegida.',
+  problem: 'Mobile: título y párrafo a ancho completo, padding reducido. Desktop: párrafo centrado con ancho máximo de lectura (~640px).',
+  process: 'Mobile: los pasos se apilan verticalmente. Desktop: los pasos se muestran en fila horizontal.',
+  promise: 'Mobile: tipografía de la frase de transformación baja de tamaño para no partir línea. Desktop: tamaño completo, centrado.',
+  portfolio: 'Mobile: grid pasa de 3 columnas a 1-2; carrusel muestra una pieza casi completa por vez. Desktop: grid completo o carrusel con varias piezas visibles.',
+  beforeAfter: 'Mobile: el comparador ocupa el ancho completo con aspect-ratio 4/5 (vertical), el arrastre horizontal del divisor no debe scrollear la página (usar touch-action: pan-y y solo bloquear el scroll cuando el gesto es claramente horizontal). Desktop: comparador centrado con ancho máximo (~480px), mismo aspect-ratio.',
+  vsl: 'Mobile: reproductor a ancho completo, controles simplificados. Desktop: reproductor centrado con ancho máximo.',
+  testimonials: 'Mobile: grid pasa a 1 columna o el carrusel se desliza con el dedo (swipe). Desktop: grid en 3 columnas o carrusel con flechas visibles.',
+  pricing: 'Mobile: tarjetas apiladas verticalmente (o tabla comparativa con scroll horizontal), la destacada va primera. Desktop: tarjetas en fila, o tabla completa sin scroll, la destacada centrada y más alta.',
+  faq: 'Mobile: acordeón a ancho completo; en la variante columna fija, la columna pasa a estar arriba (no fija) y el acordeón debajo. Desktop: acordeón centrado con ancho máximo (~640px), o columna fija al costado mientras se scrollea el acordeón.',
+  about: 'Mobile: foto arriba, texto debajo. Desktop: foto y texto lado a lado.',
+  finalCta: 'Mobile: botón a ancho completo. Desktop: botón de ancho fijo, centrado.',
+  footer: 'Mobile: links apilados verticalmente. Desktop: links en fila.',
+  trustBar: 'Mobile: logos en fila con scroll horizontal o grid de 2 columnas. Desktop: todos los logos en una sola fila.',
+  stats: 'Mobile: números apilados en 1-2 columnas. Desktop: todos los números en una fila.',
+  guarantee: 'Mobile: ícono/sello arriba, texto debajo, centrado. Desktop: ícono al costado del texto.',
+  leadMagnet: 'Mobile: input y botón apilados, ambos a ancho completo. Desktop: input y botón en una misma fila.',
+  pullQuote: 'Mobile: tipografía de la frase baja de tamaño para no partir línea. Desktop: tamaño completo, ancho máximo de lectura.',
+  embed: 'Mobile: el contenedor del widget ocupa el ancho completo. Desktop: ancho máximo centrado, igual que el resto de las secciones de texto.',
+}
+
+export function getResponsiveNote(type) {
+  return RESPONSIVE_NOTES[type] ?? 'Sin diferencias específicas más allá del comportamiento responsive estándar del layout.'
+}

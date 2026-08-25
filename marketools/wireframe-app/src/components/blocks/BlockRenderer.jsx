@@ -4,6 +4,7 @@ import ProblemBlock from './ProblemBlock'
 import ProcessBlock from './ProcessBlock'
 import PromiseBlock from './PromiseBlock'
 import PortfolioBlock from './PortfolioBlock'
+import BeforeAfterBlock from './BeforeAfterBlock'
 import VslBlock from './VslBlock'
 import VideoBandaBlock from './VideoBandaBlock'
 import TestimonialsBlock from './TestimonialsBlock'
@@ -31,6 +32,7 @@ const REGISTRY = {
   process: ProcessBlock,
   promise: PromiseBlock,
   portfolio: PortfolioBlock,
+  beforeAfter: BeforeAfterBlock,
   vsl: VslBlock,
   videoBanda: VideoBandaBlock,
   testimonials: TestimonialsBlock,

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>MarkeTools: Herramientas Gratis para Fotógrafos | The Marketographers</title>
+<meta name="description" content="Herramientas gratuitas de The Marketographers para fotógrafos: generador de wireframes, links de WhatsApp personalizados y dashboard de campañas de Meta Ads. Sin registro.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://marketographers.com/marketools/">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Marketographers">
+<meta property="og:title" content="MarkeTools: Herramientas Gratis para Fotógrafos">
+<meta property="og:description" content="Wireframes para tu web, links de WhatsApp personalizados y más. Herramientas gratis de The Marketographers, sin registro.">
+<meta property="og:image" content="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1785200397/Banner_z6b496.png">
+<meta property="og:url" content="https://marketographers.com/marketools/">
+<meta property="og:locale" content="es_LA">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="MarkeTools: Herramientas Gratis para Fotógrafos">
+<meta name="twitter:description" content="Wireframes para tu web, links de WhatsApp personalizados y más. Herramientas gratis, sin registro.">
+<meta name="twitter:image" content="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1785200397/Banner_z6b496.png">
+
+<!-- Favicon -->
+<link rel="icon" type="image/png" href="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1755314903/Marketographers_Blanco_S_F_p1toov.png">
+<link rel="apple-touch-icon" href="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1755314903/Marketographers_Blanco_S_F_p1toov.png">
+
+<!-- JSON-LD: CollectionPage -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "MarkeTools",
+  "url": "https://marketographers.com/marketools/",
+  "description": "Herramientas gratuitas de The Marketographers para fotógrafos: wireframes, links de WhatsApp personalizados y dashboard de Meta Ads.",
+  "isPartOf": { "@type": "WebSite", "name": "The Marketographers", "url": "https://marketographers.com/" },
+  "hasPart": [
+    {
+      "@type": "WebApplication",
+      "name": "Generador de Wireframes",
+      "url": "https://marketographers.com/marketools/wireframe/",
+      "applicationCategory": "DesignApplication",
+      "operatingSystem": "Any",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    },
+    {
+      "@type": "WebApplication",
+      "name": "Generador de Links de WhatsApp",
+      "url": "https://marketographers.com/marketools/link-wpp/",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Any",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    },
+    {
+      "@type": "WebApplication",
+      "name": "Dashboard de Meta Ads",
+      "url": "https://marketographers.com/marketools/adsboard/",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Any",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    }
+  ]
+}
+</script>
+
+<!-- JSON-LD: BreadcrumbList -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://marketographers.com/" },
+    { "@type": "ListItem", "position": 2, "name": "MarkeTools", "item": "https://marketographers.com/marketools/" }
+  ]
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/global.css">
+<style>
+  /* Estilos propios de esta página. Tipografía, colores, botones,
+     header y footer vienen de /assets/global.css. */
+
+  body{overflow-x:hidden;}
+
+  .blob{position:fixed;border-radius:50%;filter:blur(60px);pointer-events:none;z-index:0;opacity:.5;}
+  .blob-gold{width:420px;height:420px;background:radial-gradient(circle, rgba(245,183,41,.5), transparent 70%);top:-120px;right:-140px;animation:blob-float 16s ease-in-out infinite;}
+  .blob-red{width:360px;height:360px;background:radial-gradient(circle, rgba(194,59,38,.32), transparent 70%);bottom:-80px;left:-140px;animation:blob-float 19s ease-in-out infinite 1.5s;}
+  @keyframes blob-float{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-26px,22px) scale(1.07);}}
+  @media (prefers-reduced-motion: reduce){.blob{animation:none;}}
+
+  @keyframes fade-up{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+  .tools-hero{position:relative;z-index:1;padding:36px 0 20px;text-align:center;}
+  .tools-hero .eyebrow{animation:fade-up .7s cubic-bezier(.22,1,.36,1) both;}
+  .tools-hero h1{animation:fade-up .8s cubic-bezier(.22,1,.36,1) .08s both;font-size:clamp(30px,5.5vw,52px);max-width:760px;margin:16px auto 0;line-height:1.2;}
+  .tools-hero p.lead{animation:fade-up .8s cubic-bezier(.22,1,.36,1) .18s both;max-width:560px;margin:18px auto 0;color:var(--muted);font-size:16px;}
+  .tools-hero mark{
+    background-color:transparent;background-image:linear-gradient(100deg, var(--gold), var(--gold));
+    background-repeat:no-repeat;background-position:left center;background-size:0% 100%;
+    color:var(--ink);padding:3px 6px;border-radius:5px;
+    box-decoration-break:clone;-webkit-box-decoration-break:clone;
+    animation:highlight-sweep .9s ease-out .9s forwards;
+  }
+  @keyframes highlight-sweep{to{background-size:100% 100%;}}
+
+  .tools-section{position:relative;z-index:1;padding:24px 0 72px;}
+  .tools-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;}
+  .tool-card{
+    background:rgba(255,255,255,.6);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);
+    border:1px solid rgba(255,255,255,.5);border-radius:26px;padding:34px;
+    box-shadow:0 20px 50px -24px rgba(20,20,20,.22);
+    display:flex;flex-direction:column;
+    transition:transform .3s ease, box-shadow .3s ease;
+  }
+  .tool-card:hover{transform:translateY(-6px);box-shadow:0 28px 56px -22px rgba(20,20,20,.3);}
+  .tool-icon{
+    width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;
+    font-size:26px;background:linear-gradient(135deg, rgba(245,183,41,.25), rgba(245,183,41,.08));
+    margin-bottom:18px;
+  }
+  .tool-card h2{font-size:21px;}
+  .tool-card p{color:var(--muted);font-size:14.5px;margin-top:10px;flex:1;}
+  .tool-card .btn{margin-top:22px;align-self:flex-start;}
+  .tool-tag{
+    font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--gold);background:rgba(245,183,41,.14);
+    padding:5px 12px;border-radius:999px;display:inline-block;width:fit-content;margin-bottom:14px;
+  }
+  .tool-card.soon{opacity:.72;}
+  .tool-card.soon .tool-tag{color:var(--muted);background:rgba(20,20,20,.06);}
+  .tool-card.soon .tool-icon{background:repeating-linear-gradient(135deg, rgba(20,20,20,.07) 0 6px, rgba(20,20,20,.02) 6px 12px);}
+
+  .community-cta{position:relative;z-index:1;padding:12px 0 80px;}
+  .community-card{
+    max-width:var(--max-article);margin:0 auto;padding:42px 40px;text-align:center;color:var(--cream);
+    background:rgba(20,20,20,.82);backdrop-filter:blur(22px) saturate(140%);-webkit-backdrop-filter:blur(22px) saturate(140%);
+    border:1px solid rgba(255,255,255,.1);box-shadow:0 25px 60px -20px rgba(0,0,0,.5);border-radius:28px;
+  }
+  .community-card .eyebrow{color:var(--gold);}
+  .community-card h2{font-size:clamp(24px,3.6vw,32px);color:var(--cream);margin-top:12px;}
+  .community-card p{color:rgba(250,249,246,.75);margin-top:12px;font-size:15px;max-width:480px;margin-left:auto;margin-right:auto;}
+  .community-card .btn{margin-top:24px;}
+
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1);}
+  .reveal.in-view{opacity:1;transform:translateY(0);}
+  .reveal-stagger.in-view .stagger-item{opacity:1;transform:translateY(0);}
+  .stagger-item{opacity:0;transform:translateY(20px);transition:opacity .6s ease, transform .6s ease;}
+  .reveal-stagger.in-view .stagger-item:nth-child(1){transition-delay:.05s;}
+  .reveal-stagger.in-view .stagger-item:nth-child(2){transition-delay:.15s;}
+  .reveal-stagger.in-view .stagger-item:nth-child(3){transition-delay:.25s;}
+
+  @media (max-width:760px){
+    .tools-grid{grid-template-columns:1fr;}
+    .community-card{padding:34px 24px;}
+    .blob{opacity:.32;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .reveal,.stagger-item{opacity:1;transform:none;transition:none;}
+    .tools-hero .eyebrow,.tools-hero h1,.tools-hero p.lead{animation:none;}
+    .tools-hero mark{animation:none;background-size:100% 100%;}
+  }
+</style>
+</head>
+<body>
+
+<!-- Meta Pixel -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('set', 'autoConfig', false, '467504537642622');
+fbq('init', '467504537642622');
+function makeEventId(prefix){return prefix + '_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);}
+function getCookie(name){const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));return match ? match[2] : null;}
+function sendCapiEvent(eventName, eventId, customData){
+  try{
+    fetch('/.netlify/functions/capi', {
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({event_name: eventName,event_id: eventId,event_source_url: window.location.href,custom_data: customData || undefined,fbp: getCookie('_fbp'),fbc: getCookie('_fbc')})
+    }).catch(()=>{});
+  }catch(e){}
+}
+function trackBoth(eventName, params){
+  const id = makeEventId(eventName.toLowerCase());
+  fbq('track', eventName, params || {}, {eventID:id});
+  sendCapiEvent(eventName, id, params);
+}
+trackBoth('PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=467504537642622&ev=PageView&noscript=1"/></noscript>
+
+<div class="blob blob-gold"></div>
+<div class="blob blob-red"></div>
+
+<header>
+  <div class="nav wrap">
+    <a class="logo" href="/"><img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314905/Marketographers_Negro_S_F_tgh9z2.png" alt="The Marketographers"></a>
+    <div class="nav-actions">
+      <a class="btn btn-whatsapp" href="https://api.whatsapp.com/send?phone=+59169422335&text=%C2%A1Hola%2C%20Pablo!%20Vi%20MarkeTools%20y%20quiero%20m%C3%A1s%20info%20de%20la%20membres%C3%ADa" target="_blank" rel="noopener">WhatsApp</a>
+      <a class="btn btn-gold" href="/#planes">Únete</a>
+    </div>
+  </div>
+</header>
+
+<section class="tools-hero">
+  <div class="wrap">
+    <p class="eyebrow">· MarkeTools · Gratis, sin registro ·</p>
+    <h1>Herramientas para que <mark>vendas más rápido</mark></h1>
+    <p class="lead">Nada de formularios eternos ni "déjanos tu correo". Elige una herramienta, úsala y listo. Todo gratis, hecho por The Marketographers.</p>
+  </div>
+</section>
+
+<section class="tools-section">
+  <div class="wrap">
+    <div class="tools-grid reveal-stagger">
+
+      <a class="tool-card stagger-item" href="/marketools/wireframe/" style="text-decoration:none;color:inherit;">
+        <span class="tool-tag">Diseño web</span>
+        <div class="tool-icon">🖼️</div>
+        <h2>Generador de Wireframes</h2>
+        <p>Arma la estructura de tu web o landing antes de meterte a diseñar. Bloques, secciones y orden, listos para pasarle a quien te la construya.</p>
+        <span class="btn btn-dark">Abrir herramienta →</span>
+      </a>
+
+      <a class="tool-card stagger-item" href="/marketools/link-wpp/" style="text-decoration:none;color:inherit;">
+        <span class="tool-tag">Ventas</span>
+        <div class="tool-icon">💬</div>
+        <h2>Generador de Links de WhatsApp</h2>
+        <p>Crea tu link wa.me con mensaje precargado y el nombre de tu cliente ya escrito. Con preview en mockup de celular y código QR.</p>
+        <span class="btn btn-dark">Abrir herramienta →</span>
+      </a>
+
+      <a class="tool-card stagger-item" href="/marketools/adsboard/" style="text-decoration:none;color:inherit;">
+        <span class="tool-tag">Meta Ads</span>
+        <div class="tool-icon">📊</div>
+        <h2>Dashboard de Meta Ads</h2>
+        <p>Conecta tu cuenta de Facebook y mira el estado real de tus campañas: gasto, resultados y un semáforo que te avisa cuándo hay que actuar. Sin Ads Manager, sin planillas.</p>
+        <span class="btn btn-dark">Abrir herramienta →</span>
+      </a>
+
+      <div class="tool-card soon stagger-item">
+        <span class="tool-tag">Próximamente</span>
+        <div class="tool-icon">🛠️</div>
+        <h2>Más herramientas en camino</h2>
+        <p>Estamos armando más MarkeTools gratis. Si tienes una idea de la que no puedas vivir sin ella, escríbenos por WhatsApp.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="community-cta">
+  <div class="wrap">
+    <div class="community-card reveal">
+      <p class="eyebrow">The Marketographers</p>
+      <h2>Las herramientas ayudan. La comunidad te lleva más lejos.</h2>
+      <p>MarkeTools resuelve lo puntual. Para vender más y mejor todas las semanas, necesitas estrategia, feedback y gente que te empuje. Eso es la comunidad.</p>
+      <a class="btn btn-gold" href="/#planes">Únete a la comunidad →</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1755314903/Marketographers_Blanco_S_F_p1toov.png" alt="The Marketographers" loading="lazy">
+    <p style="margin-bottom:10px;"><a href="/blog/">Blog</a> · <a href="/#planes">Comunidad</a> · <a href="/privacidad/">Privacidad</a></p>
+    <p>© 2026 The Marketographers. Todos los putos derechos reservados.</p>
+  </div>
+</footer>
+
+<script>
+  const revealEls = document.querySelectorAll('.reveal, .reveal-stagger');
+  const revealObserver = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        entry.target.classList.add('in-view');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, {threshold:0.12});
+  revealEls.forEach(el=>revealObserver.observe(el));
+
+  document.addEventListener('click', (e)=>{
+    const link = e.target.closest('a');
+    if(!link || !link.href) return;
+    if(link.href.includes('chat.whatsapp.com')){
+      trackBoth('Lead');
+    } else if(link.href.includes('api.whatsapp.com') || link.href.includes('wa.me')){
+      trackBoth('Contact');
+    }
+    if(link.href.includes('nas.com') || link.href.includes('nas.io')){
+      trackBoth('ClickCheckoutLanding');
+    }
+  });
+</script>
+
+</body>
+</html>

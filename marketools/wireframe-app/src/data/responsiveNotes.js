@@ -9,6 +9,7 @@ export const RESPONSIVE_NOTES = {
   process: 'Mobile: los pasos se apilan verticalmente. Desktop: los pasos se muestran en fila horizontal.',
   promise: 'Mobile: tipografía de la frase de transformación baja de tamaño para no partir línea. Desktop: tamaño completo, centrado.',
   portfolio: 'Mobile: grid pasa de 3 columnas a 1-2; carrusel muestra una pieza casi completa por vez. Desktop: grid completo o carrusel con varias piezas visibles.',
+  beforeAfter: 'Mobile: el comparador ocupa el ancho completo con aspect-ratio 4/5 (vertical), el arrastre horizontal del divisor no debe scrollear la página (usar touch-action: pan-y y solo bloquear el scroll cuando el gesto es claramente horizontal). Desktop: comparador centrado con ancho máximo (~480px), mismo aspect-ratio.',
   vsl: 'Mobile: reproductor a ancho completo, controles simplificados. Desktop: reproductor centrado con ancho máximo.',
   testimonials: 'Mobile: grid pasa a 1 columna o el carrusel se desliza con el dedo (swipe). Desktop: grid en 3 columnas o carrusel con flechas visibles.',
   pricing: 'Mobile: tarjetas apiladas verticalmente (o tabla comparativa con scroll horizontal), la destacada va primera. Desktop: tarjetas en fila, o tabla completa sin scroll, la destacada centrada y más alta.',

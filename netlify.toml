@@ -1,2 +1,14 @@
 [build]
   functions = "netlify/functions"
+
+# El repo publica la raíz completa (no hay carpeta "publish" separada), así que
+# sin esto la carpeta de código fuente del wireframe (proyecto Vite/React, con
+# package.json, node_modules referenciado, .oxlintrc.json, etc.) quedaría
+# accesible públicamente en /marketools/wireframe-app/. Esa carpeta es solo
+# para seguir desarrollando la herramienta: lo que se sirve de verdad es el
+# build ya compilado en /marketools/wireframe/. Se bloquea con 404.
+[[redirects]]
+  from = "/marketools/wireframe-app/*"
+  to = "/404.html"
+  status = 404
+  force = true

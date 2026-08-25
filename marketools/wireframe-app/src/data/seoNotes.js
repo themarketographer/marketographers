@@ -11,6 +11,7 @@ export function getHeadingLevel(type) {
 const ALT_TEXT = {
   hero: 'Describe la foto/video de fondo con el servicio y el estilo del fotógrafo, ej. "[sesión de bodas en exteriores, estilo documental]".',
   portfolio: 'Cada pieza del portafolio lleva su propio alt describiendo la sesión concreta, ej. "[retrato de producto para marca de café, luz natural]" — nunca "imagen 1", "imagen 2".',
+  beforeAfter: 'La imagen de "antes" lleva alt describiendo la foto original, ej. "[foto de plato tomada con celular, mala luz]"; la de "después" describe el resultado profesional, ej. "[foto del mismo plato con foodstyling y luz de estudio]" — el contraste entre ambos alt debe notarse solo con leerlos.',
   about: 'Alt de la foto de perfil: "[nombre del fotógrafo] fotografiando en [ciudad/estudio]".',
   testimonials: 'Si se muestra foto del cliente, alt: "[nombre del cliente], cliente de [tipo de sesión]".',
   trustBar: 'Cada logo lleva alt con el nombre real de la marca/medio, ej. "Logo de [nombre]" — nunca "logo 1", "logo 2".',

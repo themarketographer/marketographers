@@ -11,6 +11,7 @@ export const ANIMATION_SUGGESTIONS = {
   process: 'Stagger fade-up de cada paso, uno detrás del otro (100-150ms de diferencia), para que se lean en el orden en que ocurren.',
   promise: 'Fade-up de la frase de transformación con un leve delay respecto al título, para que se lea como una consecuencia.',
   portfolio: 'Grid: stagger fade-in + escala leve (0.96 -> 1) de cada pieza al entrar en viewport. Carrusel: transición slide con easing suave, sin fade entre slides.',
+  beforeAfter: 'Fade-up simple del bloque al entrar en viewport. El divisor arranca en 50% y se mueve en vivo con el arrastre del mouse o el dedo (sin transición/lag), con un handle circular que tiene un leve hover con escala 1.05 en desktop.',
   vsl: 'Fade-in del reproductor de video al cargar, sin animación de scroll (el video es el foco); el CTA de cierre aparece con fade-up cuando el usuario se acerca al final.',
   testimonials: 'Grid estático: stagger fade-up de las tarjetas. Carrusel: transición slide con swipe físico en móvil y flechas con hover que las agranda levemente en escritorio.',
   pricing: 'Fade-up de las tarjetas con un leve "pop" (escala 0.97 -> 1) en la tarjeta destacada, para diferenciarla sin exagerar.',

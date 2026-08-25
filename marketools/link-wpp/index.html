@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Generador de Links de WhatsApp Personalizados (Gratis) | MarkeTools</title>
+<meta name="description" content="Crea gratis tu link de WhatsApp (wa.me) con mensaje precargado y el nombre de tu cliente ya escrito. Mira la preview en un mockup de celular antes de compartirlo. Herramienta gratuita de The Marketographers.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://marketographers.com/marketools/link-wpp/">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Marketographers">
+<meta property="og:title" content="Generador de Links de WhatsApp Personalizados | MarkeTools">
+<meta property="og:description" content="Arma tu link wa.me con mensaje precargado y el nombre de tu cliente ya escrito. Ve la preview en un celular antes de compartirlo. Gratis, sin registro.">
+<meta property="og:image" content="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1785200397/Banner_z6b496.png">
+<meta property="og:url" content="https://marketographers.com/marketools/link-wpp/">
+<meta property="og:locale" content="es_LA">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Generador de Links de WhatsApp Personalizados | MarkeTools">
+<meta name="twitter:description" content="Arma tu link wa.me con mensaje precargado y el nombre de tu cliente ya escrito. Gratis, sin registro.">
+<meta name="twitter:image" content="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1785200397/Banner_z6b496.png">
+
+<!-- Favicon -->
+<link rel="icon" type="image/png" href="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1755314903/Marketographers_Blanco_S_F_p1toov.png">
+<link rel="apple-touch-icon" href="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1755314903/Marketographers_Blanco_S_F_p1toov.png">
+
+<!-- JSON-LD: WebApplication -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Generador de Links de WhatsApp | MarkeTools",
+  "url": "https://marketographers.com/marketools/link-wpp/",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Any",
+  "isAccessibleForFree": true,
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "creator": { "@type": "Organization", "name": "The Marketographers", "url": "https://marketographers.com/" },
+  "description": "Herramienta gratuita para crear links de WhatsApp (wa.me) personalizados con mensaje precargado, código de país de toda América y preview en mockup de celular."
+}
+</script>
+
+<!-- JSON-LD: BreadcrumbList -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://marketographers.com/" },
+    { "@type": "ListItem", "position": 2, "name": "MarkeTools", "item": "https://marketographers.com/marketools/" },
+    { "@type": "ListItem", "position": 3, "name": "Generador de links de WhatsApp", "item": "https://marketographers.com/marketools/link-wpp/" }
+  ]
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/global.css">
+<style>
+  /* Estilos propios de esta herramienta. La tipografía, colores, botones,
+     header y footer ya vienen de /assets/global.css. Acá solo lo que es
+     exclusivo de esta página: hero, glass, formulario y mockup de celular. */
+
+  :root{
+    --wa-green:#25d366;
+    --wa-bubble:#d9fdd3;
+    --wa-header:#0b3d33;
+    --wa-chatbg:#e9e0cf;
+    --glass-border:rgba(255,255,255,.5);
+  }
+
+  body{overflow-x:hidden;}
+
+  /* Blobs ambientales, el toque "liquid glass" de fondo */
+  .blob{position:fixed;border-radius:50%;filter:blur(60px);pointer-events:none;z-index:0;opacity:.55;}
+  .blob-gold{width:420px;height:420px;background:radial-gradient(circle, rgba(245,183,41,.55), transparent 70%);top:-120px;right:-120px;animation:blob-float 16s ease-in-out infinite;}
+  .blob-red{width:380px;height:380px;background:radial-gradient(circle, rgba(194,59,38,.35), transparent 70%);top:420px;left:-140px;animation:blob-float 18s ease-in-out infinite 2s;}
+  .blob-green{width:340px;height:340px;background:radial-gradient(circle, rgba(37,211,102,.28), transparent 70%);bottom:0;right:-100px;animation:blob-float 20s ease-in-out infinite 1s;}
+  @keyframes blob-float{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-30px,26px) scale(1.08);}}
+  @media (prefers-reduced-motion: reduce){.blob{animation:none;}}
+
+  /* Hero */
+  .tool-hero{position:relative;z-index:1;padding:36px 0 20px;text-align:center;}
+  @keyframes fade-up{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+  .tool-hero .eyebrow{animation:fade-up .7s cubic-bezier(.22,1,.36,1) both;}
+  .tool-hero h1{animation:fade-up .8s cubic-bezier(.22,1,.36,1) .08s both;}
+  .tool-hero p.lead{animation:fade-up .8s cubic-bezier(.22,1,.36,1) .18s both;}
+  .tool-hero h1{font-size:clamp(30px,5.5vw,52px);max-width:760px;margin:16px auto 0;line-height:1.2;}
+  .tool-hero mark{
+    background-color:transparent;background-image:linear-gradient(100deg, var(--gold), var(--gold));
+    background-repeat:no-repeat;background-position:left center;background-size:0% 100%;
+    color:var(--ink);padding:3px 6px;border-radius:5px;
+    box-decoration-break:clone;-webkit-box-decoration-break:clone;
+    animation:highlight-sweep .9s ease-out .9s forwards;
+  }
+  @keyframes highlight-sweep{to{background-size:100% 100%;}}
+  .tool-hero p.lead{max-width:560px;margin:18px auto 0;color:var(--muted);font-size:16px;}
+
+  /* Glass genérico para esta página */
+  .glass{
+    background:rgba(255,255,255,.55);
+    backdrop-filter:blur(22px) saturate(160%);-webkit-backdrop-filter:blur(22px) saturate(160%);
+    border:1px solid var(--glass-border);
+    box-shadow:0 20px 50px -20px rgba(20,20,20,.18), inset 0 1px 0 rgba(255,255,255,.7);
+    border-radius:28px;
+  }
+  .glass-dark{
+    background:rgba(20,20,20,.82);
+    backdrop-filter:blur(22px) saturate(140%);-webkit-backdrop-filter:blur(22px) saturate(140%);
+    border:1px solid rgba(255,255,255,.1);
+    box-shadow:0 25px 60px -20px rgba(0,0,0,.5);
+    border-radius:28px;
+  }
+
+  /* Layout principal */
+  .tool-section{position:relative;z-index:1;padding:28px 0 72px;}
+  .tool-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:32px;align-items:start;}
+
+  .tool-form{padding:34px 36px 30px;}
+  .tool-form fieldset{border:none;margin:0 0 26px;padding:0;}
+  .tool-form fieldset:last-of-type{margin-bottom:0;}
+  .tool-form legend{
+    font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:14px;padding:0;
+  }
+  .field{margin-bottom:16px;}
+  .field:last-child{margin-bottom:0;}
+  .field label{display:block;font-size:13.5px;font-weight:700;margin-bottom:6px;color:var(--ink);}
+  .field .hint{display:block;font-size:11.5px;color:var(--muted);margin-top:6px;font-weight:500;}
+
+  .glass-input{
+    width:100%;font-family:inherit;font-size:14.5px;color:var(--ink);
+    padding:13px 16px;border-radius:14px;
+    background:rgba(255,255,255,.65);
+    border:1.5px solid rgba(20,20,20,.1);
+    backdrop-filter:blur(6px);
+    transition:border-color .2s ease, box-shadow .2s ease, background .2s ease;
+  }
+  .glass-input::placeholder{color:#a19d93;}
+  .glass-input:focus{
+    outline:none;border-color:var(--gold);background:rgba(255,255,255,.9);
+    box-shadow:0 0 0 4px rgba(245,183,41,.22);
+  }
+  textarea.glass-input{resize:vertical;min-height:96px;line-height:1.5;}
+
+  .cc-row{display:flex;gap:10px;}
+  .cc-row select{flex:1.3;cursor:pointer;}
+  .cc-row input{flex:1;}
+  #ccCustom{display:none;max-width:110px;}
+
+  .msg-row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px;}
+  .msg-row label{margin-bottom:0;}
+  .insert-name-btn{
+    flex-shrink:0;font-family:inherit;font-size:11.5px;font-weight:700;
+    background:rgba(245,183,41,.18);color:#8a6512;border:1px solid rgba(245,183,41,.4);
+    padding:6px 12px;border-radius:999px;cursor:pointer;
+    transition:transform .15s ease, background .2s ease;
+  }
+  .insert-name-btn:hover{background:rgba(245,183,41,.32);transform:translateY(-1px);}
+  .char-count{text-align:right;font-size:11px;color:var(--muted);margin-top:6px;}
+
+  .quick-msgs{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+  .quick-msg-btn{
+    font-family:inherit;font-size:12.5px;font-weight:600;color:var(--ink);
+    background:rgba(20,20,20,.05);border:1px solid rgba(20,20,20,.1);
+    padding:8px 14px;border-radius:999px;cursor:pointer;
+    transition:transform .15s ease, background .2s ease, box-shadow .2s ease;
+  }
+  .quick-msg-btn:hover{background:var(--white);transform:translateY(-2px);box-shadow:0 8px 16px -8px rgba(20,20,20,.25);}
+
+  .result-block{margin-top:28px;padding-top:24px;border-top:1px dashed rgba(20,20,20,.14);}
+  .result-block label{display:block;font-size:13.5px;font-weight:700;margin-bottom:8px;}
+  .link-row{display:flex;gap:10px;}
+  .link-row input{
+    flex:1;font-size:13px;color:var(--muted);background:rgba(20,20,20,.04);
+    border:1.5px solid rgba(20,20,20,.08);border-radius:14px;padding:13px 16px;font-family:monospace;
+  }
+  .copy-btn{
+    flex-shrink:0;font-family:inherit;font-weight:700;font-size:13px;cursor:pointer;
+    border:1.5px solid var(--ink);background:transparent;color:var(--ink);
+    padding:0 20px;border-radius:14px;transition:background .2s ease, color .2s ease, transform .15s ease;
+  }
+  .copy-btn:hover{background:var(--ink);color:var(--cream);transform:translateY(-2px);}
+  .copy-btn.copied{background:var(--wa-green);color:#fff;border-color:var(--wa-green);}
+
+  .result-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:18px;}
+  .qr-btn{
+    font-family:inherit;font-weight:700;font-size:13px;cursor:pointer;
+    border:1.5px dashed rgba(20,20,20,.3);background:transparent;color:var(--muted);
+    padding:11px 18px;border-radius:999px;transition:border-color .2s ease, color .2s ease;
+  }
+  .qr-btn:hover{border-color:var(--ink);color:var(--ink);}
+  #qrWrap{margin-top:18px;display:none;text-align:center;animation:fade-up .4s ease both;}
+  #qrWrap canvas,#qrWrap img{margin:0 auto;border-radius:12px;background:#fff;padding:10px;box-shadow:0 10px 24px -14px rgba(20,20,20,.35);}
+  #qrDownload{display:inline-block;margin-top:12px;font-size:12.5px;font-weight:700;color:var(--red);text-decoration:underline;cursor:pointer;}
+
+  .open-wa-btn{
+    display:flex;align-items:center;justify-content:center;gap:10px;width:100%;
+    margin-top:22px;padding:17px 20px;border-radius:999px;
+    background:linear-gradient(135deg, var(--wa-green), #128c7e);color:#fff;
+    font-weight:700;font-size:15.5px;box-shadow:0 12px 28px -10px rgba(37,211,102,.55);
+    transition:transform .18s ease, box-shadow .25s ease;position:relative;overflow:hidden;
+  }
+  .open-wa-btn:hover{transform:translateY(-3px) scale(1.01);box-shadow:0 18px 36px -12px rgba(37,211,102,.65);}
+  .open-wa-btn::after{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(120deg, transparent 30%, rgba(255,255,255,.35) 45%, transparent 60%);
+    background-size:220% 100%;animation:shimmer 3.2s ease-in-out infinite;
+  }
+  @keyframes shimmer{0%{background-position:140% 0;}100%{background-position:-40% 0;}}
+  .open-wa-btn[aria-disabled="true"]{opacity:.45;pointer-events:none;box-shadow:none;}
+
+  .wa-warning{font-size:11.5px;color:var(--red);margin-top:10px;font-weight:600;display:none;}
+
+  /* Preview / mockup celular */
+  .tool-preview{position:sticky;top:96px;display:flex;flex-direction:column;align-items:center;}
+  .preview-label{
+    font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:18px;text-align:center;
+  }
+  .phone-stage{position:relative;}
+  .phone{
+    width:290px;height:592px;background:#0c0c0c;border-radius:44px;
+    padding:14px;box-shadow:0 40px 70px -30px rgba(20,20,20,.5), inset 0 0 0 2px rgba(255,255,255,.06);
+    position:relative;animation:phone-float 6s ease-in-out infinite;
+  }
+  @keyframes phone-float{0%,100%{transform:translateY(0) rotate(0deg);}50%{transform:translateY(-10px) rotate(.3deg);}}
+  .phone::before{
+    content:"";position:absolute;top:14px;left:50%;transform:translateX(-50%);
+    width:110px;height:22px;background:#0c0c0c;border-radius:0 0 16px 16px;z-index:3;
+  }
+  .screen{
+    width:100%;height:100%;border-radius:32px;overflow:hidden;background:var(--wa-chatbg);
+    display:flex;flex-direction:column;position:relative;
+  }
+  .wa-header{
+    background:var(--wa-header);color:#fff;padding:44px 14px 12px;
+    display:flex;align-items:center;gap:10px;flex-shrink:0;
+  }
+  .wa-header .back{font-size:18px;opacity:.85;}
+  .wa-avatar{
+    width:34px;height:34px;border-radius:50%;background:var(--gold);color:var(--ink);
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;
+    transition:background .3s ease;
+  }
+  .wa-header .who{flex:1;min-width:0;}
+  .wa-header .who strong{display:block;font-size:14px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .wa-header .who span{font-size:11px;opacity:.75;}
+  .wa-header .icons{display:flex;gap:14px;opacity:.85;font-size:14px;}
+  .wa-body{
+    flex:1;padding:16px 12px;overflow:hidden;position:relative;
+    background-image:radial-gradient(rgba(0,0,0,.035) 1px, transparent 1px);background-size:14px 14px;
+  }
+  .wa-daystamp{
+    text-align:center;font-size:10.5px;color:#6b6b6b;background:rgba(255,255,255,.75);
+    width:fit-content;margin:0 auto 14px;padding:4px 10px;border-radius:8px;
+  }
+  .bubble{
+    max-width:88%;margin-left:auto;background:var(--wa-bubble);border-radius:10px 10px 2px 10px;
+    padding:9px 12px 8px;font-size:13px;line-height:1.42;color:#111;box-shadow:0 1px 1px rgba(0,0,0,.08);
+    animation:bubble-in .35s cubic-bezier(.22,1,.36,1) both;word-break:break-word;
+  }
+  @keyframes bubble-in{from{opacity:0;transform:translateY(8px) scale(.97);}to{opacity:1;transform:translateY(0) scale(1);}}
+  .bubble .bubble-time{display:block;text-align:right;font-size:10px;color:#5b8a63;margin-top:4px;}
+  .wa-inputbar{
+    flex-shrink:0;display:flex;align-items:center;gap:8px;padding:8px 10px;background:transparent;
+  }
+  .wa-inputbar .box{
+    flex:1;background:#fff;border-radius:20px;padding:9px 14px;font-size:12px;color:#8a8a8a;
+  }
+  .wa-inputbar .mic{
+    width:34px;height:34px;border-radius:50%;background:var(--wa-green);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;
+  }
+
+  .phone-glow{
+    position:absolute;inset:-40px;z-index:-1;border-radius:60px;
+    background:radial-gradient(circle, rgba(245,183,41,.35), transparent 70%);
+    filter:blur(30px);opacity:.7;
+  }
+
+  /* Bloque comunidad, mismo tratamiento que el CTA de los posts del blog
+     pero con vidrio esmerilado oscuro para mantener la estética glass */
+  .community-cta{position:relative;z-index:1;padding:12px 0 80px;}
+  .community-card{max-width:var(--max-article);margin:0 auto;padding:42px 40px;text-align:center;color:var(--cream);}
+  .community-card .eyebrow{color:var(--gold);}
+  .community-card h2{font-size:clamp(24px,3.6vw,32px);color:var(--cream);margin-top:12px;}
+  .community-card p{color:rgba(250,249,246,.75);margin-top:12px;font-size:15px;max-width:480px;margin-left:auto;margin-right:auto;}
+  .community-card .btn{margin-top:24px;}
+  .community-sub{display:block;margin-top:18px;font-size:12.5px;color:rgba(250,249,246,.65);}
+  .community-sub a{color:var(--gold);font-weight:700;text-decoration:underline;text-decoration-color:rgba(245,183,41,.4);}
+
+  /* Reveal on scroll (mismo patrón que la home) */
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1);}
+  .reveal.in-view{opacity:1;transform:translateY(0);}
+
+  @media (max-width:860px){
+    .tool-grid{grid-template-columns:1fr;}
+    .tool-preview{position:static;margin-top:8px;}
+    .phone{width:250px;height:512px;}
+    .tool-form{padding:28px 22px 24px;}
+    .community-card{padding:34px 24px;}
+    .blob{opacity:.35;}
+  }
+  @media (max-width:480px){
+    .price-list,.msg-row{flex-wrap:wrap;}
+    .link-row{flex-direction:column;}
+    .copy-btn{width:100%;padding:13px;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .phone,.blob,.open-wa-btn::after{animation:none;}
+    .reveal{opacity:1;transform:none;transition:none;}
+    .tool-hero .eyebrow,.tool-hero h1,.tool-hero p.lead{animation:none;}
+    .tool-hero mark{animation:none;background-size:100% 100%;}
+  }
+</style>
+</head>
+<body>
+
+<!-- Meta Pixel -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('set', 'autoConfig', false, '467504537642622');
+fbq('init', '467504537642622');
+function makeEventId(prefix){return prefix + '_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);}
+function getCookie(name){const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));return match ? match[2] : null;}
+function sendCapiEvent(eventName, eventId, customData){
+  try{
+    fetch('/.netlify/functions/capi', {
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({event_name: eventName,event_id: eventId,event_source_url: window.location.href,custom_data: customData || undefined,fbp: getCookie('_fbp'),fbc: getCookie('_fbc')})
+    }).catch(()=>{});
+  }catch(e){}
+}
+function trackBoth(eventName, params){
+  const id = makeEventId(eventName.toLowerCase());
+  fbq('track', eventName, params || {}, {eventID:id});
+  sendCapiEvent(eventName, id, params);
+}
+trackBoth('PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=467504537642622&ev=PageView&noscript=1"/></noscript>
+
+<div class="blob blob-gold"></div>
+<div class="blob blob-red"></div>
+<div class="blob blob-green"></div>
+
+<header>
+  <div class="nav wrap">
+    <a class="logo" href="/"><img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314905/Marketographers_Negro_S_F_tgh9z2.png" alt="The Marketographers"></a>
+    <div class="nav-actions">
+      <a class="btn btn-whatsapp" href="https://api.whatsapp.com/send?phone=+59169422335&text=%C2%A1Hola%2C%20Pablo!%20Vi%20la%20herramienta%20de%20links%20de%20WhatsApp%20y%20quiero%20m%C3%A1s%20info%20de%20la%20membres%C3%ADa" target="_blank" rel="noopener">WhatsApp</a>
+      <a class="btn btn-gold" href="/#planes">Únete</a>
+    </div>
+  </div>
+</header>
+
+<section class="tool-hero">
+  <div class="wrap">
+    <p class="eyebrow">· MarkeTools · Gratis, sin registro ·</p>
+    <h1>Tu link de WhatsApp, <mark>listo para pegar en bio</mark></h1>
+    <p class="lead">Arma el link con el código de tu país, un mensaje precargado y el nombre de tu cliente ya escrito. Ve la preview en el celular antes de compartirlo en tus redes, tarjeta o QR.</p>
+  </div>
+</section>
+
+<section class="tool-section">
+  <div class="wrap">
+    <div class="tool-grid reveal">
+
+      <div class="tool-form glass">
+        <fieldset>
+          <legend>Datos del negocio</legend>
+          <div class="field">
+            <label for="bizName">Nombre a mostrar</label>
+            <input type="text" id="bizName" class="glass-input" placeholder="Estudio Graphica">
+            <span class="hint">Se usa en la preview y también puedes insertarlo dentro del mensaje escribiendo <strong>[Nombre]</strong>.</span>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Número de WhatsApp</legend>
+          <div class="field">
+            <label for="ccSelect">Código de país</label>
+            <div class="cc-row">
+              <select id="ccSelect" class="glass-input">
+                <optgroup label="Norteamérica">
+                  <option value="52">🇲🇽 México (+52)</option>
+                  <option value="1">🇺🇸 Estados Unidos (+1)</option>
+                  <option value="1">🇨🇦 Canadá (+1)</option>
+                </optgroup>
+                <optgroup label="Centroamérica">
+                  <option value="502">🇬🇹 Guatemala (+502)</option>
+                  <option value="501">🇧🇿 Belice (+501)</option>
+                  <option value="503">🇸🇻 El Salvador (+503)</option>
+                  <option value="504">🇭🇳 Honduras (+504)</option>
+                  <option value="505">🇳🇮 Nicaragua (+505)</option>
+                  <option value="506">🇨🇷 Costa Rica (+506)</option>
+                  <option value="507">🇵🇦 Panamá (+507)</option>
+                </optgroup>
+                <optgroup label="Caribe">
+                  <option value="53">🇨🇺 Cuba (+53)</option>
+                  <option value="1">🇩🇴 República Dominicana (+1)</option>
+                  <option value="1">🇵🇷 Puerto Rico (+1)</option>
+                  <option value="509">🇭🇹 Haití (+509)</option>
+                  <option value="1">🇯🇲 Jamaica (+1)</option>
+                  <option value="1">🇹🇹 Trinidad y Tobago (+1)</option>
+                  <option value="1">🇧🇸 Bahamas (+1)</option>
+                </optgroup>
+                <optgroup label="Sudamérica">
+                  <option value="57">🇨🇴 Colombia (+57)</option>
+                  <option value="58">🇻🇪 Venezuela (+58)</option>
+                  <option value="593">🇪🇨 Ecuador (+593)</option>
+                  <option value="51">🇵🇪 Perú (+51)</option>
+                  <option value="591" selected>🇧🇴 Bolivia (+591)</option>
+                  <option value="56">🇨🇱 Chile (+56)</option>
+                  <option value="54">🇦🇷 Argentina (+54)</option>
+                  <option value="598">🇺🇾 Uruguay (+598)</option>
+                  <option value="595">🇵🇾 Paraguay (+595)</option>
+                  <option value="55">🇧🇷 Brasil (+55)</option>
+                  <option value="592">🇬🇾 Guyana (+592)</option>
+                  <option value="597">🇸🇷 Surinam (+597)</option>
+                </optgroup>
+                <option value="other">🌎 Otro código</option>
+              </select>
+              <input type="text" id="ccCustom" class="glass-input" placeholder="Código" maxlength="4" inputmode="numeric">
+            </div>
+          </div>
+          <div class="field">
+            <label for="numberInput">Número (sin el código de país)</label>
+            <input type="text" id="numberInput" class="glass-input" placeholder="69422335" inputmode="numeric">
+            <span class="hint">Sin espacios, sin +, sin el 0 inicial. Ej: 69422335</span>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Mensaje precargado</legend>
+          <div class="field">
+            <div class="msg-row">
+              <label for="messageInput">Qué va a ver la persona al abrir el chat</label>
+              <button type="button" class="insert-name-btn" id="insertNameBtn">+ Insertar [Nombre]</button>
+            </div>
+            <textarea id="messageInput" class="glass-input" maxlength="300">Hola, [Nombre]! Vi tu perfil y quiero cotizar una sesión de fotos 📸</textarea>
+            <p class="char-count"><span id="charCount">0</span> / 300</p>
+            <div class="quick-msgs">
+              <button type="button" class="quick-msg-btn" data-msg="Hola, [Nombre]! Vi tu perfil y quiero cotizar una sesión de fotos 📸">Cotizar sesión</button>
+              <button type="button" class="quick-msg-btn" data-msg="Hola, [Nombre]! ¿Tienes disponibilidad esta semana para una sesión?">Consultar disponibilidad</button>
+              <button type="button" class="quick-msg-btn" data-msg="Hola, [Nombre]! Quiero info sobre planes mensuales de fotos.">Plan mensual</button>
+              <button type="button" class="quick-msg-btn" data-msg="Hola, [Nombre]! Te escribo desde Instagram, vi tu contenido y me encantó 🙌">Vengo de Instagram</button>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="result-block">
+          <label for="linkOutput">Tu link</label>
+          <div class="link-row">
+            <input type="text" id="linkOutput" readonly>
+            <button type="button" class="copy-btn" id="copyBtn">Copiar</button>
+          </div>
+          <div class="result-actions">
+            <button type="button" class="qr-btn" id="qrBtn">Generar QR</button>
+          </div>
+          <div id="qrWrap">
+            <div id="qrCanvas"></div>
+            <a id="qrDownload">Descargar QR ↓</a>
+          </div>
+          <a class="open-wa-btn" id="openWaBtn" href="#" target="_blank" rel="noopener" aria-disabled="true">💬 Abrir en WhatsApp</a>
+          <p class="wa-warning" id="waWarning">⚠️ Completa el número de WhatsApp para activar el link.</p>
+        </div>
+      </div>
+
+      <div class="tool-preview">
+        <p class="preview-label">Así se ve en WhatsApp</p>
+        <div class="phone-stage">
+          <div class="phone-glow"></div>
+          <div class="phone">
+            <div class="screen">
+              <div class="wa-header">
+                <span class="back">‹</span>
+                <div class="wa-avatar" id="waAvatar">TN</div>
+                <div class="who">
+                  <strong id="waName">Tu negocio</strong>
+                  <span>en línea</span>
+                </div>
+                <div class="icons">📹 📞</div>
+              </div>
+              <div class="wa-body">
+                <p class="wa-daystamp">Hoy</p>
+                <div class="bubble" id="waBubble">Hola! Vi tu perfil y quiero cotizar una sesión de fotos 📸<span class="bubble-time" id="waTime">2:16 a.m. ✓✓</span></div>
+              </div>
+              <div class="wa-inputbar">
+                <div class="box">Mensaje</div>
+                <div class="mic">🎤</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="community-cta" id="communityCta">
+  <div class="wrap">
+    <div class="community-card glass-dark reveal">
+      <p class="eyebrow">The Marketographers</p>
+      <h2>¿Y si cada cliente ya supiera qué decirte?</h2>
+      <p>Un link personalizado ayuda, pero lo que de verdad llena tu agenda es tener una estrategia detrás. En la comunidad enseñamos StorySelling, precios y sistemas para que dejes de perseguir clientes.</p>
+      <a class="btn btn-gold" href="/#planes">Únete a la comunidad →</a>
+      <span class="community-sub">¿Sin presupuesto ahora? <a href="https://chat.whatsapp.com/H87amNgVpRr0g2habJsfjd" target="_blank" rel="noopener">Únete gratis al grupo de WhatsApp →</a></span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1755314903/Marketographers_Blanco_S_F_p1toov.png" alt="The Marketographers" loading="lazy">
+    <p style="margin-bottom:10px;"><a href="/blog/">Blog</a> · <a href="/#planes">Comunidad</a> · <a href="/privacidad/">Privacidad</a></p>
+    <p>MarkeTool gratuita de The Marketographers. © 2026 Todos los putos derechos reservados.</p>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+(function(){
+  const bizName = document.getElementById('bizName');
+  const ccSelect = document.getElementById('ccSelect');
+  const ccCustom = document.getElementById('ccCustom');
+  const numberInput = document.getElementById('numberInput');
+  const messageInput = document.getElementById('messageInput');
+  const charCount = document.getElementById('charCount');
+  const insertNameBtn = document.getElementById('insertNameBtn');
+  const linkOutput = document.getElementById('linkOutput');
+  const copyBtn = document.getElementById('copyBtn');
+  const qrBtn = document.getElementById('qrBtn');
+  const qrWrap = document.getElementById('qrWrap');
+  const qrCanvas = document.getElementById('qrCanvas');
+  const qrDownload = document.getElementById('qrDownload');
+  const openWaBtn = document.getElementById('openWaBtn');
+  const waWarning = document.getElementById('waWarning');
+  const waAvatar = document.getElementById('waAvatar');
+  const waName = document.getElementById('waName');
+  const waBubble = document.getElementById('waBubble');
+
+  function initials(name){
+    const clean = (name || 'Tu negocio').trim();
+    const parts = clean.split(/\s+/).filter(Boolean);
+    if(parts.length === 0) return 'TN';
+    if(parts.length === 1) return parts[0].slice(0,2).toUpperCase();
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+  function now(){
+    const d = new Date();
+    let h = d.getHours(); const m = d.getMinutes();
+    const ampm = h >= 12 ? 'p.m.' : 'a.m.';
+    h = h % 12; if(h === 0) h = 12;
+    return `${h}:${m < 10 ? '0'+m : m} ${ampm}`;
+  }
+  function digitsOnly(str){ return (str || '').replace(/\D/g,''); }
+  function getCC(){ return ccSelect.value === 'other' ? digitsOnly(ccCustom.value) : ccSelect.value; }
+  function personalize(text){
+    const name = bizName.value.trim();
+    return (text || '').replace(/\[nombre\]/gi, name || 'tu negocio');
+  }
+
+  let qrRendered = false;
+
+  function buildLink(){
+    const cc = getCC();
+    const num = digitsOnly(numberInput.value);
+    const full = cc + num;
+    const msg = personalize(messageInput.value);
+    const hasNumber = num.length >= 6;
+    const link = hasNumber ? `https://wa.me/${full}?text=${encodeURIComponent(msg)}` : '';
+    linkOutput.value = link;
+    if(hasNumber){
+      openWaBtn.href = link;
+      openWaBtn.removeAttribute('aria-disabled');
+      waWarning.style.display = 'none';
+    } else {
+      openWaBtn.href = '#';
+      openWaBtn.setAttribute('aria-disabled','true');
+      waWarning.style.display = 'block';
+    }
+    if(qrRendered) renderQR(link);
+    return { link, msg, hasNumber };
+  }
+
+  function updatePreview(){
+    const name = bizName.value.trim() || 'Tu negocio';
+    waName.textContent = name;
+    waAvatar.textContent = initials(bizName.value);
+    const msg = personalize(messageInput.value) || '';
+    waBubble.textContent = msg;
+    const timeSpan = document.createElement('span');
+    timeSpan.className = 'bubble-time';
+    timeSpan.textContent = now() + ' ✓✓';
+    waBubble.appendChild(timeSpan);
+    waBubble.style.animation = 'none';
+    void waBubble.offsetWidth;
+    waBubble.style.animation = '';
+    charCount.textContent = messageInput.value.length;
+  }
+
+  function refresh(){ buildLink(); updatePreview(); }
+
+  function renderQR(link){
+    qrCanvas.innerHTML = '';
+    if(!link) return;
+    new QRCode(qrCanvas, { text: link, width: 176, height: 176, colorDark:'#141414', colorLight:'#ffffff', correctLevel: QRCode.CorrectLevel.M });
+  }
+
+  ccSelect.addEventListener('change', ()=>{
+    ccCustom.style.display = ccSelect.value === 'other' ? 'block' : 'none';
+    if(ccSelect.value === 'other') ccCustom.focus();
+    refresh();
+  });
+  [bizName, ccCustom, numberInput, messageInput].forEach(el=>{
+    el.addEventListener('input', refresh);
+  });
+
+  insertNameBtn.addEventListener('click', ()=>{
+    const el = messageInput;
+    const start = el.selectionStart ?? el.value.length;
+    const end = el.selectionEnd ?? el.value.length;
+    el.value = el.value.slice(0, start) + '[Nombre]' + el.value.slice(end);
+    el.focus();
+    el.selectionStart = el.selectionEnd = start + 8;
+    refresh();
+  });
+
+  document.querySelectorAll('.quick-msg-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      messageInput.value = btn.dataset.msg;
+      refresh();
+    });
+  });
+
+  copyBtn.addEventListener('click', async ()=>{
+    if(!linkOutput.value) return;
+    try{
+      await navigator.clipboard.writeText(linkOutput.value);
+      copyBtn.textContent = '¡Copiado!';
+      copyBtn.classList.add('copied');
+      setTimeout(()=>{ copyBtn.textContent = 'Copiar'; copyBtn.classList.remove('copied'); }, 1800);
+    }catch(e){
+      linkOutput.select();
+      document.execCommand('copy');
+    }
+    const community = document.getElementById('communityCta');
+    if(community){
+      setTimeout(()=>{ community.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 450);
+    }
+  });
+
+  qrBtn.addEventListener('click', ()=>{
+    qrRendered = true;
+    qrWrap.style.display = 'block';
+    renderQR(linkOutput.value);
+  });
+
+  qrDownload.addEventListener('click', ()=>{
+    const canvas = qrCanvas.querySelector('canvas');
+    if(!canvas) return;
+    const a = document.createElement('a');
+    a.download = 'qr-whatsapp.png';
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+  });
+
+  refresh();
+
+  // ---- Animaciones de aparición al hacer scroll ----
+  const revealEls = document.querySelectorAll('.reveal');
+  const revealObserver = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        entry.target.classList.add('in-view');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, {threshold:0.12});
+  revealEls.forEach(el=>revealObserver.observe(el));
+
+  // ---- Tracking de clics, mismo mapeo que el resto del sitio ----
+  document.addEventListener('click', (e)=>{
+    const link = e.target.closest('a');
+    if(!link || !link.href) return;
+    if(link.href.includes('chat.whatsapp.com')){
+      trackBoth('Lead');
+    } else if(link.href.includes('api.whatsapp.com') || link.href.includes('wa.me')){
+      trackBoth('Contact');
+    }
+    if(link.href.includes('nas.com') || link.href.includes('nas.io')){
+      trackBoth('ClickCheckoutLanding');
+    }
+  });
+})();
+</script>
+
+</body>
+</html>

@@ -28,8 +28,22 @@ function CollapseHandle({ collapsed, onClick, side }) {
   )
 }
 
+// Texto corto del estado de guardado, al lado del botón de reiniciar — así
+// el alumno ve que no necesita hacer nada para no perder su trabajo. Sin
+// guardado todavía (recién abrió la herramienta, canvas vacío) no muestra
+// nada, para no meter ruido antes de que haya algo que guardar.
+function SaveIndicator({ lastSavedAt }) {
+  if (!lastSavedAt) return null
+  return (
+    <span className="flex items-center gap-1.5 text-[11px]" style={{ color: 'var(--app-muted)' }}>
+      <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#2fae60', display: 'inline-block' }} />
+      Guardado en esta compu
+    </span>
+  )
+}
+
 function BuilderLayout() {
-  const { state, dispatch } = useBuilder()
+  const { state, dispatch, lastSavedAt, clearSavedProgress } = useBuilder()
   const [selectedBlockId, setSelectedBlockId] = useState(null)
   const [rightTab, setRightTab] = useState('properties') // 'properties' | 'theme' | 'animation'
   const [exportStep, setExportStep] = useState(null) // null | 'config' | 'result'
@@ -41,6 +55,7 @@ function BuilderLayout() {
   function handleRestartClick() {
     if (state.canvas.blocks.length === 0) {
       dispatch({ type: 'WIZARD_RESTART' })
+      clearSavedProgress()
     } else {
       setConfirmingRestart(true)
     }
@@ -56,6 +71,7 @@ function BuilderLayout() {
           MarkeTool: Crea tu wireframe
         </h1>
         <div className="flex items-center gap-3">
+          <SaveIndicator lastSavedAt={lastSavedAt} />
           <ResponsiveToggle />
           <button
             onClick={handleRestartClick}
@@ -129,11 +145,12 @@ function BuilderLayout() {
       {confirmingRestart && (
         <ConfirmDialog
           title="¿Reiniciar el wizard?"
-          body="Se pierde el wireframe actual — esta acción no se puede deshacer."
+          body="Se pierde el wireframe actual, incluido el progreso guardado en esta compu — esta acción no se puede deshacer."
           confirmLabel="Sí, reiniciar"
           onCancel={() => setConfirmingRestart(false)}
           onConfirm={() => {
             dispatch({ type: 'WIZARD_RESTART' })
+            clearSavedProgress()
             setConfirmingRestart(false)
           }}
         />

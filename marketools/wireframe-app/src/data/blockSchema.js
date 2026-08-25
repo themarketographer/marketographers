@@ -210,6 +210,19 @@ export const BLOCK_SCHEMA = {
     ],
   },
 
+  beforeAfter: {
+    label: 'Antes y Después',
+    variants: null,
+    fields: [
+      { key: 'title', label: 'Título', type: 'text', default: '[Por qué vale la pena una sesión profesional]' },
+      { key: 'beforeImageUrl', label: 'Imagen "antes"', type: 'image', placeholder: 'Link de Cloudinary de la foto de antes (ej. con celular)', default: '' },
+      { key: 'afterImageUrl', label: 'Imagen "después"', type: 'image', placeholder: 'Link de Cloudinary de la foto de después (tu trabajo)', default: '' },
+      { key: 'beforeLabel', label: 'Etiqueta de "antes"', type: 'text', default: 'Antes' },
+      { key: 'afterLabel', label: 'Etiqueta de "después"', type: 'text', default: 'Después' },
+      { key: 'caption', label: 'Texto debajo del comparador', type: 'text', default: 'Desliza para ver la diferencia', placeholder: 'Se muestra chico y en cursiva debajo del comparador' },
+    ],
+  },
+
   vsl: {
     label: 'VSL',
     variants: null,
@@ -492,7 +505,7 @@ export const BLOCK_GROUPS = [
   { id: 'estructura', label: 'Estructura', types: ['header', 'footer'] },
   { id: 'apertura', label: 'Apertura', types: ['hero', 'vsl', 'videoBanda'] },
   { id: 'argumento', label: 'Argumento de venta', types: ['problem', 'process', 'promise', 'exclusividad'] },
-  { id: 'prueba-social', label: 'Prueba social', types: ['portfolio', 'testimonials', 'trustBar', 'stats', 'pullQuote', 'about'] },
+  { id: 'prueba-social', label: 'Prueba social', types: ['portfolio', 'beforeAfter', 'testimonials', 'trustBar', 'stats', 'pullQuote', 'about'] },
   { id: 'confianza', label: 'Confianza', types: ['guarantee', 'garantias'] },
   { id: 'precios', label: 'Precios y oferta', types: ['pricing', 'addons', 'formasPago'] },
   { id: 'conversion', label: 'Conversión', types: ['finalCta', 'proximosPasos', 'leadMagnet', 'faq'] },

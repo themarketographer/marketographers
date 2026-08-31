@@ -569,6 +569,25 @@ function trackBoth(eventName, params){
   sendCapiEvent(eventName, id, params);
 }
 
+// Eventos de conversión que dispara esta página. "boton" es la clave
+// estable que usa el código de tracking de abajo (mktEventName) para
+// buscar el nombre configurado; si no lo encuentra, usa el nombre que
+// estaba hardcodeado, así nunca se deja de trackear. Mismo patrón que
+// egEventName en estudiographica/index.html — editable desde el panel
+// en "Página de inicio → Eventos".
+const eventosPagina = [
+  { boton: 'Ver planes (scroll a la sección #planes)', tipo: 'estandar', nombre: 'ViewContent' },
+  { boton: 'Unirse a la comunidad gratuita (WhatsApp)', tipo: 'estandar', nombre: 'Lead' },
+  { boton: 'Contacto directo por WhatsApp', tipo: 'estandar', nombre: 'Contact' },
+  { boton: 'Click a checkout (Nas.io)', tipo: 'personalizado', nombre: 'ClickCheckoutLanding' },
+];
+function mktEventName(boton, fallback) {
+  try {
+    var item = (eventosPagina || []).filter(function (e) { return e.boton === boton; })[0];
+    return (item && item.nombre) || fallback;
+  } catch (e) { return fallback; }
+}
+
 trackBoth('PageView');
 </script>
 <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=467504537642622&ev=PageView&noscript=1"/></noscript>
@@ -585,19 +604,19 @@ trackBoth('PageView');
 
 <section class="hero">
   <div class="wrap">
-    <p class="eyebrow">· Inscripciones abiertas a la comunidad ·</p>
-    <h1>Tu cliente ideal ya eligió.<br>Eligió al fotógrafo <mark>que sí sabe venderse.</mark></h1>
-    <p class="lead">Una comunidad no es un grupo para "seguirnos entre todos" y criticar nuestras fotos. Es un lugar para aprender lo que nadie te quiere enseñar y no encuentras en Youtube.</p>
+    <p class="eyebrow" id="mkt-hero-eyebrow">· Inscripciones abiertas a la comunidad ·</p>
+    <h1 id="mkt-hero-h1">Tu cliente ideal ya eligió.<br>Eligió al fotógrafo <mark>que sí sabe venderse.</mark></h1>
+    <p class="lead" id="mkt-hero-sub">Una comunidad no es un grupo para "seguirnos entre todos" y criticar nuestras fotos. Es un lugar para aprender lo que nadie te quiere enseñar y no encuentras en Youtube.</p>
     <div class="hero-cta">
       <a class="btn btn-dark" href="#planes">Únete a la comunidad →</a>
     </div>
     <div class="stats-row">
-      <span>+500 fotógrafos</span>
-      <span>+17 países</span>
-      <span>+300 horas de clases</span>
+      <span id="mkt-hero-stat-1">+500 fotógrafos</span>
+      <span id="mkt-hero-stat-2">+17 países</span>
+      <span id="mkt-hero-stat-3">+300 horas de clases</span>
     </div>
     <div class="video-frame">
-      <iframe src="https://www.youtube-nocookie.com/embed/FE5oEd88x98?controls=0" title="The Marketographers" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      <iframe id="mkt-hero-video" src="https://www.youtube-nocookie.com/embed/FE5oEd88x98?controls=0" title="The Marketographers" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
     </div>
   </div>
 </section>
@@ -605,97 +624,55 @@ trackBoth('PageView');
 <section class="bg-alt">
   <div class="wrap">
     <div class="problem-head reveal">
-      <p class="eyebrow eyebrow-red">La cruda realidad</p>
-      <h2>El 95% de los fotógrafos fracasan en sus primeros 3 años</h2>
-      <p style="color:var(--muted);margin-top:14px;">Y no es porque sean malos fotógrafos. Es porque nadie les enseñó a vender, a posicionarse, a crear una marca que atraiga clientes que paguen. Mientras tú editas hasta las 3am, otro está cerrando la venta que debía ser tuya.</p>
+      <p class="eyebrow eyebrow-red" id="mkt-problema-eyebrow">La cruda realidad</p>
+      <h2 id="mkt-problema-h2">El 95% de los fotógrafos fracasan en sus primeros 3 años</h2>
+      <p style="color:var(--muted);margin-top:14px;" id="mkt-problema-texto">Y no es porque sean malos fotógrafos. Es porque nadie les enseñó a vender, a posicionarse, a crear una marca que atraiga clientes que paguen. Mientras tú editas hasta las 3am, otro está cerrando la venta que debía ser tuya.</p>
     </div>
-    <div class="problem-grid reveal-stagger">
-      <div class="problem-card featured stagger-item">
-        <div class="problem-head-row">
-          <span class="problem-num">01</span>
-          <span class="problem-tag">El más común</span>
-        </div>
-        <h3>Cobras poco porque no sabes venderte</h3>
-        <p>Crees que "el mercado está saturado" o que "en tu ciudad no pagan bien".</p>
-      </div>
-      <div class="problem-card stagger-item">
-        <div class="problem-head-row"><span class="problem-num">02</span></div>
-        <h3>Dependes del boca a boca</h3>
-        <p>Tu negocio está en manos del algoritmo, y no de una estrategia de marketing real.</p>
-      </div>
-      <div class="problem-card stagger-item">
-        <div class="problem-head-row"><span class="problem-num">03</span></div>
-        <h3>Editas solito hasta las 3am</h3>
-        <p>Trabajas hasta en Navidad y hace días que no ves a tu familia.</p>
-      </div>
-    </div>
-    <div class="stat-strip reveal-stagger">
-      <div class="stat-card stagger-item"><p class="num">95%</p><p class="lbl">Fracasan antes de 3 años</p></div>
-      <div class="stat-card stagger-item"><p class="num">$200</p><p class="lbl">Promedio que cobran</p></div>
-      <div class="stat-card stagger-item"><p class="num">60h</p><p class="lbl">Trabajan por semana</p></div>
-      <div class="stat-card stagger-item"><p class="num">0</p><p class="lbl">Estrategia de marketing</p></div>
-    </div>
+    <div class="problem-grid reveal-stagger" id="mkt-problema-grid"></div>
+    <div class="stat-strip reveal-stagger" id="mkt-problema-stats"></div>
   </div>
 </section>
 
 <section>
   <div class="wrap">
-    <div class="feature-pair reveal">
-      <div class="feature-col">
-        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1771218778/Captura_clase_vzvoyr.jpg" alt="Clase en vivo por Zoom de The Marketographers" loading="lazy">
-        <h3>Clases en vivo por Zoom</h3>
-        <p>Nos vemos cada semana para resolver dudas y compartir estrategias que realmente funcionan.</p>
-      </div>
-      <div class="feature-col">
-        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1771217256/Incluye_todo_esto_penpvs.jpg" alt="Cursos y recursos incluidos en The Marketographers" loading="lazy">
-        <h3>Todos los cursos disponibles</h3>
-        <p>Acceso a masterclasses, plantillas, libros y estrategias que funcionan en fotografía y marketing.</p>
-      </div>
-    </div>
+    <div class="feature-pair reveal" id="mkt-feature-pair"></div>
   </div>
 </section>
 
 <section class="bg-alt">
   <div class="wrap">
     <div class="includes-head reveal">
-      <p class="eyebrow">¿Qué incluye la membresía?</p>
-      <h2>Todo lo que necesitas para convertirte en un fotógrafo que vive de su arte.</h2>
+      <p class="eyebrow" id="mkt-incluye-eyebrow">¿Qué incluye la membresía?</p>
+      <h2 id="mkt-incluye-h2">Todo lo que necesitas para convertirte en un fotógrafo que vive de su arte.</h2>
     </div>
-    <div class="includes-grid reveal-stagger">
-      <div class="includes-card stagger-item"><img class="icon-real" src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1785197262/icono_camara_kir4ea.png" alt="Ícono clases en vivo" loading="lazy"><h3>Nunca más resuelves solo</h3><p>Dos veces por semana te sientas con otros fotógrafos y con Pablo. En vivo, cámara prendida, dudas reales.</p></div>
-      <div class="includes-card stagger-item"><img class="icon-real" src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1785197261/icono_biblioteca_lzbaus.png" alt="Ícono biblioteca de cursos" loading="lazy"><h3>Una biblioteca, no un PDF suelto</h3><p>Masterclasses, plantillas y libros que abres cuando los necesitas, no cuando "tengas tiempo".</p></div>
-      <div class="includes-card stagger-item"><img class="icon-real" src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1785197262/icono_chat_g4ung6.png" alt="Ícono chat de comunidad" loading="lazy"><h3>El chat que no vas a poder silenciar</h3><p>Notificaciones de gente resolviendo el mismo problema que a ti te quita el sueño, 24/7.</p></div>
-      <div class="includes-card stagger-item"><img class="icon-real" src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1785197262/icono_calendario_zhbck9.png" alt="Ícono calendario de contenido" loading="lazy"><h3>De "no sé qué publicar" a un calendario que ya sabe</h3><p>Dejas de improvisar cada mañana. La estrategia ya está armada, solo la sigues.</p></div>
-      <div class="includes-card stagger-item"><img class="icon-real" src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1785197262/icono_feedback_jgzk5c.png" alt="Ícono feedback honesto" loading="lazy"><h3>Feedback sin filtro, sin caricias</h3><p>Te decimos qué está mal antes de que lo publiques y te cueste un cliente.</p></div>
-      <div class="includes-card stagger-item"><img class="icon-real" src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1785197263/icono_dinero_eyj7m8.png" alt="Ícono facturación de alumnos" loading="lazy"><h3>+50k USD facturados, no promesas</h3><p>Números reales de fotógrafos reales. Cero screenshots inventados.</p></div>
-    </div>
+    <div class="includes-grid reveal-stagger" id="mkt-incluye-grid"></div>
   </div>
 </section>
 
 <section class="mid-cta">
   <div class="wrap mid-cta-grid reveal">
     <div class="mid-cta">
-      <h2>¡Hagamos mierda a<br>tu competencia!</h2>
-      <p>Todos nuestros casos de éxito comparten algo en común: se quieren comer el puto mundo. Y por eso lo logran. ¿Y tú? ¿Te quieres comer el mundo?</p>
-      <a class="btn btn-dark" href="#planes">Quiero comerme el mundo →</a>
+      <h2 id="mkt-midcta-h2">¡Hagamos mierda a<br>tu competencia!</h2>
+      <p id="mkt-midcta-texto">Todos nuestros casos de éxito comparten algo en común: se quieren comer el puto mundo. Y por eso lo logran. ¿Y tú? ¿Te quieres comer el mundo?</p>
+      <a class="btn btn-dark" href="#planes" id="mkt-midcta-btn">Quiero comerme el mundo →</a>
     </div>
     <div class="mascot-stage">
       <img class="mascot-img" src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1785082737/image_s2zbau.png" alt="Personaje cabeza de cámara, mascota de The Marketographers" loading="lazy">
       <div class="float-card float-1">
         <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div>
-        <div><strong>Clases en vivo</strong><span>2x por semana</span></div>
+        <div><strong id="mkt-float-1-t">Clases en vivo</strong><span id="mkt-float-1-s">2x por semana</span></div>
       </div>
       <div class="float-card float-2">
         <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
-        <div><strong>Feedback sin filtro</strong><span>Sin caricias</span></div>
+        <div><strong id="mkt-float-2-t">Feedback sin filtro</strong><span id="mkt-float-2-s">Sin caricias</span></div>
       </div>
       <div class="float-card float-3">
         <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
-        <div><strong>+200 fotógrafos</strong><span>en 18 países</span></div>
+        <div><strong id="mkt-float-3-t">+200 fotógrafos</strong><span id="mkt-float-3-s">en 18 países</span></div>
       </div>
       <div class="float-card float-4">
         <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></div>
-        <div><strong>Cursos ilimitados</strong><span>Acceso total</span></div>
+        <div><strong id="mkt-float-4-t">Cursos ilimitados</strong><span id="mkt-float-4-s">Acceso total</span></div>
       </div>
     </div>
   </div>
@@ -704,9 +681,9 @@ trackBoth('PageView');
 <section class="bg-alt" id="planes">
   <div class="wrap">
     <div class="pricing-head reveal">
-      <p class="eyebrow">Precio de fundador</p>
-      <h2>Una sola decisión. La que te faltaba tomar.</h2>
-      <p style="color:var(--muted);margin-top:14px;">Menos de lo que te sale una salida al cine, para llenar tu agenda.</p>
+      <p class="eyebrow" id="mkt-pricing-eyebrow">Precio de fundador</p>
+      <h2 id="mkt-pricing-h2">Una sola decisión. La que te faltaba tomar.</h2>
+      <p style="color:var(--muted);margin-top:14px;" id="mkt-pricing-texto">Menos de lo que te sale una salida al cine, para llenar tu agenda.</p>
     </div>
 
     <div class="toggle">
@@ -722,12 +699,12 @@ trackBoth('PageView');
         <p class="price-num"><span id="price-value">$33</span><span class="price-suffix">/mes</span></p>
       </div>
       <div class="price-list">
-        <div class="price-item"><span class="check">✓</span><div><strong>Clases en vivo</strong><p>2x por semana, con Pablo, cámara prendida.</p></div></div>
-        <div class="price-item"><span class="check">✓</span><div><strong>Cursos ilimitados</strong><p>Todas las masterclasses, sin costo extra.</p></div></div>
-        <div class="price-item"><span class="check">✓</span><div><strong>Grupo de WhatsApp</strong><p>Resuelve dudas en minutos, no en días.</p></div></div>
-        <div class="price-item"><span class="check">✓</span><div><strong>Libros y plantillas</strong><p>Sistemas ya armados, listos para copiar.</p></div></div>
-        <div class="price-item"><span class="check">✓</span><div><strong>Newsletter semanal</strong><p>Una estrategia nueva cada lunes.</p></div></div>
-        <div class="price-item"><span class="check">✓</span><div><strong>Feedback honesto</strong><p>Sin filtros, sin caricias, sin rodeos.</p></div></div>
+        <div class="price-item"><span class="check">✓</span><div><strong id="mkt-price-1-t">Clases en vivo</strong><p id="mkt-price-1-p">2x por semana, con Pablo, cámara prendida.</p></div></div>
+        <div class="price-item"><span class="check">✓</span><div><strong id="mkt-price-2-t">Cursos ilimitados</strong><p id="mkt-price-2-p">Todas las masterclasses, sin costo extra.</p></div></div>
+        <div class="price-item"><span class="check">✓</span><div><strong id="mkt-price-3-t">Grupo de WhatsApp</strong><p id="mkt-price-3-p">Resuelve dudas en minutos, no en días.</p></div></div>
+        <div class="price-item"><span class="check">✓</span><div><strong id="mkt-price-4-t">Libros y plantillas</strong><p id="mkt-price-4-p">Sistemas ya armados, listos para copiar.</p></div></div>
+        <div class="price-item"><span class="check">✓</span><div><strong id="mkt-price-5-t">Newsletter semanal</strong><p id="mkt-price-5-p">Una estrategia nueva cada lunes.</p></div></div>
+        <div class="price-item"><span class="check">✓</span><div><strong id="mkt-price-6-t">Feedback honesto</strong><p id="mkt-price-6-p">Sin filtros, sin caricias, sin rodeos.</p></div></div>
       </div>
       <a class="btn btn-gold" href="https://nas.com/marketographers/join-membership/690025802c8123e0f9b762ef" target="_blank" rel="noopener">Entrar por $33/mes →</a>
       <p class="price-note">Cancela cuando quieras.</p>
@@ -740,11 +717,11 @@ trackBoth('PageView');
   <div class="wrap about reveal">
     <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1771217266/IMG_6859_1_1_ujmxsg.png" alt="Pablo Villarroel, The Marketographer" loading="lazy">
     <div>
-      <span class="eyebrow">¿Quién es este loco?</span>
-      <h2>Pablo Villarroel · @themarketographer</h2>
-      <p>Lic. en Marketing &amp; Publicidad, TEDx speaker, especialista en StoryTelling y Persuasión. Con más de 100k USD de facturac... bla bla bla... Ya te aburriste ¿no?</p>
-      <p>Pues, lo de arriba es verdad. Pero lo único importante sobre mí es que no voy a dormir hasta que tú consigas dormir tranquilo.</p>
-      <p><em>(Por eso tengo esas ojeras)</em></p>
+      <span class="eyebrow" id="mkt-about-eyebrow">¿Quién es este loco?</span>
+      <h2 id="mkt-about-h2">Pablo Villarroel · @themarketographer</h2>
+      <p id="mkt-about-p1">Lic. en Marketing &amp; Publicidad, TEDx speaker, especialista en StoryTelling y Persuasión. Con más de 100k USD de facturac... bla bla bla... Ya te aburriste ¿no?</p>
+      <p id="mkt-about-p2">Pues, lo de arriba es verdad. Pero lo único importante sobre mí es que no voy a dormir hasta que tú consigas dormir tranquilo.</p>
+      <p><em id="mkt-about-p3-em">(Por eso tengo esas ojeras)</em></p>
     </div>
   </div>
 </section>
@@ -752,8 +729,8 @@ trackBoth('PageView');
 <section class="bg-alt">
   <div class="wrap">
     <div class="testi-head reveal">
-      <p class="eyebrow">Casos de éxito</p>
-      <h2>Marketographers que ya la están rompiendo</h2>
+      <p class="eyebrow" id="mkt-testi-eyebrow">Casos de éxito</p>
+      <h2 id="mkt-testi-h2">Marketographers que ya la están rompiendo</h2>
     </div>
   </div>
   <div class="marquee">
@@ -764,54 +741,33 @@ trackBoth('PageView');
 <section>
   <div class="wrap">
     <div class="faq-head reveal">
-      <p class="eyebrow">Preguntas frecuentes</p>
-      <h2>Preguntas que ya respondí en mis stories</h2>
+      <p class="eyebrow" id="mkt-faq-eyebrow">Preguntas frecuentes</p>
+      <h2 id="mkt-faq-h2">Preguntas que ya respondí en mis stories</h2>
     </div>
-    <div class="faq-list" id="faq-list">
-      <div class="faq-item">
-        <button class="faq-q"><span>→ ¿Tienen garantía de devolución?</span><span class="plus">+</span></button>
-        <div class="faq-a"><p>JAJAJAJAJA. No. Aquí no devolvemos dinero porque sabemos que, si entras, vas a querer quedarte. Si pensabas entrar para pedir una devolución probablemente es porque esperabas milagros sin mover un dedo, y para eso... mejor nadota.</p></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q"><span>→ ¿Cuánto tiempo tengo que dedicarle?</span><span class="plus">+</span></button>
-        <div class="faq-a"><p>Las clases en vivo son 2 veces por semana (2-3 horas). El resto del contenido lo puedes consumir a tu ritmo. El grupo está activo 24/7, pero tú decides cuánto participar.</p></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q"><span>→ ¿Cómo sé si esto es para mí?</span><span class="plus">+</span></button>
-        <div class="faq-a"><p>Si eres fotógrafo y quieres más clientes, más tiempo libre y dejar de vivir del "boca a boca", esto es para ti. Si te encanta rascarte las pelotas, coleccionar cursos como estampitas para nunca abrirlos, mejor ahórrate el dinero… o mándamelo directo, igual de inútil va a ser.</p></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q"><span>→ ¿Y si no sé nada de marketing?</span><span class="plus">+</span></button>
-        <div class="faq-a"><p>Mejor. Así no tienes que des-aprender pendejadas de gurús del marketing que te dijeron que "el contenido de valor" o "hacer videos virales con IA" era la solución a todo.</p></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q"><span>→ ¿Y siempre dices groserías?</span><span class="plus">+</span></button>
-        <div class="faq-a"><p>Sí ¡Un chingo! Porque decir "cliente de mierda" es más potente que decir "cliente poco comprometido". Y si eso te ofende, vete a buscar otro curso gratis en Youtube de alguien que inicia sus videos con un "Holiii chicos y chicas ✨".</p></div>
-      </div>
-    </div>
+    <div class="faq-list" id="faq-list"></div>
   </div>
 </section>
 
 <section class="final-cta">
   <div class="wrap reveal">
-    <h2>¿Listo para dejar de ser<br><span class="accent">uno más?</span></h2>
-    <p class="lead">Tu cliente ideal está esperando. La pregunta es: ¿lo vas a dejar ir con otro?</p>
+    <h2><span id="mkt-final-h2-a">¿Listo para dejar de ser</span><br><span class="accent" id="mkt-final-h2-b">uno más?</span></h2>
+    <p class="lead" id="mkt-final-texto">Tu cliente ideal está esperando. La pregunta es: ¿lo vas a dejar ir con otro?</p>
     <div class="final-actions">
       <a class="btn btn-gold" href="#planes">Únete a Marketographers</a>
       <div class="wpp-btn-wrap">
-        <a class="btn btn-outline" href="https://api.whatsapp.com/send?phone=+59169422335&text=%C2%A1Hola%2C%20Pablo!%20Vi%20tu%20p%C3%A1gina%20y%20quiero%20m%C3%A1s%20info%20de%20la%20membres%C3%ADa%20de%20marketing%20para%20fot%C3%B3grafos" target="_blank" rel="noopener">Escríbeme por WhatsApp</a>
-        <p class="final-note">↳ Te lleva a WhatsApp para hablar directo conmigo</p>
+        <a class="btn btn-outline" href="https://api.whatsapp.com/send?phone=+59169422335&text=%C2%A1Hola%2C%20Pablo!%20Vi%20tu%20p%C3%A1gina%20y%20quiero%20m%C3%A1s%20info%20de%20la%20membres%C3%ADa%20de%20marketing%20para%20fot%C3%B3grafos" target="_blank" rel="noopener" id="mkt-final-wa-btn">Escríbeme por WhatsApp</a>
+        <p class="final-note" id="mkt-final-wa-note">↳ Te lleva a WhatsApp para hablar directo conmigo</p>
       </div>
     </div>
-    <p class="final-sub">+200 fotógrafos ya están adentro. ¿Y tú?</p>
+    <p class="final-sub" id="mkt-final-sub">+200 fotógrafos ya están adentro. ¿Y tú?</p>
   </div>
 </section>
 
 <div class="free-band">
   <div class="wrap">
-    <p class="eyebrow" style="color:var(--gold);">¿Estás sin un peso? Tenemos una comunidad gratuita.</p>
-    <p>Grupo de WhatsApp gratuito: Newsletters, masterclasses mensuales + prioridad en los lives de TikTok.</p>
-    <a class="btn btn-gold" href="https://chat.whatsapp.com/H87amNgVpRr0g2habJsfjd" target="_blank" rel="noopener">Unirme gratis →</a>
+    <p class="eyebrow" style="color:var(--gold);" id="mkt-freeband-eyebrow">¿Estás sin un peso? Tenemos una comunidad gratuita.</p>
+    <p id="mkt-freeband-texto">Grupo de WhatsApp gratuito: Newsletters, masterclasses mensuales + prioridad en los lives de TikTok.</p>
+    <a class="btn btn-gold" href="https://chat.whatsapp.com/H87amNgVpRr0g2habJsfjd" target="_blank" rel="noopener" id="mkt-freeband-btn">Unirme gratis →</a>
   </div>
 </div>
 
@@ -819,7 +775,7 @@ trackBoth('PageView');
   <div class="wrap">
     <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1755314903/Marketographers_Blanco_S_F_p1toov.png" alt="The Marketographers" style="filter:invert(1);opacity:.85;" loading="lazy">
     <p style="margin-bottom:10px;"><a href="/blog/" style="text-decoration:underline;opacity:.85;">Blog</a> · <a href="/privacidad/" style="text-decoration:underline;opacity:.85;">Privacidad</a></p>
-    <p>© 2026 The Marketographers. Todos los putos derechos reservados.</p>
+    <p id="mkt-footer-copy">© 2026 The Marketographers. Todos los putos derechos reservados.</p>
   </div>
 </footer>
 
@@ -848,6 +804,220 @@ trackBoth('PageView');
     </div>`;
   }
   track.innerHTML = testimonios.map(cardHTML).join('') + testimonios.map(cardHTML).join('');
+
+  // ---- Datos editables desde el panel (dataBlocks, mismo patrón que
+  // estudiographica/index.html) — ver netlify/functions/lib/datablocks.js
+  // en el repo del panel. heroMkt y textosMkt son "singletons": el array
+  // siempre tiene un único objeto adentro.
+  const heroMkt = [
+    {
+      eyebrow: '· Inscripciones abiertas a la comunidad ·',
+      titulo: 'Tu cliente ideal ya eligió.<br>Eligió al fotógrafo <mark>que sí sabe venderse.</mark>',
+      subtitulo: 'Una comunidad no es un grupo para "seguirnos entre todos" y criticar nuestras fotos. Es un lugar para aprender lo que nadie te quiere enseñar y no encuentras en Youtube.',
+      stat1: '+500 fotógrafos',
+      stat2: '+17 países',
+      stat3: '+300 horas de clases',
+      videoUrl: 'https://www.youtube-nocookie.com/embed/FE5oEd88x98?controls=0',
+    },
+  ];
+
+  const textosMkt = [
+    {
+      problemaEyebrow: 'La cruda realidad',
+      problemaTitulo: 'El 95% de los fotógrafos fracasan en sus primeros 3 años',
+      problemaTexto: 'Y no es porque sean malos fotógrafos. Es porque nadie les enseñó a vender, a posicionarse, a crear una marca que atraiga clientes que paguen. Mientras tú editas hasta las 3am, otro está cerrando la venta que debía ser tuya.',
+      incluyeEyebrow: '¿Qué incluye la membresía?',
+      incluyeTitulo: 'Todo lo que necesitas para convertirte en un fotógrafo que vive de su arte.',
+      midCtaTitulo: '¡Hagamos mierda a<br>tu competencia!',
+      midCtaTexto: 'Todos nuestros casos de éxito comparten algo en común: se quieren comer el puto mundo. Y por eso lo logran. ¿Y tú? ¿Te quieres comer el mundo?',
+      midCtaBoton: 'Quiero comerme el mundo →',
+      pricingEyebrow: 'Precio de fundador',
+      pricingTitulo: 'Una sola decisión. La que te faltaba tomar.',
+      pricingTexto: 'Menos de lo que te sale una salida al cine, para llenar tu agenda.',
+      aboutEyebrow: '¿Quién es este loco?',
+      aboutTitulo: 'Pablo Villarroel · @themarketographer',
+      aboutParrafo1: 'Lic. en Marketing & Publicidad, TEDx speaker, especialista en StoryTelling y Persuasión. Con más de 100k USD de facturac... bla bla bla... Ya te aburriste ¿no?',
+      aboutParrafo2: 'Pues, lo de arriba es verdad. Pero lo único importante sobre mí es que no voy a dormir hasta que tú consigas dormir tranquilo.',
+      aboutParrafo3: '(Por eso tengo esas ojeras)',
+      testiEyebrow: 'Casos de éxito',
+      testiTitulo: 'Marketographers que ya la están rompiendo',
+      faqEyebrow: 'Preguntas frecuentes',
+      faqTitulo: 'Preguntas que ya respondí en mis stories',
+      finalTitulo1: '¿Listo para dejar de ser',
+      finalTitulo2: 'uno más?',
+      finalTexto: 'Tu cliente ideal está esperando. La pregunta es: ¿lo vas a dejar ir con otro?',
+      finalWaBoton: 'Escríbeme por WhatsApp',
+      finalWaNota: '↳ Te lleva a WhatsApp para hablar directo conmigo',
+      finalSub: '+200 fotógrafos ya están adentro. ¿Y tú?',
+      freeBandEyebrow: '¿Estás sin un peso? Tenemos una comunidad gratuita.',
+      freeBandTexto: 'Grupo de WhatsApp gratuito: Newsletters, masterclasses mensuales + prioridad en los lives de TikTok.',
+      freeBandBoton: 'Unirme gratis →',
+      footerCopyright: '© 2026 The Marketographers. Todos los putos derechos reservados.',
+    },
+  ];
+
+  const problemaCards = [
+    { numero: '01', tag: 'El más común', titulo: 'Cobras poco porque no sabes venderte', texto: 'Crees que "el mercado está saturado" o que "en tu ciudad no pagan bien".' },
+    { numero: '02', tag: '', titulo: 'Dependes del boca a boca', texto: 'Tu negocio está en manos del algoritmo, y no de una estrategia de marketing real.' },
+    { numero: '03', tag: '', titulo: 'Editas solito hasta las 3am', texto: 'Trabajas hasta en Navidad y hace días que no ves a tu familia.' },
+  ];
+
+  const problemaStats = [
+    { valor: '95%', texto: 'Fracasan antes de 3 años' },
+    { valor: '$200', texto: 'Promedio que cobran' },
+    { valor: '60h', texto: 'Trabajan por semana' },
+    { valor: '0', texto: 'Estrategia de marketing' },
+  ];
+
+  const featurePair = [
+    { imagen: 'https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1771218778/Captura_clase_vzvoyr.jpg', titulo: 'Clases en vivo por Zoom', texto: 'Nos vemos cada semana para resolver dudas y compartir estrategias que realmente funcionan.' },
+    { imagen: 'https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1771217256/Incluye_todo_esto_penpvs.jpg', titulo: 'Todos los cursos disponibles', texto: 'Acceso a masterclasses, plantillas, libros y estrategias que funcionan en fotografía y marketing.' },
+  ];
+
+  const incluyeCards = [
+    { icono: 'https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1785197262/icono_camara_kir4ea.png', titulo: 'Nunca más resuelves solo', detalle: 'Dos veces por semana te sientas con otros fotógrafos y con Pablo. En vivo, cámara prendida, dudas reales.' },
+    { icono: 'https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1785197261/icono_biblioteca_lzbaus.png', titulo: 'Una biblioteca, no un PDF suelto', detalle: 'Masterclasses, plantillas y libros que abres cuando los necesitas, no cuando "tengas tiempo".' },
+    { icono: 'https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1785197262/icono_chat_g4ung6.png', titulo: 'El chat que no vas a poder silenciar', detalle: 'Notificaciones de gente resolviendo el mismo problema que a ti te quita el sueño, 24/7.' },
+    { icono: 'https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1785197262/icono_calendario_zhbck9.png', titulo: 'De "no sé qué publicar" a un calendario que ya sabe', detalle: 'Dejas de improvisar cada mañana. La estrategia ya está armada, solo la sigues.' },
+    { icono: 'https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1785197262/icono_feedback_jgzk5c.png', titulo: 'Feedback sin filtro, sin caricias', detalle: 'Te decimos qué está mal antes de que lo publiques y te cueste un cliente.' },
+    { icono: 'https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1785197263/icono_dinero_eyj7m8.png', titulo: '+50k USD facturados, no promesas', detalle: 'Números reales de fotógrafos reales. Cero screenshots inventados.' },
+  ];
+
+  const midCtaFloat = [
+    { titulo: 'Clases en vivo', texto: '2x por semana' },
+    { titulo: 'Feedback sin filtro', texto: 'Sin caricias' },
+    { titulo: '+200 fotógrafos', texto: 'en 18 países' },
+    { titulo: 'Cursos ilimitados', texto: 'Acceso total' },
+  ];
+
+  const pricingFeatures = [
+    { titulo: 'Clases en vivo', texto: '2x por semana, con Pablo, cámara prendida.' },
+    { titulo: 'Cursos ilimitados', texto: 'Todas las masterclasses, sin costo extra.' },
+    { titulo: 'Grupo de WhatsApp', texto: 'Resuelve dudas en minutos, no en días.' },
+    { titulo: 'Libros y plantillas', texto: 'Sistemas ya armados, listos para copiar.' },
+    { titulo: 'Newsletter semanal', texto: 'Una estrategia nueva cada lunes.' },
+    { titulo: 'Feedback honesto', texto: 'Sin filtros, sin caricias, sin rodeos.' },
+  ];
+
+  const faqsMkt = [
+    { q: '→ ¿Tienen garantía de devolución?', a: 'JAJAJAJAJA. No. Aquí no devolvemos dinero porque sabemos que, si entras, vas a querer quedarte. Si pensabas entrar para pedir una devolución probablemente es porque esperabas milagros sin mover un dedo, y para eso... mejor nadota.' },
+    { q: '→ ¿Cuánto tiempo tengo que dedicarle?', a: 'Las clases en vivo son 2 veces por semana (2-3 horas). El resto del contenido lo puedes consumir a tu ritmo. El grupo está activo 24/7, pero tú decides cuánto participar.' },
+    { q: '→ ¿Cómo sé si esto es para mí?', a: 'Si eres fotógrafo y quieres más clientes, más tiempo libre y dejar de vivir del "boca a boca", esto es para ti. Si te encanta rascarte las pelotas, coleccionar cursos como estampitas para nunca abrirlos, mejor ahórrate el dinero… o mándamelo directo, igual de inútil va a ser.' },
+    { q: '→ ¿Y si no sé nada de marketing?', a: 'Mejor. Así no tienes que des-aprender pendejadas de gurús del marketing que te dijeron que "el contenido de valor" o "hacer videos virales con IA" era la solución a todo.' },
+    { q: '→ ¿Y siempre dices groserías?', a: 'Sí ¡Un chingo! Porque decir "cliente de mierda" es más potente que decir "cliente poco comprometido". Y si eso te ofende, vete a buscar otro curso gratis en Youtube de alguien que inicia sus videos con un "Holiii chicos y chicas ✨".' },
+  ];
+
+  (function () {
+    function esc(str) {
+      return String(str == null ? '' : str).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+    function set(id, val, html) {
+      var el = document.getElementById(id);
+      if (!el || val == null) return;
+      if (html) el.innerHTML = val; else el.textContent = val;
+    }
+
+    var hero = heroMkt[0] || {};
+    set('mkt-hero-eyebrow', hero.eyebrow);
+    set('mkt-hero-h1', hero.titulo, true);
+    set('mkt-hero-sub', hero.subtitulo);
+    set('mkt-hero-stat-1', hero.stat1);
+    set('mkt-hero-stat-2', hero.stat2);
+    set('mkt-hero-stat-3', hero.stat3);
+    var heroVideo = document.getElementById('mkt-hero-video');
+    if (heroVideo && hero.videoUrl) heroVideo.src = hero.videoUrl;
+
+    var t = textosMkt[0] || {};
+    set('mkt-problema-eyebrow', t.problemaEyebrow);
+    set('mkt-problema-h2', t.problemaTitulo);
+    set('mkt-problema-texto', t.problemaTexto);
+    set('mkt-incluye-eyebrow', t.incluyeEyebrow);
+    set('mkt-incluye-h2', t.incluyeTitulo);
+    set('mkt-midcta-h2', t.midCtaTitulo, true);
+    set('mkt-midcta-texto', t.midCtaTexto);
+    set('mkt-midcta-btn', t.midCtaBoton);
+    set('mkt-pricing-eyebrow', t.pricingEyebrow);
+    set('mkt-pricing-h2', t.pricingTitulo);
+    set('mkt-pricing-texto', t.pricingTexto);
+    set('mkt-about-eyebrow', t.aboutEyebrow);
+    set('mkt-about-h2', t.aboutTitulo);
+    set('mkt-about-p1', t.aboutParrafo1);
+    set('mkt-about-p2', t.aboutParrafo2);
+    set('mkt-about-p3-em', t.aboutParrafo3);
+    set('mkt-testi-eyebrow', t.testiEyebrow);
+    set('mkt-testi-h2', t.testiTitulo);
+    set('mkt-faq-eyebrow', t.faqEyebrow);
+    set('mkt-faq-h2', t.faqTitulo);
+    set('mkt-final-h2-a', t.finalTitulo1);
+    set('mkt-final-h2-b', t.finalTitulo2);
+    set('mkt-final-texto', t.finalTexto);
+    set('mkt-final-wa-btn', t.finalWaBoton);
+    set('mkt-final-wa-note', t.finalWaNota);
+    set('mkt-final-sub', t.finalSub);
+    set('mkt-freeband-eyebrow', t.freeBandEyebrow);
+    set('mkt-freeband-texto', t.freeBandTexto);
+    set('mkt-freeband-btn', t.freeBandBoton);
+    set('mkt-footer-copy', t.footerCopyright);
+
+    var problemaGrid = document.getElementById('mkt-problema-grid');
+    if (problemaGrid) {
+      problemaGrid.innerHTML = problemaCards.map(function (c, i) {
+        var tagHtml = c.tag ? '<span class="problem-tag">' + esc(c.tag) + '</span>' : '';
+        return '<div class="problem-card' + (i === 0 ? ' featured' : '') + ' stagger-item">' +
+          '<div class="problem-head-row"><span class="problem-num">' + esc(c.numero) + '</span>' + tagHtml + '</div>' +
+          '<h3>' + esc(c.titulo) + '</h3><p>' + esc(c.texto) + '</p></div>';
+      }).join('');
+    }
+    var problemaStatsEl = document.getElementById('mkt-problema-stats');
+    if (problemaStatsEl) {
+      problemaStatsEl.innerHTML = problemaStats.map(function (s) {
+        return '<div class="stat-card stagger-item"><p class="num">' + esc(s.valor) + '</p><p class="lbl">' + esc(s.texto) + '</p></div>';
+      }).join('');
+    }
+
+    var featurePairEl = document.getElementById('mkt-feature-pair');
+    if (featurePairEl) {
+      featurePairEl.innerHTML = featurePair.map(function (f) {
+        return '<div class="feature-col"><img src="' + esc(f.imagen) + '" alt="' + esc(f.titulo) + '" loading="lazy"><h3>' + esc(f.titulo) + '</h3><p>' + esc(f.texto) + '</p></div>';
+      }).join('');
+    }
+
+    var incluyeGrid = document.getElementById('mkt-incluye-grid');
+    if (incluyeGrid) {
+      incluyeGrid.innerHTML = incluyeCards.map(function (c) {
+        return '<div class="includes-card stagger-item"><img class="icon-real" src="' + esc(c.icono) + '" alt="Ícono ' + esc(c.titulo) + '" loading="lazy"><h3>' + esc(c.titulo) + '</h3><p>' + esc(c.detalle) + '</p></div>';
+      }).join('');
+    }
+
+    midCtaFloat.forEach(function (item, i) {
+      set('mkt-float-' + (i + 1) + '-t', item.titulo);
+      set('mkt-float-' + (i + 1) + '-s', item.texto);
+    });
+
+    pricingFeatures.forEach(function (item, i) {
+      set('mkt-price-' + (i + 1) + '-t', item.titulo);
+      set('mkt-price-' + (i + 1) + '-p', item.texto);
+    });
+  })();
+
+  // ---- FAQ (array editable desde el panel) ----
+  (function () {
+    var list = document.getElementById('faq-list');
+    if (!list) return;
+    function esc(str) {
+      return String(str == null ? '' : str).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+    list.innerHTML = faqsMkt.map(function (item) {
+      return '<div class="faq-item">' +
+        '<button class="faq-q"><span>' + esc(item.q) + '</span><span class="plus">+</span></button>' +
+        '<div class="faq-a"><p>' + esc(item.a) + '</p></div>' +
+      '</div>';
+    }).join('');
+  })();
 
   // ---- Auto-scroll del carrusel de testimonios (se pausa al deslizar) ----
   const marqueeEl = document.querySelector('.marquee');
@@ -923,7 +1093,7 @@ trackBoth('PageView');
   const observer = new IntersectionObserver((entries)=>{
     entries.forEach(entry=>{
       if(entry.isIntersecting && !viewContentFired){
-        trackBoth('ViewContent');
+        trackBoth(mktEventName('Ver planes (scroll a la sección #planes)', 'ViewContent'));
         viewContentFired = true;
         observer.disconnect();
       }
@@ -936,12 +1106,12 @@ trackBoth('PageView');
     const link = e.target.closest('a');
     if(!link || !link.href) return;
         if(link.href.includes('chat.whatsapp.com')){
-            trackBoth('Lead');
+            trackBoth(mktEventName('Unirse a la comunidad gratuita (WhatsApp)', 'Lead'));
     } else if(link.href.includes('api.whatsapp.com') || link.href.includes('wa.me')){
-            trackBoth('Contact');
+            trackBoth(mktEventName('Contacto directo por WhatsApp', 'Contact'));
     }
     if(link.href.includes('nas.com') || link.href.includes('nas.io')){
-      trackBoth('ClickCheckoutLanding');
+      trackBoth(mktEventName('Click a checkout (Nas.io)', 'ClickCheckoutLanding'));
     }
   });
 </script>

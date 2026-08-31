@@ -82,8 +82,25 @@ function trackCustomBoth(eventName, params){
   sendCapiEvent(eventName, id, params);
 }
 
+// Eventos de conversión que dispara esta página (independiente del
+// pixel/tracking de index.html — ver comentario arriba sobre por qué
+// esta página tiene su propio setup duplicado). Mismo patrón que
+// eventosPagina en index.html / estudiographica — editable desde el
+// panel en "Otras páginas → Masterclass · Eventos".
+const eventosPagina = [
+  { boton: 'Vista de la landing (dispara siempre al cargar)', tipo: 'personalizado', nombre: 'ViewMasterclassLanding' },
+  { boton: 'Unirse al grupo de WhatsApp del evento', tipo: 'estandar', nombre: 'Lead' },
+  { boton: 'Click en "Registrarme al evento" (abre Cal)', tipo: 'personalizado', nombre: 'ClickRegisterMasterclass' },
+];
+function mktEventName(boton, fallback) {
+  try {
+    var item = (eventosPagina || []).filter(function (e) { return e.boton === boton; })[0];
+    return (item && item.nombre) || fallback;
+  } catch (e) { return fallback; }
+}
+
 trackBoth('PageView');
-trackCustomBoth('ViewMasterclassLanding');
+trackCustomBoth(mktEventName('Vista de la landing (dispara siempre al cargar)', 'ViewMasterclassLanding'));
 </script>
 <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=467504537642622&ev=PageView&noscript=1"/></noscript>
 
@@ -145,16 +162,17 @@ trackCustomBoth('ViewMasterclassLanding');
     <div class="fade-in">
 
       <!-- EDITAR: texto del badge, normalmente "cupos limitados" o "en vivo" -->
-      <p class="eyebrow">· Masterclass gratuita, cupos limitados ·</p>
+      <p class="eyebrow" id="mkt-mc-badge">· Masterclass gratuita, cupos limitados ·</p>
 
       <!-- EDITAR: titulo del evento -->
-      <h1>Ventas para fotógrafos: <mark>cómo cobrar lo que vales</mark></h1>
+      <h1 id="mkt-mc-h1">Ventas para fotógrafos: <mark>cómo cobrar lo que vales</mark></h1>
 
       <!-- EDITAR: bajada corta -->
-      <p class="lead">Una clase en vivo para dejar de competir por precio y empezar a cerrar clientes que sí valoran tu trabajo.</p>
+      <p class="lead" id="mkt-mc-sub">Una clase en vivo para dejar de competir por precio y empezar a cerrar clientes que sí valoran tu trabajo.</p>
 
       <button
         class="btn btn-gold"
+        id="mkt-mc-btn-registrar"
         data-cal-link="ventas-para-fotografos"
         data-cal-namespace="ventas-para-fotografos"
         data-cal-config='{"layout":"month_view","useSlotsViewOnSmallScreen":"true","theme":"light"}'
@@ -166,12 +184,12 @@ trackCustomBoth('ViewMasterclassLanding');
         <div class="row">
           <div class="label">Qué</div>
           <!-- EDITAR: titulo del evento (repetido aca para que se lea sin abrir el popup) -->
-          <div class="value">Masterclass gratuita: Ventas para fotógrafos</div>
+          <div class="value" id="mkt-mc-que">Masterclass gratuita: Ventas para fotógrafos</div>
         </div>
         <div class="row">
           <div class="label">Cuándo</div>
           <!-- EDITAR: fecha y hora -->
-          <div class="value">Sábado 29 de agosto, 20:00 (GMT-4)</div>
+          <div class="value" id="mkt-mc-cuando">Sábado 29 de agosto, 20:00 (GMT-4)</div>
         </div>
         <div class="row">
           <div class="label">Dónde</div>
@@ -183,9 +201,9 @@ trackCustomBoth('ViewMasterclassLanding');
            con pruebas reales que no existe una senal confiable del
            lado del navegador para este tipo de evento con cupos. -->
       <div class="whatsapp-block card-glass card-shadow">
-        <p>Una vez que te registres arriba, únete al grupo de WhatsApp del evento para que no se te pierda el link de Zoom y avisos de último minuto.</p>
+        <p id="mkt-mc-wa-texto">Una vez que te registres arriba, únete al grupo de WhatsApp del evento para que no se te pierda el link de Zoom y avisos de último minuto.</p>
         <!-- EDITAR: link del grupo de WhatsApp especifico de este evento -->
-        <a class="btn btn-whatsapp" href="https://chat.whatsapp.com/Hskq4Mv0CpK3RxYR4gTIH1?s=cl&p=i&ilr=2" target="_blank" rel="noopener">
+        <a class="btn btn-whatsapp" href="https://chat.whatsapp.com/Hskq4Mv0CpK3RxYR4gTIH1?s=cl&p=i&ilr=2" target="_blank" rel="noopener" id="mkt-mc-wa-btn">
           Únete al grupo de WhatsApp →
         </a>
       </div>
@@ -197,15 +215,15 @@ trackCustomBoth('ViewMasterclassLanding');
 
 <section class="info bg-alt">
   <div class="wrap" style="text-align:center; padding:56px 0;">
-    <h2 style="font-size:26px; margin-bottom:12px;">¿Qué te vas a llevar?</h2>
-    <p style="color:var(--muted); max-width:480px; margin:0 auto; font-size:15px;">Una hora de contenido directo, sin relleno, para que salgas con al menos una cosa que puedas aplicar en tu próxima cotización.</p>
+    <h2 style="font-size:26px; margin-bottom:12px;" id="mkt-mc-info-h2">¿Qué te vas a llevar?</h2>
+    <p style="color:var(--muted); max-width:480px; margin:0 auto; font-size:15px;" id="mkt-mc-info-texto">Una hora de contenido directo, sin relleno, para que salgas con al menos una cosa que puedas aplicar en tu próxima cotización.</p>
   </div>
 </section>
 
 <footer>
   <div class="wrap">
     <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314903/Marketographers_Blanco_S_F_p1toov.png" alt="The Marketographers">
-    <p>© 2026 The Marketographers. Todos los putos derechos reservados.</p>
+    <p id="mkt-mc-footer">© 2026 The Marketographers. Todos los putos derechos reservados.</p>
   </div>
 </footer>
 
@@ -233,12 +251,52 @@ trackCustomBoth('ViewMasterclassLanding');
     const link = e.target.closest('a, button');
     if(!link) return;
     if(link.href && link.href.includes('chat.whatsapp.com')){
-      trackBoth('Lead');
+      trackBoth(mktEventName('Unirse al grupo de WhatsApp del evento', 'Lead'));
     }
     if(link.dataset && link.dataset.calLink){
-      trackCustomBoth('ClickRegisterMasterclass');
+      trackCustomBoth(mktEventName('Click en "Registrarme al evento" (abre Cal)', 'ClickRegisterMasterclass'));
     }
   });
+</script>
+
+<script>
+  // Textos editables desde el panel (mismo patrón que index.html /
+  // estudiographica) — ver netlify/functions/lib/datablocks.js en el
+  // repo del panel.
+  const textoMasterclass = [
+    {
+      badge: '· Masterclass gratuita, cupos limitados ·',
+      titulo: 'Ventas para fotógrafos: <mark>cómo cobrar lo que vales</mark>',
+      subtitulo: 'Una clase en vivo para dejar de competir por precio y empezar a cerrar clientes que sí valoran tu trabajo.',
+      botonRegistrar: 'Registrarme al evento →',
+      eventoQue: 'Masterclass gratuita: Ventas para fotógrafos',
+      eventoCuando: 'Sábado 29 de agosto, 20:00 (GMT-4)',
+      whatsappTexto: 'Una vez que te registres arriba, únete al grupo de WhatsApp del evento para que no se te pierda el link de Zoom y avisos de último minuto.',
+      whatsappBoton: 'Únete al grupo de WhatsApp →',
+      infoTitulo: '¿Qué te vas a llevar?',
+      infoTexto: 'Una hora de contenido directo, sin relleno, para que salgas con al menos una cosa que puedas aplicar en tu próxima cotización.',
+      footerCopyright: '© 2026 The Marketographers. Todos los putos derechos reservados.',
+    },
+  ];
+  (function () {
+    function set(id, val, html) {
+      var el = document.getElementById(id);
+      if (!el || val == null) return;
+      if (html) el.innerHTML = val; else el.textContent = val;
+    }
+    var t = textoMasterclass[0] || {};
+    set('mkt-mc-badge', t.badge);
+    set('mkt-mc-h1', t.titulo, true);
+    set('mkt-mc-sub', t.subtitulo);
+    set('mkt-mc-btn-registrar', t.botonRegistrar);
+    set('mkt-mc-que', t.eventoQue);
+    set('mkt-mc-cuando', t.eventoCuando);
+    set('mkt-mc-wa-texto', t.whatsappTexto);
+    set('mkt-mc-wa-btn', t.whatsappBoton);
+    set('mkt-mc-info-h2', t.infoTitulo);
+    set('mkt-mc-info-texto', t.infoTexto);
+    set('mkt-mc-footer', t.footerCopyright);
+  })();
 </script>
 
 </body>

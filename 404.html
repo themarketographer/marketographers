@@ -73,10 +73,10 @@
 <section class="error-hero">
   <div class="wrap error-wrap">
     <p class="error-code">4<mark>0</mark>4</p>
-    <h1>Esta página se perdió, como tus clientes cuando no saben qué esperar de ti.</h1>
-    <p class="lead">El link está roto o la página ya no existe. Pasa algo parecido cuando tu marca no es clara: la gente se pierde y se va a otro lado.</p>
+    <h1 id="mkt-404-h1">Esta página se perdió, como tus clientes cuando no saben qué esperar de ti.</h1>
+    <p class="lead" id="mkt-404-sub">El link está roto o la página ya no existe. Pasa algo parecido cuando tu marca no es clara: la gente se pierde y se va a otro lado.</p>
     <div class="error-actions">
-      <a class="btn btn-gold" href="/">Volver al inicio →</a>
+      <a class="btn btn-gold" href="/" id="mkt-404-btn">Volver al inicio →</a>
     </div>
   </div>
 </section>
@@ -84,9 +84,35 @@
 <footer>
   <div class="wrap">
     <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1755314903/Marketographers_Blanco_S_F_p1toov.png" alt="The Marketographers" loading="lazy">
-    <p>© 2026 The Marketographers. Todos los putos derechos reservados.</p>
+    <p id="mkt-404-footer">© 2026 The Marketographers. Todos los putos derechos reservados.</p>
   </div>
 </footer>
+
+<script>
+  // Textos editables desde el panel (mismo patrón que index.html /
+  // estudiographica/404.html) — ver netlify/functions/lib/datablocks.js
+  // en el repo del panel.
+  const texto404 = [
+    {
+      titulo: 'Esta página se perdió, como tus clientes cuando no saben qué esperar de ti.',
+      subtitulo: 'El link está roto o la página ya no existe. Pasa algo parecido cuando tu marca no es clara: la gente se pierde y se va a otro lado.',
+      boton: 'Volver al inicio →',
+      footerCopyright: '© 2026 The Marketographers. Todos los putos derechos reservados.',
+    },
+  ];
+  (function () {
+    function set(id, val) {
+      var el = document.getElementById(id);
+      if (!el || val == null) return;
+      el.textContent = val;
+    }
+    var t = texto404[0] || {};
+    set('mkt-404-h1', t.titulo);
+    set('mkt-404-sub', t.subtitulo);
+    set('mkt-404-btn', t.boton);
+    set('mkt-404-footer', t.footerCopyright);
+  })();
+</script>
 
 </body>
 </html>

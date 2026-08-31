@@ -30,11 +30,11 @@
 </head>
 <body>
   <div class="privacy-wrap">
-    <a class="back" href="/">← Volver al inicio</a>
-    <h1>Política de privacidad</h1>
-    <p class="updated">Última actualización: 22 de agosto de 2026</p>
+    <a class="back" href="/" id="mkt-priv-volver">← Volver al inicio</a>
+    <h1 id="mkt-priv-h1">Política de privacidad</h1>
+    <p class="updated" id="mkt-priv-actualizado">Última actualización: 22 de agosto de 2026</p>
 
-    <p>Esta página explica qué datos recoge marketographers.com cuando la visitas, para qué se usan y cómo puedes desactivarlos. No sustituye asesoría legal; si necesitas garantías específicas para tu país, consulta con un abogado.</p>
+    <p id="mkt-priv-intro">Esta página explica qué datos recoge marketographers.com cuando la visitas, para qué se usan y cómo puedes desactivarlos. No sustituye asesoría legal; si necesitas garantías específicas para tu país, consulta con un abogado.</p>
 
     <h2>Qué datos se recogen</h2>
     <ul>
@@ -63,8 +63,35 @@
     <div class="wrap">
       <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1755314903/Marketographers_Blanco_S_F_p1toov.png" alt="The Marketographers" style="filter:invert(1);opacity:.85;" loading="lazy">
       <p style="margin-bottom:10px;"><a href="/blog/" style="text-decoration:underline;opacity:.85;">Blog</a></p>
-      <p>© 2026 The Marketographers. Todos los putos derechos reservados.</p>
+      <p id="mkt-priv-footer">© 2026 The Marketographers. Todos los putos derechos reservados.</p>
     </div>
   </footer>
+
+  <script>
+    // Textos editables desde el panel (mismo patrón que index.html /
+    // estudiographica/privacidad/index.html).
+    const textoPrivacidad = [
+      {
+        volverInicio: '← Volver al inicio',
+        titulo: 'Política de privacidad',
+        actualizado: 'Última actualización: 22 de agosto de 2026',
+        intro: 'Esta página explica qué datos recoge marketographers.com cuando la visitas, para qué se usan y cómo puedes desactivarlos. No sustituye asesoría legal; si necesitas garantías específicas para tu país, consulta con un abogado.',
+        footer: '© 2026 The Marketographers. Todos los putos derechos reservados.',
+      },
+    ];
+    (function () {
+      function set(id, val) {
+        var el = document.getElementById(id);
+        if (!el || val == null) return;
+        el.textContent = val;
+      }
+      var t = textoPrivacidad[0] || {};
+      set('mkt-priv-volver', t.volverInicio);
+      set('mkt-priv-h1', t.titulo);
+      set('mkt-priv-actualizado', t.actualizado);
+      set('mkt-priv-intro', t.intro);
+      set('mkt-priv-footer', t.footer);
+    })();
+  </script>
 </body>
 </html>

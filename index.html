@@ -432,8 +432,8 @@
     display:flex;justify-content:space-between;align-items:center;gap:16px;
     padding:22px 4px;cursor:pointer;font-size:16px;font-weight:600;color:var(--ink);
   }
-  .faq-q .arrow{color:var(--gold);font-weight:700;}
-  .faq-q .plus{transition:transform .2s ease;font-size:20px;color:var(--gold);}
+  .faq-q .arrow{color:var(--gold-text);font-weight:700;}
+  .faq-q .plus{transition:transform .2s ease;font-size:20px;color:var(--gold-text);}
   .faq-item.open .plus{transform:rotate(45deg);}
   .faq-a{max-height:0;overflow:hidden;transition:max-height .25s ease;}
   .faq-a p{padding:0 4px 22px;color:var(--muted);font-size:14.5px;}
@@ -523,9 +523,17 @@
     .hero mark{animation:none;background-size:100% 100%;}
   }
 </style>
-  <link rel="stylesheet" href="/assets/css/button-states.css">
 </head>
 <body>
+
+<!-- ═══════════ GA4 ═══════════ -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GQY8VYBD5T"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  gtag('js', new Date());
+  gtag('config', 'G-GQY8VYBD5T');
+</script>
 
 <!-- Meta Pixel -->
 <script>
@@ -689,7 +697,7 @@ trackBoth('PageView');
 
     <div class="toggle">
       <button type="button" class="active" data-plan="mensual">Mensual</button>
-      <button type="button" data-plan="anual">Anual <span class="badge">-24%</span></button>
+      <button type="button" data-plan="anual">Anual <span class="badge">-17%</span></button>
     </div>
 
     <div class="price-card-wrap reveal">
@@ -1134,7 +1142,8 @@ trackBoth('PageView');
       toggleBtns.forEach(x=>x.classList.remove('active'));
       b.classList.add('active');
       const anual = b.dataset.plan === 'anual';
-      priceValue.textContent = anual ? '$25' : '$33'; // TODO: Pablo, confirma el precio anual real
+      // $330/año confirmado en el checkout real de Nas.io = $27.5/mes (ahorra 17% vs $33/mes).
+      priceValue.textContent = anual ? '$27.5' : '$33';
       priceOld.textContent = anual ? '$33' : '$49';
     });
   });
@@ -1180,6 +1189,5 @@ trackBoth('PageView');
   });
 </script>
 
-  <script src="/assets/js/button-states.js" defer></script>
 </body>
 </html>

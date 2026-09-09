@@ -126,7 +126,7 @@
   .tool-form fieldset:last-of-type{margin-bottom:0;}
   .tool-form legend{
     font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
-    color:var(--gold);margin-bottom:14px;padding:0;
+    color:var(--gold-text);margin-bottom:14px;padding:0;
   }
   .field{margin-bottom:16px;}
   .field:last-child{margin-bottom:0;}
@@ -221,7 +221,7 @@
   .tool-preview{position:sticky;top:96px;display:flex;flex-direction:column;align-items:center;}
   .preview-label{
     font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
-    color:var(--gold);margin-bottom:18px;text-align:center;
+    color:var(--gold-text);margin-bottom:18px;text-align:center;
   }
   .phone-stage{position:relative;}
   .phone{
@@ -322,6 +322,17 @@
 </head>
 <body>
 
+<!-- GA4 — misma propiedad y Measurement ID que la landing principal
+     (marketographers.com), para que esta pagina cuente dentro del mismo funnel
+     en vez de quedar como punto ciego. -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GQY8VYBD5T"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  gtag('js', new Date());
+  gtag('config', 'G-GQY8VYBD5T');
+</script>
+
 <!-- Meta Pixel -->
 <script>
 !function(f,b,e,v,n,t,s)
@@ -351,7 +362,7 @@ function trackBoth(eventName, params){
 }
 trackBoth('PageView');
 </script>
-<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=467504537642622&ev=PageView&noscript=1"/></noscript>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=467504537642622&ev=PageView&noscript=1" alt=""/></noscript>
 
 <div class="blob blob-gold"></div>
 <div class="blob blob-red"></div>

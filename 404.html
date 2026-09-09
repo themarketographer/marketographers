@@ -57,6 +57,17 @@
 </head>
 <body>
 
+<!-- GA4 — misma propiedad y Measurement ID que la landing principal
+     (marketographers.com), para que esta pagina cuente dentro del mismo funnel
+     en vez de quedar como punto ciego. -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GQY8VYBD5T"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  gtag('js', new Date());
+  gtag('config', 'G-GQY8VYBD5T');
+</script>
+
 <div class="blob blob-gold"></div>
 <div class="blob blob-red"></div>
 

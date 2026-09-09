@@ -87,9 +87,19 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/global.css">
 <link rel="stylesheet" href="/blog/assets/blog-extra.css">
-  <link rel="stylesheet" href="/assets/css/button-states.css">
 </head>
 <body>
+
+<!-- GA4 — misma propiedad y Measurement ID que la landing principal
+     (marketographers.com), para que esta pagina cuente dentro del mismo funnel
+     en vez de quedar como punto ciego. -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GQY8VYBD5T"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  gtag('js', new Date());
+  gtag('config', 'G-GQY8VYBD5T');
+</script>
 
 <script>
 !function(f,b,e,v,n,t,s)
@@ -135,7 +145,7 @@ function trackBoth(eventName, params){
 trackBoth('PageView');
 trackBoth('ViewContent', {content_name:'La mentira de “primero necesito más portafolio para cobrar bien”', content_type:'article'});
 </script>
-<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=467504537642622&ev=PageView&noscript=1"/></noscript>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=467504537642622&ev=PageView&noscript=1" alt=""/></noscript>
 
 <header>
   <div class="nav wrap">
@@ -221,6 +231,5 @@ trackBoth('ViewContent', {content_name:'La mentira de “primero necesito más p
   });
 </script>
 
-  <script src="/assets/js/button-states.js" defer></script>
 </body>
 </html>

@@ -68,9 +68,19 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/global.css">
 <link rel="stylesheet" href="/blog/assets/blog-extra.css">
-  <link rel="stylesheet" href="/assets/css/button-states.css">
 </head>
 <body>
+
+<!-- GA4 — misma propiedad y Measurement ID que la landing principal
+     (marketographers.com), para que esta pagina cuente dentro del mismo funnel
+     en vez de quedar como punto ciego. -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GQY8VYBD5T"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  gtag('js', new Date());
+  gtag('config', 'G-GQY8VYBD5T');
+</script>
 
 <!-- Meta Pixel. Mismo ID y mismo patrón anti-duplicados que el resto del sitio
      (autoConfig apagado + Pixel/CAPI con el mismo event_id). Dispara PageView y
@@ -120,7 +130,7 @@ function trackBoth(eventName, params){
 trackBoth('PageView');
 trackBoth('ViewContent', {content_name:'Por qué el boca a boca no es una estrategia de marketing', content_type:'article'});
 </script>
-<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=467504537642622&ev=PageView&noscript=1"/></noscript>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=467504537642622&ev=PageView&noscript=1" alt=""/></noscript>
 
 <header>
   <div class="nav wrap">
@@ -187,6 +197,7 @@ trackBoth('ViewContent', {content_name:'Por qué el boca a boca no es una estrat
 <footer>
   <div class="wrap">
     <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1755314903/Marketographers_Blanco_S_F_p1toov.png" alt="The Marketographers" loading="lazy">
+    <p style="margin-bottom:10px;"><a href="/" style="text-decoration:underline;opacity:.85;">Inicio</a> · <a href="/privacidad/" style="text-decoration:underline;opacity:.85;">Privacidad</a></p>
     <p>© 2026 The Marketographers. Todos los putos derechos reservados.</p>
   </div>
 </footer>
@@ -209,6 +220,5 @@ trackBoth('ViewContent', {content_name:'Por qué el boca a boca no es una estrat
   });
 </script>
 
-  <script src="/assets/js/button-states.js" defer></script>
 </body>
 </html>

@@ -128,7 +128,7 @@
   .tool-card .btn{margin-top:22px;align-self:flex-start;}
   .tool-tag{
     font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
-    color:var(--gold);background:rgba(245,183,41,.14);
+    color:var(--gold-text);background:rgba(245,183,41,.14);
     padding:5px 12px;border-radius:999px;display:inline-block;width:fit-content;margin-bottom:14px;
   }
   .tool-card.soon{opacity:.72;}
@@ -168,6 +168,17 @@
 </head>
 <body>
 
+<!-- GA4 — misma propiedad y Measurement ID que la landing principal
+     (marketographers.com), para que esta pagina cuente dentro del mismo funnel
+     en vez de quedar como punto ciego. -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GQY8VYBD5T"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  gtag('js', new Date());
+  gtag('config', 'G-GQY8VYBD5T');
+</script>
+
 <!-- Meta Pixel -->
 <script>
 !function(f,b,e,v,n,t,s)
@@ -197,7 +208,7 @@ function trackBoth(eventName, params){
 }
 trackBoth('PageView');
 </script>
-<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=467504537642622&ev=PageView&noscript=1"/></noscript>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=467504537642622&ev=PageView&noscript=1" alt=""/></noscript>
 
 <div class="blob blob-gold"></div>
 <div class="blob blob-red"></div>

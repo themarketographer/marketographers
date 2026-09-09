@@ -13,6 +13,9 @@
   --cream-alt:#f1efe9;
   --ink:#141414;
   --gold:#F5B729;
+  --gold-text:#8C6412; /* mismo dorado de marca, oscurecido para texto — el --gold
+                           puro sobre cream/cream-alt da ~1.7:1 de contraste
+                           (casi invisible), este da 4.6-5:1 (AA) */
   --red:#C23B26;
   --muted:#68655f;
   --white:#ffffff;
@@ -38,7 +41,7 @@ a{text-decoration:none;color:inherit;}
 
 .eyebrow{
   font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--gold);
+  color:var(--gold-text);
 }
 .eyebrow-red{color:var(--red);}
 h1,h2,h3{font-weight:800;line-height:1.15;letter-spacing:-0.02em;}
@@ -91,6 +94,17 @@ footer{background:var(--ink);color:var(--cream);padding:48px 0;text-align:center
 footer img{margin:0 auto 14px;height:32px;filter:invert(1);opacity:.85;}
 footer p{font-size:13px;color:rgba(250,249,246,.6);}
 footer a{text-decoration:underline;opacity:.85;}
+
+/* ═══ FOCO VISIBLE (teclado) ═══ el sitio no tenía ningún indicador de
+   foco: alguien navegando con Tab no podía ver dónde estaba parado. */
+a:focus-visible,
+button:focus-visible,
+.btn:focus-visible {
+  outline: 2.5px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+.btn:focus-visible { border-radius: var(--radius-pill); }
 
 /* Placeholder genérico para imágenes por reemplazar, usado en
    cualquier página mientras no hay foto final */

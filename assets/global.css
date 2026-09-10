@@ -91,7 +91,7 @@ header{
 
 /* Footer, igual en todas las páginas del sitio */
 footer{background:var(--ink);color:var(--cream);padding:48px 0;text-align:center;}
-footer img{margin:0 auto 14px;height:32px;filter:invert(1);opacity:.85;}
+footer img{margin:0 auto 14px;height:32px;opacity:.85;} /* el logo Blanco ya es claro: invert(1) lo volvía negro sobre negro, invisible en TODO el sitio */
 footer p{font-size:13px;color:rgba(250,249,246,.6);}
 footer a{text-decoration:underline;opacity:.85;}
 

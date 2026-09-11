@@ -1,5 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /marketools/wireframe-app/
+Disallow: /marketools/adsboard-app/
+Disallow: /blog/_plantilla-nuevo-articulo/
 
 Sitemap: https://marketographers.com/sitemap.xml

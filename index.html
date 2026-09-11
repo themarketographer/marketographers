@@ -477,6 +477,11 @@
     .nav-actions .btn{padding:9px 14px;font-size:12.5px;}
     .stats-row{gap:14px;font-size:12px;}
     .stats-row span{gap:5px;}
+    /* El <mark> del hero suele quedar solo en su propia línea en
+       pantallas angostas; con el line-height base (1.22) queda pegado
+       a la línea de arriba. Le damos más aire para que respire igual
+       que en desktop. */
+    .hero h1{line-height:1.45;}
   }
   @media (prefers-reduced-motion: reduce){
     html{scroll-behavior:auto;}
@@ -783,7 +788,7 @@ trackBoth('PageView');
 <footer>
   <div class="wrap">
     <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1755314903/Marketographers_Blanco_S_F_p1toov.png" alt="The Marketographers"  loading="lazy">
-    <p style="margin-bottom:10px;"><a href="/blog/" style="text-decoration:underline;opacity:.85;">Blog</a> · <a href="/privacidad/" style="text-decoration:underline;opacity:.85;">Privacidad</a></p>
+    <p style="margin-bottom:10px;"><a href="/blog/" style="text-decoration:underline;opacity:.85;">Blog</a> · <a href="/privacidad/" style="text-decoration:underline;opacity:.85;">Privacidad</a> · <a href="https://estudiographica.com/" target="_blank" rel="noopener" style="text-decoration:underline;opacity:.85;">Estudio Graphica</a></p>
     <p id="mkt-footer-copy">© 2026 The Marketographers. Todos los putos derechos reservados.</p>
   </div>
 </footer>

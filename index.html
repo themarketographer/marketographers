@@ -422,6 +422,21 @@
   .testi-top span{font-size:12.5px;color:var(--muted);}
   .testi-card p{font-size:13.5px;color:var(--ink);margin-top:14px;line-height:1.55;}
 
+  /* Dots de navegación manual del carrusel (el carrusel ya auto-avanza y
+     se puede arrastrar, pero no había ninguna señal visible de que fuera
+     interactivo ni forma de saltar a un testimonio en particular). */
+  .marquee-dots{display:flex;justify-content:center;flex-wrap:wrap;gap:2px;margin-top:18px;}
+  .marquee-dot{
+    width:24px;height:24px;display:flex;align-items:center;justify-content:center;
+    background:none;border:none;padding:0;cursor:pointer;
+  }
+  .marquee-dot::before{
+    content:'';display:block;width:8px;height:8px;border-radius:50%;
+    background:rgba(20,20,20,.18);
+    transition:background-color .2s ease, transform .2s ease;
+  }
+  .marquee-dot:hover::before,.marquee-dot:focus-visible::before{background:var(--gold);transform:scale(1.15);}
+
   /* FAQ */
   .faq-head{text-align:center;max-width:600px;margin:0 auto 40px;}
   .faq-head h2{font-size:clamp(26px,4vw,42px);margin-top:12px;}
@@ -749,6 +764,9 @@ trackBoth('PageView');
   </div>
   <div class="marquee">
     <div class="marquee-track" id="marquee-track"></div>
+  </div>
+  <div class="wrap">
+    <div class="marquee-dots" id="marquee-dots" aria-label="Ir a un testimonio"></div>
   </div>
 </section>
 
@@ -1121,6 +1139,28 @@ trackBoth('PageView');
     marqueeEl.addEventListener('wheel', pauseAuto, {passive:true});
     marqueeEl.addEventListener('touchstart', pauseAuto, {passive:true});
   }
+
+  // ---- Dots del carrusel de testimonios (click para saltar a uno puntual) ----
+  (function () {
+    var dotsEl = document.getElementById('marquee-dots');
+    if (!dotsEl || !marqueeEl || !track) return;
+    var cards = track.querySelectorAll('.testi-card');
+    testimonios.forEach(function (item, i) {
+      var dot = document.createElement('button');
+      dot.type = 'button';
+      dot.className = 'marquee-dot';
+      dot.setAttribute('aria-label', 'Ver testimonio de ' + item.n);
+      dot.addEventListener('click', function () {
+        var card = cards[i];
+        if (card) {
+          marqueeEl.scrollTo({ left: card.offsetLeft, behavior: 'smooth' });
+          // Reutiliza la misma pausa del auto-scroll que ya se dispara al arrastrar.
+          marqueeEl.dispatchEvent(new Event('pointerdown'));
+        }
+      });
+      dotsEl.appendChild(dot);
+    });
+  })();
 
   // ---- FAQ accordion ----
   document.querySelectorAll('.faq-item').forEach(item=>{

@@ -284,9 +284,15 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-off
 @media (min-width:860px){
   .includes-stack{justify-content:center;gap:var(--sp-6);}
   .includes-visual{
-    display:block;order:-1;width:320px;height:400px;flex:0 0 auto;
+    /* La captura de Zoom es cuadrada (1:1). Forzarla a un recuadro
+       320x400 (vertical) recortaba caras por los costados y además
+       se veía como una tarjeta más entre las demás. Con aspect-ratio:1
+       se respeta la proporción real de la imagen (sin recortes raros)
+       y el tamaño más grande + el borde dorado le dan más peso visual,
+       para que no compita en pequeño contra el stack de tarjetas. */
+    display:block;order:-1;width:420px;aspect-ratio:1/1;flex:0 0 auto;
     background-size:cover;background-position:center;border-radius:var(--r-lg);
-    box-shadow:0 30px 60px -20px rgba(0,0,0,.6),0 0 0 1px var(--border);
+    box-shadow:0 30px 70px -20px rgba(0,0,0,.65),0 0 0 2px var(--accent);
   }
   /* La versión nítida del panel ya cubre el rol visual, así que el fondo
      desenfocado detrás de las tarjetas se apaga para no competir con ella. */

@@ -513,7 +513,7 @@ const eventosPagina = [
   { boton: 'Ver planes (scroll a la sección #planes)', tipo: 'estandar', nombre: 'ViewContent' },
   { boton: 'Contacto directo por WhatsApp', tipo: 'estandar', nombre: 'Contact' },
   { boton: 'Click en "Quiero entrar" (CTA intermedio, antes de llegar al precio)', tipo: 'estandar', nombre: 'AddToCart' },
-  { boton: 'Click a checkout (Nas.io)', tipo: 'estandar', nombre: 'InitiateCheckout' },
+  { boton: 'Click a checkout (Nas.io)', tipo: 'personalizado', nombre: 'ClickCheckoutLanding' },
 ];
 function mktEventName(boton, fallback) {
   try {
@@ -1003,8 +1003,8 @@ document.querySelectorAll('.reveal, .reveal-stagger').forEach(function(el){ io.o
   if(planesSection) observer.observe(planesSection);
 })();
 
-// ---- Meta Pixel: Contact (WhatsApp), AddToCart (CTA intermedio) e
-// InitiateCheckout (clic a Nas.io, el paso real antes de pagar) ----
+// ---- Meta Pixel: Contact (WhatsApp), AddToCart (CTA intermedio) y
+// ClickCheckoutLanding (clic a Nas.io, el paso real antes de pagar) ----
 document.addEventListener('click', function(e){
   var link = e.target.closest('a');
   if(!link || !link.href) return;
@@ -1015,13 +1015,19 @@ document.addEventListener('click', function(e){
   }
   if(link.href.includes('nas.com') || link.href.includes('nas.io')){
     // Este es el clic que saca al usuario de la landing hacia el checkout
-    // real de Nas.io. Antes se mandaba como evento personalizado
-    // "ClickCheckoutLanding"; lo cambiamos a InitiateCheckout (estándar de
-    // Meta) porque el algoritmo de Meta optimiza mejor con eventos
-    // estándar (usa datos de referencia de todos los anunciantes que los
-    // usan, no solo los tuyos) y porque semánticamente es exactamente lo
-    // que describe: el usuario inicia el proceso de pago.
-    trackBoth(mktEventName('Click a checkout (Nas.io)', 'InitiateCheckout'));
+    // real de Nas.io. Se manda como evento personalizado
+    // "ClickCheckoutLanding" (no InitiateCheckout) porque Nas.io ya dispara
+    // su propio InitiateCheckout estándar en su página de pago, bajo este
+    // mismo pixel (467504537642622). Si aquí también mandáramos
+    // InitiateCheckout, cada persona real que llega al checkout sumaría 2
+    // en vez de 1 en ese conteo de Ads Manager, e inflaría el costo por
+    // InitiateCheckout que se ve ahí. Con un nombre propio, este evento
+    // sigue siendo útil como número exclusivo de "cuánta gente hizo clic
+    // real hacia Nas", sin mezclarse con lo que Nas dispara en su dominio.
+    // El InitiateCheckout de Nas es el que hay que usar si algún día se
+    // optimiza una campaña por intención de checkout, porque está más
+    // cerca del pago real.
+    trackBoth(mktEventName('Click a checkout (Nas.io)', 'ClickCheckoutLanding'));
   } else if(link.closest('.cta-planes')){
     // Los botones "Quiero entrar a la comunidad" / "Ya estoy listo" / "Únete"
     // que solo hacen scroll a #planes (todavía no van a Nas.io). Marcan un

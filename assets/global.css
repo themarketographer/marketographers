@@ -1,39 +1,69 @@
 /* =========================================================
    GLOBAL STYLES — The Marketographers
    Fuente única de verdad para toda la identidad visual del sitio:
-   paleta cream/ink/gold/red, tipografía Poppins, botones píldora,
-   header y footer. Se enlaza con <link> en cada página del sitio.
+   fondo oscuro con glassmorphism, tipografía Working/Poppins,
+   acento amarillo, botones frosted, header y footer. Se enlaza
+   con <link> en cada página del sitio.
+   Los mismos nombres de variables de siempre (--cream, --ink,
+   --gold, --red, --muted, --white) se mantienen para que ninguna
+   página tenga que tocar su HTML: cambian los VALORES, no los
+   nombres, así el estilo nuevo se hereda automáticamente en todo
+   el sitio (home, blog, masterclass, marketools, privacidad, 404).
    Lo que es específico de una sola sección (blog, home, etc.) vive
    en un CSS aparte que se carga además de este.
    No requiere build ni compilador, funciona directo en Netlify.
    ========================================================= */
 
+@font-face{
+  font-family:'Working';
+  src:url('/assets/fonts/Working-400.otf') format('opentype');
+  font-weight:400 800;
+  font-display:swap;
+}
+
 :root{
-  --cream:#faf9f6;
-  --cream-alt:#f1efe9;
-  --ink:#141414;
-  --gold:#F5B729;
-  --gold-text:#8C6412; /* mismo dorado de marca, oscurecido para texto — el --gold
-                           puro sobre cream/cream-alt da ~1.7:1 de contraste
-                           (casi invisible), este da 4.6-5:1 (AA) */
-  --red:#C23B26;
-  --muted:#68655f;
-  --white:#ffffff;
+  /* Fondo del sitio (antes claro, ahora oscuro) */
+  --cream:#141414;
+  --cream-alt:#1c1c1c;
+  /* Texto principal (antes oscuro, ahora claro) */
+  --ink:#f8f8f8;
+  --ink-on-gold:#181818; /* texto oscuro cuando va SOBRE el amarillo, nunca al revés */
+  --gold:#fddc5b;
+  --gold-text:#fddc5b; /* mismo dorado de marca; sobre fondo oscuro ya cumple AA sin oscurecer */
+  --red:#ff6b6b;
+  --muted:#b3b3b3;
+  --white:#232323; /* superficie "tarjeta" — antes blanco sólido, ahora superficie oscura translúcida */
+  --border:#333333;
   --radius-pill:100px;
   --max:1120px;
   --max-article:720px;
+  --font-display:'Working','Poppins',system-ui,sans-serif;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
 body{
   font-family:'Poppins',sans-serif;
   background-color:var(--cream);
-  background-image:radial-gradient(rgba(20,20,20,.08) 1.4px, transparent 1.4px);
-  background-size:26px 26px;
   color:var(--ink);
   line-height:1.6;
   -webkit-font-smoothing:antialiased;
+  position:relative;
+  overflow-x:hidden;
 }
+/* Blobs ambientales de fondo, fijos a la ventana, no interfieren con el contenido */
+body::before,body::after{
+  content:"";position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0;
+}
+body::before{
+  width:640px;height:640px;top:-220px;right:-180px;
+  background:radial-gradient(circle, rgba(253,220,91,.16), transparent 70%);
+}
+body::after{
+  width:560px;height:560px;bottom:-200px;left:-200px;
+  background:radial-gradient(circle, rgba(255,107,107,.12), transparent 70%);
+}
+header,section,footer,.free-band{position:relative;z-index:1;}
+
 img{max-width:100%;display:block;}
 a{text-decoration:none;color:inherit;}
 .wrap{max-width:var(--max);margin:0 auto;padding:0 24px;}
@@ -44,74 +74,78 @@ a{text-decoration:none;color:inherit;}
   color:var(--gold-text);
 }
 .eyebrow-red{color:var(--red);}
-h1,h2,h3{font-weight:800;line-height:1.15;letter-spacing:-0.02em;}
+h1,h2,h3{font-family:var(--font-display);font-weight:800;line-height:1.15;letter-spacing:-0.02em;}
 
 .btn{
-  display:inline-flex;align-items:center;gap:8px;
+  display:inline-flex;align-items:center;gap:8px;font-family:var(--font-display);
   padding:16px 30px;border-radius:var(--radius-pill);
   font-weight:600;font-size:15px;cursor:pointer;border:none;
   transition:transform .15s ease, box-shadow .15s ease;
 }
 .btn:hover{transform:translateY(-2px);}
-.btn-dark{background:linear-gradient(135deg, var(--ink), #2b2b2b);color:var(--cream);box-shadow:0 8px 22px rgba(20,20,20,.28);}
-.btn-dark:hover{box-shadow:0 12px 30px rgba(20,20,20,.35);}
-.btn-gold{background:linear-gradient(135deg, var(--gold), #e0a61f);color:var(--ink);box-shadow:0 8px 22px rgba(245,183,41,.35);}
-.btn-gold:hover{box-shadow:0 12px 30px rgba(245,183,41,.45);}
-.btn-outline{background:transparent;color:var(--ink);border:1.5px solid var(--ink);}
-.btn-whatsapp{background:linear-gradient(135deg, #25D366, #128C7E);color:#fff;box-shadow:0 8px 22px rgba(37,211,102,.35);}
-.btn-whatsapp:hover{box-shadow:0 12px 30px rgba(37,211,102,.45);}
+.btn-dark{
+  background:rgba(255,255,255,.08);color:var(--ink);border:1px solid rgba(255,255,255,.16);
+  backdrop-filter:blur(14px) saturate(160%);-webkit-backdrop-filter:blur(14px) saturate(160%);
+  box-shadow:0 10px 26px -10px rgba(0,0,0,.5);
+}
+.btn-dark:hover{background:rgba(255,255,255,.14);box-shadow:0 14px 32px -10px rgba(0,0,0,.55);}
+.btn-gold{background:var(--gold);color:var(--ink-on-gold);box-shadow:0 8px 22px rgba(253,220,91,.25);}
+.btn-gold:hover{box-shadow:0 12px 30px rgba(253,220,91,.4);}
+.btn-outline{background:transparent;color:var(--ink);border:1.5px solid rgba(255,255,255,.3);}
+.btn-outline:hover{background:rgba(255,255,255,.06);}
+.btn-whatsapp{background:linear-gradient(135deg, #25D366, #128C7E);color:#fff;box-shadow:0 8px 22px rgba(37,211,102,.3);}
+.btn-whatsapp:hover{box-shadow:0 12px 30px rgba(37,211,102,.4);}
 
-/* Tarjeta glass, el mismo tratamiento que en /gracias */
+/* Tarjeta glass, tratamiento frosted usado en toda la nueva identidad */
 .card-glass{
-  background:rgba(255,255,255,.6);
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  background:rgba(255,255,255,.07);
+  backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);
   border-radius:25px;
-  border:1px solid rgba(20,20,20,.08);
-  box-shadow:0 20px 40px rgba(20,20,20,.08), inset 0 1px 0 rgba(255,255,255,.6);
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 20px 40px rgba(0,0,0,.35);
 }
 
 section{padding:72px 0;}
-.bg-alt{
-  background-color:var(--cream-alt);
-  background-image:radial-gradient(rgba(20,20,20,.09) 1.4px, transparent 1.4px);
-  background-size:26px 26px;
-}
+.bg-alt{background-color:var(--cream-alt);}
+
+/* mark: resaltado amarillo (positivo) y rojo (negativo), solo glow, sin
+   subrayado — así nunca corta descendentes de letras como g, j, p, y. */
+mark{background:none;color:var(--gold);font-weight:700;text-shadow:0 0 18px rgba(253,220,91,.5);}
+mark.neg{color:var(--red);text-shadow:0 0 18px rgba(255,107,107,.5);}
 
 /* Header, igual en todas las páginas del sitio */
 header{
   position:sticky;top:0;z-index:50;
-  background:rgba(250,249,246,.92);backdrop-filter:blur(8px);
-  border-bottom:1px solid rgba(20,20,20,.08);
+  background:rgba(20,20,20,.65);backdrop-filter:blur(14px) saturate(160%);-webkit-backdrop-filter:blur(14px) saturate(160%);
+  border-bottom:1px solid rgba(255,255,255,.08);
 }
 .nav{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;}
-.logo{display:flex;align-items:center;font-weight:800;font-size:18px;letter-spacing:-.02em;}
+.logo{display:flex;align-items:center;font-weight:800;font-size:18px;letter-spacing:-.02em;font-family:var(--font-display);}
 .logo img{height:32px;width:auto;display:block;}
 .nav-actions{display:flex;gap:10px;align-items:center;}
 .nav-actions .btn{padding:11px 20px;font-size:14px;}
 
 /* Footer, igual en todas las páginas del sitio */
-footer{background:var(--ink);color:var(--cream);padding:48px 0;text-align:center;}
-footer img{margin:0 auto 14px;height:32px;opacity:.85;} /* el logo Blanco ya es claro: invert(1) lo volvía negro sobre negro, invisible en TODO el sitio */
-footer p{font-size:13px;color:rgba(250,249,246,.6);}
+footer{background:#0e0e0e;color:var(--ink);padding:48px 0;text-align:center;border-top:1px solid rgba(255,255,255,.08);}
+footer img{margin:0 auto 14px;height:32px;opacity:.9;}
+footer p{font-size:13px;color:rgba(248,248,248,.55);}
 footer a{text-decoration:underline;opacity:.85;}
 
-/* ═══ FOCO VISIBLE (teclado) ═══ el sitio no tenía ningún indicador de
-   foco: alguien navegando con Tab no podía ver dónde estaba parado. */
+/* ═══ FOCO VISIBLE (teclado) ═══ */
 a:focus-visible,
 button:focus-visible,
 .btn:focus-visible {
-  outline: 2.5px solid var(--ink);
+  outline: 2.5px solid var(--gold);
   outline-offset: 3px;
   border-radius: 4px;
 }
 .btn:focus-visible { border-radius: var(--radius-pill); }
 
-/* Placeholder genérico para imágenes por reemplazar, usado en
-   cualquier página mientras no hay foto final */
+/* Placeholder genérico para imágenes por reemplazar */
 .img-placeholder{
   display:flex;align-items:center;justify-content:center;text-align:center;
-  background:repeating-linear-gradient(135deg, rgba(20,20,20,.06) 0 10px, rgba(20,20,20,.02) 10px 20px);
-  border:2px dashed rgba(20,20,20,.35);
+  background:repeating-linear-gradient(135deg, rgba(255,255,255,.05) 0 10px, rgba(255,255,255,.02) 10px 20px);
+  border:2px dashed rgba(255,255,255,.25);
   color:var(--muted);font-size:12px;font-weight:600;line-height:1.5;padding:16px;
 }
 .img-placeholder .ph-tag{
@@ -120,7 +154,7 @@ button:focus-visible,
 }
 
 /* Tarjetas genéricas reutilizables (stat, feature, problema) */
-.card-shadow{box-shadow:0 14px 34px -26px rgba(20,20,20,.35);}
+.card-shadow{box-shadow:0 14px 34px -26px rgba(0,0,0,.6);}
 
 @media (max-width:640px){
   section{padding:56px 0;}

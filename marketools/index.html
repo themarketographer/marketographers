@@ -99,50 +99,43 @@
   .tools-hero .eyebrow{animation:fade-up .7s cubic-bezier(.22,1,.36,1) both;}
   .tools-hero h1{animation:fade-up .8s cubic-bezier(.22,1,.36,1) .08s both;font-size:clamp(30px,5.5vw,52px);max-width:760px;margin:16px auto 0;line-height:1.2;}
   .tools-hero p.lead{animation:fade-up .8s cubic-bezier(.22,1,.36,1) .18s both;max-width:560px;margin:18px auto 0;color:var(--muted);font-size:16px;}
-  .tools-hero mark{
-    background-color:transparent;background-image:linear-gradient(100deg, var(--gold), var(--gold));
-    background-repeat:no-repeat;background-position:left center;background-size:0% 100%;
-    color:var(--ink);padding:3px 6px;border-radius:5px;
-    box-decoration-break:clone;-webkit-box-decoration-break:clone;
-    animation:highlight-sweep .9s ease-out .9s forwards;
-  }
-  @keyframes highlight-sweep{to{background-size:100% 100%;}}
+  .tools-hero mark{background:none;color:var(--gold);font-weight:700;text-shadow:0 0 18px rgba(253,220,91,.5);}
 
   .tools-section{position:relative;z-index:1;padding:24px 0 72px;}
   .tools-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;}
   .tool-card{
-    background:rgba(255,255,255,.6);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);
-    border:1px solid rgba(255,255,255,.5);border-radius:26px;padding:34px;
-    box-shadow:0 20px 50px -24px rgba(20,20,20,.22);
+    background:rgba(255,255,255,.07);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);
+    border:1px solid rgba(255,255,255,.14);border-radius:26px;padding:34px;
+    box-shadow:0 20px 50px -24px rgba(0,0,0,.5);
     display:flex;flex-direction:column;
     transition:transform .3s ease, box-shadow .3s ease;
   }
-  .tool-card:hover{transform:translateY(-6px);box-shadow:0 28px 56px -22px rgba(20,20,20,.3);}
+  .tool-card:hover{transform:translateY(-6px);box-shadow:0 28px 56px -22px rgba(0,0,0,.6);}
   .tool-icon{
     width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;
-    font-size:26px;background:linear-gradient(135deg, rgba(245,183,41,.25), rgba(245,183,41,.08));
+    font-size:26px;background:linear-gradient(135deg, rgba(253,220,91,.3), rgba(253,220,91,.1));
     margin-bottom:18px;
   }
-  .tool-card h2{font-size:21px;}
+  .tool-card h2{font-size:21px;color:var(--ink);}
   .tool-card p{color:var(--muted);font-size:14.5px;margin-top:10px;flex:1;}
   .tool-card .btn{margin-top:22px;align-self:flex-start;}
   .tool-tag{
     font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
-    color:var(--gold-text);background:rgba(245,183,41,.14);
+    color:var(--gold-text);background:rgba(253,220,91,.14);
     padding:5px 12px;border-radius:999px;display:inline-block;width:fit-content;margin-bottom:14px;
   }
   .tool-card.soon{opacity:.72;}
-  .tool-card.soon .tool-tag{color:var(--muted);background:rgba(20,20,20,.06);}
-  .tool-card.soon .tool-icon{background:repeating-linear-gradient(135deg, rgba(20,20,20,.07) 0 6px, rgba(20,20,20,.02) 6px 12px);}
+  .tool-card.soon .tool-tag{color:var(--muted);background:rgba(255,255,255,.08);}
+  .tool-card.soon .tool-icon{background:repeating-linear-gradient(135deg, rgba(255,255,255,.08) 0 6px, rgba(255,255,255,.02) 6px 12px);}
 
   .community-cta{position:relative;z-index:1;padding:12px 0 80px;}
   .community-card{
-    max-width:var(--max-article);margin:0 auto;padding:42px 40px;text-align:center;color:var(--cream);
+    max-width:var(--max-article);margin:0 auto;padding:42px 40px;text-align:center;color:var(--ink);
     background:rgba(20,20,20,.82);backdrop-filter:blur(22px) saturate(140%);-webkit-backdrop-filter:blur(22px) saturate(140%);
     border:1px solid rgba(255,255,255,.1);box-shadow:0 25px 60px -20px rgba(0,0,0,.5);border-radius:28px;
   }
   .community-card .eyebrow{color:var(--gold);}
-  .community-card h2{font-size:clamp(24px,3.6vw,32px);color:var(--cream);margin-top:12px;}
+  .community-card h2{font-size:clamp(24px,3.6vw,32px);color:var(--ink);margin-top:12px;}
   .community-card p{color:rgba(250,249,246,.75);margin-top:12px;font-size:15px;max-width:480px;margin-left:auto;margin-right:auto;}
   .community-card .btn{margin-top:24px;}
 
@@ -162,7 +155,6 @@
   @media (prefers-reduced-motion: reduce){
     .reveal,.stagger-item{opacity:1;transform:none;transition:none;}
     .tools-hero .eyebrow,.tools-hero h1,.tools-hero p.lead{animation:none;}
-    .tools-hero mark{animation:none;background-size:100% 100%;}
   }
 </style>
 </head>
@@ -215,7 +207,7 @@ trackBoth('PageView');
 
 <header>
   <div class="nav wrap">
-    <a class="logo" href="/"><img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314905/Marketographers_Negro_S_F_tgh9z2.png" alt="The Marketographers"></a>
+    <a class="logo" href="/"><img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314905/Marketographers_Blanco_S_F_p1toov.png" alt="The Marketographers"></a>
     <div class="nav-actions">
       <a class="btn btn-whatsapp" href="https://api.whatsapp.com/send?phone=+59169422335&text=%C2%A1Hola%2C%20Pablo!%20Vi%20MarkeTools%20y%20quiero%20m%C3%A1s%20info%20de%20la%20membres%C3%ADa" target="_blank" rel="noopener">WhatsApp</a>
       <a class="btn btn-gold" href="/#planes">Únete</a>

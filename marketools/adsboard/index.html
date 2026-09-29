@@ -2540,7 +2540,7 @@ AB.renderTab = function () {
   var fn = T[S.tab] || T.resumen;
   panel.innerHTML = fn(A);
   Ch.bind(panel);
-  if (S.tab === "escalado") { $("simOut").innerHTML = T.simOut(A, parseInt($("simRange").value, 10)); }
+  if (S.tab === "escalado" && $("simOut") && $("simRange")) { $("simOut").innerHTML = T.simOut(A, parseInt($("simRange").value, 10)); }
   if (S.tab === "laboratorio" && $("ssOut")) $("ssOut").innerHTML = T.ssOut();
   if (S.tab === "ajustes") { var d = $("defaultLevelSelect"); if (d) d.value = S.prefs.defaultLevel || "campaign"; }
   if (S.tab === "segmentos" && !S.seg && !S.segLoading) {

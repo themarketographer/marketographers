@@ -2363,7 +2363,7 @@ AB.wizPreview = function () {
     '<div style="padding:10px 12px;display:flex;justify-content:space-between;align-items:center;background:var(--cream-alt)"><b style="font-size:13px">' + F.esc(W.headline || "Tu título") + '</b><span class="btn btn-sm">' + F.esc(W.kind === "whatsapp" ? "Enviar mensaje" : (CTAS[W.cta] || "Más información")) + '</span></div></div>';
 };
 AB.loadPages = function () {
-  if (W.pages) return Promise.resolve(W.pages);
+  if (W.pages && W.pages.length) return Promise.resolve(W.pages);
   return G.all("me/accounts", { fields: "id,name", limit: 100 }, 2).catch(function () { return []; }).then(function (p) {
     if (p.length) return p;
     return G.all(S.acct + "/promote_pages", { fields: "id,name", limit: 100 }, 1).catch(function () { return []; });
@@ -2622,7 +2622,7 @@ document.addEventListener("click", function (e) {
   if (id === "retryBtn") { AB.refresh(false); return; }
   if (id === "refreshBtn") { AB.refresh(false); return; }
   if (id === "logoutBtn") { AB.logout(); return; }
-  if (id === "editBtn") { UI.confirm({ title: "Activar modo edición", html: '<p class="sub">Facebook te pedirá permiso para <b>administrar tus anuncios</b> y leer tus páginas. Con eso podrás pausar, cambiar presupuestos, duplicar y crear campañas desde aquí. Cada cambio te pide confirmación y lo que se crea queda en pausa. Puedes revocar el permiso cuando quieras.</p>', ok: "Continuar con Facebook" }).then(function (ok) { if (ok) AB.login(true); }); return; }
+  if (id === "editBtn") { UI.modal('<h3>Activar modo edición</h3><p class="sub">Facebook te pedirá permiso para <b>administrar tus anuncios</b> y leer tus páginas. Con eso podrás pausar, cambiar presupuestos, duplicar y crear campañas desde aquí. Cada cambio te pide confirmación y lo que se crea queda en pausa. Puedes revocar el permiso cuando quieras.</p><div class="mb"><button class="btn" id="edNo">Cancelar</button><button class="btn btn-gold" id="edYes">Continuar con Facebook</button></div>', function (m) { m.querySelector("#edNo").onclick = function () { UI.closeAll(); }; m.querySelector("#edYes").onclick = function () { UI.closeAll(); AB.login(true); }; }); return; }
   if (id === "btnRead") { AB.login(false); return; }
   if (id === "btnEdit") { AB.login(true); return; }
   if (id === "btnDemo") { AB.startDemo(); return; }

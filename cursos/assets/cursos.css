@@ -146,3 +146,7 @@ p.eyebrow{margin-bottom:12px;}
 }
 .cv-card{justify-content:center;align-items:center;}
 .cv-glifo{font-family:var(--font-display);font-weight:800;font-size:64px;letter-spacing:-.04em;color:transparent;-webkit-text-stroke:1.5px rgba(255,255,255,.55);}
+/* Portadas reales (16:9): se muestran completas, sin recortar el título */
+.cv-img{aspect-ratio:16/9;}
+.ccard .cv-img{aspect-ratio:16/9;}
+.c-hero .cv-img.cv-big{max-width:none;}

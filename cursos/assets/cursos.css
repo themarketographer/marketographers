@@ -150,3 +150,9 @@ p.eyebrow{margin-bottom:12px;}
 .cv-img{aspect-ratio:16/9;}
 .ccard .cv-img{aspect-ratio:16/9;}
 .c-hero .cv-img.cv-big{max-width:none;}
+/* Lista de logros al terminar el curso */
+.logros{list-style:none;max-width:720px;margin:0 auto;padding:28px 32px;border-radius:20px;}
+.logros li{position:relative;padding:12px 0 12px 32px;border-bottom:1px solid rgba(255,255,255,.08);font-size:16px;}
+.logros li:last-child{border-bottom:none;}
+.logros li::before{content:"✓";position:absolute;left:0;top:12px;color:var(--gold);font-weight:800;}
+@media (max-width:640px){.logros{padding:20px;}}

@@ -25,7 +25,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <!-- Misma hoja de estilos que usa el resto del sitio. -->
-<link rel="stylesheet" href="https://marketographers.com/assets/global.css">
+<link rel="stylesheet" href="/assets/global.css">
 
 <!-- GA4 — misma propiedad y Measurement ID que la landing principal
      (marketographers.com), para que esta página cuente dentro del mismo funnel
@@ -137,7 +137,7 @@ trackCustomBoth(mktEventName('Vista de la landing (dispara siempre al cargar)', 
     max-width:520px; margin:40px auto 0; padding:28px 32px;
     text-align:left;
   }
-  .event-card .row{display:flex; gap:18px; padding:14px 0; border-bottom:1px solid rgba(20,20,20,.08);}
+  .event-card .row{display:flex; gap:18px; padding:14px 0; border-bottom:1px solid var(--line);}
   .event-card .row:last-child{border-bottom:none;}
   .event-card .label{width:90px; flex-shrink:0; font-weight:700; font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; padding-top:2px;}
   .event-card .value{font-weight:600; font-size:16px;}
@@ -162,9 +162,7 @@ trackCustomBoth(mktEventName('Vista de la landing (dispara siempre al cargar)', 
 
 <header>
   <div class="nav wrap">
-    <a class="logo" href="https://marketographers.com">
-      <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314905/Marketographers_Blanco_S_F_p1toov.png" alt="The Marketographers">
-    </a>
+    <a class="logo" href="/" aria-label="The Marketographers">the marketo<i>g</i>raphers</a>
   </div>
 </header>
 
@@ -187,7 +185,7 @@ trackCustomBoth(mktEventName('Vista de la landing (dispara siempre al cargar)', 
         id="mkt-mc-btn-registrar"
         data-cal-link="ventas-para-fotografos"
         data-cal-namespace="ventas-para-fotografos"
-        data-cal-config='{"layout":"month_view","useSlotsViewOnSmallScreen":"true","theme":"light"}'
+        data-cal-config='{"layout":"month_view","useSlotsViewOnSmallScreen":"true","theme":"dark"}'
       >
         Registrarme al evento →
       </button>
@@ -234,7 +232,7 @@ trackCustomBoth(mktEventName('Vista de la landing (dispara siempre al cargar)', 
 
 <footer>
   <div class="wrap">
-    <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314903/Marketographers_Blanco_S_F_p1toov.png" alt="The Marketographers">
+    <span class="mark">the marketo<i>g</i>raphers</span>
     <p id="mkt-mc-footer">© 2026 The Marketographers. Todos los putos derechos reservados.</p>
   </div>
 </footer>
@@ -247,7 +245,7 @@ trackCustomBoth(mktEventName('Vista de la landing (dispara siempre al cargar)', 
   Cal.config = Cal.config || {};
   Cal.config.forwardQueryParams = true;
 
-  Cal.ns["ventas-para-fotografos"]("ui", {"theme":"light","cssVarsPerTheme":{"light":{"cal-brand":"#F5B729"},"dark":{"cal-brand":"#F5B729"}},"hideEventTypeDetails":false,"layout":"month_view"});
+  Cal.ns["ventas-para-fotografos"]("ui", {"theme":"dark","cssVarsPerTheme":{"light":{"cal-brand":"#fddc5b"},"dark":{"cal-brand":"#fddc5b"}},"hideEventTypeDetails":false,"layout":"month_view"});
 </script>
 <!-- Cal element-click embed code ends -->
 

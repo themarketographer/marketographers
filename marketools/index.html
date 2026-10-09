@@ -88,25 +88,18 @@
 
   body{overflow-x:hidden;}
 
-  .blob{position:fixed;border-radius:50%;filter:blur(60px);pointer-events:none;z-index:0;opacity:.5;}
-  .blob-gold{width:420px;height:420px;background:radial-gradient(circle, rgba(245,183,41,.5), transparent 70%);top:-120px;right:-140px;animation:blob-float 16s ease-in-out infinite;}
-  .blob-red{width:360px;height:360px;background:radial-gradient(circle, rgba(194,59,38,.32), transparent 70%);bottom:-80px;left:-140px;animation:blob-float 19s ease-in-out infinite 1.5s;}
-  @keyframes blob-float{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-26px,22px) scale(1.07);}}
-  @media (prefers-reduced-motion: reduce){.blob{animation:none;}}
-
   @keyframes fade-up{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
   .tools-hero{position:relative;z-index:1;padding:36px 0 20px;text-align:center;}
   .tools-hero .eyebrow{animation:fade-up .7s cubic-bezier(.22,1,.36,1) both;}
   .tools-hero h1{animation:fade-up .8s cubic-bezier(.22,1,.36,1) .08s both;font-size:clamp(30px,5.5vw,52px);max-width:760px;margin:16px auto 0;line-height:1.2;}
   .tools-hero p.lead{animation:fade-up .8s cubic-bezier(.22,1,.36,1) .18s both;max-width:560px;margin:18px auto 0;color:var(--muted);font-size:16px;}
-  .tools-hero mark{background:none;color:var(--gold);font-weight:700;text-shadow:0 0 18px rgba(253,220,91,.5);}
 
   .tools-section{position:relative;z-index:1;padding:24px 0 72px;}
   .tools-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;}
   .tool-card{
-    background:rgba(255,255,255,.07);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);
-    border:1px solid rgba(255,255,255,.14);border-radius:26px;padding:34px;
-    box-shadow:0 20px 50px -24px rgba(0,0,0,.5);
+    background:linear-gradient(160deg,var(--surface-2),var(--cream-alt));
+    border:1px solid var(--line);border-radius:26px;padding:34px;
+    box-shadow:0 30px 60px -34px rgba(0,0,0,.8);
     display:flex;flex-direction:column;
     transition:transform .3s ease, box-shadow .3s ease;
   }
@@ -131,8 +124,8 @@
   .community-cta{position:relative;z-index:1;padding:12px 0 80px;}
   .community-card{
     max-width:var(--max-article);margin:0 auto;padding:42px 40px;text-align:center;color:var(--ink);
-    background:rgba(20,20,20,.82);backdrop-filter:blur(22px) saturate(140%);-webkit-backdrop-filter:blur(22px) saturate(140%);
-    border:1px solid rgba(255,255,255,.1);box-shadow:0 25px 60px -20px rgba(0,0,0,.5);border-radius:28px;
+    background:linear-gradient(165deg,#242424,#141414);
+    border:1px solid rgba(253,220,91,.35);box-shadow:0 60px 120px -40px rgba(0,0,0,.9);border-radius:28px;
   }
   .community-card .eyebrow{color:var(--gold);}
   .community-card h2{font-size:clamp(24px,3.6vw,32px);color:var(--ink);margin-top:12px;}
@@ -150,7 +143,6 @@
   @media (max-width:760px){
     .tools-grid{grid-template-columns:1fr;}
     .community-card{padding:34px 24px;}
-    .blob{opacity:.32;}
   }
   @media (prefers-reduced-motion: reduce){
     .reveal,.stagger-item{opacity:1;transform:none;transition:none;}
@@ -202,12 +194,10 @@ trackBoth('PageView');
 </script>
 <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=467504537642622&ev=PageView&noscript=1" alt=""/></noscript>
 
-<div class="blob blob-gold"></div>
-<div class="blob blob-red"></div>
 
 <header>
   <div class="nav wrap">
-    <a class="logo" href="/"><img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314905/Marketographers_Blanco_S_F_p1toov.png" alt="The Marketographers"></a>
+    <a class="logo" href="/" aria-label="The Marketographers">the marketo<i>g</i>raphers</a>
     <div class="nav-actions">
       <a class="btn btn-whatsapp" href="https://api.whatsapp.com/send?phone=+59169422335&text=%C2%A1Hola%2C%20Pablo!%20Vi%20MarkeTools%20y%20quiero%20m%C3%A1s%20info%20de%20la%20membres%C3%ADa" target="_blank" rel="noopener">WhatsApp</a>
       <a class="btn btn-gold" href="/#planes">Únete</a>
@@ -275,7 +265,7 @@ trackBoth('PageView');
 
 <footer>
   <div class="wrap">
-    <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1755314903/Marketographers_Blanco_S_F_p1toov.png" alt="The Marketographers" loading="lazy">
+    <span class="mark">the marketo<i>g</i>raphers</span>
     <p style="margin-bottom:10px;"><a href="/blog/">Blog</a> · <a href="/#planes">Comunidad</a> · <a href="/privacidad/">Privacidad</a></p>
     <p>© 2026 The Marketographers. Todos los putos derechos reservados.</p>
   </div>

@@ -76,14 +76,6 @@
 
   body{overflow-x:hidden;}
 
-  /* Blobs ambientales, el toque "liquid glass" de fondo */
-  .blob{position:fixed;border-radius:50%;filter:blur(60px);pointer-events:none;z-index:0;opacity:.55;}
-  .blob-gold{width:420px;height:420px;background:radial-gradient(circle, rgba(245,183,41,.55), transparent 70%);top:-120px;right:-120px;animation:blob-float 16s ease-in-out infinite;}
-  .blob-red{width:380px;height:380px;background:radial-gradient(circle, rgba(194,59,38,.35), transparent 70%);top:420px;left:-140px;animation:blob-float 18s ease-in-out infinite 2s;}
-  .blob-green{width:340px;height:340px;background:radial-gradient(circle, rgba(37,211,102,.28), transparent 70%);bottom:0;right:-100px;animation:blob-float 20s ease-in-out infinite 1s;}
-  @keyframes blob-float{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-30px,26px) scale(1.08);}}
-  @media (prefers-reduced-motion: reduce){.blob{animation:none;}}
-
   /* Hero */
   .tool-hero{position:relative;z-index:1;padding:36px 0 20px;text-align:center;}
   @keyframes fade-up{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
@@ -92,8 +84,7 @@
   .tool-hero p.lead{animation:fade-up .8s cubic-bezier(.22,1,.36,1) .18s both;}
   .tool-hero h1{font-size:clamp(30px,5.5vw,52px);max-width:760px;margin:16px auto 0;line-height:1.2;}
   .tool-hero mark{
-    background:none;color:var(--gold);font-weight:800;
-    text-shadow:0 0 22px rgba(253,220,91,.55);
+    background:none;color:var(--gold);
     opacity:0;animation:mark-glow-in .6s ease-out .9s forwards;
   }
   @keyframes mark-glow-in{to{opacity:1;}}
@@ -303,7 +294,6 @@
     .phone{width:250px;height:512px;}
     .tool-form{padding:28px 22px 24px;}
     .community-card{padding:34px 24px;}
-    .blob{opacity:.35;}
   }
   @media (max-width:480px){
     .price-list,.msg-row{flex-wrap:wrap;}
@@ -311,10 +301,10 @@
     .copy-btn{width:100%;padding:13px;}
   }
   @media (prefers-reduced-motion: reduce){
-    .phone,.blob,.open-wa-btn::after{animation:none;}
+    .phone,.open-wa-btn::after{animation:none;}
     .reveal{opacity:1;transform:none;transition:none;}
     .tool-hero .eyebrow,.tool-hero h1,.tool-hero p.lead{animation:none;}
-    .tool-hero mark{animation:none;background-size:100% 100%;}
+    .tool-hero mark{animation:none;opacity:1;background-size:100% 100%;}
   }
 </style>
 </head>
@@ -362,13 +352,10 @@ trackBoth('PageView');
 </script>
 <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=467504537642622&ev=PageView&noscript=1" alt=""/></noscript>
 
-<div class="blob blob-gold"></div>
-<div class="blob blob-red"></div>
-<div class="blob blob-green"></div>
 
 <header>
   <div class="nav wrap">
-    <a class="logo" href="/"><img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314905/Marketographers_Blanco_S_F_p1toov.png" alt="The Marketographers"></a>
+    <a class="logo" href="/" aria-label="The Marketographers">the marketo<i>g</i>raphers</a>
     <div class="nav-actions">
       <a class="btn btn-whatsapp" href="https://api.whatsapp.com/send?phone=+59169422335&text=%C2%A1Hola%2C%20Pablo!%20Vi%20la%20herramienta%20de%20links%20de%20WhatsApp%20y%20quiero%20m%C3%A1s%20info%20de%20la%20membres%C3%ADa" target="_blank" rel="noopener">WhatsApp</a>
       <a class="btn btn-gold" href="/#planes">Únete</a>
@@ -535,7 +522,7 @@ trackBoth('PageView');
 
 <footer>
   <div class="wrap">
-    <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1755314903/Marketographers_Blanco_S_F_p1toov.png" alt="The Marketographers" loading="lazy">
+    <span class="mark">the marketo<i>g</i>raphers</span>
     <p style="margin-bottom:10px;"><a href="/blog/">Blog</a> · <a href="/#planes">Comunidad</a> · <a href="/privacidad/">Privacidad</a></p>
     <p>MarkeTool gratuita de The Marketographers. © 2026 Todos los putos derechos reservados.</p>
   </div>

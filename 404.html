@@ -17,12 +17,6 @@
 <link rel="stylesheet" href="/assets/global.css">
 <style>
   body{overflow-x:hidden;}
-  .blob{position:fixed;border-radius:50%;filter:blur(60px);pointer-events:none;z-index:0;opacity:.5;}
-  .blob-gold{width:420px;height:420px;background:radial-gradient(circle, rgba(245,183,41,.5), transparent 70%);top:-120px;right:-140px;animation:blob-float 16s ease-in-out infinite;}
-  .blob-red{width:360px;height:360px;background:radial-gradient(circle, rgba(194,59,38,.32), transparent 70%);bottom:-80px;left:-140px;animation:blob-float 19s ease-in-out infinite 1.5s;}
-  @keyframes blob-float{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-26px,22px) scale(1.07);}}
-  @media (prefers-reduced-motion: reduce){.blob{animation:none;}}
-
   @keyframes fade-up{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
   .error-hero{position:relative;z-index:1;min-height:calc(100vh - 320px);display:flex;align-items:center;padding:60px 0;}
   .error-wrap{max-width:640px;margin:0 auto;text-align:center;}
@@ -33,7 +27,7 @@
   .error-code mark{
     background-color:transparent;background-image:linear-gradient(100deg, var(--gold), var(--gold));
     background-repeat:no-repeat;background-position:left center;background-size:0% 100%;
-    color:var(--ink);padding:0 10px;border-radius:8px;
+    color:var(--ink-on-gold);display:inline-block;line-height:.92;padding:.04em 10px;border-radius:8px;
     animation:highlight-sweep .9s ease-out .7s forwards;
   }
   @keyframes highlight-sweep{to{background-size:100% 100%;}}
@@ -68,12 +62,9 @@
   gtag('config', 'G-GQY8VYBD5T');
 </script>
 
-<div class="blob blob-gold"></div>
-<div class="blob blob-red"></div>
-
 <header>
   <div class="nav wrap">
-    <a class="logo" href="/"><img src="https://res.cloudinary.com/dplhu2z6j/image/upload/v1755314905/Marketographers_Blanco_S_F_p1toov.png" alt="The Marketographers"></a>
+    <a class="logo" href="/" aria-label="The Marketographers">the marketo<i>g</i>raphers</a>
     <div class="nav-actions">
       <a class="btn btn-whatsapp" href="https://api.whatsapp.com/send?phone=+59169422335&text=%C2%A1Hola%2C%20Pablo!%20Llegu%C3%A9%20a%20una%20p%C3%A1gina%20que%20no%20existe%20en%20tu%20web" target="_blank" rel="noopener">WhatsApp</a>
       <a class="btn btn-gold" href="/#planes">Únete</a>
@@ -94,7 +85,7 @@
 
 <footer>
   <div class="wrap">
-    <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1755314903/Marketographers_Blanco_S_F_p1toov.png" alt="The Marketographers" loading="lazy">
+    <span class="mark">the marketo<i>g</i>raphers</span>
     <p id="mkt-404-footer">© 2026 The Marketographers. Todos los putos derechos reservados.</p>
   </div>
 </footer>

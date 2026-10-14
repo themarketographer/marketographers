@@ -47,7 +47,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/global.css">
 <link rel="stylesheet" href="/blog/assets/blog-extra.css">
-</head>
+<script>try{if(localStorage.getItem("mk-theme")==="light")document.documentElement.setAttribute("data-theme","light")}catch(e){}</script><link rel="stylesheet" href="/assets/fx.css"></head>
 <body>
 
 <!-- GA4 — misma propiedad y Measurement ID que la landing principal
@@ -109,7 +109,7 @@ trackBoth('PageView');
 </script>
 <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=467504537642622&ev=PageView&noscript=1" alt=""/></noscript>
 
-<header>
+<div class="bar" id="bar"></div><header>
   <div class="nav wrap">
     <a class="logo" href="/" aria-label="The Marketographers">the marketo<i>g</i>raphers</a>
     <div class="nav-actions">
@@ -119,13 +119,13 @@ trackBoth('PageView');
   </div>
 </header>
 
-<section class="blog-hero">
+<section class="blog-hero"><div class="ring" style="width:520px;height:520px;right:-170px;top:-130px"></div><div class="ring" style="width:320px;height:320px;left:-120px;bottom:-150px"></div>
   <div class="wrap">
     <p class="eyebrow">· Blog de The Marketographers ·</p>
     <h1>Marketing para fotógrafos, explicado sin rodeos.</h1>
     <p class="lead">Estrategias de venta, posicionamiento y precio para fotógrafos que quieren dejar de competir por ser los más baratos.</p>
   </div>
-</section>
+</section><div class="ticker" aria-hidden="true"><div class="tk"><span>Precios</span><i></i><span>Clientes</span><i></i><span>Storytelling</span><i></i><span>Marketing</span><i></i><span>Ventas</span><i></i><span>Fotografía</span><i></i><span>Precios</span><i></i><span>Clientes</span><i></i><span>Storytelling</span><i></i><span>Marketing</span><i></i><span>Ventas</span><i></i><span>Fotografía</span><i></i></div></div>
 
 <section class="bg-alt">
   <div class="wrap">
@@ -288,5 +288,5 @@ trackBoth('PageView');
   });
 </script>
 
-</body>
+<script src="/assets/fx.js"></script><script>mkFx({"reveal": [".blog-hero .wrap > *", ".blog-card"], "tilt": [".blog-card"]})</script></body>
 </html>

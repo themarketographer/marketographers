@@ -68,7 +68,44 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/global.css">
 <link rel="stylesheet" href="/blog/assets/blog-extra.css">
-</head>
+<script>try{if(localStorage.getItem("mk-theme")==="light")document.documentElement.setAttribute("data-theme","light")}catch(e){}</script><link rel="stylesheet" href="/assets/fx.css"><script type="application/ld+json">{
+ "@context": "https://schema.org",
+ "@type": "FAQPage",
+ "mainEntity": [
+  {
+   "@type": "Question",
+   "name": "¿Cuánto debería cobrar por una sesión de fotos?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Cobra lo que cubra tus costos fijos divididos entre tus sesiones reales al mes, más el costo variable de cada sesión, más un margen para vivir y crecer. Copiar la tarifa de otro fotógrafo arrastra costos que no son los tuyos."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "¿Cómo calculo mi hora real de trabajo?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Suma preproducción, la sesión, la edición, la entrega y la comunicación con el cliente. La mayoría de los fotógrafos subestima ese tiempo a la mitad."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "¿Qué margen debería tener mi precio?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "El suficiente para vivir, invertir en equipo y tomarte una semana libre sin quebrar. En la calculadora de MarkeTools el margen inicial es de 20%."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "¿Qué hago si el cliente dice que estoy caro?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Sostén el número con el resultado que recibe el cliente y con tu historial de entregas."
+   }
+  }
+ ]
+}</script></head>
 <body>
 
 <!-- GA4 — misma propiedad y Measurement ID que la landing principal
@@ -132,7 +169,7 @@ trackBoth('ViewContent', {content_name:'Cuánto deberías cobrar por una sesión
 </script>
 <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=467504537642622&ev=PageView&noscript=1" alt=""/></noscript>
 
-<header>
+<div class="bar" id="bar"></div><header>
   <div class="nav wrap">
     <a class="logo" href="/" aria-label="The Marketographers">the marketo<i>g</i>raphers</a>
     <div class="nav-actions">
@@ -143,37 +180,34 @@ trackBoth('ViewContent', {content_name:'Cuánto deberías cobrar por una sesión
 </header>
 
 <article>
-  <div class="article-hero">
+  <div class="article-hero"><div class="ring" style="width:520px;height:520px;right:-170px;top:-130px"></div><div class="ring" style="width:320px;height:320px;left:-120px;bottom:-150px"></div>
     <div class="wrap">
       <span class="eyebrow eyebrow-red">Precio y ventas</span>
       <h1>Cuánto deberías cobrar por una sesión de fotos en 2026</h1>
       <div class="article-meta">
         <span>Pablo Villarroel</span>
-        <span>18 de agosto, 2026</span>
+        <time datetime="2026-08-18">18 de agosto, 2026</time>
         <span>6 min de lectura</span>
       </div>
     </div>
     <div class="wrap">
-      <div class="article-cover img-placeholder" style="aspect-ratio:16/9;">
-        <span class="ph-tag">Imagen por reemplazar</span>
-        Portada del artículo — 1600×900px, formato WebP comprimido
-      </div>
+      <div class="article-cover"><img src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1785200397/Banner_z6b496.png" alt="Calculadora, cámara y billetes sobre una mesa: cuánto cobrar por una sesión de fotos en 2026"></div>
     </div>
   </div>
 
-  <div class="article-body">
+  <div class="article-body"><aside class="tldr card-glass"><p class="t">Respuesta corta</p><p>Tu tarifa sale de tres números: tus costos fijos divididos entre tus sesiones reales al mes, tu hora real de trabajo y un margen para vivir. Con eso calculas un precio mínimo y le sumas el margen para obtener el recomendado.</p></aside><nav class="toc card-glass" aria-label="En este artículo"><p class="t">En este artículo</p><ol><li><a href="#s1">Tu tarifa no sale de lo que cobran los demás</a></li><li><a href="#s2">La cuenta que sí tienes que hacer</a></li><li><a href="#s3">Lo que el cliente paga en realidad</a></li></ol></nav>
     <div class="wrap-article">
 
       <p>"¿Cuánto cobro?" es la pregunta que más me hacen fotógrafos de todas las especialidades, y casi siempre la responden mal porque la hacen al revés: primero miran cuánto cobra la competencia y después intentan justificar ese número. Eso no es una tarifa, es una copia con margen de error.</p>
 
-      <h2>Tu tarifa no sale de lo que cobran los demás</h2>
+      <h2 id="s1">Tu tarifa no sale de lo que cobran los demás</h2>
       <p>Lo que cobra otro fotógrafo incluye su renta, su equipo, su experiencia y su ciudad. Ninguno de esos números es el tuyo. Copiar un precio ajeno es copiar un negocio ajeno, y normalmente ese negocio tampoco está calculando bien sus números, así que terminas copiando un error.</p>
 
       <blockquote>Una tarifa que no cubre tus costos reales no es un precio bajo, es un negocio que se está pagando a sí mismo para perder dinero.</blockquote>
 
       <p>Ojo: calcular bien el número es solo la mitad del trabajo. La otra mitad es sostenerlo cuando un cliente lo cuestiona, y ahí conviene tener listo <a href="/blog/objeciones-de-precio-fotografos/">cómo responder cuando un cliente te dice que estás caro</a>.</p>
 
-      <h2>La cuenta que sí tienes que hacer</h2>
+      <h2 id="s2">La cuenta que sí tienes que hacer</h2>
       <p>Antes de pensar en cuánto "se ve bien" cobrar, hay tres números que necesitas tener a mano:</p>
       <ul>
         <li><strong>Tus costos fijos mensuales.</strong> Equipo, software, transporte, edición si la subcontratas. Divide ese total entre cuántas sesiones puedes hacer al mes de forma realista.</li>
@@ -181,14 +215,14 @@ trackBoth('ViewContent', {content_name:'Cuánto deberías cobrar por una sesión
         <li><strong>El margen que te permite vivir, no solo sobrevivir.</strong> Un precio que apenas cubre gastos no te deja invertir en mejorar equipo, aprender o tomarte una semana libre sin quebrar.</li>
       </ul>
 
-      <h2>Lo que el cliente paga en realidad</h2>
+      <p>Si prefieres que la cuenta la haga una herramienta, usa la <a href="/marketools/calculadora/">calculadora de precio por sesión</a> de MarkeTools. Es gratis.</p><h2 id="s3">Lo que el cliente paga en realidad</h2>
       <p>Nadie paga por el clic del obturador. Paga por el resultado y por la certeza de que va a salir bien: tu estilo, tu forma de dirigir la sesión, tu historial, cómo entregas el trabajo. Cuando tu precio está anclado solo en el tiempo que te toma, estás vendiendo horas. Cuando está anclado en el resultado que le das al cliente, estás vendiendo valor, y el valor sí se puede subir sin que se caiga la venta. Si además bajaste el precio la última vez que perdiste una cotización, te conviene leer <a href="/blog/como-cobrar-mas-sin-bajar-precio/">por qué bajar tus precios no te trae más clientes</a>.</p>
 
     </div>
   </div>
 
   <div class="wrap-article">
-    <div class="article-cta">
+    <h2 id="faq">Preguntas frecuentes</h2><details class="faq-a"><summary>¿Cuánto debería cobrar por una sesión de fotos?</summary><p>Cobra lo que cubra tus costos fijos divididos entre tus sesiones reales al mes, más el costo variable de cada sesión, más un margen para vivir y crecer. Copiar la tarifa de otro fotógrafo arrastra costos que no son los tuyos.</p></details><details class="faq-a"><summary>¿Cómo calculo mi hora real de trabajo?</summary><p>Suma preproducción, la sesión, la edición, la entrega y la comunicación con el cliente. La mayoría de los fotógrafos subestima ese tiempo a la mitad.</p></details><details class="faq-a"><summary>¿Qué margen debería tener mi precio?</summary><p>El suficiente para vivir, invertir en equipo y tomarte una semana libre sin quebrar. En la calculadora de MarkeTools el margen inicial es de 20%.</p></details><details class="faq-a"><summary>¿Qué hago si el cliente dice que estoy caro?</summary><p>Sostén el número con el resultado que recibe el cliente y con tu historial de entregas. Aquí tienes una guía para responder objeciones de precio: <a href="/blog/objeciones-de-precio-fotografos/">cómo responder cuando dicen que estás caro</a></p></details><div class="article-cta">
       <h3>¿Sacaste la cuenta y el número te asustó?</h3>
       <p>Es normal la primera vez. En la comunidad revisamos precios reales de fotógrafos como tú cada semana.</p>
       <a class="btn btn-gold" href="https://api.whatsapp.com/send?phone=+59169422335&text=%C2%A1Hola%2C%20Pablo!%20Le%C3%AD%20el%20art%C3%ADculo%20de%20cu%C3%A1nto%20cobrar%20y%20quiero%20saber%20m%C3%A1s%20de%20la%20comunidad" target="_blank" rel="noopener">Escríbeme por WhatsApp →</a>
@@ -222,5 +256,5 @@ trackBoth('ViewContent', {content_name:'Cuánto deberías cobrar por una sesión
   });
 </script>
 
-</body>
+<script src="/assets/fx.js"></script><script>mkFx({"reveal": [".article-hero .eyebrow", ".article-hero h1", ".article-meta", ".article-cover", ".article-body h2", ".article-body p", ".article-body ul", ".article-body blockquote", ".article-cta"], "tilt": []})</script></body>
 </html>

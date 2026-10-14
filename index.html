@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+<script>try{if(localStorage.getItem("mk-theme")==="light")document.documentElement.setAttribute("data-theme","light")}catch(e){}</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Marketographers | Marketing para fotógrafos - Pablo Villarroel</title>
@@ -48,7 +49,7 @@
 }
 </script>
 
-<!-- JSON-LD: AggregateRating + Review. Mismos testimonios reales que se muestran en el carrusel de testimonios de esta pagina (ver var testimonios en el script antes de </body>), palabra por palabra. -->
+<!-- JSON-LD: AggregateRating + Review. Mismos testimonios reales que se muestran en el carrusel de testimonios de esta pagina (ver var testimonios en el script antes de <div class="dock" id="dock"><a class="btn btn-p" href="#planes">Únete por $1 al día</a></div></body>), palabra por palabra. -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -95,6 +96,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="preload" href="/assets/fonts/Working-400.otf" as="font" type="font/otf" crossorigin>
 <style>
+
 @font-face{
   font-family:"Working";
   src:url("/assets/fonts/Working-400.otf") format("opentype");
@@ -355,6 +357,175 @@ footer .mark i{font-style:normal;color:var(--accent)}
 .price .btn{padding:14px 20px}.note{margin-top:10px}
 @media(max-width:860px){.pz{grid-template-columns:1fr}.sq.zoom{max-width:300px}}
 @media(max-width:600px){.price{padding:22px 18px 18px}.pl{gap:12px 10px}.pi p{display:none}.pi{gap:10px}.pi strong{font-size:.86rem}.pib{flex-basis:36px;width:36px;height:36px}}
+
+/* --- ronda 3: móvil y iconos --- */
+@media (hover:none){
+  .pc::before{background:radial-gradient(420px circle at 50% 30%,rgba(255,92,92,.16),transparent 62%)}
+  .track>*:hover{translate:none}
+  .btn:hover svg{transform:none}
+  .video:hover img,.video:hover .play{transform:none}
+}
+.pc{transition:border-color .5s var(--ease)}
+.pc.lit::before{opacity:1}
+.pc.lit{border-color:rgba(255,92,92,.38)}
+.pc .n{transition:-webkit-text-stroke-color .5s var(--ease)}
+.pc.lit .n{-webkit-text-stroke-color:var(--red,#ff5c5c)}
+.st .num{transition:color .5s var(--ease)}
+.st.lit .num{color:var(--accent)}
+.price{transition:box-shadow .6s var(--ease)}
+.price.lit{box-shadow:0 0 0 1px rgba(253,220,91,.35),0 40px 90px -40px rgba(253,220,91,.25)}
+.ic .badge{width:64px;height:64px;border-radius:20px}
+.ic .badge svg{width:32px;height:32px}
+.bill button i{font-style:normal;font-size:.7rem;margin-left:6px;padding:2px 7px;border-radius:999px;background:rgba(0,0,0,.18)}
+
+/* --- ronda 2: precio con baja, plan anual, chips, dock, nav activo --- */
+.old{position:relative;text-decoration:none}
+.old::after{content:"";position:absolute;left:-4px;right:-4px;top:54%;height:2px;background:currentColor;transform:scaleX(0);transform-origin:0 50%;transition:transform .5s var(--ease)}
+.old.struck::after{transform:scaleX(1)}
+.bill{position:relative;display:grid;grid-template-columns:1fr 1fr;padding:4px;margin-bottom:22px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--glass-b)}
+.bill-thumb{position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:999px;background:var(--accent);transition:transform .3s var(--ease)}
+.bill.annual .bill-thumb{transform:translateX(100%)}
+.bill button{position:relative;z-index:1;padding:10px 12px;border-radius:999px;font-weight:600;font-size:.88rem;color:var(--mut);transition:color .2s}
+.bill button[aria-pressed=true]{color:var(--accent-ink)}
+.bill button i{font-style:normal;font-size:.7rem;margin-left:6px;padding:2px 8px;border-radius:999px;background:rgba(0,0,0,.12)}
+.bill button:not([aria-pressed=true]) i{background:rgba(253,220,91,.16);color:var(--accent)}
+.pbill{color:var(--mut);font-size:.88rem;margin:-14px 0 24px;transition:opacity .14s}
+.pd{transition:opacity .14s}
+.pd.swap,.pbill.swap{opacity:0}
+.pnum,.old{font-variant-numeric:tabular-nums}
+.nav a.l.on{color:var(--ink);background:rgba(255,255,255,.07)}
+.dock{display:none}
+@media(max-width:860px){
+  .dock{display:flex;position:fixed;left:12px;right:84px;bottom:14px;z-index:54;transform:translateY(140%);transition:transform .35s var(--ease)}
+  .dock.show{transform:none}
+  .dock .btn{width:100%;justify-content:center;box-shadow:0 14px 36px -10px rgba(0,0,0,.8)}
+}
+@media(prefers-reduced-motion:reduce){.dock{transition:none}.bill-thumb,.old::after{transition:none}}
+
+/* --- ronda 4: afinado con las skills de movimiento --- */
+@view-transition{navigation:auto}
+h1,h2,h3,.wl{text-wrap:balance}
+.pnum,.num,.vn b,.mini-calc b,#oldnum,.pn,.st .num{font-variant-numeric:tabular-nums}
+.js .rv{transition-duration:.8s;transition-delay:calc(var(--i,0)*60ms)}
+.track.in>*{animation-delay:calc(var(--k,0)*60ms)}
+.pc:active,.sc:active,.tile:active,.dd:active,.mc:active{scale:.985}
+.dq:active,.mchips button:active,.bill button:active{scale:.97}
+@media (prefers-reduced-transparency:reduce){.nav,.chip,.bill,.dock .btn{backdrop-filter:none;-webkit-backdrop-filter:none}.nav{background:#1a1a1a}}
+
+/* --- ronda 4: secciones nuevas --- */
+.wl{font-family:var(--fd);font-size:clamp(1.9rem,4.6vw,3.6rem);line-height:1.1;letter-spacing:-.02em;max-width:20ch;margin:0 auto}
+.wlw{color:rgba(255,255,255,.22);transition:color .45s var(--ease)}.wlw.on{color:var(--ink)}
+.scenes .top,.mapa .top,.dentro .top,.dudas .top{max-width:820px;margin-bottom:clamp(36px,5vw,64px)}
+.scenes .top.center{margin-inline:auto;text-align:center}
+.sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.sc{position:relative;padding:28px 24px 26px;border-radius:24px;background:linear-gradient(160deg,var(--s2),var(--s1));border:1px solid var(--line);overflow:hidden;transition:border-color .5s var(--ease)}
+.sc::before{content:"";position:absolute;inset:0;background:radial-gradient(380px circle at 50% 20%,rgba(255,92,92,.14),transparent 60%);opacity:0;transition:opacity .4s;pointer-events:none}
+.sc.lit{border-color:rgba(255,92,92,.38)}.sc.lit::before{opacity:1}
+@media (hover:hover) and (pointer:fine){.sc:hover{border-color:rgba(255,92,92,.38)}.sc:hover::before{opacity:1}}
+.sc .when{display:inline-block;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--neg);font-weight:600;margin-bottom:16px}
+.sc h3{font-size:1.45rem;margin:18px 0 8px}.sc>p{color:var(--mut);font-size:.96rem}
+.chat{display:grid;gap:6px;padding:14px;border-radius:18px;background:#0b141a;min-height:220px;align-content:start}
+.b{max-width:82%;padding:8px 12px;border-radius:14px;font-size:.88rem;line-height:1.35}
+.b.in{background:#202c33;color:#e9edef;border-bottom-left-radius:4px;justify-self:start}
+.b.out{background:#005c4b;color:#e9edef;border-bottom-right-radius:4px;justify-self:end}
+.seen{font-size:.7rem;color:#8696a0;justify-self:end;margin-top:2px}
+.js .sc.rv.in .chat .b{animation:bIn .5s var(--ease) backwards}
+.js .sc.rv.in .chat .b:nth-child(2){animation-delay:.25s}.js .sc.rv.in .chat .b:nth-child(3){animation-delay:.5s}.js .sc.rv.in .chat .b:nth-child(4){animation-delay:.75s}
+@keyframes bIn{from{opacity:0;transform:translateY(8px) scale(.97)}}
+.viral{display:grid;grid-template-columns:1fr 1fr;gap:10px;min-height:220px}
+.vn{display:grid;place-content:center;text-align:center;border-radius:18px;background:var(--s3);padding:18px}
+.vn b{font-family:var(--fd);font-weight:400;font-size:clamp(2.4rem,5vw,3.4rem);line-height:1}.vn small{color:var(--mut);font-size:.8rem;margin-top:6px}
+.vn.zero b{color:var(--neg)}
+.agenda{display:grid;gap:8px;min-height:220px;align-content:start}
+.agenda p{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;align-items:center;padding:12px 14px;border-radius:14px;background:var(--s3);font-size:.8rem;color:var(--mut)}
+.agenda p i{grid-row:1/3;width:10px;height:10px;border-radius:50%;background:var(--accent)}.agenda p.empty i{background:transparent;border:1px solid var(--mut)}
+.agenda p b{font-weight:500;color:var(--ink);font-size:.92rem}.agenda p.empty b{color:var(--mut)}
+.escap{text-align:center;margin-top:clamp(28px,4vw,48px);color:var(--mut);font-size:1.05rem}
+.mgrid{display:grid;grid-template-columns:minmax(260px,380px) 1fr;gap:clamp(20px,3vw,40px);align-items:start}
+.mchips{display:grid;gap:10px}
+.mchips button{text-align:left;padding:16px 20px;border-radius:18px;background:var(--glass);border:1px solid var(--line);font-weight:500;min-height:56px;transition:transform .18s var(--ease),background .25s,border-color .25s,color .25s}
+.mchips button:active{transform:scale(.97)}
+.mchips button[aria-selected=true]{border-color:var(--accent);background:rgba(253,220,91,.1);color:var(--accent)}
+@media (hover:hover) and (pointer:fine){.mchips button:hover{background:rgba(255,255,255,.1)}}
+.mres{display:grid;gap:16px;transition:opacity .22s var(--ease),transform .22s var(--ease),filter .22s var(--ease)}
+.mres.out{opacity:0;transform:translateY(8px);filter:blur(4px)}
+.mc{display:grid;grid-template-columns:minmax(0,260px) 1fr;gap:22px;align-items:center;padding:18px;border-radius:24px;background:linear-gradient(160deg,var(--s2),var(--s1));border:1px solid var(--line);text-decoration:none}
+.mc img{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:16px}
+.mc h3{font-size:1.5rem;margin-bottom:8px}.mc p{color:var(--mut);font-size:.96rem}
+.mc .go{display:inline-block;margin-top:14px;color:var(--accent);font-weight:600;transition:transform .3s var(--ease)}
+@media (hover:hover) and (pointer:fine){.mc:hover .go{transform:translateX(4px)}}
+.mfoot{margin-top:28px;text-align:center}
+.mtool{padding:14px 18px;border-radius:16px;border:1px dashed var(--glass-b);color:var(--mut);font-size:.9rem}.mtool a{color:var(--accent)}
+@media(max-width:860px){.mgrid{grid-template-columns:1fr}.mc{grid-template-columns:1fr}.mchips{grid-auto-flow:column;grid-auto-columns:max-content;overflow-x:auto;scroll-snap-type:x proximity;padding-bottom:6px}.mchips button{scroll-snap-align:start;white-space:nowrap}}
+.bento{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+.tile{position:relative;overflow:hidden;border-radius:26px;background:linear-gradient(160deg,var(--s2),var(--s1));border:1px solid var(--line);padding:26px;min-height:300px;display:flex;flex-direction:column;justify-content:space-between;gap:16px;transition:border-color .5s var(--ease)}
+.tile.lit{border-color:rgba(253,220,91,.35)}
+.t-clase{grid-column:span 7;padding:0;min-height:380px}.t-wpp{grid-column:span 5}.t-tool{grid-column:span 5}.t-rec{grid-column:span 7}
+.t-clase img,.t-rec img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(.8) contrast(1.05);transition:transform .9s var(--ease)}
+.t-clase::after,.t-rec::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(12,12,12,0) 35%,rgba(12,12,12,.92));pointer-events:none}
+.t-clase .tcap,.t-rec .tcap{position:absolute;left:26px;right:26px;bottom:24px;z-index:2}
+.tile h3{font-size:1.5rem;margin-bottom:6px}.tile p{color:var(--mut);font-size:.95rem}
+.live{display:inline-flex;align-items:center;gap:8px;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--ink);margin-bottom:10px}
+.live i{width:9px;height:9px;border-radius:50%;background:var(--neg);animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 8px rgba(255,92,92,0);transform:scale(.85)}}
+@media (hover:hover) and (pointer:fine){.tile:hover img{transform:scale(1.04)}}
+.mini-chat{display:grid;gap:6px;padding:14px;border-radius:18px;background:#0b141a;position:relative}.ej{font-size:.7rem;color:var(--mut);justify-self:end;margin-top:4px}
+.mini-calc{display:grid;gap:4px;padding:18px;border-radius:18px;background:var(--s3)}.mini-calc small{color:var(--mut)}.mini-calc b{font-family:var(--fd);font-weight:400;font-size:3rem;line-height:1;color:var(--accent)}
+.tlink{color:var(--accent);font-weight:600;text-decoration:none}
+@media(max-width:860px){.bento{grid-template-columns:1fr}.t-clase,.t-wpp,.t-tool,.t-rec{grid-column:auto}.t-clase{min-height:320px}.t-rec{min-height:260px}}
+.dgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.dd{position:relative;border-radius:24px;background:linear-gradient(160deg,var(--s2),var(--s1));border:1px solid var(--line);overflow:hidden;transition:border-color .5s var(--ease)}
+.dd.lit,.dd.open{border-color:rgba(253,220,91,.4)}
+.dq{display:grid;grid-template-columns:1fr auto;gap:6px 14px;align-items:start;width:100%;text-align:left;padding:24px;min-height:140px}
+.dq .say,.dd .say{grid-column:1/-1;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);font-weight:600}.say.gold{color:var(--accent)}
+.qt{font-family:var(--fd);font-size:1.5rem;line-height:1.15}
+.dq svg{width:26px;height:26px;color:var(--accent);transition:transform .4s var(--ease);align-self:end}
+.dd.open .dq svg{transform:rotate(135deg)}
+.da{display:grid;grid-template-rows:0fr;transition:grid-template-rows .45s var(--ease)}.dd.open .da{grid-template-rows:1fr}
+.da>div{overflow:hidden;padding:0 24px}.dd.open .da>div{padding-bottom:24px}.da p{color:var(--ink);font-size:.96rem;margin-top:8px}
+.dd.cta{display:grid;gap:8px;padding:24px;text-decoration:none;align-content:space-between;border-color:rgba(253,220,91,.3)}.dd.cta .arr{font-size:1.6rem;color:var(--accent)}
+@media(max-width:860px){.dgrid{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.wlw,.sc,.tile,.dd,.mres,.da,.dq svg{transition:none}.live i{animation:none}.js .sc.rv.in .chat .b{animation:none}}
+
+/* ===== Tema claro ===== */
+:root[data-theme="light"]{
+  --bg:#f6f5f2;--s1:#ffffff;--s2:#efeeea;--s3:#e5e4df;
+  --ink:#181818;--mut:#5c5c5c;--line:rgba(24,24,24,.12);
+  --neg:#d63a3a;--accent-t:#8a6a00;
+  --glass:rgba(255,255,255,.72);--glass-b:rgba(24,24,24,.12);
+  --cream:#f6f5f2;--cream-alt:#ffffff;--surface-2:#efeeea;--surface-3:#e5e4df;--white:#ffffff;
+  --muted:#5c5c5c;--border:rgba(24,24,24,.12);--gold-text:#8a6a00;--red:#d63a3a;
+  color-scheme:light;
+}
+:root[data-theme="light"] header .nav{background:rgba(255,255,255,.75)}
+:root[data-theme="light"] .btn-dark{background:#181818;color:#f8f8f8}
+:root[data-theme="light"] .tool-icon{color:#8a6a00}
+:root[data-theme="light"] body{background:var(--bg);color:var(--ink)}
+:root[data-theme="light"] .eyebrow:not(.neg),:root[data-theme="light"] mark:not(.neg){color:var(--accent-t)}
+:root[data-theme="light"] .poster small,:root[data-theme="light"] .poster b{color:#fff}
+:root[data-theme="light"] .wa-tip,:root[data-theme="light"] .wa-ic{background:rgba(255,255,255,.78);color:var(--ink)}
+:root[data-theme="light"] .nav{background:rgba(255,255,255,.72)}
+:root[data-theme="light"] .btn-g{background:rgba(255,255,255,.7)}
+:root[data-theme="light"] img{filter:none}
+:root[data-theme="light"] ::selection{background:#fddc5b;color:#181818}
+@media(prefers-reduced-transparency:reduce){:root[data-theme="light"] .nav,:root[data-theme="light"] .wa-tip,:root[data-theme="light"] .wa-ic{background:#fff}}
+/* Boton */
+.thm{position:fixed;left:18px;bottom:18px;z-index:9990;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;
+  background:var(--glass,rgba(255,255,255,.08));border:1px solid var(--glass-b,rgba(255,255,255,.14));color:var(--ink,#f8f8f8);
+  backdrop-filter:blur(16px) saturate(160%);-webkit-backdrop-filter:blur(16px) saturate(160%);cursor:pointer;
+  transition:transform .18s cubic-bezier(.22,1,.36,1),box-shadow .25s,border-color .25s}
+.thm:active{transform:scale(.94)}
+.thm svg{width:20px;height:20px;overflow:visible}
+.thm .sun,.thm .moon{transition:transform .5s cubic-bezier(.22,1,.36,1),opacity .35s;transform-origin:12px 12px}
+.thm .sun{opacity:0;transform:rotate(-90deg) scale(.4)}
+:root[data-theme="light"] .thm .sun{opacity:1;transform:none}
+:root[data-theme="light"] .thm .moon{opacity:0;transform:rotate(90deg) scale(.4)}
+@media(hover:hover) and (pointer:fine){.thm:hover{box-shadow:0 8px 24px rgba(0,0,0,.25);border-color:#fddc5b}}
+.thm:focus-visible{outline:2px solid #fddc5b;outline-offset:3px}
+@media(prefers-reduced-transparency:reduce){.thm{backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--s1,#1f1f1f)}}
+@media(prefers-reduced-motion:reduce){.thm .sun,.thm .moon{transition:opacity .2s}}
+::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal}
+
 </style>
 </head>
 <body>
@@ -474,7 +645,7 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
   <a class="l" href="#incluye">Qué incluye</a>
   <a class="l" href="#casos">Casos</a>
   <a class="l" href="#planes">Precio</a>
-  <a class="l" href="#faq">Preguntas</a>
+  <a class="l" href="#faq">Preguntas</a> <a class="l" href="/cursos/">Cursos</a> <a class="l" href="/marketools/">Herramientas</a>
   <a class="btn btn-p cta-planes" href="#planes">Entrar</a>
 </nav>
 
@@ -491,7 +662,7 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
       <button type="button" class="video" id="videoFrame" data-yt="FE5oEd88x98" aria-label="Reproducir el video">
         <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1790061642/marketographers/vsl-thumbnail-pablo-marketographers.jpg" alt="Pablo Villarroel en el video de The Marketographers" width="1280" height="720" fetchpriority="high">
         <span class="poster"><small>Dale play</small><b><mark>90 segundos</mark> y decides</b></span><span class="play"><svg viewBox="0 0 24 24" width="30" height="30" fill="#181818" style="margin-left:4px"><path d="M8 5v14l11-7z"/></svg></span>
-      </button>
+      </button><span class="chip" style="left:-2%;top:10%"><b>+500</b> fotógrafos adentro</span><span class="chip" style="right:-2%;bottom:14%"><b>17</b> países</span>
     </div>
   </div>
   <p class="cap">Con sonido. Sí, digo groserías.</p>
@@ -519,7 +690,7 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
   </div>
 </section>
 
-<section class="track-sec" id="incluye">
+<section class="scenes" id="escenas"><div class="wrap-w"><div class="top center"><span class="eyebrow neg rv">Tres escenas de ejemplo</span><p class="wl" data-wl="Si una de estas escenas te suena, tu problema se llama ventas.">Si una de estas escenas te suena, tu problema se llama ventas.</p></div><div class="sgrid"><article class="sc rv" style="--i:0"><span class="when">Viernes, 10:47 pm</span><div class="chat"><p class="b in">Hola, ¿cuánto cobras por una sesión?</p><p class="b out">¿$50?</p><p class="b in">Uy, otro me cobra $30</p><p class="b out">Te la dejo en $35</p><p class="seen">Visto 10:52 pm</p></div><h3>Negociaste contra ti</h3><p>Pusiste el precio mirando al vecino y lo bajaste antes de que te lo pidieran.</p></article><article class="sc rv" style="--i:1"><span class="when">Domingo, 8:15 pm</span><div class="viral"><div class="vn"><b data-count="2300">2300</b><small>me gusta</small></div><div class="vn zero"><b>0</b><small>consultas</small></div></div><h3>El reel que se hizo viral</h3><p>Los likes se sienten como aplausos, y los aplausos no pagan el alquiler.</p></article><article class="sc rv" style="--i:2"><span class="when">Lunes, 9:02 am</span><div class="agenda"><p><i></i>Semana 1<b>Boda de la prima</b></p><p class="empty"><i></i>Semana 2<b>Libre</b></p><p class="empty"><i></i>Semana 3<b>Libre</b></p><p class="empty"><i></i>Semana 4<b>¿Alguna recomendación?</b></p></div><h3>Cada mes es una ruleta</h3><p>Vives del boca a boca, y el boca a boca no responde mensajes.</p></article></div><p class="escap rv">Las tres tienen arreglo, y el arreglo se enseña en clase, con tarea para ese mismo día.</p></div></section><section class="track-sec" id="incluye">
   <div class="wrap-w">
     <div class="th">
       <div class="txt">
@@ -535,7 +706,7 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
   <div class="trail"><a class="btn btn-g cta-planes" href="#planes">Quiero entrar a la comunidad</a></div>
 </section>
 
-<section class="track-sec" id="casos">
+<section class="dentro" id="dentro"><div class="wrap-w"><div class="top"><span class="eyebrow rv">Por dentro</span><h2 class="h-sec rv" style="--i:1">Esto es lo que abres <mark>el día que entras</mark></h2></div><div class="bento"><article class="tile t-clase rv" style="--i:0"><img src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto:best,f_auto/v1771218778/Captura_clase_vzvoyr.jpg" alt="Clase en vivo de The Marketographers por Zoom" loading="lazy"><div class="tcap"><span class="live"><i></i>En vivo</span><h3>Clases dos veces por semana</h3><p>Con cámara prendida y tiempo para tus preguntas.</p></div></article><article class="tile t-wpp rv" style="--i:1"><div class="tcap"><h3>Grupo de WhatsApp</h3><p>Tus dudas se resuelven en minutos.</p></div><div class="mini-chat"><p class="b in">¿Cuánto cobran por un reel de 30 s?</p><p class="b out">Yo $60 con guion incluido</p><p class="b in">Gracias, ya lo subí</p><span class="ej">Conversación de ejemplo</span></div></article><article class="tile t-tool rv" style="--i:2"><div class="tcap"><h3>MarkeTools</h3><p>Calculadora de precio, link de WhatsApp y más.</p></div><div class="mini-calc"><small>Precio recomendado</small><b id="miniCalc">$74</b><span class="ej">Ejemplo con datos ficticios</span></div><a class="tlink" href="/marketools/">Abrir MarkeTools →</a></article><article class="tile t-rec rv" style="--i:3"><div class="tcap"><h3>Recursos y plantillas</h3><p>Todo ordenado para que sepas qué sigue.</p></div><img src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1790061651/marketographers/pablo-villarroel-about-marketographers.jpg" alt="" loading="lazy" aria-hidden="true"></article></div></div></section><section class="mapa" id="mapa"><div class="wrap-w"><div class="top"><span class="eyebrow rv">Mapa de cursos</span><h2 class="h-sec rv" style="--i:1">Dime qué te duele y te digo <mark>por cuál curso empezar</mark></h2></div><div class="mgrid"><div class="mchips" id="mchips" role="tablist" aria-label="Elige tu problema"></div><div class="mres" id="mres" aria-live="polite"></div></div><p class="mfoot rv"><a class="btn btn-g" href="/cursos/">Ver los 8 cursos</a></p></div></section><section class="track-sec" id="casos">
   <div class="wrap-w">
     <div class="th">
       <div class="txt">
@@ -565,7 +736,7 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
   </div>
 </section>
 
-<section class="pricing" id="planes">
+<section class="dudas" id="dudas"><div class="wrap-w"><div class="top"><span class="eyebrow rv">Dudas honestas</span><h2 class="h-sec rv" style="--i:1">Lo que ya te dijiste en la ducha, <mark>con su respuesta</mark></h2></div><div class="dgrid"><article class="dd rv" style="--i:0"><button type="button" class="dq" aria-expanded="false" aria-controls="da0"><span class="say">Dices</span><span class="qt">“Es caro”</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button><div class="da" id="da0"><div><span class="say gold">Pablo responde</span><p>Son $33 al mes, menos de $1.10 al día. Con que dejes de rebajar un solo trabajo al mes, ya la recuperaste. Haz la cuenta en la calculadora y me cuentas.</p></div></div></article><article class="dd rv" style="--i:1"><button type="button" class="dq" aria-expanded="false" aria-controls="da1"><span class="say">Dices</span><span class="qt">“No tengo tiempo”</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button><div class="da" id="da1"><div><span class="say gold">Pablo responde</span><p>Las clases son en vivo dos veces por semana y quedan grabadas. Si te alcanza el tiempo para editar a las 3 AM, te alcanza para una clase que te devuelva esas horas.</p></div></div></article><article class="dd rv" style="--i:2"><button type="button" class="dq" aria-expanded="false" aria-controls="da2"><span class="say">Dices</span><span class="qt">“Ya hice cursos y no me sirvieron”</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button><div class="da" id="da2"><div><span class="say gold">Pablo responde</span><p>Entonces ya conoces el dolor de aprender y no aplicar. Aquí cada clase termina con una tarea para ese mismo día, y si te atoras escribes al grupo y alguien te responde en minutos.</p></div></div></article><article class="dd rv" style="--i:3"><button type="button" class="dq" aria-expanded="false" aria-controls="da3"><span class="say">Dices</span><span class="qt">“Mi nicho es muy raro”</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button><div class="da" id="da3"><div><span class="say gold">Pablo responde</span><p>Hay miembros de 17 países y de especialidades que ni sabías que existían. Un cliente que paga busca lo mismo en todos los nichos: que alguien le explique por qué elegirte.</p></div></div></article><article class="dd rv" style="--i:4"><button type="button" class="dq" aria-expanded="false" aria-controls="da4"><span class="say">Dices</span><span class="qt">“No sé nada de marketing”</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button><div class="da" id="da4"><div><span class="say gold">Pablo responde</span><p>Mejor. Nadie te enseñó malas mañas todavía. Empezamos desde cero, con un paso a paso con orden, y la primera tarea la haces hoy.</p></div></div></article><a class="dd cta rv" style="--i:5" href="#planes"><span class="say gold">¿Otra duda?</span><span class="qt">Escríbela en el grupo gratis o mira el plan</span><span class="arr">→</span></a></div></div></section><section class="pricing" id="planes">
     <div class="wrap center">
     <div class="ph">
       <span class="eyebrow rv">Precio de fundador</span>
@@ -575,10 +746,10 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
     <div class="pz"><div class="sq zoom rv" style="--i:3"><img src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto:best,f_auto/v1771218778/Captura_clase_vzvoyr.jpg" alt="Captura de una clase en vivo por Zoom con fotógrafos de la comunidad" width="1000" height="1000" loading="lazy"></div><div class="pst rv" style="--i:3">
       <div class="price" id="price">
         <span class="ribbon">Precio de fundador</span>
-        <div class="pt"><span class="old">$49</span><p class="pn"><span class="pnum">$33</span><small>/mes</small></p></div>
-        <p class="pd">Menos de $1.10 al día.</p>
+        <div class="bill" id="bill" role="group" aria-label="Frecuencia de pago"><span class="bill-thumb" aria-hidden="true"></span><button type="button" data-bill="m" aria-pressed="true">Mensual</button><button type="button" data-bill="a" aria-pressed="false">Anual <i>2 meses gratis</i></button></div><div class="pt"><span class="old" id="oldW"><span id="oldnum">$49</span></span><p class="pn"><span class="pnum" id="pnum">$49</span><small>/mes</small></p></div>
+        <p class="pd" id="pdesc">Menos de $1.10 al día.</p><p class="pbill" id="pbill">Se cobran $33 cada mes. Cancela cuando quieras.</p>
         <div class="pl" id="plist" style="text-align:left"></div>
-        <a class="btn btn-p" href="https://nas.com/marketographers/join-membership/690025802c8123e0f9b762ef" target="_blank" rel="noopener">Quiero entrar a la comunidad <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="btn btn-p" href="https://nas.com/marketographers/join-membership/690025802c8123e0f9b762ef" target="_blank" rel="noopener"><span id="priceCtaTxt">Quiero entrar a la comunidad</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         <p class="note">Cancela cuando quieras.</p>
       </div>
     </div>
@@ -774,7 +945,7 @@ tilt(document.getElementById('price'), 6);
 document.querySelectorAll('.pc').forEach(function(c){ tilt(c, 8); });
 (function(){
   var v = document.getElementById('videoFrame');
-  document.getElementById('heroTilt').addEventListener('pointermove', function(e){
+  document.getElementById('heroTilt').addEventListener('pointermove', function(e){ if(e.pointerType==='touch') return;
     var r = v.getBoundingClientRect();
     v.style.setProperty('--mx', (e.clientX-r.left)+'px');
     v.style.setProperty('--my', (e.clientY-r.top)+'px');
@@ -859,9 +1030,12 @@ function makeTrack(rootId){
     c.style.setProperty('--k', i);
     c.addEventListener('pointermove', function(e){ var r = c.getBoundingClientRect(); c.style.setProperty('--mx',(e.clientX-r.left)+'px'); c.style.setProperty('--my',(e.clientY-r.top)+'px'); });
   });
-  var vis = false, lastUser = 0, hov = false;
+  var vis = false, lastUser = 0, hov = false, touching = false, lastSet = -1;
   new IntersectionObserver(function(es){ es.forEach(function(e){ vis = e.isIntersecting; if(vis) track.classList.add('in'); }); }, {threshold:.15}).observe(track);
   function touched(){ lastUser = Date.now(); }
+  track.addEventListener('touchstart', function(){ touching = true; touched(); }, {passive:true});
+  ['touchend','touchcancel'].forEach(function(ev){ track.addEventListener(ev, function(){ touching = false; touched(); }, {passive:true}); });
+  track.addEventListener('scroll', function(){ if(lastSet>=0 && !down && Math.abs(track.scrollLeft-lastSet)>3){ touched(); } }, {passive:true});
   ['pointerdown','keydown','touchstart'].forEach(function(ev){ track.addEventListener(ev, touched, {passive:true}); });
   track.addEventListener('wheel', function(e){ if(Math.abs(e.deltaX) > Math.abs(e.deltaY)) touched(); }, {passive:true});
   track.addEventListener('pointerup', touched);
@@ -872,14 +1046,14 @@ function makeTrack(rootId){
     // desplazamiento continuo en bucle: acumulador propio porque scrollLeft se redondea a entero
     var pos = track.scrollLeft, cur = .8;
     (function tick(){
-      var active = !vis || down || Date.now() < lastUser+2500;
+      var active = !vis || down || touching || Date.now() < lastUser+2500;
       if(active){ pos = track.scrollLeft; }
       else {
         cur += ((hov ? .22 : .8) - cur)*.08;
         var per = period();
         pos += cur;
         if(per && pos >= per) pos -= per;
-        track.scrollLeft = pos;
+        track.scrollLeft = pos; lastSet = track.scrollLeft;
       }
       requestAnimationFrame(tick);
     })();
@@ -934,7 +1108,7 @@ function frame(){
   });
 }
 function onScroll(){ if(!ticking){ ticking = true; requestAnimationFrame(frame); } }
-addEventListener('scroll', onScroll, {passive:true});
+addEventListener('scroll', onScroll, {passive:true, capture:true});
 addEventListener('resize', onScroll);
 if(reduce){ words.forEach(function(w){ w.style.setProperty('--l','1'); }); }
 frame();
@@ -1027,25 +1201,149 @@ if(!reduce && fine){
     b.addEventListener('pointerleave', function(){ b.style.setProperty('--tx','0px'); b.style.setProperty('--ty','0px'); });
   });
 }
-/* ---------- precio que cuenta ---------- */
+
+/* ---------- precio: baja de $49 a $33, con plan anual ---------- */
 (function(){
-  var el = document.querySelector('.pnum'), card = document.querySelector('.price');
-  if(!el || !card || reduce) return;
-  new IntersectionObserver(function(es,o){
-    es.forEach(function(e){
-      if(!e.isIntersecting) return;
-      o.disconnect();
-      var st = null;
-      function step(ts){
-        if(!st) st = ts;
-        var p = Math.min((ts-st)/1100,1);
-        el.textContent = '$'+Math.round(33*(1-Math.pow(1-p,3)));
-        if(p<1) requestAnimationFrame(step);
-      }
-      requestAnimationFrame(step);
-    });
-  }, {threshold:.5}).observe(card);
+  var card=document.getElementById('price'); if(!card) return;
+  var elP=document.getElementById('pnum'), elO=document.getElementById('oldnum'), oldW=document.getElementById('oldW');
+  var pd=document.getElementById('pdesc'), pb=document.getElementById('pbill'), ctaT=document.getElementById('priceCtaTxt');
+  var bill=document.getElementById('bill'), btns=Array.prototype.slice.call(bill.querySelectorAll('button')), txtEls=[pd,pb];
+  /* Valores propuestos. El anual es una propuesta: confirma el precio real y crea el nivel en Nas.io antes de publicar. */
+  var PLAN={
+    m:{p:33,o:49,day:'Menos de $1.10 al día.',bill:'Se cobran $33 cada mes. Cancela cuando quieras.',cta:'Quiero entrar a la comunidad'},
+    a:{p:27.5,o:33,day:'Menos de $0.92 al día.',bill:'Se cobran $330 una vez al año. Pagas 10 meses y recibes 2 gratis.',cta:'Quiero el plan anual'}
+  };
+  function fmt(v){ return '$'+(v%1?v.toFixed(2):v); }
+  var cur={p:49,o:49}, tk={p:0,o:0}, mode='m', seen=false;
+  function tween(key,el,to,dur,done){
+    var from=cur[key];
+    if(reduce){ cur[key]=to; el.textContent=fmt(to); if(done) done(); return; }
+    var my=++tk[key], t0=null;
+    (function step(ts){
+      if(tk[key]!==my) return;
+      if(!t0) t0=ts;
+      var p=Math.min((ts-t0)/dur,1), e=1-Math.pow(1-p,3);
+      cur[key]=from+(to-from)*e; el.textContent=p>=1?fmt(to):'$'+Math.round(cur[key]);
+      if(p<1) requestAnimationFrame(step); else if(done) done();
+    })(performance.now());
+  }
+  function setText(k){
+    txtEls.forEach(function(e){ e.classList.add('swap'); });
+    setTimeout(function(){ pd.textContent=PLAN[k].day; pb.textContent=PLAN[k].bill; ctaT.textContent=PLAN[k].cta; txtEls.forEach(function(e){ e.classList.remove('swap'); }); }, reduce?0:140);
+  }
+  function go(k,first){
+    mode=k; oldW.classList.remove('struck');
+    bill.classList.toggle('annual',k==='a');
+    btns.forEach(function(b){ b.setAttribute('aria-pressed', b.getAttribute('data-bill')===k?'true':'false'); });
+    tween('o',elO,PLAN[k].o,first?0:700);
+    tween('p',elP,PLAN[k].p,first?1100:900,function(){ oldW.classList.add('struck'); });
+    if(!first) setText(k);
+  }
+  btns.forEach(function(b){ b.addEventListener('click',function(){ var k=b.getAttribute('data-bill'); if(k!==mode && seen) go(k,false); }); });
+  if(reduce){ seen=true; cur.p=33; cur.o=49; elP.textContent='$33'; elO.textContent='$49'; oldW.classList.add('struck'); return; }
+  new IntersectionObserver(function(es,o){ es.forEach(function(e){ if(e.isIntersecting){ o.disconnect(); seen=true; go('m',true); } }); },{threshold:.5}).observe(card);
 })();
+
+/* ---------- indicador de sección en el nav ---------- */
+(function(){
+  var links={}; document.querySelectorAll('.nav a.l').forEach(function(a){ links[a.getAttribute('href')]=a; });
+  var secs=['problema','incluye','casos','planes','faq'].map(function(id){ return document.getElementById(id); }).filter(Boolean);
+  if(!secs.length) return;
+  var io2=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ Object.keys(links).forEach(function(h){ links[h].classList.toggle('on', h==='#'+e.target.id); }); } }); },{rootMargin:'-45% 0px -50% 0px'});
+  secs.forEach(function(s){ io2.observe(s); });
+})();
+
+/* ---------- barra inferior en móvil: aparece tras el hero y se oculta en el precio ---------- */
+(function(){
+  var dock=document.getElementById('dock'), hero=document.querySelector('.hero'), plan=document.getElementById('planes');
+  if(!dock||!hero||!plan) return;
+  var h=true,p=false;
+  function upd(){ dock.classList.toggle('show', !h && !p); }
+  new IntersectionObserver(function(es){ h=es[0].isIntersecting; upd(); },{threshold:0}).observe(hero);
+  new IntersectionObserver(function(es){ p=es[0].isIntersecting; upd(); },{threshold:.15}).observe(plan);
+})();
+
+/* ---------- secciones nuevas ---------- */
+(function(){
+  function getVh(){ return (typeof mkScroller==='function') ? mkScroller().vh : innerHeight; }
+  /* frase que se enciende con el scroll */
+  var wls=[].slice.call(document.querySelectorAll('[data-wl]')).map(function(el){
+    var txt=el.textContent.replace(/\s+/g,' ').trim(); el.setAttribute('aria-label',txt); el.textContent='';
+    var ws=txt.split(' ').map(function(t){ var s=document.createElement('span'); s.className='wlw'; s.setAttribute('aria-hidden','true'); s.textContent=t; el.appendChild(s); el.appendChild(document.createTextNode(' ')); if(reduce) s.classList.add('on'); return s; });
+    return {el:el,ws:ws};
+  });
+  var wt=0;
+  function wf(){ wt=0; if(reduce) return; var vh=getVh(); wls.forEach(function(o){ var r=o.el.getBoundingClientRect(), p=Math.min(1,Math.max(0,(vh*.88-r.top)/(vh*.5))), n=Math.round(p*o.ws.length); o.ws.forEach(function(s,i){ s.classList.toggle('on', i<n); }); }); }
+  addEventListener('scroll',function(){ if(!wt){ wt=1; requestAnimationFrame(wf); } },{passive:true,capture:true}); wf();
+  /* mapa de cursos */
+  var C={"fotografia-de-novato-a-pro": {"t": "Fotógrafo: de novato a pro", "d": "Fotografía básica, desde cero", "img": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1790794333540_eff8ff5e-3e15-4576-b1b4-78f5110485ad_GV", "href": "/cursos/fotografia-de-novato-a-pro/"}, "marketing-para-fotografos": {"t": "Marketing para fotógrafos", "d": "Marketing y ventas para fotógrafos", "img": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1789677004230_a059673c-a420-424c-add8-9d90943bf85b_GV", "href": "/cursos/marketing-para-fotografos/"}, "meta-ads-para-creativos": {"t": "Meta Ads para creativos", "d": "Pixel, audiencias y campañas en Meta", "img": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1789678578478_6d7e2c96-583d-47ee-9fd0-92f58b176e1c_GV", "href": "/cursos/meta-ads-para-creativos/"}, "fotografia-con-iphone": {"t": "Fotografía con iPhone para principiantes", "d": "La cámara del iPhone, desde cero", "img": "/cursos/assets/portadas/fotografia-con-iphone.jpg", "href": "/cursos/fotografia-con-iphone/"}, "landing-pages-con-ia": {"t": "Landing pages con IA, gratis", "d": "Tu landing con IA, sin pagar hosting", "img": "/cursos/assets/portadas/landing-pages-con-ia.jpg", "href": "/cursos/landing-pages-con-ia/"}, "zoom-coach": {"t": "Zoom Coach", "d": "Clases y asesorías online con buena imagen y audio", "img": "/cursos/assets/portadas/zoom-coach.jpg", "href": "/cursos/zoom-coach/"}, "agenda-automatica-cal-iphone": {"t": "Agendamiento automático con Cal + iPhone", "d": "Reservas, señas y recordatorios con Cal.com", "img": "/cursos/assets/portadas/agenda-automatica-cal-iphone.jpg", "href": "/cursos/agenda-automatica-cal-iphone/"}, "shortcuts-iphone": {"t": "Shortcuts de iPhone", "d": "Automatiza tu iPhone con la app Atajos", "img": "/cursos/assets/portadas/shortcuts-iphone.jpg", "href": "/cursos/shortcuts-iphone/"}}, M=[["No sé cuánto cobrar", ["marketing-para-fotografos"], "Para la cuenta rápida usa también la calculadora de precio de MarkeTools."], ["Nadie me escribe", ["marketing-para-fotografos", "landing-pages-con-ia"], ""], ["Mis fotos no se ven pro", ["fotografia-de-novato-a-pro", "fotografia-con-iphone"], ""], ["Quiero anunciar y no sé cómo", ["meta-ads-para-creativos"], ""], ["Pierdo horas agendando", ["agenda-automatica-cal-iphone", "shortcuts-iphone"], ""], ["Mis clases online se ven mal", ["zoom-coach"], ""]], chips=document.getElementById('mchips'), res=document.getElementById('mres'), cur=-1;
+  if(chips&&res){
+    chips.innerHTML=M.map(function(m,i){ return '<button type="button" role="tab" data-i="'+i+'" aria-selected="false">'+esc(m[0])+'</button>'; }).join('');
+    function show(i,first){
+      if(i===cur) return; cur=i;
+      [].forEach.call(chips.children,function(b,k){ b.setAttribute('aria-selected', k===i?'true':'false'); });
+      function paint(){ var m=M[i]; res.innerHTML=m[1].map(function(s){ var c=C[s]; return '<a class="mc" href="'+c.href+'"><img src="'+c.img+'" alt="Portada del curso '+esc(c.t)+'" loading="lazy"><div><h3>'+esc(c.t)+'</h3><p>'+esc(c.d)+'</p><span class="go">Ver el curso →</span></div></a>'; }).join('')+(m[2]?'<p class="mtool">'+esc(m[2])+' <a href="/marketools/calculadora/">Abrir calculadora</a></p>':''); res.classList.remove('out'); }
+      if(first||reduce){ paint(); } else { res.classList.add('out'); setTimeout(paint,200); }
+    }
+    chips.addEventListener('click',function(e){ var b=e.target.closest('button'); if(b) show(+b.dataset.i,false); });
+    show(0,true);
+  }
+  /* dudas: una abierta a la vez */
+  var dds=[].slice.call(document.querySelectorAll('.dd:not(.cta)'));
+  dds.forEach(function(d){ var b=d.querySelector('.dq'); b.addEventListener('click',function(){ var o=!d.classList.contains('open'); dds.forEach(function(x){ x.classList.remove('open'); x.querySelector('.dq').setAttribute('aria-expanded','false'); }); if(o){ d.classList.add('open'); b.setAttribute('aria-expanded','true'); } }); });
+  /* cifras que cuentan al entrar */
+  [].slice.call(document.querySelectorAll('[data-count]')).forEach(function(el){
+    var to=+el.getAttribute('data-count'); if(reduce){ el.textContent=to.toLocaleString('es'); return; }
+    el.textContent='0';
+    new IntersectionObserver(function(es,o){ es.forEach(function(e){ if(!e.isIntersecting) return; o.disconnect(); var t0=null; (function st(ts){ if(!t0) t0=ts; var p=Math.min((ts-t0)/1200,1); el.textContent=Math.round(to*(1-Math.pow(1-p,3))).toLocaleString('es'); if(p<1) requestAnimationFrame(st); })(performance.now()); }); },{threshold:.6}).observe(el);
+  });
+  var mc=document.getElementById('miniCalc');
+  if(mc && !reduce){ new IntersectionObserver(function(es,o){ es.forEach(function(e){ if(!e.isIntersecting) return; o.disconnect(); var t0=null; (function st(ts){ if(!t0) t0=ts; var p=Math.min((ts-t0)/1100,1); mc.textContent='$'+Math.round(120-(120-74)*(1-Math.pow(1-p,3))); if(p<1) requestAnimationFrame(st); })(performance.now()); }); },{threshold:.6}).observe(mc); }
+  /* inclinación en las baldosas */
+  /* móvil: se encienden con el scroll */
+  if(!fine && !reduce){ var io3=new IntersectionObserver(function(es){ es.forEach(function(e){ e.target.classList.toggle('lit', e.isIntersecting); }); },{rootMargin:'-36% 0px -36% 0px'}); document.querySelectorAll('.sc,.tile,.dd').forEach(function(el){ io3.observe(el); }); }
+})();
+
+(function(){
+  try{var d=document.documentElement,K='mk-theme',s=null;
+  try{s=localStorage.getItem(K)}catch(e){}
+  if(s==='light')d.setAttribute('data-theme','light');
+  function mount(){
+    if(document.querySelector('.thm'))return;
+    var b=document.createElement('button');b.className='thm';b.type='button';
+    b.setAttribute('aria-label','Cambiar entre modo claro y oscuro');
+    b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><g class="moon"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></g><g class="sun"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></g></svg>';
+    b.addEventListener('click',function(e){
+      var light=d.getAttribute('data-theme')==='light';
+      var apply=function(){if(light)d.removeAttribute('data-theme');else d.setAttribute('data-theme','light');
+        try{localStorage.setItem(K,light?'dark':'light')}catch(_){}
+        var m=document.querySelector('meta[name=theme-color]');if(m)m.setAttribute('content',light?'#0c0c0c':'#f6f5f2')};
+      var red=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
+      if(document.startViewTransition&&!red){
+        var x=e.clientX,y=e.clientY,r=Math.hypot(Math.max(x,innerWidth-x),Math.max(y,innerHeight-y));
+        var t=document.startViewTransition(apply);
+        t.ready.then(function(){d.animate({clipPath:['circle(0px at '+x+'px '+y+'px)','circle('+r+'px at '+x+'px '+y+'px)']},{duration:650,easing:'cubic-bezier(.22,1,.36,1)',pseudoElement:'::view-transition-new(root)'})}).catch(function(){});
+      }else apply();
+    });
+    document.body.appendChild(b);
+  }
+  if(document.body)mount();else document.addEventListener('DOMContentLoaded',mount);
+  }catch(e){}
+})();
+
+/* ---------- móvil: lo que en escritorio reacciona al mouse, aquí reacciona al scroll ---------- */
+(function(){
+  if(fine) return;
+  var set=function(sel,margin){
+    var els=document.querySelectorAll(sel); if(!els.length) return;
+    var io=new IntersectionObserver(function(es){ es.forEach(function(e){ e.target.classList.toggle('lit', e.isIntersecting); }); },{rootMargin:margin});
+    els.forEach(function(el){ io.observe(el); });
+  };
+  set('.pc','-38% 0px -38% 0px');
+  set('.st','-30% 0px -30% 0px');
+  set('.price','-25% 0px -25% 0px');
+})();
+
 </script>
 </body>
 </html>

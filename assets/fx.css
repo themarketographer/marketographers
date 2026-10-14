@@ -126,10 +126,10 @@ h1,h2,h3,.wl{text-wrap:balance}
 :root[data-theme="light"]{
   --bg:#f6f5f2;--s1:#ffffff;--s2:#efeeea;--s3:#e5e4df;
   --ink:#181818;--mut:#5c5c5c;--line:rgba(24,24,24,.12);
-  --neg:#d63a3a;--accent-t:#8a6a00;
+  --neg:#d63a3a;--accent-t:#7a5f00;
   --glass:rgba(255,255,255,.72);--glass-b:rgba(24,24,24,.12);
   --cream:#f6f5f2;--cream-alt:#ffffff;--surface-2:#efeeea;--surface-3:#e5e4df;--white:#ffffff;
-  --muted:#5c5c5c;--border:rgba(24,24,24,.12);--gold-text:#8a6a00;--red:#d63a3a;
+  --muted:#5c5c5c;--border:rgba(24,24,24,.12);--gold-text:#7a5f00;--red:#b02a2a;
   color-scheme:light;
 }
 :root[data-theme="light"] header .nav{background:rgba(255,255,255,.75)}
@@ -144,6 +144,37 @@ h1,h2,h3,.wl{text-wrap:balance}
 :root[data-theme="light"] img{filter:none}
 :root[data-theme="light"] ::selection{background:#fddc5b;color:#181818}
 @media(prefers-reduced-transparency:reduce){:root[data-theme="light"] .nav,:root[data-theme="light"] .wa-tip,:root[data-theme="light"] .wa-ic{background:#fff}}
+/* --- ajustes de contraste del tema claro --- */
+:root[data-theme="light"]{--neg:#c92f2f;--accent-t:#7a5f00}
+/* islas que siguen oscuras (fotos, tarjeta de precio, chats): recuperan las variables del tema noche */
+:root[data-theme="light"] :is(.price,.t-clase,.t-rec,.chip,.video,.poster,.mini-chat,.chat,.tool-hero-dark){
+  --ink:#f8f8f8;--mut:#b3b3b3;--line:rgba(255,255,255,.1);--glass:rgba(255,255,255,.07);--glass-b:rgba(255,255,255,.14);
+  --accent-t:#fddc5b;--neg:#ff5c5c;--s1:#151515;--s2:#1d1d1d;--s3:#262626;color:var(--ink)}
+:root[data-theme="light"] .chip{background:rgba(18,18,18,.78)}
+:root[data-theme="light"] .chip b{color:var(--accent-t)}
+/* texto y iconos amarillos pasan al dorado oscuro */
+:root[data-theme="light"] :is(.ic .num,.st.lit .num,.tc .who span,.tlink,.mchips button[aria-selected="true"],.mc .inc,.mc .go,.about .h,.mini-calc b,.say.gold,.dd.cta .arr,.dq svg,.fi button svg,.statement .w.k){color:var(--accent-t)}
+:root[data-theme="light"] :is(.logo i,nav mark,nav mark i){color:#9a7400}
+/* paginas internas: amarillo y verde usados como texto */
+:root[data-theme="light"] :is(.ccard-foot .now,.ccard-foot .go,.tldr .t,.toc .t,.article-body a,.res-card .big,.tool-tag,.go){color:#7a5f00}
+:root[data-theme="light"] .pill{color:#14703e}
+:root[data-theme="light"] :is(.btn-whatsapp,.nav .btn-whatsapp){color:#0f7a3d}
+:root[data-theme="light"] :is(.tag,.insight strong){color:#b02a2a}
+:root[data-theme="light"] .wlw{color:rgba(24,24,24,.28)}
+/* gris claros pensados para fondo oscuro */
+:root[data-theme="light"] .wlw{color:rgba(24,24,24,.2)}
+:root[data-theme="light"] .wlw.on{color:var(--ink)}
+:root[data-theme="light"] .tc q{color:var(--ink)}
+:root[data-theme="light"] .about p{color:var(--mut)}
+:root[data-theme="light"] .pc .n{-webkit-text-stroke-color:rgba(24,24,24,.32)}
+:root[data-theme="light"] .pc.lit .n{-webkit-text-stroke-color:var(--neg)}
+:root[data-theme="light"] .mini-calc{background:var(--s3)}
+:root[data-theme="light"] .mchips button{background:#fff}
+:root[data-theme="light"] .mchips button[aria-selected="true"]{background:rgba(138,106,0,.1);border-color:var(--accent-t)}
+/* iconos blancos */
+:root[data-theme="light"] svg[stroke="#fff"]{stroke:var(--ink)}
+:root[data-theme="light"] svg[fill="#fff"]{fill:var(--ink)}
+:root[data-theme="light"] .wa-ic svg{fill:#128c4a}
 /* Boton */
 .thm{position:fixed;left:18px;bottom:18px;z-index:9990;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;
   background:var(--glass,rgba(255,255,255,.08));border:1px solid var(--glass-b,rgba(255,255,255,.14));color:var(--ink,#f8f8f8);

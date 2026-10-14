@@ -455,7 +455,14 @@ h1,h2,h3,.wl{text-wrap:balance}
 .mc .go{display:inline-block;margin-top:14px;color:var(--accent);font-weight:600;transition:transform .3s var(--ease)}
 @media (hover:hover) and (pointer:fine){.mc:hover .go{transform:translateX(4px)}}
 .mfoot{margin-top:28px;text-align:center}
-.mtool{padding:14px 18px;border-radius:16px;border:1px dashed var(--glass-b);color:var(--mut);font-size:.9rem}.mtool a{color:var(--accent)}
+.mtool{padding:14px 18px;border-radius:16px;border:1px dashed var(--glass-b);color:var(--mut);font-size:.9rem}
+.mc .inc{display:inline-block;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--accent);margin-bottom:8px}
+.mfoot{display:grid;justify-items:center;gap:16px}.mnote{color:var(--mut);max-width:46ch;font-size:.98rem}
+/* portada del video con gancho */
+.poster.hook{justify-content:flex-start;gap:10px;padding:clamp(18px,4.2vw,56px);padding-right:clamp(18px,54%,760px);background:linear-gradient(90deg,rgba(12,12,12,.9) 0%,rgba(12,12,12,.62) 36%,rgba(12,12,12,0) 62%),linear-gradient(180deg,rgba(12,12,12,0) 60%,rgba(12,12,12,.55) 100%)}
+.poster.hook small{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:var(--accent)}
+.poster.hook b{font-size:clamp(1.35rem,3.3vw,2.7rem);line-height:1.08;max-width:14ch}
+@media(max-width:640px){.poster.hook{justify-content:flex-end;padding:18px;padding-right:96px;background:linear-gradient(180deg,rgba(12,12,12,0) 28%,rgba(12,12,12,.92) 100%)}.poster.hook b{font-size:clamp(1.15rem,5.2vw,1.5rem);max-width:none}}
 @media(max-width:860px){.mgrid{grid-template-columns:1fr}.mc{grid-template-columns:1fr}.mchips{grid-auto-flow:column;grid-auto-columns:max-content;overflow-x:auto;scroll-snap-type:x proximity;padding-bottom:6px}.mchips button{scroll-snap-align:start;white-space:nowrap}}
 .bento{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
 .tile{position:relative;overflow:hidden;border-radius:26px;background:linear-gradient(160deg,var(--s2),var(--s1));border:1px solid var(--line);padding:26px;min-height:300px;display:flex;flex-direction:column;justify-content:space-between;gap:16px;transition:border-color .5s var(--ease)}
@@ -491,10 +498,10 @@ h1,h2,h3,.wl{text-wrap:balance}
 :root[data-theme="light"]{
   --bg:#f6f5f2;--s1:#ffffff;--s2:#efeeea;--s3:#e5e4df;
   --ink:#181818;--mut:#5c5c5c;--line:rgba(24,24,24,.12);
-  --neg:#d63a3a;--accent-t:#8a6a00;
+  --neg:#d63a3a;--accent-t:#7a5f00;
   --glass:rgba(255,255,255,.72);--glass-b:rgba(24,24,24,.12);
   --cream:#f6f5f2;--cream-alt:#ffffff;--surface-2:#efeeea;--surface-3:#e5e4df;--white:#ffffff;
-  --muted:#5c5c5c;--border:rgba(24,24,24,.12);--gold-text:#8a6a00;--red:#d63a3a;
+  --muted:#5c5c5c;--border:rgba(24,24,24,.12);--gold-text:#7a5f00;--red:#b02a2a;
   color-scheme:light;
 }
 :root[data-theme="light"] header .nav{background:rgba(255,255,255,.75)}
@@ -509,6 +516,37 @@ h1,h2,h3,.wl{text-wrap:balance}
 :root[data-theme="light"] img{filter:none}
 :root[data-theme="light"] ::selection{background:#fddc5b;color:#181818}
 @media(prefers-reduced-transparency:reduce){:root[data-theme="light"] .nav,:root[data-theme="light"] .wa-tip,:root[data-theme="light"] .wa-ic{background:#fff}}
+/* --- ajustes de contraste del tema claro --- */
+:root[data-theme="light"]{--neg:#c92f2f;--accent-t:#7a5f00}
+/* islas que siguen oscuras (fotos, tarjeta de precio, chats): recuperan las variables del tema noche */
+:root[data-theme="light"] :is(.price,.t-clase,.t-rec,.chip,.video,.poster,.mini-chat,.chat,.tool-hero-dark){
+  --ink:#f8f8f8;--mut:#b3b3b3;--line:rgba(255,255,255,.1);--glass:rgba(255,255,255,.07);--glass-b:rgba(255,255,255,.14);
+  --accent-t:#fddc5b;--neg:#ff5c5c;--s1:#151515;--s2:#1d1d1d;--s3:#262626;color:var(--ink)}
+:root[data-theme="light"] .chip{background:rgba(18,18,18,.78)}
+:root[data-theme="light"] .chip b{color:var(--accent-t)}
+/* texto y iconos amarillos pasan al dorado oscuro */
+:root[data-theme="light"] :is(.ic .num,.st.lit .num,.tc .who span,.tlink,.mchips button[aria-selected="true"],.mc .inc,.mc .go,.about .h,.mini-calc b,.say.gold,.dd.cta .arr,.dq svg,.fi button svg,.statement .w.k){color:var(--accent-t)}
+:root[data-theme="light"] :is(.logo i,nav mark,nav mark i){color:#9a7400}
+/* paginas internas: amarillo y verde usados como texto */
+:root[data-theme="light"] :is(.ccard-foot .now,.ccard-foot .go,.tldr .t,.toc .t,.article-body a,.res-card .big,.tool-tag,.go){color:#7a5f00}
+:root[data-theme="light"] .pill{color:#14703e}
+:root[data-theme="light"] :is(.btn-whatsapp,.nav .btn-whatsapp){color:#0f7a3d}
+:root[data-theme="light"] :is(.tag,.insight strong){color:#b02a2a}
+:root[data-theme="light"] .wlw{color:rgba(24,24,24,.28)}
+/* gris claros pensados para fondo oscuro */
+:root[data-theme="light"] .wlw{color:rgba(24,24,24,.2)}
+:root[data-theme="light"] .wlw.on{color:var(--ink)}
+:root[data-theme="light"] .tc q{color:var(--ink)}
+:root[data-theme="light"] .about p{color:var(--mut)}
+:root[data-theme="light"] .pc .n{-webkit-text-stroke-color:rgba(24,24,24,.32)}
+:root[data-theme="light"] .pc.lit .n{-webkit-text-stroke-color:var(--neg)}
+:root[data-theme="light"] .mini-calc{background:var(--s3)}
+:root[data-theme="light"] .mchips button{background:#fff}
+:root[data-theme="light"] .mchips button[aria-selected="true"]{background:rgba(138,106,0,.1);border-color:var(--accent-t)}
+/* iconos blancos */
+:root[data-theme="light"] svg[stroke="#fff"]{stroke:var(--ink)}
+:root[data-theme="light"] svg[fill="#fff"]{fill:var(--ink)}
+:root[data-theme="light"] .wa-ic svg{fill:#128c4a}
 /* Boton */
 .thm{position:fixed;left:18px;bottom:18px;z-index:9990;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;
   background:var(--glass,rgba(255,255,255,.08));border:1px solid var(--glass-b,rgba(255,255,255,.14));color:var(--ink,#f8f8f8);
@@ -645,7 +683,7 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
   <a class="l" href="#incluye">Qué incluye</a>
   <a class="l" href="#casos">Casos</a>
   <a class="l" href="#planes">Precio</a>
-  <a class="l" href="#faq">Preguntas</a> <a class="l" href="/cursos/">Cursos</a> <a class="l" href="/marketools/">Herramientas</a>
+  <a class="l" href="#faq">Preguntas</a>
   <a class="btn btn-p cta-planes" href="#planes">Entrar</a>
 </nav>
 
@@ -660,8 +698,8 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
   <div class="stage rv" style="--i:3" id="stage">
     <div class="tilt" id="heroTilt">
       <button type="button" class="video" id="videoFrame" data-yt="FE5oEd88x98" aria-label="Reproducir el video">
-        <img src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1790061642/marketographers/vsl-thumbnail-pablo-marketographers.jpg" alt="Pablo Villarroel en el video de The Marketographers" width="1280" height="720" fetchpriority="high">
-        <span class="poster"><small>Dale play</small><b><mark>90 segundos</mark> y decides</b></span><span class="play"><svg viewBox="0 0 24 24" width="30" height="30" fill="#181818" style="margin-left:4px"><path d="M8 5v14l11-7z"/></svg></span>
+        <img src="/assets/hero-hook.jpg" alt="Pablo Villarroel, con las manos abiertas, en el video de The Marketographers" width="1280" height="720" fetchpriority="high">
+        <span class="poster hook"><small>Dale play</small><b>Hay fotógrafos peores que tú <mark>cobrando más</mark>. ¿Quieres saber por qué?</b></span><span class="play"><svg viewBox="0 0 24 24" width="30" height="30" fill="#181818" style="margin-left:4px"><path d="M8 5v14l11-7z"/></svg></span>
       </button><span class="chip" style="left:-2%;top:10%"><b>+500</b> fotógrafos adentro</span><span class="chip" style="right:-2%;bottom:14%"><b>17</b> países</span>
     </div>
   </div>
@@ -678,7 +716,7 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
   </div>
 </section>
 
-<section class="problem" id="problema">
+<section class="scenes" id="escenas"><div class="wrap-w"><div class="top center"><span class="eyebrow neg rv">Tres escenas de ejemplo</span><p class="wl" data-wl="Si una de estas escenas te suena, tu problema se llama ventas.">Si una de estas escenas te suena, tu problema se llama ventas.</p></div><div class="sgrid"><article class="sc rv" style="--i:0"><span class="when">Viernes, 10:47 pm</span><div class="chat"><p class="b in">Hola, ¿cuánto cobras por una sesión?</p><p class="b out">¿$50?</p><p class="b in">Uy, otro me cobra $30</p><p class="b out">Te la dejo en $35</p><p class="seen">Visto 10:52 pm</p></div><h3>Negociaste contra ti</h3><p>Pusiste el precio mirando al vecino y lo bajaste antes de que te lo pidieran.</p></article><article class="sc rv" style="--i:1"><span class="when">Domingo, 8:15 pm</span><div class="viral"><div class="vn"><b data-count="2300">2300</b><small>me gusta</small></div><div class="vn zero"><b>0</b><small>consultas</small></div></div><h3>El reel que se hizo viral</h3><p>Los likes se sienten como aplausos, y los aplausos no pagan el alquiler.</p></article><article class="sc rv" style="--i:2"><span class="when">Lunes, 9:02 am</span><div class="agenda"><p><i></i>Semana 1<b>Boda de la prima</b></p><p class="empty"><i></i>Semana 2<b>Libre</b></p><p class="empty"><i></i>Semana 3<b>Libre</b></p><p class="empty"><i></i>Semana 4<b>¿Alguna recomendación?</b></p></div><h3>Cada mes es una ruleta</h3><p>Vives del boca a boca, y el boca a boca no responde mensajes.</p></article></div><p class="escap rv">Las tres tienen arreglo, y el arreglo se enseña en clase, con tarea para ese mismo día.</p></div></section><section class="problem" id="problema">
   <div class="wrap-w">
     <div class="top">
       <span class="eyebrow neg rv">¿Te has sentido así?</span>
@@ -690,7 +728,7 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
   </div>
 </section>
 
-<section class="scenes" id="escenas"><div class="wrap-w"><div class="top center"><span class="eyebrow neg rv">Tres escenas de ejemplo</span><p class="wl" data-wl="Si una de estas escenas te suena, tu problema se llama ventas.">Si una de estas escenas te suena, tu problema se llama ventas.</p></div><div class="sgrid"><article class="sc rv" style="--i:0"><span class="when">Viernes, 10:47 pm</span><div class="chat"><p class="b in">Hola, ¿cuánto cobras por una sesión?</p><p class="b out">¿$50?</p><p class="b in">Uy, otro me cobra $30</p><p class="b out">Te la dejo en $35</p><p class="seen">Visto 10:52 pm</p></div><h3>Negociaste contra ti</h3><p>Pusiste el precio mirando al vecino y lo bajaste antes de que te lo pidieran.</p></article><article class="sc rv" style="--i:1"><span class="when">Domingo, 8:15 pm</span><div class="viral"><div class="vn"><b data-count="2300">2300</b><small>me gusta</small></div><div class="vn zero"><b>0</b><small>consultas</small></div></div><h3>El reel que se hizo viral</h3><p>Los likes se sienten como aplausos, y los aplausos no pagan el alquiler.</p></article><article class="sc rv" style="--i:2"><span class="when">Lunes, 9:02 am</span><div class="agenda"><p><i></i>Semana 1<b>Boda de la prima</b></p><p class="empty"><i></i>Semana 2<b>Libre</b></p><p class="empty"><i></i>Semana 3<b>Libre</b></p><p class="empty"><i></i>Semana 4<b>¿Alguna recomendación?</b></p></div><h3>Cada mes es una ruleta</h3><p>Vives del boca a boca, y el boca a boca no responde mensajes.</p></article></div><p class="escap rv">Las tres tienen arreglo, y el arreglo se enseña en clase, con tarea para ese mismo día.</p></div></section><section class="track-sec" id="incluye">
+<section class="track-sec" id="incluye">
   <div class="wrap-w">
     <div class="th">
       <div class="txt">
@@ -706,7 +744,7 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
   <div class="trail"><a class="btn btn-g cta-planes" href="#planes">Quiero entrar a la comunidad</a></div>
 </section>
 
-<section class="dentro" id="dentro"><div class="wrap-w"><div class="top"><span class="eyebrow rv">Por dentro</span><h2 class="h-sec rv" style="--i:1">Esto es lo que abres <mark>el día que entras</mark></h2></div><div class="bento"><article class="tile t-clase rv" style="--i:0"><img src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto:best,f_auto/v1771218778/Captura_clase_vzvoyr.jpg" alt="Clase en vivo de The Marketographers por Zoom" loading="lazy"><div class="tcap"><span class="live"><i></i>En vivo</span><h3>Clases dos veces por semana</h3><p>Con cámara prendida y tiempo para tus preguntas.</p></div></article><article class="tile t-wpp rv" style="--i:1"><div class="tcap"><h3>Grupo de WhatsApp</h3><p>Tus dudas se resuelven en minutos.</p></div><div class="mini-chat"><p class="b in">¿Cuánto cobran por un reel de 30 s?</p><p class="b out">Yo $60 con guion incluido</p><p class="b in">Gracias, ya lo subí</p><span class="ej">Conversación de ejemplo</span></div></article><article class="tile t-tool rv" style="--i:2"><div class="tcap"><h3>MarkeTools</h3><p>Calculadora de precio, link de WhatsApp y más.</p></div><div class="mini-calc"><small>Precio recomendado</small><b id="miniCalc">$74</b><span class="ej">Ejemplo con datos ficticios</span></div><a class="tlink" href="/marketools/">Abrir MarkeTools →</a></article><article class="tile t-rec rv" style="--i:3"><div class="tcap"><h3>Recursos y plantillas</h3><p>Todo ordenado para que sepas qué sigue.</p></div><img src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1790061651/marketographers/pablo-villarroel-about-marketographers.jpg" alt="" loading="lazy" aria-hidden="true"></article></div></div></section><section class="mapa" id="mapa"><div class="wrap-w"><div class="top"><span class="eyebrow rv">Mapa de cursos</span><h2 class="h-sec rv" style="--i:1">Dime qué te duele y te digo <mark>por cuál curso empezar</mark></h2></div><div class="mgrid"><div class="mchips" id="mchips" role="tablist" aria-label="Elige tu problema"></div><div class="mres" id="mres" aria-live="polite"></div></div><p class="mfoot rv"><a class="btn btn-g" href="/cursos/">Ver los 8 cursos</a></p></div></section><section class="track-sec" id="casos">
+<section class="dentro" id="dentro"><div class="wrap-w"><div class="top"><span class="eyebrow rv">Por dentro</span><h2 class="h-sec rv" style="--i:1">Esto es lo que abres <mark>el día que entras</mark></h2></div><div class="bento"><article class="tile t-clase rv" style="--i:0"><img src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto:best,f_auto/v1771218778/Captura_clase_vzvoyr.jpg" alt="Clase en vivo de The Marketographers por Zoom" loading="lazy"><div class="tcap"><span class="live"><i></i>En vivo</span><h3>Clases dos veces por semana</h3><p>Con cámara prendida y tiempo para tus preguntas.</p></div></article><article class="tile t-wpp rv" style="--i:1"><div class="tcap"><h3>Grupo de WhatsApp</h3><p>Tus dudas se resuelven en minutos.</p></div><div class="mini-chat"><p class="b in">¿Cuánto cobran por un reel de 30 s?</p><p class="b out">Yo $60 con guion incluido</p><p class="b in">Gracias, ya lo subí</p><span class="ej">Conversación de ejemplo</span></div></article><article class="tile t-tool rv" style="--i:2"><div class="tcap"><h3>Cursos, retos y herramientas</h3><p>Se abren con tu membresía, sin pagar nada aparte.</p></div><div class="mini-calc"><small>Calculadora de precio, ejemplo</small><b id="miniCalc">$74</b><span class="ej">Con datos ficticios</span></div><a class="tlink" href="#planes">Quiero entrar →</a></article><article class="tile t-rec rv" style="--i:3"><div class="tcap"><h3>Recursos y plantillas</h3><p>Todo ordenado para que sepas qué sigue.</p></div><img src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1790061651/marketographers/pablo-villarroel-about-marketographers.jpg" alt="" loading="lazy" aria-hidden="true"></article></div></div></section><section class="mapa" id="mapa"><div class="wrap-w"><div class="top"><span class="eyebrow rv">Dentro de la membresía</span><h2 class="h-sec rv" style="--i:1">Dime qué te duele y te digo <mark>por dónde empezar</mark></h2></div><div class="mgrid"><div class="mchips" id="mchips" role="tablist" aria-label="Elige tu problema"></div><div class="mres" id="mres" aria-live="polite"></div></div><p class="mfoot rv"><span class="mnote">Cursos, retos y herramientas vienen con la membresía. Un solo pago, sin comprar nada por separado.</span><a class="btn btn-p" href="#planes">Entrar a la membresía</a></p></div></section><section class="track-sec" id="casos">
   <div class="wrap-w">
     <div class="th">
       <div class="txt">
@@ -1217,7 +1255,7 @@ if(!reduce && fine){
   var cur={p:49,o:49}, tk={p:0,o:0}, mode='m', seen=false;
   function tween(key,el,to,dur,done){
     var from=cur[key];
-    if(reduce){ cur[key]=to; el.textContent=fmt(to); if(done) done(); return; }
+    if(reduce||dur<=0){ tk[key]++; cur[key]=to; el.textContent=fmt(to); if(done) done(); return; }
     var my=++tk[key], t0=null;
     (function step(ts){
       if(tk[key]!==my) return;
@@ -1276,13 +1314,13 @@ if(!reduce && fine){
   function wf(){ wt=0; if(reduce) return; var vh=getVh(); wls.forEach(function(o){ var r=o.el.getBoundingClientRect(), p=Math.min(1,Math.max(0,(vh*.88-r.top)/(vh*.5))), n=Math.round(p*o.ws.length); o.ws.forEach(function(s,i){ s.classList.toggle('on', i<n); }); }); }
   addEventListener('scroll',function(){ if(!wt){ wt=1; requestAnimationFrame(wf); } },{passive:true,capture:true}); wf();
   /* mapa de cursos */
-  var C={"fotografia-de-novato-a-pro": {"t": "Fotógrafo: de novato a pro", "d": "Fotografía básica, desde cero", "img": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1790794333540_eff8ff5e-3e15-4576-b1b4-78f5110485ad_GV", "href": "/cursos/fotografia-de-novato-a-pro/"}, "marketing-para-fotografos": {"t": "Marketing para fotógrafos", "d": "Marketing y ventas para fotógrafos", "img": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1789677004230_a059673c-a420-424c-add8-9d90943bf85b_GV", "href": "/cursos/marketing-para-fotografos/"}, "meta-ads-para-creativos": {"t": "Meta Ads para creativos", "d": "Pixel, audiencias y campañas en Meta", "img": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1789678578478_6d7e2c96-583d-47ee-9fd0-92f58b176e1c_GV", "href": "/cursos/meta-ads-para-creativos/"}, "fotografia-con-iphone": {"t": "Fotografía con iPhone para principiantes", "d": "La cámara del iPhone, desde cero", "img": "/cursos/assets/portadas/fotografia-con-iphone.jpg", "href": "/cursos/fotografia-con-iphone/"}, "landing-pages-con-ia": {"t": "Landing pages con IA, gratis", "d": "Tu landing con IA, sin pagar hosting", "img": "/cursos/assets/portadas/landing-pages-con-ia.jpg", "href": "/cursos/landing-pages-con-ia/"}, "zoom-coach": {"t": "Zoom Coach", "d": "Clases y asesorías online con buena imagen y audio", "img": "/cursos/assets/portadas/zoom-coach.jpg", "href": "/cursos/zoom-coach/"}, "agenda-automatica-cal-iphone": {"t": "Agendamiento automático con Cal + iPhone", "d": "Reservas, señas y recordatorios con Cal.com", "img": "/cursos/assets/portadas/agenda-automatica-cal-iphone.jpg", "href": "/cursos/agenda-automatica-cal-iphone/"}, "shortcuts-iphone": {"t": "Shortcuts de iPhone", "d": "Automatiza tu iPhone con la app Atajos", "img": "/cursos/assets/portadas/shortcuts-iphone.jpg", "href": "/cursos/shortcuts-iphone/"}}, M=[["No sé cuánto cobrar", ["marketing-para-fotografos"], "Para la cuenta rápida usa también la calculadora de precio de MarkeTools."], ["Nadie me escribe", ["marketing-para-fotografos", "landing-pages-con-ia"], ""], ["Mis fotos no se ven pro", ["fotografia-de-novato-a-pro", "fotografia-con-iphone"], ""], ["Quiero anunciar y no sé cómo", ["meta-ads-para-creativos"], ""], ["Pierdo horas agendando", ["agenda-automatica-cal-iphone", "shortcuts-iphone"], ""], ["Mis clases online se ven mal", ["zoom-coach"], ""]], chips=document.getElementById('mchips'), res=document.getElementById('mres'), cur=-1;
+  var C={"fotografia-de-novato-a-pro": {"t": "Fotógrafo: de novato a pro", "d": "Fotografía básica, desde cero", "img": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1790794333540_eff8ff5e-3e15-4576-b1b4-78f5110485ad_GV", "href": "/cursos/fotografia-de-novato-a-pro/"}, "marketing-para-fotografos": {"t": "Marketing para fotógrafos", "d": "Marketing y ventas para fotógrafos", "img": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1789677004230_a059673c-a420-424c-add8-9d90943bf85b_GV", "href": "/cursos/marketing-para-fotografos/"}, "meta-ads-para-creativos": {"t": "Meta Ads para creativos", "d": "Pixel, audiencias y campañas en Meta", "img": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1789678578478_6d7e2c96-583d-47ee-9fd0-92f58b176e1c_GV", "href": "/cursos/meta-ads-para-creativos/"}, "fotografia-con-iphone": {"t": "Fotografía con iPhone para principiantes", "d": "La cámara del iPhone, desde cero", "img": "/cursos/assets/portadas/fotografia-con-iphone.jpg", "href": "/cursos/fotografia-con-iphone/"}, "landing-pages-con-ia": {"t": "Landing pages con IA, gratis", "d": "Tu landing con IA, sin pagar hosting", "img": "/cursos/assets/portadas/landing-pages-con-ia.jpg", "href": "/cursos/landing-pages-con-ia/"}, "zoom-coach": {"t": "Zoom Coach", "d": "Clases y asesorías online con buena imagen y audio", "img": "/cursos/assets/portadas/zoom-coach.jpg", "href": "/cursos/zoom-coach/"}, "agenda-automatica-cal-iphone": {"t": "Agendamiento automático con Cal + iPhone", "d": "Reservas, señas y recordatorios con Cal.com", "img": "/cursos/assets/portadas/agenda-automatica-cal-iphone.jpg", "href": "/cursos/agenda-automatica-cal-iphone/"}, "shortcuts-iphone": {"t": "Shortcuts de iPhone", "d": "Automatiza tu iPhone con la app Atajos", "img": "/cursos/assets/portadas/shortcuts-iphone.jpg", "href": "/cursos/shortcuts-iphone/"}}, M=[["No sé cuánto cobrar", ["marketing-para-fotografos"], "La calculadora de precio también viene incluida."], ["Nadie me escribe", ["marketing-para-fotografos", "landing-pages-con-ia"], ""], ["Mis fotos no se ven pro", ["fotografia-de-novato-a-pro", "fotografia-con-iphone"], ""], ["Quiero anunciar y no sé cómo", ["meta-ads-para-creativos"], ""], ["Pierdo horas agendando", ["agenda-automatica-cal-iphone", "shortcuts-iphone"], ""], ["Mis clases online se ven mal", ["zoom-coach"], ""]], chips=document.getElementById('mchips'), res=document.getElementById('mres'), cur=-1;
   if(chips&&res){
     chips.innerHTML=M.map(function(m,i){ return '<button type="button" role="tab" data-i="'+i+'" aria-selected="false">'+esc(m[0])+'</button>'; }).join('');
     function show(i,first){
       if(i===cur) return; cur=i;
       [].forEach.call(chips.children,function(b,k){ b.setAttribute('aria-selected', k===i?'true':'false'); });
-      function paint(){ var m=M[i]; res.innerHTML=m[1].map(function(s){ var c=C[s]; return '<a class="mc" href="'+c.href+'"><img src="'+c.img+'" alt="Portada del curso '+esc(c.t)+'" loading="lazy"><div><h3>'+esc(c.t)+'</h3><p>'+esc(c.d)+'</p><span class="go">Ver el curso →</span></div></a>'; }).join('')+(m[2]?'<p class="mtool">'+esc(m[2])+' <a href="/marketools/calculadora/">Abrir calculadora</a></p>':''); res.classList.remove('out'); }
+      function paint(){ var m=M[i]; res.innerHTML=m[1].map(function(s){ var c=C[s]; return '<a class="mc" href="#planes"><img src="'+c.img+'" alt="Portada del curso '+esc(c.t)+'" loading="lazy"><div><span class="inc">Incluido en tu membresía</span><h3>'+esc(c.t)+'</h3><p>'+esc(c.d)+'</p><span class="go">Entrar a la membresía →</span></div></a>'; }).join('')+(m[2]?'<p class="mtool">'+esc(m[2])+'</p>':''); res.classList.remove('out'); }
       if(first||reduce){ paint(); } else { res.classList.add('out'); setTimeout(paint,200); }
     }
     chips.addEventListener('click',function(e){ var b=e.target.closest('button'); if(b) show(+b.dataset.i,false); });

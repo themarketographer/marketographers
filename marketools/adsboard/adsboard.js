@@ -969,7 +969,7 @@ F.grad = function (seed) { var h = 0; for (var i = 0; i < (seed || "").length; i
 F.statusEs = function (s) { return { ACTIVE: "Activo", PAUSED: "Pausado", ARCHIVED: "Archivado", DELETED: "Eliminado", DISAPPROVED: "Rechazado", PENDING_REVIEW: "En revisión", WITH_ISSUES: "Con problemas", CAMPAIGN_PAUSED: "Campaña pausada", ADSET_PAUSED: "Conjunto pausado", IN_PROCESS: "Procesando" }[s] || s || "—"; };
 F.objEs = function (o) { var map = { OUTCOME_LEADS: "Clientes potenciales", OUTCOME_SALES: "Ventas", OUTCOME_ENGAGEMENT: "Interacción", OUTCOME_TRAFFIC: "Tráfico", OUTCOME_AWARENESS: "Reconocimiento", OUTCOME_APP_PROMOTION: "App" }; return map[o] || (o || "").replace("OUTCOME_", "").toLowerCase(); };
 F.rankEs = function (r) { if (!r) return null; if (r === "ABOVE_AVERAGE") return { t: "Sobre el promedio", l: "g" }; if (r === "AVERAGE") return { t: "Promedio", l: "y" }; if (/BELOW/.test(r)) return { t: "Bajo el promedio", l: "r" }; return { t: r, l: "n" }; };
-F.icon = { g: "●", y: "▲", r: "✕", n: "○", i: "ℹ" };
+F.icon = { g: "", y: "", r: "", n: "", i: "" };
 F.chip = function (level, text, tip) { return '<span class="chip ' + level + '"' + (tip ? ' data-tip="' + F.esc(tip) + '"' : '') + '><span class="ic">' + (F.icon[level] || "") + '</span>' + F.esc(text) + '</span>'; };
 F.help = function (key) { return '<button type="button" class="help" data-gl="' + key + '" aria-label="Qué significa esto">?</button>'; };
 
@@ -1837,7 +1837,7 @@ T.cuentas = function (A) {
   html += A.pixels.length ? A.pixels.map(function (p) {
     var hrs = p.last_fired_time ? (Date.now() - new Date(p.last_fired_time).getTime()) / 36e5 : null;
     var chip = hrs === null ? F.chip("n", "Nunca disparó") : (hrs < 24 ? F.chip("g", "Activo hoy") : (hrs < 72 ? F.chip("y", "Hace " + Math.round(hrs / 24) + " d") : F.chip("r", "Inactivo " + Math.round(hrs / 24) + " d")));
-    return '<div class="card pad"><div class="eyebrow">' + F.esc(p.id) + '</div><h4 style="margin:4px 0 6px">' + F.esc(p.name) + '</h4>' + chip + '<div style="margin-top:10px"><button class="btn btn-sm" data-px="' + F.esc(p.id) + '">Ver eventos de 7 días</button> <button class="btn btn-sm" data-pxq="' + F.esc(p.id) + '">Calidad de datos</button></div><div id="px-' + F.esc(p.id) + '"></div><div id="pxq-' + F.esc(p.id) + '"></div></div>';
+    return '<div class="card pad"><h4 style="margin:0 0 2px">' + F.esc(p.name) + '</h4><div class="sub" style="margin-bottom:8px">ID ' + F.esc(p.id) + '</div>' + chip + '<div style="margin-top:10px"><button class="btn btn-sm" data-px="' + F.esc(p.id) + '">Ver eventos de 7 días</button> <button class="btn btn-sm" data-pxq="' + F.esc(p.id) + '">Calidad de datos</button></div><div id="px-' + F.esc(p.id) + '"></div><div id="pxq-' + F.esc(p.id) + '"></div></div>';
   }).join("") : '<div class="state" style="grid-column:1/-1"><b>No encontramos píxeles</b>Si acabas de instalarlo puede tardar en aparecer.</div>';
   html += '</div><div class="sec-head"><h2>Audiencias</h2><div class="hint">Públicos guardados y personalizados</div></div><div class="grid g3">';
   html += A.auds.length ? A.auds.map(function (a) {
@@ -2085,9 +2085,9 @@ T.crear = function (A) {
   var h = warnIfRead() + steps();
   if (W.step === 1) {
     h += '<div class="grid g3">' +
-      '<div class="card pad wopt" data-wk="traffic" style="cursor:pointer;' + (W.kind === "traffic" ? "outline:2px solid var(--gold);" : "") + '"><div class="eyebrow">Recomendada si tienes landing</div><h3 style="margin:6px 0">Tráfico a mi landing</h3><p class="sub">Optimiza por visitas reales a la página (no solo clics). Necesitas el píxel instalado para medir lo que pase después.</p></div>' +
-      '<div class="card pad wopt" data-wk="whatsapp" style="cursor:pointer;' + (W.kind === "whatsapp" ? "outline:2px solid var(--gold);" : "") + '"><div class="eyebrow">Para cerrar ventas por chat</div><h3 style="margin:6px 0">Mensajes a WhatsApp</h3><p class="sub">Optimiza por conversaciones iniciadas. Responder rápido (idealmente en minutos) pesa tanto como el anuncio.</p></div>' +
-      '<div class="card pad wopt" data-wk="conversion" style="cursor:pointer;' + (W.kind === "conversion" ? "outline:2px solid var(--gold);" : "") + '"><div class="eyebrow">Con píxel y evento propio</div><h3 style="margin:6px 0">Conversión en sitio web</h3><p class="sub">Optimiza por un evento de tu píxel, estándar o personalizado, como una reserva o un inicio de compra. Es la configuración de tu borrador de estudiographica.</p></div></div>' +
+      '<div class="card pad wopt" data-wk="traffic" style="cursor:pointer;' + (W.kind === "traffic" ? "outline:2px solid var(--gold);" : "") + '"><h3 style="margin:0 0 2px">Tráfico a mi landing</h3><div class="note-strong">Recomendada si tienes landing</div><p class="sub">Optimiza por visitas reales a la página (no solo clics). Necesitas el píxel instalado para medir lo que pase después.</p></div>' +
+      '<div class="card pad wopt" data-wk="whatsapp" style="cursor:pointer;' + (W.kind === "whatsapp" ? "outline:2px solid var(--gold);" : "") + '"><h3 style="margin:0 0 2px">Mensajes a WhatsApp</h3><div class="note-strong">Para cerrar ventas por chat</div><p class="sub">Optimiza por conversaciones iniciadas. Responder rápido (idealmente en minutos) pesa tanto como el anuncio.</p></div>' +
+      '<div class="card pad wopt" data-wk="conversion" style="cursor:pointer;' + (W.kind === "conversion" ? "outline:2px solid var(--gold);" : "") + '"><h3 style="margin:0 0 2px">Conversión en sitio web</h3><div class="note-strong">Con píxel y evento propio</div><p class="sub">Optimiza por un evento de tu píxel, estándar o personalizado, como una reserva o un inicio de compra. Es la configuración de tu borrador de estudiographica.</p></div></div>' +
       '<div class="card pad" style="margin-top:14px"><div class="row2"><div class="field"><label>Nombre de la campaña</label><input id="wName" value="' + F.esc(W.name) + '" placeholder="' + (W.kind === "whatsapp" ? "Ej. WhatsApp retratos" : "Ej. Landing bodas 2026") + '"></div>' +
       '<div class="field"><label>Página de Facebook que publica el anuncio</label><select id="wPage"><option value="">Cargando páginas…</option></select><span class="hint" id="wPageHint">Se necesita para poder publicar el anuncio.</span></div></div></div>' +
       '<div class="mb" style="display:flex;justify-content:flex-end;margin-top:14px"><button class="btn btn-gold" data-wnext="1">Continuar</button></div>' + dupCard(A);
@@ -2293,8 +2293,7 @@ function copyBlock(title, sub, data, A) {
 
 T.hooks = function (A) {
   var vids = A.ads.filter(function (a) { return a.isVideo && a.m.impr >= 300; }).sort(function (a, b) { return (b.m.hook || 0) - (a.m.hook || 0); });
-  var html = '<div class="card pad glass reveal" style="margin-bottom:14px"><div class="eyebrow">Hooks y retención</div>' +
-    '<h2 style="margin:4px 0 6px">Descubre qué frena el dedo y qué lo retiene</h2>' +
+  var html = '<div class="card pad glass reveal" style="margin-bottom:14px"><h2 style="margin:0 0 6px">Descubre qué frena el dedo y qué lo retiene</h2>' +
     '<div class="sub">Hook ' + F.help("hook") + ' = personas que ven 3 segundos dividido entre impresiones. Retención ' + F.help("hold") + ' = quienes llegan a ThruPlay dividido entre quienes vieron 3 segundos. Si el hook es bajo, el problema es el inicio. Si el hook sube y la retención cae, el problema es el cuerpo del video.</div></div>';
   if (!vids.length) {
     html += '<div class="card pad glass reveal" style="margin-bottom:14px"><div class="sub">Todavía no hay videos con suficientes impresiones en este periodo. Los hooks se miden en reels y videos, no en fotos.</div></div>';
@@ -2368,11 +2367,11 @@ AB.createRule = function (key) {
 };
 T.reglas = function (A) {
   var pr = presets(A), r = S.rules;
-  var h = '<div class="card pad glass reveal" style="margin-bottom:14px"><div class="eyebrow">Reglas automáticas de Meta</div><h2 style="margin:4px 0 6px">Que Meta te avise antes de que pierdas plata</h2>' +
+  var h = '<div class="card pad glass reveal" style="margin-bottom:14px"><h2 style="margin:0 0 6px">Que Meta te avise antes de que pierdas plata</h2>' +
     '<div class="sub">Son reglas que corren dentro de Meta cada día aunque tengas esta página cerrada. Las de aviso te notifican y no tocan tus anuncios. La de gasto sin resultados también puede pausar sola, con doble confirmación, como tope para que un anuncio roto no se coma el presupuesto.</div></div>';
   h += '<div class="grid g3">' + Object.keys(pr).map(function (k) {
     var x = pr[k];
-    return '<div class="card pad glass"><div class="eyebrow">Plantilla</div><h4 style="margin:4px 0 6px">' + F.esc(x.title) + '</h4><div class="sub" style="min-height:66px">' + F.esc(x.text) + '</div><div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-sm btn-gold" data-rule="' + k + '">Crear regla de aviso</button>' + (k === "spend" ? '<button class="btn btn-sm" data-rule="spend:pause">Crear regla que pausa</button>' : '') + '</div></div>';
+    return '<div class="card pad glass"><h4 style="margin:0 0 6px">' + F.esc(x.title) + '</h4><div class="sub" style="min-height:66px">' + F.esc(x.text) + '</div><div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-sm btn-gold" data-rule="' + k + '">Crear regla de aviso</button>' + (k === "spend" ? '<button class="btn btn-sm" data-rule="spend:pause">Crear regla que pausa</button>' : '') + '</div></div>';
   }).join("") + '</div>';
   h += '<div class="sec-head"><h2>Reglas de aviso que ya tienes</h2><div class="hint">Leídas directamente de tu cuenta</div></div>';
   if (!r) h += '<div class="state"><div class="spinner"></div>Leyendo reglas…</div>';
@@ -2874,7 +2873,6 @@ AB.renderTab = function () {
     S.segLoading = true;
     AB.loadSegments().then(function (r) { S.seg = r; S.segLoading = false; if (S.tab === "segmentos") AB.renderTab(); }).catch(function () { S.segLoading = false; S.seg = { place: { error: "No se pudo leer" }, age: { error: "No se pudo leer" }, hour: { error: "No se pudo leer" } }; if (S.tab === "segmentos") AB.renderTab(); });
   }
-  if (S._animTab !== S.tab) { S._animTab = S.tab; AB.countUp(panel); }
   if (S.tab === "rentabilidad" && !S.attr && !S.attrLoading) {
     S.attrLoading = true;
     AB.loadAttr().then(function (r) { S.attr = r; S.attrLoading = false; if (S.tab === "rentabilidad") AB.renderTab(); });

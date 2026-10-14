@@ -6,6 +6,14 @@
 <title>Adsboard · The Marketographers</title>
 <meta name="description" content="Panel de tus anuncios de Meta con semáforo estadístico, saturación de creativos, rendimientos decrecientes y acciones para editar y crear campañas.">
 <meta name="robots" content="noindex">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0c0c0c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Ads Board">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -519,6 +527,99 @@ footer{color:#7a7a7a;}
   #accountBar{flex-wrap:wrap;} #periodNote{display:none;} #refreshBtn{margin-left:0;}
 }
 [data-theme="dark"] .btn-gold:hover:not(:disabled){background:#ffe57a;color:#181818;} [data-theme="dark"] .btn-danger:hover:not(:disabled){background:#ff7a7a;color:#181818;} [data-theme="dark"] .btn-ghost{background:transparent;border-color:transparent;color:var(--muted);} [data-theme="dark"] .btn-ghost:hover:not(:disabled){background:rgba(255,255,255,.06);color:var(--ink);}
+/* primera vez, contexto y plantillas */
+.setup{padding:26px 28px;margin:12px 0;border-color:rgba(253,220,91,.3);}
+.setup h2{font-size:28px;margin-bottom:4px;}
+.setup-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 16px;margin:18px 0 6px;}
+@media(max-width:640px){.setup-grid{grid-template-columns:1fr;}}
+.reality{margin-top:14px;padding-top:14px;border-top:1px solid var(--line);color:var(--muted);font-size:14.5px;max-width:760px;}
+.reality b{color:var(--ink);font-weight:600;}
+.empty{padding:34px 32px;text-align:left;}
+.empty h2{font-size:clamp(26px,3.6vw,38px);max-width:680px;}
+.empty .sub{margin-top:10px;font-size:15px;max-width:560px;}
+.empty-acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px;}
+a.btn{text-decoration:none;display:inline-flex;align-items:center;}
+.lesson{display:inline-flex;align-items:center;gap:6px;color:var(--gold);font-size:13px;font-weight:500;text-decoration:none;margin-right:14px;}
+.lesson::after{content:"";width:6px;height:6px;border-top:1.6px solid currentColor;border-right:1.6px solid currentColor;transform:rotate(45deg);}
+.lesson:hover{text-decoration:underline;text-underline-offset:3px;}
+.cc .lesson+details.why{display:inline-block;}
+.lead-line{font-family:var(--font-display);font-size:clamp(20px,2.4vw,26px);line-height:1.3;letter-spacing:-.015em;margin:0 0 18px;max-width:900px;}
+.tplbar{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:12px 16px;margin-bottom:12px;border-radius:16px;background:rgba(253,220,91,.07);border:1px solid rgba(253,220,91,.22);font-size:14px;}
+.policy{margin-top:8px;padding:10px 12px;border-radius:12px;font-size:13px;}
+.policy.ok{color:var(--good);background:var(--good-soft);}
+.policy.bad{color:#ffd0d0;background:var(--bad-soft);border:1px solid rgba(255,92,92,.25);}
+.policy ul{margin:6px 0 0 18px;padding:0;}
+.kpi .chip{align-self:flex-start;}
+/* ===== portada: alternativas en texto ===== */
+.gate-alt{margin-top:18px;display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:14px;}
+.linkbtn{background:none;border:0;padding:6px 2px;color:var(--ink);font:500 14px var(--font-main);cursor:pointer;text-decoration:underline;text-decoration-color:rgba(253,220,91,.6);text-underline-offset:4px;}
+.linkbtn:hover{color:var(--gold);}
+.check{display:flex;gap:10px;align-items:center;font-size:14px;margin:6px 0 4px;cursor:pointer;}
+.check input{width:18px;height:18px;accent-color:var(--gold);}
+.keywarn{font-size:12.5px;margin-top:6px;}
+
+/* ===== guía de primera vez: pantalla completa, un paso a la vez ===== */
+body.guiding{overflow:hidden;}
+#guide{position:fixed;inset:0;z-index:400;background:#0c0c0c;overflow-y:auto;display:none;padding:22px clamp(16px,5vw,48px) 120px;}
+#guide.on{display:block;animation:gin .28s var(--ease) both;}
+@keyframes gin{from{opacity:0}to{opacity:1}}
+.g-top{max-width:880px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;}
+.g-top .wordmark{font-family:var(--font-display);font-size:22px;}
+.g-prog{max-width:880px;margin:16px auto 0;height:3px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden;}
+.g-prog i{display:block;height:100%;background:var(--gold);border-radius:99px;transition:width .4s var(--ease);}
+.g-step{max-width:880px;margin:40px auto 0;}
+.g-step.fwd{animation:gfwd .32s var(--ease) both;} .g-step.back{animation:gback .32s var(--ease) both;}
+@keyframes gfwd{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+@keyframes gback{from{opacity:0;transform:translateX(-24px)}to{opacity:1;transform:none}}
+.g-count{color:var(--gold);font-size:13px;font-weight:500;margin:0 0 10px;}
+.g-step h2{font-size:clamp(32px,5vw,54px);outline:none;}
+.g-lead{color:var(--muted);font-size:17px;max-width:620px;margin:14px 0 28px;}
+.g-body{display:grid;gap:24px;}
+.g-body .field{max-width:620px;}
+.g-body a{color:var(--gold);text-underline-offset:3px;}
+.g-body code{font-family:ui-monospace,Menlo,monospace;font-size:13px;background:rgba(255,255,255,.08);padding:2px 6px;border-radius:6px;}
+.g-nav{position:fixed;left:0;right:0;bottom:0;padding:16px clamp(16px,5vw,48px) max(16px,env(safe-area-inset-bottom));display:flex;justify-content:space-between;gap:12px;background:linear-gradient(to top,#0c0c0c 60%,rgba(12,12,12,0));}
+.g-nav .btn-gold{margin-left:auto;}
+.roadmap{list-style:none;counter-reset:r;margin:0;padding:0;display:grid;gap:4px;max-width:620px;}
+.roadmap li{counter-increment:r;display:grid;grid-template-columns:44px 1fr;column-gap:14px;padding:14px 0;border-top:1px solid var(--line);}
+.roadmap li::before{content:counter(r);grid-row:span 2;width:36px;height:36px;border-radius:50%;border:1px solid rgba(253,220,91,.5);color:var(--gold);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:18px;}
+.roadmap b{font-weight:600;font-size:16px;} .roadmap span{color:var(--muted);font-size:14px;}
+.how{margin:0;padding-left:22px;display:grid;gap:12px;max-width:620px;font-size:15.5px;line-height:1.55;}
+.how li::marker{color:var(--gold);font-weight:600;}
+.how b{font-weight:600;}
+
+/* capturas ilustradas: una ventana simplificada con el botón a tocar resaltado */
+.shot{margin:0;max-width:620px;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.12);background:#f4f4f2;color:#1c1c1c;box-shadow:0 30px 60px -30px rgba(0,0,0,.9);}
+.shot-bar{display:flex;align-items:center;gap:6px;padding:9px 12px;background:#e4e4e1;border-bottom:1px solid #d3d3cf;}
+.shot-bar i{width:10px;height:10px;border-radius:50%;background:#c9c9c4;}
+.shot-bar span{margin-left:10px;flex:1;background:#fff;border-radius:8px;padding:4px 10px;font-size:12px;color:#555;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.shot-body{padding:18px;font-size:13.5px;}
+.hl{position:relative;display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:#1877f2;color:#fff;font-weight:600;box-shadow:0 0 0 3px #fddc5b;}
+.hl .tap{position:absolute;right:-10px;bottom:-12px;width:22px;height:22px;border-radius:50%;background:rgba(253,220,91,.55);border:2px solid #fddc5b;animation:tap 1.6s var(--ease) infinite;}
+@keyframes tap{0%{transform:scale(.6);opacity:1}70%{transform:scale(1.5);opacity:0}100%{opacity:0}}
+.form-mock,.sheet-mock,.mdrop{display:grid;gap:8px;}
+.form-mock .lbl{font-weight:600;font-size:12.5px;color:#444;margin-top:4px;}
+.form-mock .opt,.sheet-mock .row,.mdrop>div{padding:10px 12px;border-radius:10px;background:#fff;border:1px solid #deded9;}
+.form-mock .opt.sel{border-color:#1877f2;}
+.form-mock .cta,.split-mock .cta{justify-self:end;padding:8px 16px;border-radius:8px;background:#1877f2;color:#fff;font-weight:600;}
+.perm,.check-row{display:flex;gap:8px;align-items:center;}
+.box{width:16px;height:16px;border-radius:4px;border:1.5px solid #888;display:inline-block;} .box.on{background:#1877f2;border-color:#1877f2;}
+.split-mock{display:grid;grid-template-columns:160px 1fr;gap:14px;}
+.split-mock .side{display:grid;gap:4px;align-content:start;} .split-mock .side div{padding:8px 10px;border-radius:8px;color:#444;} .split-mock .side .on{background:#e7f0fe;color:#1877f2;font-weight:600;}
+.split-mock .main{display:grid;gap:12px;align-content:start;background:#fff;border:1px solid #deded9;border-radius:12px;padding:14px;}
+.toprow{display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.empty-row{color:#777;padding:18px 0;text-align:center;}
+.url-mock{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #deded9;border-radius:999px;padding:6px 8px 6px 14px;}
+.url-mock .url{flex:1;color:#555;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.url-mock .hl{padding:6px;}
+.pop-mock{margin:14px 0 0 auto;width:260px;background:#fff;border:1px solid #deded9;border-radius:12px;padding:14px;display:grid;gap:4px;box-shadow:0 10px 30px -10px rgba(0,0,0,.25);}
+.pop-mock span{color:#666;} .pop-acts{display:flex;justify-content:flex-end;align-items:center;gap:12px;margin-top:8px;}
+.menu-mock .mbar{display:flex;gap:16px;padding:6px 10px;background:#fff;border-radius:8px;border:1px solid #deded9;font-weight:500;}
+.menu-mock .mbar .on{color:#1877f2;}
+.menu-mock .mdrop{margin:6px 0 0 60px;width:240px;}
+@media(max-width:640px){.split-mock{grid-template-columns:1fr;}.split-mock .side{grid-auto-flow:column;overflow-x:auto;}.pop-mock{width:auto;}}
+@media(prefers-reduced-motion:reduce){#guide.on,.g-step.fwd,.g-step.back,.hl .tap{animation:none!important;}}
+.pop-mock .hl{color:#fff;}
 
 </style>
 </head>
@@ -529,6 +630,7 @@ footer{color:#7a7a7a;}
     <div class="bar-actions">
       <span class="modepill" id="modePill"><i></i>Sin conectar</span>
       <button class="btn btn-sm btn-gold hidden" id="editBtn">Activar edición</button>
+      <button class="btn btn-sm btn-ghost hidden" id="installBtn">Instalar app</button>
       <button class="btn btn-sm btn-ghost" id="glossBtn">Glosario</button>
       <button class="btn btn-sm btn-ghost hidden" id="logoutBtn">Salir</button>
     </div>
@@ -538,10 +640,11 @@ footer{color:#7a7a7a;}
     <h1>Tus anuncios, <mark>en simple.</mark></h1>
     <p class="lead">Conecta tu cuenta de Meta y te digo qué anuncio te sale caro, cuál conviene subir y qué hacer hoy.</p>
     <div class="gate-btns">
-      <button class="btn btn-gold btn-lg" id="btnRead">Conectar con Facebook</button>
+      <button class="btn btn-gold btn-lg" id="btnGuide">Configurar mi cuenta</button>
       <button class="btn btn-lg" id="btnDemo">Probar con datos de ejemplo</button>
     </div>
-    <p class="fine">Solo lectura: no puede cambiar nada en tu cuenta. Tus datos van directo de tu navegador a Meta y no pasan por ningún servidor nuestro.</p>
+    <p class="gate-alt"><button class="linkbtn" id="btnKey">Ya tengo mi clave</button><span aria-hidden="true">·</span><button class="linkbtn" id="btnRead">Soy tester: entrar con Facebook</button></p>
+    <p class="fine">Tus datos van directo de tu equipo a Meta y no pasan por ningún servidor nuestro.</p>
   </section>
 
   <div id="app" class="hidden">
@@ -569,6 +672,6 @@ footer{color:#7a7a7a;}
 <div id="loader"><div style="position:fixed;inset:0;background:rgba(250,249,246,.7);z-index:90;display:flex;align-items:center;justify-content:center"><div class="card pad" style="display:flex;gap:12px;align-items:center"><div class="spinner"></div><div class="t">Cargando…</div></div></div></div>
 
 <script>try{if(localStorage.getItem("adsboard_theme")==="dark")document.documentElement.setAttribute("data-theme","dark")}catch(e){}</script>
-<script src="adsboard.js?v=5679cf7b0f"></script>
+<script src="adsboard.js?v=7a1e0ef51d"></script>
 </body>
 </html>

@@ -1417,6 +1417,8 @@ T.resumen = function (A) {
   var im = E.sum(act, function (a) { return a.m.impr; }), fw = im ? E.sum(act, function (a) { return (a.m.freq || 0) * a.m.impr; }) / im : null;
   var days = m.days || 0, tgt = A.target, hasGoal = A.goal && A.goal.ok;
   var v = A.account.verdict, lv = v ? v.level : "n";
+  if (!(m.spend > 0)) return T.empty(A) + (hasGoal ? "" : T.setup(A));
+  var bench = AB.bench && AB.bench();
   /* titular: una sola frase que se entiende sin saber de anuncios */
   var head;
   if (!m.results) head = 'Todavía no hay resultados <mark class="neg">en este periodo.</mark>';
@@ -1427,12 +1429,12 @@ T.resumen = function (A) {
   var html = '<section class="hero card"><h1 class="hero-h">' + head + '</h1>' +
     '<p class="hero-p">En ' + (days || "los") + ' días gastaste <b>' + F.money(m.spend) + '</b> y conseguiste <b>' + F.num(m.results) + '</b> ' + (S.metric === "auto" ? "resultados" : F.esc(E.METRIC_LABELS[S.metric]).toLowerCase()) + '.' +
     (hasGoal ? ' Tu límite para ganar plata es <b>' + F.money(A.goal.breakEven) + '</b> por resultado.' : '') + '</p>' +
-    (!hasGoal ? '<div class="hero-cta"><span>Dime cuánto cobras y te digo si ese costo es bueno o malo.</span><button class="btn btn-gold btn-sm" data-goto="rentabilidad">Calcular mi límite</button></div>' : '') + '</section>';
+    (hasGoal ? T.reality(A) : '') + '</section>' + (hasGoal ? '' : T.setup(A));
 
   html += '<div class="grid g3 kpis">' +
-    T.kpi({ label: "Gastaste", gl: "gasto", val: F.money(m.spend), note: days ? F.money(m.spend / days) + " por día" : "" }) +
-    T.kpi({ label: "Conseguiste", gl: "resultado", val: F.num(m.results), note: S.metric === "auto" ? "mensajes, visitas o ventas según cada campaña" : E.METRIC_LABELS[S.metric] }) +
-    T.kpi({ label: "Cada uno te costó", gl: "cpr", val: F.money(m.cpr), chip: v ? F.chip(lv, lv === "g" ? "Barato" : (lv === "r" ? "Caro" : (lv === "y" ? "En el límite" : "Faltan datos")), v.why) : "", delta: cprD }) +
+    T.kpi({ label: "Gastaste", val: F.money(m.spend), note: days ? F.money(m.spend / days) + " por día" : "" }) +
+    T.kpi({ label: "Conseguiste", val: F.num(m.results), note: S.metric === "auto" ? "mensajes, visitas o ventas según cada campaña" : E.METRIC_LABELS[S.metric] }) +
+    T.kpi({ label: "Cada uno te costó", val: F.money(m.cpr), chip: v && hasGoal ? F.chip(lv, lv === "g" ? "Barato" : (lv === "r" ? "Caro" : (lv === "y" ? "En el límite" : "Faltan datos")), v.why) : "", delta: cprD, note: bench && bench.text ? bench.text : "" }) +
     '</div>';
 
   if (S.prefs.showHero) {
@@ -2012,6 +2014,7 @@ Act.rename = function (type, id) {
 
 /* despachador */
 Act.run = function (act, type, id, extra) {
+  AB.track && AB.track("action", { action: act, level: type || "" });
   if (!S.canEdit) { UI.toast("Activa el modo edición para ejecutar cambios desde aquí.", "bad"); return Promise.resolve(false); }
   type = type || typeOfId(id);
   if (act === "pause") return Act.setStatus(type, id, "PAUSED");
@@ -2107,8 +2110,8 @@ T.crear = function (A) {
       exclBlock(A) + '<p class="sub" style="margin-top:8px">Meta usa la edad y el lugar como sugerencia y busca a quien más probable te escriba.</p></div>' +
       '<div class="mb" style="display:flex;justify-content:space-between;margin-top:14px"><button class="btn" data-wprev="1">Atrás</button><button class="btn btn-gold" data-wnext="2">Continuar</button></div>';
   } else if (W.step === 3) {
-    h += '<div class="grid g21"><div class="card pad"><div class="field"><label>Imagen del anuncio (JPG o PNG, máximo 8 MB)</label><input type="file" id="wFile" accept="image/jpeg,image/png"><span class="hint">Recomendado 1080 × 1350 (4:5). ' + (W.fileName ? "Elegida: " + F.esc(W.fileName) : "") + '</span></div>' +
-      '<div class="field"><label>Texto principal</label><textarea id="wPrimary" rows="4" maxlength="500" placeholder="Lo primero que se lee. Cuenta una escena o promete un resultado concreto, sin garantías absolutas.">' + F.esc(W.primary) + '</textarea></div>' +
+    h += T.templateBar() + '<div class="grid g21"><div class="card pad"><div class="field"><label>Imagen del anuncio (JPG o PNG, máximo 8 MB)</label><input type="file" id="wFile" accept="image/jpeg,image/png"><span class="hint">Recomendado 1080 × 1350 (4:5). ' + (W.fileName ? "Elegida: " + F.esc(W.fileName) : "") + '</span></div>' +
+      '<div class="field"><label>Texto principal</label><textarea id="wPrimary" rows="4" maxlength="500" placeholder="Lo primero que se lee. Cuenta una escena o promete un resultado concreto, sin garantías absolutas.">' + F.esc(W.primary) + '</textarea><div id="wPolicy"></div></div>' +
       '<div class="row2"><div class="field"><label>Título</label><input id="wHead" maxlength="60" value="' + F.esc(W.headline) + '" placeholder="Ej. Reserva tu sesión de fotos"></div>' +
       '<div class="field"><label>Botón</label><select id="wCta">' + (W.kind === "whatsapp" ? '<option value="WHATSAPP_MESSAGE" selected>Enviar mensaje de WhatsApp</option>' : Object.keys(CTAS).map(function (k) { return '<option value="' + k + '"' + (W.cta === k ? " selected" : "") + '>' + CTAS[k] + '</option>'; }).join("")) + '</select></div></div>' + varBlock() + hookHints() + '</div>' +
       '<div class="card pad"><div class="eyebrow">Vista previa</div><div id="wPrev" style="margin-top:8px"></div></div></div>' +
@@ -2730,6 +2733,370 @@ AB.countUp = function (rootEl) {
 
 ;
 /* ==========================================================================
+   PRIMERA VEZ Y CONTEXTO: configuración en 3 preguntas, cuenta vacía,
+   referencias de LATAM, clase por recomendación, plantillas de texto por
+   especialidad, revisión de políticas, respaldo y estadísticas de uso.
+   ========================================================================== */
+(function (root) {
+"use strict";
+var AB = root.AB, S = AB.S, F = AB.F, UI = AB.UI, T = AB.T, E = root.AdsEngine, $ = AB.$;
+
+/* --------------------------- referencias de mercado ---------------------- */
+/* Fuente: skill meta-ads-fotografos, referencia 11 (LATAM, mediados de 2026).
+   La fotografía no tiene cifra publicada: se ubica por analogía con otras industrias. */
+var NICHES = {
+  bodas: { label: "Bodas y eventos", lo: 15, hi: 35, like: "servicios de decisión cara, como reformas del hogar" },
+  retratos: { label: "Retratos, familias y minisesiones", lo: 6, hi: 15, like: "servicios de decisión rápida, como gimnasios" },
+  comercial: { label: "Producto, gastronomía y marcas", lo: 10, hi: 30, like: "servicios a empresas con ciclo de venta medio" },
+  cursos: { label: "Cursos y mentorías", lo: 4, hi: 12, like: "registros a contenido educativo" }
+};
+var CPM = { MX: 3.9, CL: 2.4, CO: 2.0, AR: 3, PE: 2.5, BO: 2.5, EC: 2.5, PY: 2.5, UY: 3, ES: 6, US: 16 };
+AB.NICHES = NICHES;
+AB.bench = function () {
+  var n = NICHES[S.prefs.niche]; if (!n) return null;
+  var usd = (S.currency || "USD") === "USD";
+  return { n: n, usd: usd, text: usd ? "Lo habitual en " + n.label.toLowerCase() + ": entre $" + n.lo + " y $" + n.hi + " por consulta." : "" };
+};
+
+/* ------------------------- configuración en 3 preguntas ------------------- */
+T.setup = function (A) {
+  var g = S.goal, p = S.prefs;
+  var clean = g.ticket && g.margin ? Math.round(parseFloat(g.ticket) * parseFloat(g.margin) / 100) : "";
+  var close10 = g.close ? Math.round(parseFloat(g.close) / 10) : 2;
+  return '<section class="card setup"><h2>Configúralo en un minuto</h2><p class="sub">Con estas respuestas te digo si cada resultado te deja plata o te la quita.</p>' +
+    '<div class="setup-grid">' +
+    '<div class="field"><label for="suNiche">Qué fotografía vendes</label><select id="suNiche">' + Object.keys(NICHES).map(function (k) { return '<option value="' + k + '"' + (p.niche === k ? " selected" : "") + '>' + NICHES[k].label + '</option>'; }).join("") + '</select></div>' +
+    '<div class="field"><label for="suTicket">Cuánto cobras por trabajo (' + F.esc(S.currency || "USD") + ')</label><input id="suTicket" type="number" min="0" step="any" inputmode="decimal" value="' + F.esc(g.ticket) + '" placeholder="Ej. 400"></div>' +
+    '<div class="field"><label for="suClean">Cuánto te queda limpio</label><input id="suClean" type="number" min="0" step="any" inputmode="decimal" value="' + F.esc(clean) + '" placeholder="Ej. 280"><span class="hint">Lo que queda después de pagar asistente, viáticos o impresión.</span></div>' +
+    '<div class="field"><label for="suClose">De cada 10 que te escriben, ¿cuántos te compran?</label><select id="suClose">' + [1, 2, 3, 4, 5, 6].map(function (k) { return '<option value="' + k + '"' + (close10 === k ? " selected" : "") + '>' + k + (k === 2 ? " (si no sabes, empieza aquí)" : "") + '</option>'; }).join("") + '</select></div>' +
+    '</div><button class="btn btn-gold" id="suSave">Listo, calcular</button></section>';
+};
+AB.saveSetup = function () {
+  var t = parseFloat($("suTicket").value), c = parseFloat($("suClean").value), cl = parseInt($("suClose").value, 10);
+  if (!(t > 0)) { UI.toast("Escribe cuánto cobras.", "bad"); return; }
+  if (!(c > 0) || c > t) { UI.toast("Lo que te queda limpio debe ser mayor que cero y menor que lo que cobras.", "bad"); return; }
+  S.goal.ticket = String(t); S.goal.margin = String(Math.round(c / t * 1000) / 10); S.goal.close = String(cl * 10);
+  S.prefs.niche = $("suNiche").value;
+  AB.saveLocal(); AB.track("setup_done", { niche: S.prefs.niche }); AB.recompute(); UI.toast("Listo. Ya sé cuánto puedes pagar por cada resultado.");
+};
+/* lo que el presupuesto alcanza a comprar, dicho en ventas */
+T.reality = function (A) {
+  if (!A.goal || !A.goal.ok || !A.target) return "";
+  var month = (A.dailyBudget || 0) * 30; if (!(month > 0)) return "";
+  var res = month / (A.account.m.cpr || A.target), sales = res * A.goal.close;
+  return '<p class="reality">Con tu presupuesto de <b>' + F.money(month) + '</b> al mes y tu costo actual, Meta te traería unos <b>' + F.num(res) + '</b> resultados, o sea unas <b>' + F.num(sales, 1) + '</b> ventas al mes.' +
+    (sales < 1 ? ' <mark class="neg">Menos de una venta.</mark> Sube el presupuesto, baja el precio de entrada o empieza por contenido orgánico.' : '') + '</p>';
+};
+
+/* ------------------------------- cuenta vacía ----------------------------- */
+T.empty = function (A) {
+  return '<section class="card empty"><h2>Todavía no tienes anuncios corriendo en este periodo.</h2>' +
+    '<p class="sub">Cuando publiques uno, aquí vas a ver cuánto te cuesta cada resultado y qué hacer cada día.</p>' +
+    '<div class="empty-acts"><button class="btn btn-gold" data-goto="crear">Crear mi primer anuncio</button>' +
+    (S.demo ? '' : '<a class="btn" href="?demo=1" target="_blank" rel="noopener">Ver cómo se ve con datos</a>') +
+    '<button class="btn btn-ghost" id="range90">Mirar los últimos 90 días</button></div></section>';
+};
+
+/* ----------------------- clase de la comunidad por tema ------------------- */
+/* Reemplaza cada enlace por la clase exacta cuando la tengas. */
+AB.LESSONS = {
+  pausar: "https://marketographers.com/?utm_source=adsboard&utm_content=pausar",
+  creativos: "https://marketographers.com/?utm_source=adsboard&utm_content=creativos",
+  hooks: "https://marketographers.com/?utm_source=adsboard&utm_content=hooks",
+  aprendizaje: "https://marketographers.com/?utm_source=adsboard&utm_content=aprendizaje",
+  audiencias: "https://marketographers.com/?utm_source=adsboard&utm_content=audiencias",
+  rentabilidad: "https://marketographers.com/?utm_source=adsboard&utm_content=rentabilidad",
+  escalar: "https://marketographers.com/?utm_source=adsboard&utm_content=escalar"
+};
+var TOPIC = { cut: "pausar", exp: "pausar", fat: "creativos", rep: "creativos", freq: "creativos", div: "creativos", win: "escalar", hook: "hooks", learn: "aprendizaje", learning: "aprendizaje", evt: "aprendizaje", ovl: "audiencias", goal: "rentabilidad" };
+var baseCard = T.coachCard;
+T.coachCard = function (c) {
+  var html = baseCard(c), topic = TOPIC[String(c.id).split("-")[0]], url = topic && AB.LESSONS[topic];
+  if (!url) return html;
+  return html.replace('<details class="why">', '<a class="lesson" href="' + F.esc(url) + '" target="_blank" rel="noopener" data-lesson="' + topic + '">Aprende esto en la comunidad</a><details class="why">');
+};
+
+/* ------------------------- Campañas: una frase arriba --------------------- */
+var baseCamp = T.campanas;
+T.campanas = function (A) {
+  var withRes = A.campaigns.filter(function (c) { return c.m.results >= 3 && c.m.spend > 0; }).sort(function (a, b) { return a.m.cpr - b.m.cpr; });
+  var lead = "";
+  if (withRes.length >= 2) lead = '<p class="lead-line">Tu campaña más rentable es <mark>' + F.esc(withRes[0].name) + '</mark>, con ' + F.money(withRes[0].m.cpr) + ' por resultado. La más cara es ' + F.esc(withRes[withRes.length - 1].name) + ', con ' + F.money(withRes[withRes.length - 1].m.cpr) + '.</p>';
+  else if (withRes.length === 1) lead = '<p class="lead-line">Tu única campaña con resultados es <mark>' + F.esc(withRes[0].name) + '</mark>, con ' + F.money(withRes[0].m.cpr) + ' por resultado.</p>';
+  return lead + baseCamp(A);
+};
+
+/* ------------------------- Tu público: una frase arriba ------------------- */
+var baseSeg = T.segmentos;
+T.segmentos = function (A) {
+  var seg = S.seg, parts = [];
+  if (seg) {
+    function best(rows, name) { var r = AB.mapSeg(rows).filter(function (x) { return x.results >= 5; }).sort(function (a, b) { return a.cpr - b.cpr; })[0]; return r ? name(r) : null; }
+    if (seg.place && !seg.place.error) { var p = best(seg.place, function (r) { return ({ facebook: "Facebook", instagram: "Instagram" }[r.r.publisher_platform] || r.r.publisher_platform) + " " + String(r.r.platform_position || "").replace(/^instagram_|^facebook_/, "").replace(/_/g, " "); }); if (p) parts.push(p); }
+    if (seg.age && !seg.age.error) { var a = best(seg.age, function (r) { return ({ female: "mujeres", male: "hombres" }[r.r.gender] || "personas") + " de " + String(r.r.age).replace("-", " a ") + " años"; }); if (a) parts.push(a); }
+  }
+  var d = A.dow.filter(function (x) { return x.n > 0 && x.cpr; }).sort(function (x, y) { return x.cpr - y.cpr; })[0];
+  var FULL = { lun: "lunes", mar: "martes", "mié": "miércoles", mie: "miércoles", jue: "jueves", vie: "viernes", "sáb": "sábados", sab: "sábados", dom: "domingos" };
+  if (d) { var k = d.label.toLowerCase().replace(".", "").slice(0, 3); parts.push("los " + (FULL[k] || d.label.toLowerCase())); }
+  var lead = parts.length ? '<p class="lead-line">Te sale más barato llegar a <mark>' + F.esc(parts.join(", ")) + '</mark>. Con Advantage+ Meta ya reparte hacia ahí; úsalo para decidir dónde poner tus mejores fotos.</p>' : '';
+  return lead + baseSeg(A);
+};
+
+/* ------------------------- Pruebas A/B: más simple ------------------------ */
+var baseLab = T.laboratorio;
+T.laboratorio = function (A) {
+  var h = baseLab(A);
+  var mark = '<div class="sec-head"><h2>Calculadora de muestra</h2>';
+  if (h.indexOf(mark) >= 0) {
+    var i = h.indexOf(mark), j = h.indexOf('</div>', i + mark.length) + 6;
+    h = h.slice(0, i) + '<details class="more"><summary>¿Cuánta plata necesito para probar algo?</summary>' + h.slice(j) + '</details>';
+  }
+  return '<p class="lead-line">Elige dos anuncios y te digo si uno es mejor de verdad o si fue suerte.</p>' + h;
+};
+
+/* -------------------- plantillas de texto por especialidad ---------------- */
+AB.TEMPLATES = {
+  bodas: {
+    p: ["Marta y Diego no querían posar. Querían acordarse de cómo se miraron en el altar. Eso fotografiamos. Cuéntame la fecha y te digo si estoy libre.",
+      "El día pasa rápido y las fotos quedan para siempre. Te acompaño desde la preparación hasta el último baile, con álbum listo en 15 días. Escríbeme y te paso precios.",
+      "Quedan pocas fechas libres para [MES]. Si ya tienes la tuya, escríbeme hoy y la aparto mientras decides."],
+    h: ["Tu boda, contada como pasó", "Álbum listo en 15 días", "Fechas libres en [MES]"]
+  },
+  retratos: {
+    p: ["Ana llegó diciendo que no salía bien en las fotos. Se fue con 12 que ya cuelga en su sala. Reserva tu sesión y te guío en cada pose.",
+      "Sesión de 45 minutos, 15 fotos editadas y entrega en 5 días. Precio cerrado, sin sorpresas. Escríbeme y elige tu horario.",
+      "Minisesiones familiares el [FECHA] en [LUGAR]. Pocos cupos. Escríbeme para apartar el tuyo."],
+    h: ["Fotos que sí te gustan", "Sesión con precio cerrado", "Minisesiones de [MES]"]
+  },
+  comercial: {
+    p: ["El plato es el mismo. La foto es la que decide si alguien lo pide. Hago fotos que hacen salivar a tus clientes. Agenda un diagnóstico gratis.",
+      "Tu carta, tus redes y tu delivery con fotos que venden. Te entrego en 24 horas y te digo qué foto va en cada lugar.",
+      "Este mes hago 3 sesiones con precio de lanzamiento para negocios de [CIUDAD]. Escríbeme y te cuento cómo funciona."],
+    h: ["Fotos que hacen salivar", "Entrega en 24 horas", "3 cupos este mes"]
+  },
+  cursos: {
+    p: ["Hace un año cobraba poco y trabajaba de más. Hoy elijo mis clientes. Te cuento cómo en una clase gratis.",
+      "Aprende a vender tu fotografía sin regalar tu trabajo. Clases en vivo cada semana y una comunidad que responde.",
+      "Las inscripciones cierran el [FECHA]. Si lo estabas pensando, este es el momento."],
+    h: ["Cobra lo que vale tu trabajo", "Clases en vivo cada semana", "Cierra el [FECHA]"]
+  }
+};
+AB.applyTemplate = function () {
+  var t = AB.TEMPLATES[S.prefs.niche || "retratos"] || AB.TEMPLATES.retratos, W = S.wiz;
+  W.primary = t.p[0]; W.p2 = t.p[1]; W.p3 = t.p[2]; W.headline = t.h[0]; W.h2 = t.h[1]; W.h3 = t.h[2];
+  AB.renderTab(); AB.wizPreview && AB.wizPreview(); UI.toast("Texto cargado. Cambia lo que está entre corchetes.");
+};
+T.templateBar = function () {
+  var n = NICHES[S.prefs.niche || "retratos"] || NICHES.retratos;
+  return '<div class="tplbar"><span>¿Sin ideas? Usa los textos de ejemplo para ' + F.esc(n.label.toLowerCase()) + '.</span><button type="button" class="btn btn-sm" id="tplApply">Usar texto de ejemplo</button></div>';
+};
+
+/* --------------------------- revisión de políticas ------------------------ */
+var POLICY = [
+  [/garantiz|asegurad|100\s?%/i, "Promesas de resultado garantizado. Meta las rechaza."],
+  [/¿\s*(estás|estas)\s+(embarazada|soltera|gorda|deprimid|endeudad)/i, "Pregunta sobre un rasgo personal de quien lee. Habla del grupo, por ejemplo «las mamás que…»."],
+  [/¿\s*(tienes|tenés)\s+(más de|mas de|menos de)\s+\d+/i, "Pregunta sobre la edad de quien lee. Meta lo rechaza."],
+  [/¿\s*te sientes\s+(insegur|fe[ao]|gord)/i, "Pregunta sobre el cuerpo o la autoestima de quien lee."],
+  [/baja(r)?\s+de\s+peso|tu\s+deuda|tu\s+enfermedad/i, "Menciona salud, peso o deudas de quien lee."]
+];
+AB.policyCheck = function (txt) { return POLICY.filter(function (r) { return r[0].test(txt || ""); }).map(function (r) { return r[1]; }); };
+AB.renderPolicy = function () {
+  var el = $("wPolicy"); if (!el) return;
+  var W = S.wiz, all = [W.primary, W.p2, W.p3, W.headline, W.h2, W.h3].join(" \n "), issues = AB.policyCheck(all);
+  el.innerHTML = issues.length ? '<div class="policy bad"><b>Meta podría rechazar este texto</b><ul>' + issues.map(function (i) { return "<li>" + F.esc(i) + "</li>"; }).join("") + '</ul></div>' : (all.trim().length > 3 ? '<div class="policy ok">El texto no tiene frases que Meta suela rechazar.</div>' : '');
+};
+
+/* --------------------------------- respaldo ------------------------------- */
+AB.exportBackup = function () {
+  var data = { v: 1, at: new Date().toISOString(), goal: S.goal, prefs: S.prefs, sales: S.sales || [], hookBank: S.hookBank || [], editLog: S.editLog || [] };
+  var blob = new Blob([JSON.stringify(data, null, 1)], { type: "application/json" }), a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = "adsboard-respaldo-" + new Date().toISOString().slice(0, 10) + ".json";
+  document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  UI.toast("Respaldo descargado. Cárgalo en otro navegador para seguir donde quedaste.");
+};
+AB.importBackup = function (file) {
+  if (!file) return;
+  var fr = new FileReader();
+  fr.onload = function () {
+    try {
+      var d = JSON.parse(String(fr.result));
+      if (!d || d.v !== 1) throw new Error("x");
+      if (d.goal) S.goal = Object.assign(S.goal, d.goal);
+      if (d.prefs) S.prefs = Object.assign(S.prefs, d.prefs);
+      S.sales = d.sales || []; S.hookBank = d.hookBank || []; S.editLog = d.editLog || [];
+      AB.saveLocal(); AB.recompute(); UI.toast("Respaldo cargado: " + S.sales.length + " ventas y " + S.hookBank.length + " hooks.");
+    } catch (e) { UI.toast("Ese archivo no es un respaldo del Ads Board.", "bad"); }
+  };
+  fr.readAsText(file);
+};
+T.backup = function () {
+  return '<div class="prefrow"><div><div class="lbl">Respaldo</div><div class="desc">Tus ventas, tu calculadora y tus hooks viven en este navegador. Descárgalos para usarlos en otra computadora.</div></div>' +
+    '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-sm" id="bkExport">Descargar</button><label class="btn btn-sm" for="bkImport">Cargar<input type="file" id="bkImport" accept="application/json" hidden></label></div></div>';
+};
+var baseAj = T.ajustes;
+T.ajustes = function (A) { return baseAj(A).replace('<div style="max-width:640px">', '<div style="max-width:640px">' + T.backup()); };
+
+/* ------------------------ estadísticas de uso (GA4) ----------------------- */
+/* Solo nombres de pantallas y acciones. Nunca montos, nombres de anuncios ni datos de la cuenta. */
+var GA = "G-GQY8VYBD5T";
+AB.track = function (name, params) {
+  try { if (root.gtag && !S.noTrack) root.gtag("event", name, Object.assign({ app: "adsboard", demo: !!S.demo }, params || {})); } catch (e) {}
+};
+(function loadGA() {
+  if (/^file:/.test(location.href) || /[?&]notrack=1/.test(location.search)) { S.noTrack = true; return; }
+  root.dataLayer = root.dataLayer || [];
+  root.gtag = function () { root.dataLayer.push(arguments); };
+  root.gtag("js", new Date()); root.gtag("config", GA, { anonymize_ip: true, send_page_view: false });
+  var s = document.createElement("script"); s.async = true; s.src = "https://www.googletagmanager.com/gtag/js?id=" + GA; document.head.appendChild(s);
+})();
+})(window);
+
+;
+/* ==========================================================================
+   APP INSTALABLE Y CLAVE PROPIA
+   1. Clave propia: cada alumno conecta su cuenta con un token de su propio
+      usuario del sistema. No pasa por la app de The Marketographers, así que no
+      necesita App Review ni tener rol de tester. La clave queda solo en su equipo.
+   2. App instalable (PWA): se instala desde Chrome, Edge o Safari en Windows y
+      Mac, funciona como una app y se actualiza sola con cada versión nueva.
+   ========================================================================== */
+(function (root) {
+"use strict";
+var AB = root.AB, S = AB.S, G = AB.G, F = AB.F, UI = AB.UI, $ = AB.$;
+var KEY = "adsboard_key";
+
+/* ------------------------ guía de primera vez y clave ---------------------- */
+function esc(x) { return F.esc(x); }
+function ua() { var u = navigator.userAgent; return { mac: /Macintosh/.test(u), win: /Windows/.test(u), ios: /iPhone|iPad/.test(u), android: /Android/.test(u), safari: /Safari/.test(u) && !/Chrome|Chromium|Edg|CriOS/.test(u), edge: /Edg/.test(u) }; }
+/* marco de ventana con una pantalla simplificada y el botón a tocar resaltado */
+function frame(url, body) {
+  return '<figure class="shot" aria-hidden="true"><div class="shot-bar"><i></i><i></i><i></i><span>' + esc(url) + '</span></div><div class="shot-body">' + body + '</div></figure>';
+}
+function hl(t) { return '<span class="hl">' + t + '<em class="tap"></em></span>'; }
+var GSTEPS = [
+  { id: "hola", title: "Bienvenido al <mark>Ads Board.</mark>", lead: "Te dejo todo listo en 6 pasos. Tómate 15 minutos una sola vez y después entras directo.",
+    body: function () { return '<ol class="roadmap"><li><b>Instala la app</b><span>Queda en tu computadora y se actualiza sola.</span></li><li><b>Crea tu app gratis en Meta</b><span>Es la llave para leer tu cuenta sin pedir permiso a nadie.</span></li><li><b>Crea un usuario del sistema</b><span>Un usuario robot que trabaja para ti.</span></li><li><b>Dale acceso a tu cuenta</b><span>Solo ve lo que tú le asignas.</span></li><li><b>Genera tu clave</b><span>Una contraseña larga que no vence.</span></li><li><b>Pégala y listo</b><span>Ves tus anuncios explicados en simple.</span></li></ol>'; } },
+  { id: "instalar", title: "Instala la app", lead: "Así la abres como cualquier programa y te llegan las mejoras sin hacer nada.",
+    body: function () {
+      var u = ua();
+      if (deferred) return '<button class="btn btn-gold btn-lg" id="gInstall">Instalar ahora</button><p class="sub">Se abre una ventanita de tu navegador. Pulsa <b>Instalar</b>.</p>';
+      if (u.ios) return '<ol class="how"><li>Toca el botón <b>Compartir</b>, el cuadrado con una flecha hacia arriba.</li><li>Baja y toca <b>Agregar a pantalla de inicio</b>.</li><li>Toca <b>Agregar</b>.</li></ol>' + frame("marketographers.com/marketools/adsboard", '<div class="sheet-mock"><div class="row">Copiar</div><div class="row">Agregar a favoritos</div><div class="row">' + hl("Agregar a pantalla de inicio") + '</div></div>');
+      if (u.mac && u.safari) return '<ol class="how"><li>Arriba, en la barra de menú, abre <b>Archivo</b>.</li><li>Elige <b>Agregar al Dock</b>.</li><li>Pulsa <b>Agregar</b>. El ícono aparece en tu Dock.</li></ol>' + frame("Safari", '<div class="menu-mock"><div class="mbar"><span>Safari</span><span class="on">Archivo</span><span>Edición</span><span>Visualización</span></div><div class="mdrop"><div>Nueva ventana</div><div>Nueva pestaña</div><div>' + hl("Agregar al Dock…") + '</div><div>Cerrar ventana</div></div></div>');
+      return '<ol class="how"><li>Abre esta página en <b>Google Chrome</b> o <b>Microsoft Edge</b>' + (u.win ? " (Edge ya viene en Windows)" : "") + '.</li><li>A la derecha de la barra de direcciones aparece un ícono de una pantalla con una flecha. Púlsalo.</li><li>Pulsa <b>Instalar</b>.</li></ol>' + frame("marketographers.com/marketools/adsboard", '<div class="url-mock"><span class="url">marketographers.com/marketools/adsboard</span>' + hl('<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M12 8v6M9 11l3 3 3-3M8 20h8"/></svg>') + '</div><div class="pop-mock"><b>¿Instalar app?</b><span>Ads Board</span><div class="pop-acts"><span>Cancelar</span>' + hl("Instalar") + '</div></div>');
+    } },
+  { id: "app", title: "Crea tu app gratis en Meta", lead: "Esta app es tuya y solo lee tu cuenta. Meta no la revisa porque no la usas con cuentas de otros.",
+    body: function () { return '<ol class="how"><li>Abre <a href="https://developers.facebook.com/apps/creation/" target="_blank" rel="noopener">developers.facebook.com/apps</a> e inicia sesión con tu Facebook. Si te pide registrarte como desarrollador, acepta: es gratis.</li><li>Pulsa <b>Crear app</b>. De nombre pon <b>Mi Ads Board</b> y tu correo.</li><li>En casos de uso marca <b>Crea y administra anuncios con la API de marketing</b>.</li><li>Cuando te pregunte por el portafolio empresarial, elige el tuyo. Pulsa <b>Crear app</b>.</li></ol>' +
+      frame("developers.facebook.com/apps/creation", '<div class="form-mock"><div class="lbl">Casos de uso</div><div class="opt">Inicio de sesión con Facebook</div><div class="opt sel">' + hl("Crea y administra anuncios con la API de marketing") + '</div><div class="opt">Gestiona mensajes y contenido en Instagram</div><div class="cta">Siguiente</div></div>'); } },
+  { id: "usuario", title: "Crea un usuario del sistema", lead: "Es un usuario robot de tu negocio. Gracias a él la clave no vence nunca.",
+    body: function () { return '<ol class="how"><li>Abre <a href="https://business.facebook.com/latest/settings/system_users" target="_blank" rel="noopener">Configuración del negocio, Usuarios del sistema</a>.</li><li>Pulsa <b>Agregar</b>. Nombre: <b>Ads Board</b>. Rol: <b>Administrador</b>. Pulsa <b>Crear usuario del sistema</b>.</li></ol>' +
+      frame("business.facebook.com/latest/settings/system_users", '<div class="split-mock"><div class="side"><div>Usuarios</div><div class="on">Usuarios del sistema</div><div>Cuentas publicitarias</div><div>Apps</div></div><div class="main"><div class="toprow"><b>Usuarios del sistema</b>' + hl("Agregar") + '</div><div class="empty-row">Todavía no hay usuarios del sistema</div></div></div>'); } },
+  { id: "activos", title: "Dale acceso a tu cuenta y a tu app", lead: "El usuario robot solo ve lo que le asignes.",
+    body: function () { return '<ol class="how"><li>Con el usuario <b>Ads Board</b> elegido, pulsa <b>Asignar activos</b>.</li><li>En <b>Cuentas publicitarias</b> marca tu cuenta y activa <b>Control total</b>.</li><li>En <b>Apps</b> marca <b>Mi Ads Board</b> con control total.</li><li>Si quieres crear anuncios desde aquí, en <b>Páginas</b> marca tu página.</li><li>Pulsa <b>Asignar activos</b>.</li></ol>' +
+      frame("business.facebook.com/latest/settings/system_users", '<div class="split-mock"><div class="side"><div class="on">Cuentas publicitarias</div><div>Apps</div><div>Páginas</div></div><div class="main"><div class="check-row"><span class="box on"></span>Mi cuenta publicitaria</div><div class="toggle-row">' + hl("Control total") + '</div><div class="cta">Asignar activos</div></div></div>'); } },
+  { id: "clave", title: "Genera tu clave", lead: "Meta la muestra una sola vez. Cópiala antes de cerrar.",
+    body: function () { return '<ol class="how"><li>En el mismo usuario pulsa <b>Generar token</b>.</li><li>Elige la app <b>Mi Ads Board</b>.</li><li>En caducidad elige <b>Nunca</b>.</li><li>Marca estos permisos: <code>ads_read</code>, <code>ads_management</code>, <code>business_management</code>, <code>pages_show_list</code> y <code>pages_read_engagement</code>.</li><li>Pulsa <b>Generar token</b> y después <b>Copiar</b>.</li></ol>' +
+      frame("business.facebook.com/latest/settings/system_users", '<div class="form-mock"><div class="lbl">Caducidad del token</div><div class="opt">60 días</div><div class="opt sel">' + hl("Nunca") + '</div><div class="lbl">Permisos</div><div class="perm"><span class="box on"></span>ads_read</div><div class="perm"><span class="box on"></span>ads_management</div><div class="perm"><span class="box on"></span>business_management</div><div class="cta">Generar token</div></div>'); } },
+  { id: "pegar", title: "Pega tu clave y listo", lead: "Queda guardada solo en este equipo. Nadie más la recibe, tampoco The Marketographers.",
+    body: function () { return '<div class="field"><label for="keyVal">Tu clave</label><textarea id="keyVal" rows="3" autocomplete="off" spellcheck="false" placeholder="Empieza con EAA…"></textarea></div><label class="check"><input type="checkbox" id="keyRemember" checked> Recordar en este equipo</label><p class="sub keywarn">Quien tenga la clave puede manejar tus anuncios. Úsala solo en tu equipo. Si la pierdes, bórrala en Usuarios del sistema y genera otra.</p><button class="btn btn-gold btn-lg" id="keyYes">Conectar mi cuenta</button>'; } }
+];
+var gi = 0;
+function saveStep() { try { localStorage.setItem("adsboard_guide", String(gi)); } catch (e) {} }
+function renderGuide(dir) {
+  var st = GSTEPS[gi], el = $("guide");
+  el.innerHTML = '<div class="g-top"><span class="wordmark">ads board</span><button class="btn btn-sm btn-ghost" id="gClose">Salir de la guía</button></div>' +
+    '<div class="g-prog" role="progressbar" aria-valuemin="1" aria-valuemax="' + GSTEPS.length + '" aria-valuenow="' + (gi + 1) + '" aria-label="Paso ' + (gi + 1) + ' de ' + GSTEPS.length + '"><i style="width:' + ((gi + 1) / GSTEPS.length * 100) + '%"></i></div>' +
+    '<section class="g-step ' + (dir || "") + '">' + (gi > 0 ? '<p class="g-count">Paso ' + gi + ' de ' + (GSTEPS.length - 1) + '</p>' : '') + '<h2 tabindex="-1">' + st.title + '</h2><p class="g-lead">' + st.lead + '</p><div class="g-body">' + st.body() + '</div></section>' +
+    '<div class="g-nav">' + (gi > 0 ? '<button class="btn" id="gPrev">Atrás</button>' : '<button class="btn btn-ghost" id="gDemo">Ver primero con datos de ejemplo</button>') +
+    (gi < GSTEPS.length - 1 ? '<button class="btn btn-gold" id="gNext">' + (gi === 0 ? "Empezar" : (GSTEPS[gi].id === "instalar" ? "Ya la instalé o lo hago después" : "Listo, siguiente")) + '</button>' : '') + '</div>';
+  var h = el.querySelector("h2"); if (h) h.focus({ preventScroll: true });
+  el.scrollTop = 0; saveStep();
+  wire(el);
+}
+function wire(el) {
+  function on(id, f) { var b = el.querySelector("#" + id); if (b) b.onclick = f; }
+  on("gClose", AB.closeGuide);
+  on("gNext", function () { gi = Math.min(GSTEPS.length - 1, gi + 1); renderGuide("fwd"); AB.track && AB.track("guide_step", { step: GSTEPS[gi].id }); });
+  on("gPrev", function () { gi = Math.max(0, gi - 1); renderGuide("back"); });
+  on("gDemo", function () { AB.closeGuide(); AB.startDemo(); });
+  on("gInstall", function () { AB.install(); });
+  on("keyYes", function () {
+    var v = (el.querySelector("#keyVal").value || "").replace(/\s+/g, "");
+    if (!/^EA[A-Za-z0-9]{40,}$/.test(v)) { UI.toast("Esa clave no parece válida. Debe empezar con EAA y ser larga.", "bad"); return; }
+    var remember = el.querySelector("#keyRemember").checked;
+    AB.closeGuide(); AB.startWithKey(v, remember);
+  });
+}
+AB.openGuide = function (stepId) {
+  var el = $("guide");
+  if (!el) { el = document.createElement("div"); el.id = "guide"; el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); el.setAttribute("aria-label", "Guía de configuración"); document.body.appendChild(el); }
+  var saved = 0; try { saved = parseInt(localStorage.getItem("adsboard_guide") || "0", 10) || 0; } catch (e) {}
+  gi = stepId ? Math.max(0, GSTEPS.map(function (s) { return s.id; }).indexOf(stepId)) : saved;
+  el.classList.add("on"); document.body.classList.add("guiding"); renderGuide("");
+  try { localStorage.setItem("adsboard_seen", "1"); } catch (e) {}
+};
+AB.closeGuide = function () { var el = $("guide"); if (el) el.classList.remove("on"); document.body.classList.remove("guiding"); };
+AB.openKey = function () { AB.openGuide("pegar"); };
+document.addEventListener("keydown", function (e) { var el = $("guide"); if (el && el.classList.contains("on") && e.key === "Escape") AB.closeGuide(); });
+AB.startWithKey = function (token, remember) {
+  S.token = token; S.demo = false; S.keyMode = true;
+  try { if (remember) localStorage.setItem(KEY, token); else localStorage.removeItem(KEY); } catch (e) {}
+  AB.track && AB.track("login", { method: "key" });
+  AB.startSession();
+};
+AB.resumeKey = function () {
+  var t = null, seen = null; try { t = localStorage.getItem(KEY); seen = localStorage.getItem("adsboard_seen"); } catch (e) {}
+  if (t) { S.token = t; S.keyMode = true; S.demo = false; AB.startSession(); return; }
+  if (!seen) AB.openGuide("hola");
+};
+
+/* ------------------------------ app instalable ----------------------------- */
+var deferred = null;
+function standalone() { return (root.matchMedia && root.matchMedia("(display-mode: standalone)").matches) || root.navigator.standalone === true; }
+function showInstall(on) { var b = $("installBtn"); if (b) b.classList.toggle("hidden", !on || standalone()); }
+root.addEventListener("beforeinstallprompt", function (e) { e.preventDefault(); deferred = e; showInstall(true); });
+root.addEventListener("appinstalled", function () { deferred = null; showInstall(false); UI.toast("Listo, el Ads Board quedó instalado."); AB.track && AB.track("installed"); });
+AB.install = function () {
+  if (deferred) { deferred.prompt(); deferred.userChoice.then(function () { deferred = null; showInstall(false); }); return; }
+  var ua = navigator.userAgent, mac = /Macintosh/.test(ua), ios = /iPhone|iPad/.test(ua), safari = /Safari/.test(ua) && !/Chrome|Chromium|Edg/.test(ua);
+  var how = ios ? "Toca el botón Compartir y elige <b>Agregar a pantalla de inicio</b>." :
+    (mac && safari ? "En la barra de menú elige <b>Archivo</b> y después <b>Agregar al Dock</b>." :
+      "Abre esta página en <b>Google Chrome</b> o <b>Microsoft Edge</b> y pulsa el ícono de instalar que aparece a la derecha de la barra de direcciones.");
+  UI.modal('<h3>Instalar el Ads Board</h3><p>' + how + '</p><p class="sub">Queda como una app más en tu computadora o celular y se actualiza sola cada vez que hay una versión nueva.</p><div class="mb"><button class="btn btn-gold" id="instOk">Entendido</button></div>', function (m) { m.querySelector("#instOk").onclick = function () { UI.closeAll(); }; });
+};
+/* Safari y iPhone no disparan beforeinstallprompt: mostramos el botón con instrucciones. */
+if (!standalone() && /Safari/.test(navigator.userAgent) && !/Chrome|Chromium|Edg/.test(navigator.userAgent)) setTimeout(function () { showInstall(true); }, 0);
+
+/* ---------------------- service worker y actualización --------------------- */
+if ("serviceWorker" in navigator && (/^https:/.test(location.protocol) || location.hostname === "localhost")) {
+  root.addEventListener("load", function () {
+    navigator.serviceWorker.register("sw.js").then(function (reg) {
+      function offer(w) {
+        UI.toast("Hay una versión nueva del Ads Board. Se aplica en un segundo.");
+        w.postMessage("skipWaiting");
+      }
+      if (reg.waiting && navigator.serviceWorker.controller) offer(reg.waiting);
+      reg.addEventListener("updatefound", function () {
+        var w = reg.installing; if (!w) return;
+        w.addEventListener("statechange", function () { if (w.state === "installed" && navigator.serviceWorker.controller) offer(w); });
+      });
+      /* busca versiones nuevas al volver a la app y cada hora */
+      document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible") reg.update().catch(function () {}); });
+      setInterval(function () { reg.update().catch(function () {}); }, 3600e3);
+    }).catch(function () {});
+    var reloaded = false, hadController = !!navigator.serviceWorker.controller;
+    navigator.serviceWorker.addEventListener("controllerchange", function () {
+      /* la primera instalación no recarga: solo las actualizaciones */
+      if (reloaded || !hadController) return; reloaded = true;
+      /* si hay una tarea a medio crear, no recargamos de golpe */
+      if (S.wiz && S.wiz.run && !S.wiz.run.done) { UI.toast("La actualización se aplicará cuando termines."); return; }
+      root.location.reload();
+    });
+  });
+}
+})(window);
+
+;
+/* ==========================================================================
    APP: acceso con Facebook, carga, navegación, eventos
    ========================================================================== */
 (function (root) {
@@ -2772,11 +3139,13 @@ AB.login = function (edit) {
 };
 AB.startDemo = function () { S.demo = true; S.token = "demo"; S.userId = "demo"; S.userName = "Alumno Demo"; S.canEdit = true; startSession(); };
 AB.logout = function () {
-  S.token = null; S.data = null; S.A = null; S.seg = null; S.copy = null; S.rules = null; S.attr = null; S.demo = false; S.canEdit = false; S.mode = "gate";
+  try { localStorage.removeItem("adsboard_key"); } catch (e) {}
+  S.keyMode = false; S.token = null; S.data = null; S.A = null; S.seg = null; S.copy = null; S.rules = null; S.attr = null; S.demo = false; S.canEdit = false; S.mode = "gate";
   try { if (root.FB && root.FB.getLoginStatus) root.FB.logout(function () {}); } catch (e) {}
   showGate(); UI.toast("Sesión cerrada. Tu token se borró de esta pestaña.");
 };
 
+AB.startSession = function () { startSession(); };
 function startSession() {
   UI.loading(true, "Conectando…");
   var p = S.demo ? Promise.resolve({ id: "demo", name: "Alumno Demo" }) : G.get("me", { fields: "id,name" });
@@ -2785,7 +3154,7 @@ function startSession() {
     var perm = S.demo ? Promise.resolve(null) : G.get("me/permissions").catch(function () { return null; });
     return perm;
   }).then(function (perm) {
-    if (!S.demo) { var g = (perm && perm.data || []).filter(function (x) { return x.status === "granted"; }).map(function (x) { return x.permission; }); S.canEdit = g.indexOf("ads_management") >= 0; }
+    if (!S.demo) { var g = (perm && perm.data || []).filter(function (x) { return x.status === "granted"; }).map(function (x) { return x.permission; }); S.canEdit = g.indexOf("ads_management") >= 0 || (S.keyMode && !perm); }
     return G.all("me/adaccounts", { fields: "id,name,currency,account_status", limit: 100 }, 3);
   }).then(function (accts) {
     S.accounts = accts.filter(function (a) { return a.account_status === 1 || a.account_status === undefined || S.demo; });
@@ -2896,6 +3265,7 @@ AB.renderTab = function () {
   if (S.tab === "crear" && !S.wiz.run && S.wiz.kind === "conversion" && S.wiz.step === 2 && S.wiz.pixel && !S.wiz.events) {
     AB.wizEvents().then(function () { if (S.tab === "crear" && S.wiz.step === 2) AB.renderTab(); });
   }
+  if (S.tab === "crear" && S.wiz.step === 3 && !S.wiz.run) AB.renderPolicy();
   if (S.tab === "crear" && !S.wiz.run) {
     AB.loadPages().then(function () {
       var sel = $("wPage"); if (!sel) return;
@@ -2931,7 +3301,7 @@ function copyText(t) {
 }
 
 /* -------------------------------- eventos ---------------------------------- */
-function goto(tab) { S.lastSub = S.lastSub || {}; S.lastSub[groupOf(tab)[0]] = tab; S.tab = tab; UI.closeAll(); buildTabs(); AB.renderTab(); window.scrollTo({ top: 0, behavior: "smooth" }); }
+function goto(tab) { AB.track("screen", { screen: tab }); S.lastSub = S.lastSub || {}; S.lastSub[groupOf(tab)[0]] = tab; S.tab = tab; UI.closeAll(); buildTabs(); AB.renderTab(); window.scrollTo({ top: 0, behavior: "smooth" }); }
 function keepFocus(id, fn) { var el = $(id), pos = el ? el.selectionStart : 0; fn(); var n = $(id); if (n) { n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) {} } }
 
 document.addEventListener("click", function (e) {
@@ -2984,8 +3354,15 @@ document.addEventListener("click", function (e) {
   if (id === "btnRead") { AB.login(false); return; }
   if (id === "btnEdit") { AB.login(true); return; }
   if (id === "btnDemo") { AB.startDemo(); return; }
+  if (id === "btnKey") { AB.openKey(); return; }
+  if (id === "btnGuide") { AB.openGuide(); return; }
+  if (id === "installBtn") { AB.install(); return; }
   if (id === "glossBtn") { AB.openGlossary(); return; }
   if (id === "createBtn") { goto("crear"); return; }
+  if (id === "suSave") { AB.saveSetup(); return; }
+  if (id === "range90") { S.range = "90"; $("rangeSel").value = "90"; AB.saveLocal(); AB.refresh(false); return; }
+  if (id === "tplApply") { AB.applyTemplate(); AB.renderPolicy(); AB.track("template_used", { niche: S.prefs.niche || "retratos" }); return; }
+  if (id === "bkExport") { AB.exportBackup(); return; }
   if (id === "themeBtn") { AB.toggleTheme(); return; }
   if (id === "slAdd") { AB.addSale(); return; }
   if (id === "slUseClose") { S.goal.close = t.getAttribute("data-close"); AB.saveLocal(); AB.recompute(); UI.toast("Tasa de cierre actualizada con tus ventas reales"); return; }
@@ -3017,7 +3394,7 @@ document.addEventListener("input", function (e) {
   if (id === "ssBase" || id === "ssLift" || id === "ssCpm" || id === "ssBudget") { $("ssOut").innerHTML = T.ssOut(); return; }
   var W = S.wiz;
   var wmap = { wName: "name", wUrl: "url", wWa: "wa", wCity: "city", wEvent: "event", wP2: "p2", wP3: "p3", wH2: "h2", wH3: "h3", wBudget: "budget", wPrimary: "primary", wHead: "headline" };
-  if (wmap[id]) { W[wmap[id]] = v; if (id === "wBudget") budgetHint(); if (id === "wPrimary" || id === "wHead") AB.wizPreview(); return; }
+  if (wmap[id]) { W[wmap[id]] = v; if (id === "wBudget") budgetHint(); if (id === "wPrimary" || id === "wHead") AB.wizPreview(); if (/^w(Primary|Head|P2|P3|H2|H3)$/.test(id)) AB.renderPolicy(); return; }
   if (id === "wAgeMin") W.ageMin = parseInt(v, 10) || 18; if (id === "wAgeMax") W.ageMax = parseInt(v, 10) || 65;
 });
 document.addEventListener("change", function (e) {
@@ -3036,6 +3413,7 @@ document.addEventListener("change", function (e) {
   if (id === "audPage") { S.aud.page = v; return; }
   if (id === "wExcl") { W.excl = Array.prototype.filter.call(e.target.options, function (o) { return o.selected; }).map(function (o) { return o.value; }); return; }
   if (id === "vrType") { S.vr = S.vr || {}; S.vr.type = v; AB.renderTab(); return; }
+  if (id === "bkImport") { AB.importBackup(e.target.files[0]); return; }
   if (id === "wPixel") { W.pixel = v; W.events = null; W.event = ""; AB.renderTab(); return; }
   if (id === "wGender") { W.gender = v; return; }
   if (id === "wCta") { W.cta = v; AB.wizPreview(); return; }
@@ -3057,6 +3435,7 @@ function init() {
   AB.applyTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light");
   showGate(); loadSDK();
   if (/[?&]demo=1/.test(location.search)) AB.startDemo();
+  else if (AB.resumeKey) AB.resumeKey();
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
 })(window);

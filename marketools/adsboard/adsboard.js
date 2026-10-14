@@ -778,21 +778,21 @@ C.run = function (A) {
 
     var v = ad.verdict;
     if (v && v.level === "r" && m.results === 0) {
-      add({ id: "cut-" + ad.id, sev: "r", title: "Pausa \"" + ad.name + "\"", why: v.why, evidence: money(m.spend) + " gastados, 0 resultados.",
-        fix: "Con esta inversión sin resultados, seguir cuesta más de lo que enseña. Pausa y reemplaza con un concepto distinto.", entity: { type: "ad", id: ad.id }, action: { type: "pause", label: "Pausar anuncio" }, impact: m.spend });
+      add({ id: "cut-" + ad.id, sev: "r", title: "«" + ad.name + "» gastó " + money(m.spend) + " y no trajo nada", why: v.why, evidence: money(m.spend) + " gastados, 0 resultados.",
+        fix: "Págale menos a lo que no funciona: pausa este anuncio y prueba una idea distinta.", entity: { type: "ad", id: ad.id }, action: { type: "pause", label: "Pausar anuncio" }, impact: m.spend });
     } else if (v && v.level === "r") {
       var waste = m.spend * (1 - target / m.cpr);
-      add({ id: "exp-" + ad.id, sev: "r", title: "\"" + ad.name + "\" sale caro con confianza", why: v.why, evidence: "CPR " + money(m.cpr) + " contra objetivo " + money(target) + ".",
-        fix: "Pausa o reemplaza. El exceso de gasto sobre tu objetivo en este anuncio ronda " + money(waste) + ".", entity: { type: "ad", id: ad.id }, action: { type: "pause", label: "Pausar anuncio" }, impact: waste });
+      add({ id: "exp-" + ad.id, sev: "r", title: "«" + ad.name + "» te sale caro", why: v.why, evidence: "Cada resultado cuesta " + money(m.cpr) + " y tu meta es " + money(target) + ".",
+        fix: "Ya pagaste unos " + money(waste) + " de más con este anuncio. Pausarlo libera esa plata para los que sí funcionan.", entity: { type: "ad", id: ad.id }, action: { type: "pause", label: "Pausar anuncio" }, impact: waste });
     } else if (v && v.level === "g" && ad.share && ad.share.spendShare < 0.35 && ad.siblings > 1) {
-      add({ id: "win-" + ad.id, sev: "g", title: "\"" + ad.name + "\" rinde por encima de tu objetivo", why: v.why, evidence: "Recibe " + pct(ad.share.spendShare) + " del gasto de su conjunto y aporta " + pct(ad.share.resShare) + " de los resultados.",
+      add({ id: "win-" + ad.id, sev: "g", title: "«" + ad.name + "» funciona: dale más", why: v.why, evidence: "Recibe " + pct(ad.share.spendShare) + " del gasto de su conjunto y aporta " + pct(ad.share.resShare) + " de los resultados.",
         fix: "Meta todavía le da poco. Usa su concepto como base de dos variantes nuevas con otro visual y el mismo mensaje.", entity: { type: "ad", id: ad.id }, action: { type: "duplicate", label: "Duplicar en pausa" } });
     }
 
     var f = ad.fat;
     if (f && f.score !== null && f.score >= 50) {
       var why = "Frecuencia " + (f.freq ? f.freq.toFixed(1) : "?") + (f.ctrDrop !== null ? ", CTR " + (f.ctrDrop > 0 ? "bajó " : "subió ") + pct(Math.abs(f.ctrDrop)) + " entre el inicio y el final del rango" : "") + (f.cprRise !== null && f.cprRise > 0.1 ? ", costo por resultado subió " + pct(f.cprRise) : "") + ".";
-      add({ id: "fat-" + ad.id, sev: f.score >= 75 ? "r" : "y", title: "Saturación en \"" + ad.name + "\" (" + f.label + ")", why: why,
+      add({ id: "fat-" + ad.id, sev: f.score >= 75 ? "r" : "y", title: "La gente ya se cansó de «" + ad.name + "»", why: why,
         fix: "La audiencia ya lo vio demasiado. Cambia el visual o el hook manteniendo la promesa, y prepara un reemplazo antes de que el costo se dispare.", entity: { type: "ad", id: ad.id }, action: { type: "duplicate", label: "Duplicar para renovar" }, impact: m.spend * 0.25 });
     }
 
@@ -965,7 +965,7 @@ F.compact = function (n) { if (n === null || n === undefined) return "—"; if (
 F.date = function (iso) { if (!iso) return ""; var d = new Date(iso + "T12:00:00Z"); return d.toLocaleDateString("es-BO", { day: "2-digit", month: "short", timeZone: "UTC" }); };
 F.ago = function (ts) { var s = (Date.now() - ts) / 1000; if (s < 90) return "hace un momento"; if (s < 3600) return "hace " + Math.round(s / 60) + " min"; if (s < 86400) return "hace " + Math.round(s / 3600) + " h"; return "hace " + Math.round(s / 86400) + " d"; };
 F.initials = function (s) { var w = (s || "?").trim().split(/\s+/).filter(function (x) { return /[a-zA-Z0-9]/.test(x); }); return ((w[0] || "?")[0] + ((w[1] || "")[0] || "")).toUpperCase(); };
-F.grad = function (seed) { var h = 0; for (var i = 0; i < (seed || "").length; i++) h = (h * 31 + seed.charCodeAt(i)) % 360; return "linear-gradient(140deg,hsl(" + h + ",62%,60%),hsl(" + ((h + 42) % 360) + ",58%,46%))"; };
+F.grad = function (seed) { var h = 0; for (var i = 0; i < (seed || "").length; i++) h = (h * 31 + seed.charCodeAt(i)) % 360; return "linear-gradient(160deg,hsl(" + h + ",10%,22%),hsl(" + h + ",8%,13%))"; };
 F.statusEs = function (s) { return { ACTIVE: "Activo", PAUSED: "Pausado", ARCHIVED: "Archivado", DELETED: "Eliminado", DISAPPROVED: "Rechazado", PENDING_REVIEW: "En revisión", WITH_ISSUES: "Con problemas", CAMPAIGN_PAUSED: "Campaña pausada", ADSET_PAUSED: "Conjunto pausado", IN_PROCESS: "Procesando" }[s] || s || "—"; };
 F.objEs = function (o) { var map = { OUTCOME_LEADS: "Clientes potenciales", OUTCOME_SALES: "Ventas", OUTCOME_ENGAGEMENT: "Interacción", OUTCOME_TRAFFIC: "Tráfico", OUTCOME_AWARENESS: "Reconocimiento", OUTCOME_APP_PROMOTION: "App" }; return map[o] || (o || "").replace("OUTCOME_", "").toLowerCase(); };
 F.rankEs = function (r) { if (!r) return null; if (r === "ABOVE_AVERAGE") return { t: "Sobre el promedio", l: "g" }; if (r === "AVERAGE") return { t: "Promedio", l: "y" }; if (/BELOW/.test(r)) return { t: "Bajo el promedio", l: "r" }; return { t: r, l: "n" }; };
@@ -1079,7 +1079,7 @@ var AB = root.AB, F = AB.F, UI = AB.UI, E = root.AdsEngine;
 var Ch = AB.Ch = {};
 var REG = {}, uid = 0;
 
-var C = { gold: "#F5B729", goldDeep: "#c98a12", ink: "#141414", muted: "#68655f", good: "#1c9a5b", bad: "#C23B26", blue: "#3a5a8c" };
+var C = { gold: "#fddc5b", goldDeep: "#c98a12", ink: "#141414", muted: "#68655f", good: "#1c9a5b", bad: "#C23B26", blue: "#3a5a8c" };
 Ch.C = C;
 
 function niceMax(v) {
@@ -1412,45 +1412,52 @@ function tab(name) { return '<div class="tabpanel' + (S.tab === name ? " active"
 /* ------------------------------- Resumen --------------------------------- */
 T.resumen = function (A) {
   var m = A.account.m, ser = A.account.series, hv = halves(ser);
-  var spendD = hv ? T.delta(hv[0].spend, hv[1].spend, true) : "";
-  var cprD = hv && hv[0].cpr && hv[1].cpr ? T.delta(hv[0].cpr, hv[1].cpr, true) : "";
-  var cpmD = hv && hv[0].cpm && hv[1].cpm ? T.delta(hv[0].cpm, hv[1].cpm, true) : "";
-  var ctrD = hv && hv[0].ctr && hv[1].ctr ? T.delta(hv[0].ctr, hv[1].ctr, false) : "";
+  var cprD = hv && hv[0].cpr && hv[1].cpr ? T.delta(hv[0].cpr, hv[1].cpr, true, "contra la primera mitad") : "";
   var act = A.ads.filter(function (a) { return a.effStatus === "ACTIVE"; });
   var im = E.sum(act, function (a) { return a.m.impr; }), fw = im ? E.sum(act, function (a) { return (a.m.freq || 0) * a.m.impr; }) / im : null;
-  var ci = A.account.verdict && A.account.verdict.ci;
-  var days = m.days || 0;
-  var html = '<div class="grid g6">' +
-    T.kpi({ label: "Gasto", gl: "gasto", val: F.money(m.spend), delta: spendD, note: days + " días con gasto · " + F.money(days ? m.spend / days : 0) + " por día" }) +
-    T.kpi({ label: "Resultados", gl: "resultado", val: F.num(m.results), note: S.metric === "auto" ? "resultado principal de cada campaña" : E.METRIC_LABELS[S.metric] }) +
-    T.kpi({ label: "Costo por resultado", gl: "cpr", val: F.money(m.cpr), chip: verdictChip(A.account.verdict), delta: cprD,
-      note: ci ? "Rango 90%: " + F.money(ci.lo) + " a " + (isFinite(ci.hi) ? F.money(ci.hi) : "más") + " · objetivo " + F.money(A.target) + " (" + A.targetSource + ")" : "" }) +
-    T.kpi({ label: "CTR de enlace", gl: "ctr", val: F.pct(m.ctr, 2), delta: ctrD, note: A.medians.ctr ? "mediana de tus anuncios: " + F.pct(A.medians.ctr, 2) : "" }) +
-    T.kpi({ label: "CPM", gl: "cpm", val: F.money(m.cpm), delta: cpmD, note: "por cada mil impresiones" }) +
-    T.kpi({ label: "Frecuencia", gl: "frecuencia", val: fw ? F.num(fw, 2) : "—", chip: fw ? (fw >= 3.5 ? F.chip("r", "Alta") : (fw >= 2.5 ? F.chip("y", "Subiendo") : F.chip("g", "Sana"))) : "", note: "veces que una persona ve tus anuncios" }) +
+  var days = m.days || 0, tgt = A.target, hasGoal = A.goal && A.goal.ok;
+  var v = A.account.verdict, lv = v ? v.level : "n";
+  /* titular: una sola frase que se entiende sin saber de anuncios */
+  var head;
+  if (!m.results) head = 'Todavía no hay resultados <mark class="neg">en este periodo.</mark>';
+  else if (!hasGoal) head = 'Cada resultado te cuesta <mark>' + F.money(m.cpr) + '.</mark>';
+  else if (m.cpr <= tgt) head = 'Cada resultado te cuesta <mark>' + F.money(m.cpr) + '.</mark> Vas bien.';
+  else if (A.goal.breakEven && m.cpr <= A.goal.breakEven) head = 'Cada resultado te cuesta ' + F.money(m.cpr) + '. <mark>Ganas, pero poco.</mark>';
+  else head = 'Cada resultado te cuesta ' + F.money(m.cpr) + '. <mark class="neg">Estás perdiendo plata.</mark>';
+  var html = '<section class="hero card"><h1 class="hero-h">' + head + '</h1>' +
+    '<p class="hero-p">En ' + (days || "los") + ' días gastaste <b>' + F.money(m.spend) + '</b> y conseguiste <b>' + F.num(m.results) + '</b> ' + (S.metric === "auto" ? "resultados" : F.esc(E.METRIC_LABELS[S.metric]).toLowerCase()) + '.' +
+    (hasGoal ? ' Tu límite para ganar plata es <b>' + F.money(A.goal.breakEven) + '</b> por resultado.' : '') + '</p>' +
+    (!hasGoal ? '<div class="hero-cta"><span>Dime cuánto cobras y te digo si ese costo es bueno o malo.</span><button class="btn btn-gold btn-sm" data-goto="rentabilidad">Calcular mi límite</button></div>' : '') + '</section>';
+
+  html += '<div class="grid g3 kpis">' +
+    T.kpi({ label: "Gastaste", gl: "gasto", val: F.money(m.spend), note: days ? F.money(m.spend / days) + " por día" : "" }) +
+    T.kpi({ label: "Conseguiste", gl: "resultado", val: F.num(m.results), note: S.metric === "auto" ? "mensajes, visitas o ventas según cada campaña" : E.METRIC_LABELS[S.metric] }) +
+    T.kpi({ label: "Cada uno te costó", gl: "cpr", val: F.money(m.cpr), chip: v ? F.chip(lv, lv === "g" ? "Barato" : (lv === "r" ? "Caro" : (lv === "y" ? "En el límite" : "Faltan datos")), v.why) : "", delta: cprD }) +
     '</div>';
 
   if (S.prefs.showHero) {
-    var spendPts = ser.map(function (d) { return { label: F.date(d.date) + ": gasto", short: F.date(d.date), y: d.spend }; });
     var rolling = ser.map(function (d, i) {
       var w = ser.slice(Math.max(0, i - 6), i + 1), sp = E.sum(w, function (x) { return x.spend; }), rs = E.sum(w, function (x) { return x.results; });
-      return { label: F.date(d.date) + ": CPR 7 días", short: F.date(d.date), y: (rs > 0 && i >= 2) ? sp / rs : null };
+      return { label: F.date(d.date) + ": costo por resultado", short: F.date(d.date), y: (rs > 0 && i >= 2) ? sp / rs : null };
     });
-    html += '<div class="grid g2" style="margin-top:14px"><div class="card pad"><div class="eyebrow">Gasto diario ' + F.help("gasto") + '</div>' +
-      Ch.line({ series: [{ name: "Gasto", color: Ch.C.gold, points: spendPts }], area: true, yFmt: function (v) { return F.money(v, 0); }, title: "Gasto diario" }) + '</div>' +
-      '<div class="card pad"><div class="eyebrow">Costo por resultado (media móvil 7 días) ' + F.help("cpr") + '</div>' +
-      Ch.line({ series: [{ name: "CPR", color: Ch.C.ink, points: rolling }], yFmt: function (v) { return F.money(v); }, ref: A.target ? { y: A.target, label: "objetivo " + F.money(A.target) } : null, title: "Costo por resultado" }) + '</div></div>';
+    html += '<div class="card pad chartcard"><h3>Cuánto te cuesta cada resultado, día a día ' + F.help("cpr") + '</h3>' +
+      Ch.line({ series: [{ name: "Costo", color: Ch.C.gold, points: rolling }], yFmt: function (x) { return F.money(x); }, ref: tgt ? { y: tgt, label: "tu meta " + F.money(tgt) } : null, title: "Costo por resultado" }) + '</div>';
   }
 
-  var top = A.coach.filter(function (c) { return c.sev === "r" || c.sev === "y" || c.sev === "g"; }).slice(0, 4);
-  html += '<div class="sec-head"><h2>Lo que conviene hacer hoy</h2><div class="hint"><a href="#" data-goto="coach">Ver las ' + A.coach.length + ' recomendaciones</a></div></div>';
-  html += top.length ? '<div class="coach">' + top.map(T.coachCard).join("") + '</div>' : '<div class="state"><b>Todo en orden por ahora</b>El coach no encontró alertas con los datos de este rango.</div>';
+  var top = A.coach.filter(function (c) { return c.sev === "r" || c.sev === "y" || c.sev === "g"; }).slice(0, 3);
+  html += '<div class="sec-head"><h2>Qué hacer hoy</h2>' + (A.coach.length > 3 ? '<button class="btn btn-sm btn-ghost" data-goto="coach">Ver las ' + A.coach.length + '</button>' : '') + '</div>';
+  html += top.length ? '<div class="coach">' + top.map(T.coachCard).join("") + '</div>' : '<div class="state"><b>Todo en orden</b>No hay nada urgente con los datos de este periodo.</div>';
 
   if (S.prefs.showAds) {
     var live = act.filter(function (a) { return a.m.spend > 0; }).sort(function (a, b) { return b.m.spend - a.m.spend; });
-    html += '<div class="sec-head"><h2>Anuncios corriendo</h2><div class="hint">' + live.length + ' con gasto en el rango · toca uno para ver su diagnóstico</div></div>';
-    html += live.length ? '<div class="ads">' + live.slice(0, 8).map(T.adCard).join("") + '</div>' : '<div class="state"><b>No hay anuncios activos con gasto</b>Cuando publiques y Meta apruebe un anuncio, aparece aquí con su diagnóstico.</div>';
+    html += '<div class="sec-head"><h2>Tus anuncios activos</h2>' + (live.length > 4 ? '<button class="btn btn-sm btn-ghost" data-goto="creativos">Ver todos</button>' : '') + '</div>';
+    html += live.length ? '<div class="ads">' + live.slice(0, 4).map(T.adCard).join("") + '</div>' : '<div class="state"><b>No hay anuncios activos</b>Cuando publiques uno aparece aquí.</div>';
   }
+  html += '<details class="more"><summary>Más números</summary><div class="grid g3" style="margin-top:12px">' +
+    T.kpi({ label: "De cada 100 que lo ven, hacen clic", gl: "ctr", val: F.pct(m.ctr, 2) }) +
+    T.kpi({ label: "Te cuesta mostrarlo a 1.000 personas", gl: "cpm", val: F.money(m.cpm) }) +
+    T.kpi({ label: "Veces que la misma persona lo vio", gl: "frecuencia", val: fw ? F.num(fw, 1) : "—", chip: fw ? (fw >= 3.5 ? F.chip("r", "Demasiadas") : (fw >= 2.5 ? F.chip("y", "Subiendo") : F.chip("g", "Bien"))) : "" }) +
+    '</div></details>';
   return html;
 };
 
@@ -1461,20 +1468,18 @@ T.coachCard = function (c) {
     if (c.action.type === "goto") acts += '<button class="btn btn-sm btn-gold" data-goto="' + c.action.tab + '">' + F.esc(c.action.label) + '</button>';
     else if (c.entity) acts += T.act(c.action.type, c.entity.type, c.entity.id, c.action.label, "btn-gold");
   }
-  if (c.entity && c.entity.type === "ad") acts += '<button class="btn btn-sm" data-open="ad:' + F.esc(c.entity.id) + '">Ver diagnóstico</button>';
-  else if (c.tab) acts += '<button class="btn btn-sm" data-goto="' + c.tab + '">Ir a ' + F.esc(c.tab) + '</button>';
-  var tagText = { r: "Urgente", y: "Atención", g: "Oportunidad", i: "Dato útil" }[c.sev];
-  return '<div class="cc ' + c.sev + '"><div style="display:flex;gap:10px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap"><h4>' + F.esc(c.title) + '</h4>' + F.chip(c.sev, tagText) + '</div>' +
-    '<div class="why"><span class="lbl">Por qué</span>' + F.esc(c.why) + '</div>' + (c.evidence ? '<div class="ev">' + F.esc(c.evidence) + '</div>' : '') +
-    '<div class="fix"><span class="lbl">Qué hacer</span>' + F.esc(c.fix) + '</div>' + (acts ? '<div class="acts">' + acts + '</div>' : '') + '</div>';
+  if (c.entity && c.entity.type === "ad") acts += '<button class="btn btn-sm btn-ghost" data-open="ad:' + F.esc(c.entity.id) + '">Ver anuncio</button>';
+  return '<article class="cc ' + c.sev + '"><h4>' + F.esc(c.title) + '</h4><p class="fixline">' + F.esc(c.fix) + '</p>' +
+    (acts ? '<div class="acts">' + acts + '</div>' : '') +
+    '<details class="why"><summary>Por qué</summary><p>' + F.esc(c.why) + (c.evidence ? ' ' + F.esc(c.evidence) : '') + '</p></details></article>';
 };
 T.coach = function (A) {
   var f = S.coachFilter || "all";
   var list = A.coach.filter(function (c) { return f === "all" || (f === "urgent" && (c.sev === "r" || c.sev === "y")) || (f === "opp" && (c.sev === "g" || c.sev === "i")); });
   var waste = E.sum(A.coach.filter(function (c) { return c.sev === "r" && c.impact > 0 && (c.id.indexOf("cut-") === 0 || c.id.indexOf("exp-") === 0); }), function (c) { return c.impact; });
-  return '<div class="filters"><div class="seg" id="coachSeg"><button data-cf="all" class="' + (f === "all" ? "on" : "") + '">Todo (' + A.coach.length + ')</button><button data-cf="urgent" class="' + (f === "urgent" ? "on" : "") + '">Urgente y atención</button><button data-cf="opp" class="' + (f === "opp" ? "on" : "") + '">Oportunidades y datos</button></div>' +
-    '<button class="btn" id="copyReport">Copiar resumen para WhatsApp</button> <button class="btn" id="mailReport">Enviar por correo</button></div>' +
-    (waste > 0 ? '<div class="alert on bad"><div><b>Gasto por encima de tu objetivo: ' + F.money(waste) + '</b><div class="sub">Suma estimada de lo que pagaron de más los anuncios marcados en rojo dentro de este rango.</div></div></div>' : '') +
+  return '<div class="filters"><div class="seg" id="coachSeg"><button data-cf="all" class="' + (f === "all" ? "on" : "") + '">Todo (' + A.coach.length + ')</button><button data-cf="urgent" class="' + (f === "urgent" ? "on" : "") + '">Urgente</button><button data-cf="opp" class="' + (f === "opp" ? "on" : "") + '">Oportunidades</button></div>' +
+    '<button class="btn btn-sm btn-ghost" id="copyReport">Copiar para WhatsApp</button><button class="btn btn-sm btn-ghost" id="mailReport">Enviar por correo</button></div>' +
+    (waste > 0 ? '<div class="alert on bad"><div><b>Pagaste de más: ' + F.money(waste) + '</b><div class="sub">Lo que pagaste de más en los anuncios marcados como caros.</div></div></div>' : '') +
     (list.length ? '<div class="coach">' + list.map(T.coachCard).join("") + '</div>' : '<div class="state"><b>Sin recomendaciones en esta vista</b>Cambia el filtro o amplía el rango de fechas.</div>');
 };
 T.weeklyReport = function (A) {
@@ -1532,7 +1537,7 @@ T.adCard = function (a) {
   var media = a.thumb ? '<img src="' + F.esc(a.thumb) + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' : '<div class="ph" style="background:' + F.grad(a.name) + '">' + F.esc(F.initials(a.name)) + '</div>';
   var m = a.m;
   return '<div class="ad" data-open="ad:' + F.esc(a.id) + '" tabindex="0"><div class="thumb">' + media + '<div class="veil"></div>' +
-    '<div class="tl">' + (a.isVideo ? '<span class="chip n">▶ Video</span>' : '<span class="chip n">Imagen</span>') + (a.effStatus !== "ACTIVE" ? F.chip("n", F.statusEs(a.effStatus)) : "") + '</div>' +
+    '<div class="tl">' + (a.isVideo ? '<span class="chip n">Video</span>' : '<span class="chip n">Imagen</span>') + (a.effStatus !== "ACTIVE" ? F.chip("n", F.statusEs(a.effStatus)) : "") + '</div>' +
     '<div class="tr"><div class="scorebadge ' + lv + '" data-tip="Puntaje creativo 0 a 100: combina hook, retención, CTR, costo y frescura. ' + (sc.grade || "") + '">' + (sc.score === null ? "—" : sc.score) + '</div></div>' +
     '<div class="name">' + F.esc(a.name) + '</div></div>' +
     '<div class="ad-body"><div class="mini2"><div><div class="k">Gasto</div><div class="v">' + F.money(m.spend) + '</div></div><div><div class="k">Costo x result.</div><div class="v">' + F.money(m.cpr) + '</div></div>' +
@@ -1852,7 +1857,7 @@ T.ajustes = function (A) {
   var P = S.prefs;
   function sw(k, l, d) { return '<div class="prefrow"><div><div class="lbl">' + l + '</div><div class="desc">' + d + '</div></div><div class="switch' + (P[k] ? " on" : "") + '" data-pref="' + k + '" role="switch" aria-checked="' + !!P[k] + '" tabindex="0"><div class="knob"></div></div></div>'; }
   var log = (S.editLog || []).slice(0, 25);
-  return '<div style="max-width:640px">' + sw("showHero", "Gráficos de gasto y costo", "Muestra las curvas grandes en Resumen") + sw("showAds", "Anuncios corriendo", "Muestra las tarjetas con diagnóstico en Resumen") + sw("showBadAlert", "Alerta de rechazados", "Aviso arriba de todo cuando hay anuncios con problemas") +
+  return '<div style="max-width:640px"><div class="prefrow"><div><div class="lbl">Qué cuenta como resultado</div><div class="desc">Automático usa el objetivo de cada campaña. Cámbialo solo si sabes lo que buscas.</div></div><select id="metricSel">' + Object.keys(E.METRIC_LABELS).map(function (k) { return '<option value="' + k + '"' + (S.metric === k ? " selected" : "") + '>' + F.esc(E.METRIC_LABELS[k]) + '</option>'; }).join("") + '</select></div>' + sw("showHero", "Gráfico en Resumen", "Muestra la curva de costo por resultado") + sw("showAds", "Anuncios en Resumen", "Muestra los anuncios que están gastando") +
     '<div class="prefrow"><div><div class="lbl">Nivel por defecto en Campañas</div></div><select id="defaultLevelSelect" style="border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-weight:600"><option value="campaign">Campañas</option><option value="adset">Conjuntos</option><option value="ad">Anuncios</option></select></div>' +
     '<p class="sub">Tus preferencias, tu calculadora y la bitácora se guardan solo en este navegador, asociadas a tu usuario de Facebook.</p>' +
     '<div class="sec-head"><h2>Herramientas</h2></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="openGl">Abrir glosario</button><button class="btn" id="csvBtn2">Exportar campañas a CSV</button><button class="btn" id="clearLocal">Borrar datos locales</button></div>' +
@@ -2038,7 +2043,7 @@ function steps() {
   return '<div class="steps">' + names.map(function (n, i) { var k = i + 1; return '<div class="st ' + (W.step === k ? "on" : (W.step > k ? "done" : "")) + '">' + k + ". " + n + '</div>'; }).join("") + '</div>';
 }
 function warnIfRead() {
-  return S.canEdit ? "" : '<div class="alert on edit"><div><b>Necesitas el modo edición para crear</b><div class="sub">Puedes preparar todo aquí y, al llegar al último paso, activar el modo edición desde el botón de arriba a la derecha. Todo lo que se cree queda en pausa.</div></div></div>';
+  return S.canEdit ? "" : '<div class="alert on edit"><div><b>Necesitas el modo edición para crear</b><div class="sub">Prepara todo y activa la edición al final. Se crea en pausa.</div></div></div>';
 }
 function convBlock(A) {
   var px = A.pixels || [];
@@ -2087,7 +2092,7 @@ T.crear = function (A) {
     h += '<div class="grid g3">' +
       '<div class="card pad wopt" data-wk="traffic" style="cursor:pointer;' + (W.kind === "traffic" ? "outline:2px solid var(--gold);" : "") + '"><h3 style="margin:0 0 2px">Tráfico a mi landing</h3><div class="note-strong">Recomendada si tienes landing</div><p class="sub">Optimiza por visitas reales a la página (no solo clics). Necesitas el píxel instalado para medir lo que pase después.</p></div>' +
       '<div class="card pad wopt" data-wk="whatsapp" style="cursor:pointer;' + (W.kind === "whatsapp" ? "outline:2px solid var(--gold);" : "") + '"><h3 style="margin:0 0 2px">Mensajes a WhatsApp</h3><div class="note-strong">Para cerrar ventas por chat</div><p class="sub">Optimiza por conversaciones iniciadas. Responder rápido (idealmente en minutos) pesa tanto como el anuncio.</p></div>' +
-      '<div class="card pad wopt" data-wk="conversion" style="cursor:pointer;' + (W.kind === "conversion" ? "outline:2px solid var(--gold);" : "") + '"><h3 style="margin:0 0 2px">Conversión en sitio web</h3><div class="note-strong">Con píxel y evento propio</div><p class="sub">Optimiza por un evento de tu píxel, estándar o personalizado, como una reserva o un inicio de compra. Es la configuración de tu borrador de estudiographica.</p></div></div>' +
+      '<div class="card pad wopt" data-wk="conversion" style="cursor:pointer;' + (W.kind === "conversion" ? "outline:2px solid var(--gold);" : "") + '"><h3 style="margin:0 0 2px">Conversión en sitio web</h3><div class="note-strong">Con píxel y evento propio</div><p class="sub">Meta busca gente que haga una acción en tu web, como reservar o pagar.</p></div></div>' +
       '<div class="card pad" style="margin-top:14px"><div class="row2"><div class="field"><label>Nombre de la campaña</label><input id="wName" value="' + F.esc(W.name) + '" placeholder="' + (W.kind === "whatsapp" ? "Ej. WhatsApp retratos" : "Ej. Landing bodas 2026") + '"></div>' +
       '<div class="field"><label>Página de Facebook que publica el anuncio</label><select id="wPage"><option value="">Cargando páginas…</option></select><span class="hint" id="wPageHint">Se necesita para poder publicar el anuncio.</span></div></div></div>' +
       '<div class="mb" style="display:flex;justify-content:flex-end;margin-top:14px"><button class="btn btn-gold" data-wnext="1">Continuar</button></div>' + dupCard(A);
@@ -2099,7 +2104,7 @@ T.crear = function (A) {
       (W.kind === "conversion" ? convBlock(A) : "") + '<div class="row3" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px"><div class="field"><label>País</label><select id="wCountry">' + Object.keys(COUNTRIES).map(function (k) { return '<option value="' + k + '"' + (W.country === k ? " selected" : "") + '>' + COUNTRIES[k] + '</option>'; }).join("") + '</select></div>' +
       '<div class="field"><label>Ciudad (opcional)</label><input id="wCity" value="' + F.esc(W.city) + '" placeholder="Ej. Cochabamba"><span class="hint">Con radio de ' + W.radius + ' km. Vacío usa todo el país.</span></div><div class="field"><label>Edad mínima</label><input id="wAgeMin" type="number" min="18" max="64" value="' + W.ageMin + '"></div><div class="field"><label>Edad máxima</label><input id="wAgeMax" type="number" min="19" max="65" value="' + W.ageMax + '"></div>' +
       '<div class="field"><label>Género</label><select id="wGender"><option value="0"' + (W.gender === "0" ? " selected" : "") + '>Todos</option><option value="2"' + (W.gender === "2" ? " selected" : "") + '>Mujeres</option><option value="1"' + (W.gender === "1" ? " selected" : "") + '>Hombres</option></select></div></div>' +
-      exclBlock(A) + '<p class="sub" style="margin-top:8px">Usa audiencia amplia con Advantage+ activado: la edad y el país son sugerencias y Meta busca a quien más probabilidad tiene de responder. Ubicaciones automáticas.</p></div>' +
+      exclBlock(A) + '<p class="sub" style="margin-top:8px">Meta usa la edad y el lugar como sugerencia y busca a quien más probable te escriba.</p></div>' +
       '<div class="mb" style="display:flex;justify-content:space-between;margin-top:14px"><button class="btn" data-wprev="1">Atrás</button><button class="btn btn-gold" data-wnext="2">Continuar</button></div>';
   } else if (W.step === 3) {
     h += '<div class="grid g21"><div class="card pad"><div class="field"><label>Imagen del anuncio (JPG o PNG, máximo 8 MB)</label><input type="file" id="wFile" accept="image/jpeg,image/png"><span class="hint">Recomendado 1080 × 1350 (4:5). ' + (W.fileName ? "Elegida: " + F.esc(W.fileName) : "") + '</span></div>' +
@@ -2259,7 +2264,7 @@ AB.mapCopy = function (rows, key) {
 };
 
 function imageBlock(data, A) {
-  var h = '<div class="card pad glass reveal" style="margin-top:14px"><div class="eyebrow">Qué foto funciona</div><div class="sub" style="margin:2px 0 10px">Costo por resultado de cada imagen dentro de tus anuncios flexibles. Útil para decidir qué foto repetir.</div>';
+  var h = '<div class="card pad glass reveal" style="margin-top:14px"><div class="eyebrow">Qué foto funciona</div><div class="sub" style="margin:2px 0 10px">Cuánto costó cada resultado con cada foto.</div>';
   if (!data || !data.list.length) return h + '<div class="sub">Sin datos de imágenes. Aparece cuando un anuncio usa varias fotos.</div></div>';
   h += '<div class="grid g3">' + data.list.slice(0, 6).map(function (x, i) {
     var lv = !x.cpr ? "n" : (A.target && x.cpr <= A.target ? "g" : (A.target && x.cpr > A.target * 1.5 ? "r" : "y"));
@@ -2293,8 +2298,8 @@ function copyBlock(title, sub, data, A) {
 
 T.hooks = function (A) {
   var vids = A.ads.filter(function (a) { return a.isVideo && a.m.impr >= 300; }).sort(function (a, b) { return (b.m.hook || 0) - (a.m.hook || 0); });
-  var html = '<div class="card pad glass reveal" style="margin-bottom:14px"><h2 style="margin:0 0 6px">Descubre qué frena el dedo y qué lo retiene</h2>' +
-    '<div class="sub">Hook ' + F.help("hook") + ' = personas que ven 3 segundos dividido entre impresiones. Retención ' + F.help("hold") + ' = quienes llegan a ThruPlay dividido entre quienes vieron 3 segundos. Si el hook es bajo, el problema es el inicio. Si el hook sube y la retención cae, el problema es el cuerpo del video.</div></div>';
+  var html = '<div class="card pad glass reveal" style="margin-bottom:14px"><h2 style="margin:0 0 6px">Qué video frena el dedo</h2>' +
+    '<div class="sub">Hook ' + F.help("hook") + ': cuántos se quedan los primeros 3 segundos. Retención ' + F.help("hold") + ': cuántos de esos siguen mirando.</div></div>';
   if (!vids.length) {
     html += '<div class="card pad glass reveal" style="margin-bottom:14px"><div class="sub">Todavía no hay videos con suficientes impresiones en este periodo. Los hooks se miden en reels y videos, no en fotos.</div></div>';
   } else {
@@ -2320,10 +2325,10 @@ T.hooks = function (A) {
   var c = S.copy;
   html += '<div class="eyebrow" style="margin:6px 4px 8px">Laboratorio de copy</div>';
   if (!c) html += '<div class="state"><div class="spinner"></div>Leyendo variaciones de texto y titular…</div>';
-  else html += '<div class="grid g2">' + copyBlock("Textos principales", "Costo por resultado de cada versión de texto", AB.mapCopy(c.body, "body_asset"), A) +
-    copyBlock("Titulares", "Costo por resultado de cada titular", AB.mapCopy(c.title, "title_asset"), A) + '</div>' + imageBlock(AB.mapCopy(c.image, "image_asset"), A);
+  else html += '<div class="grid g2">' + copyBlock("Textos principales", "Cuánto costó cada resultado", AB.mapCopy(c.body, "body_asset"), A) +
+    copyBlock("Titulares", "Cuánto costó cada resultado", AB.mapCopy(c.title, "title_asset"), A) + '</div>' + imageBlock(AB.mapCopy(c.image, "image_asset"), A);
   html += T.angles(A);
-  html += '<div class="card pad glass reveal" style="margin-top:14px"><div class="eyebrow">Cómo probar copy sin mezclar variables</div><div class="sub">Usa un anuncio flexible con una sola foto y 3 textos o 3 titulares. Así cambias una cosa a la vez. Espera unas 50 acciones por versión antes de decidir. Para repetir lo ganador, duplica el anuncio en la pestaña Crear.</div></div>';
+  html += '<div class="card pad glass reveal" style="margin-top:14px"><div class="eyebrow">Cómo probar copy sin mezclar variables</div><div class="sub">Una foto con 3 textos distintos. Cambia una sola cosa a la vez y espera unas 50 acciones por versión antes de decidir.</div></div>';
   return html;
 };
 
@@ -2367,8 +2372,8 @@ AB.createRule = function (key) {
 };
 T.reglas = function (A) {
   var pr = presets(A), r = S.rules;
-  var h = '<div class="card pad glass reveal" style="margin-bottom:14px"><h2 style="margin:0 0 6px">Que Meta te avise antes de que pierdas plata</h2>' +
-    '<div class="sub">Son reglas que corren dentro de Meta cada día aunque tengas esta página cerrada. Las de aviso te notifican y no tocan tus anuncios. La de gasto sin resultados también puede pausar sola, con doble confirmación, como tope para que un anuncio roto no se coma el presupuesto.</div></div>';
+  var h = '<div class="card pad glass reveal" style="margin-bottom:14px"><h2 style="margin:0 0 6px">Alertas para no perder plata</h2>' +
+    '<div class="sub">Meta las revisa cada día, aunque no abras esta página.</div></div>';
   h += '<div class="grid g3">' + Object.keys(pr).map(function (k) {
     var x = pr[k];
     return '<div class="card pad glass"><h4 style="margin:0 0 6px">' + F.esc(x.title) + '</h4><div class="sub" style="min-height:66px">' + F.esc(x.text) + '</div><div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-sm btn-gold" data-rule="' + k + '">Crear regla de aviso</button>' + (k === "spend" ? '<button class="btn btn-sm" data-rule="spend:pause">Crear regla que pausa</button>' : '') + '</div></div>';
@@ -2398,7 +2403,7 @@ T.angles = function (A) {
   var map = {};
   ANGLES.forEach(function (x) { map[x[0]] = { spend: 0, results: 0, n: 0, fat: 0, fn: 0 }; });
   active.forEach(function (a) { var g = AB.angleOf(a.name); if (g) { map[g].spend += a.m.spend; map[g].results += a.m.results; map[g].n++; if (a.fat && a.fat.score !== null) { map[g].fat += a.fat.score; map[g].fn++; } } });
-  var h = '<div class="card pad glass reveal" style="margin-top:14px"><div class="eyebrow">Ángulos que estás probando</div><div class="sub" style="margin:2px 0 10px">Meta reparte mejor cuando tus anuncios son distintos de verdad. Detectamos el ángulo por el nombre del anuncio.</div><div class="grid g3">' +
+  var h = '<div class="card pad glass reveal" style="margin-top:14px"><div class="eyebrow">Ángulos que estás probando</div><div class="sub" style="margin:2px 0 10px">Según el nombre de cada anuncio.</div><div class="grid g3">' +
     ANGLES.map(function (x) {
       var d = map[x[0]], cpr = d.results > 0 ? d.spend / d.results : null;
       return '<div class="kv"><div class="k">' + x[0] + '</div><div class="v">' + (d.n ? F.num(d.n) + (d.n === 1 ? " anuncio" : " anuncios") : "Sin probar") + '</div><div class="sub">' + (cpr ? F.money(cpr) + " por resultado" : F.esc(x[2])) + '</div>' + (d.fn ? F.chip(d.fat / d.fn >= 70 ? "r" : (d.fat / d.fn >= 45 ? "y" : "g"), "Fatiga " + Math.round(d.fat / d.fn) + " de 100") : "") + '</div>';
@@ -2444,7 +2449,7 @@ function bestHint(A) {
 T.valueRules = function (A) {
   var vr = S.vr = S.vr || { type: "PLACEMENT" }, ty = VR_TYPES[vr.type] || VR_TYPES.PLACEMENT, list = S.vrules;
   var h = '<div class="sec-head"><h2>Reglas de valor</h2><div class="hint">Le dices a Meta qué público vale más para ti y ajusta la puja</div></div>' +
-    '<div class="grid g2"><div class="card pad glass"><div class="eyebrow">Nueva regla</div><div class="sub" style="margin:2px 0 10px">Ejemplo: si tus reservas vienen sobre todo de Reels, sube su valor 20%. Meta pujará más fuerte ahí sin dejar de mostrar el anuncio en otros lugares.</div>' +
+    '<div class="grid g2"><div class="card pad glass"><div class="eyebrow">Nueva regla</div><div class="sub" style="margin:2px 0 10px">Le dices a Meta dónde vale más tu anuncio y puja más fuerte ahí.</div>' +
     '<div class="row2"><div class="field"><label>Según</label><select id="vrType">' + Object.keys(VR_TYPES).map(function (k) { return '<option value="' + k + '"' + (k === vr.type ? " selected" : "") + '>' + VR_TYPES[k].label + '</option>'; }).join("") + '</select></div>' +
     '<div class="field"><label>Valor</label>' + (ty.opts ? '<select id="vrVal">' + ty.opts.map(function (o) { return '<option value="' + o[0] + '">' + o[1] + '</option>'; }).join("") + '</select>' : '<input id="vrVal" placeholder="Ej. Cochabamba">') + '</div></div>' +
     '<div class="row2"><div class="field"><label>Ajuste</label><select id="vrSign"><option value="INCREASE">Subir valor</option><option value="DECREASE">Bajar valor</option></select></div><div class="field"><label>Porcentaje</label><input id="vrPct" type="number" min="1" max="90" value="20"><span class="hint">Entre 10% y 30% es un buen inicio.</span></div></div>' +
@@ -2519,8 +2524,8 @@ T.ventas = function (A) {
   var cpa = n ? spend / n : null, roas = spend ? rev / spend : null, close = res ? n / res : null;
   var ads = A.ads.filter(function (a) { return a.m.spend > 0; }).sort(function (a, b) { return b.m.spend - a.m.spend; });
   var today = new Date().toISOString().slice(0, 10);
-  var h = '<div class="sec-head"><h2>Ventas reales</h2><div class="hint">Las que cerraste por WhatsApp, llamada o en persona</div></div>' +
-    '<div class="grid g21"><div class="card pad glass"><div class="eyebrow">Registrar una venta</div><div class="sub" style="margin:2px 0 10px">Meta no ve las ventas que cierras en un chat. Anótalas aquí y el Ads Board calcula tu costo por venta real y tu tasa de cierre verdadera. Se guardan solo en este navegador.</div>' +
+  var h = '<div class="sec-head"><h2>Tus ventas reales</h2><div class="hint">Las que cerraste por WhatsApp, llamada o en persona</div></div>' +
+    '<div class="grid g21"><div class="card pad glass"><div class="eyebrow">Registrar una venta</div><div class="sub" style="margin:2px 0 10px">Meta no ve lo que cierras por WhatsApp. Anótalo aquí y sabrás cuánto te cuesta cada venta de verdad.</div>' +
     '<div class="row3"><div class="field"><label>Fecha</label><input type="date" id="slDate" value="' + today + '"></div>' +
     '<div class="field"><label>Monto cobrado (' + F.esc(S.currency || "USD") + ')</label><input type="number" min="0" step="any" id="slAmount" placeholder="' + F.esc(S.goal.ticket || "Ej. 250") + '"></div>' +
     '<div class="field"><label>Vino del anuncio</label><select id="slAd"><option value="">No sé o fue orgánico</option>' + ads.slice(0, 40).map(function (a) { return '<option value="' + F.esc(a.id) + '">' + F.esc(a.name) + '</option>'; }).join("") + '</select></div></div>' +
@@ -2576,7 +2581,7 @@ AB.loadAttr = function () {
   return G.all(S.acct + "/insights", { level: "account", time_range: rp.time_range, fields: "spend,actions", action_attribution_windows: JSON.stringify(["1d_click", "7d_click", "1d_view"]), limit: 5 }, 1).catch(function (e) { return { error: e.userMsg || e.message }; });
 };
 T.attrib = function (A) {
-  var h = '<div class="sec-head"><h2>Cuánto le crees a Meta</h2><div class="hint">Resultados según cuándo se cuentan</div></div>';
+  var h = '<div class="sec-head"><h2>¿Cuánto le crees a Meta?</h2><div class="hint">Resultados según cuándo se cuentan</div></div>';
   var r = S.attr;
   if (!r) return h + '<div class="state"><div class="spinner"></div>Comparando ventanas de atribución…</div>';
   if (r.error) return h + '<div class="state"><b>No se pudo comparar</b>' + F.esc(r.error) + '</div>';
@@ -2600,9 +2605,9 @@ T.rentabilidad = function (A) { return baseRent(A) + T.ventas(A) + T.fx(A) + T.a
 var EVENT_LADDER = [["Purchase / Compra", "InitiateCheckout"], ["Schedule / Agenda", "Lead o Contact"], ["Lead / Registro", "ViewContent o LandingPageView"], ["Evento propio", "InitiateCheckout o ViewContent"]];
 T.learnPlan = function (A) {
   var sets = A.adsets.filter(function (s) { return (s.status === "ACTIVE" || s.effStatus === "ACTIVE") && s.m.spend > 0; });
-  var h = '<div class="sec-head"><h2>Plan para salir del aprendizaje</h2><div class="hint">Meta necesita unos 50 resultados por semana en cada conjunto</div></div>';
+  var h = '<div class="sec-head"><h2>¿Meta ya aprendió?</h2><div class="hint">Meta necesita unos 50 resultados por semana en cada conjunto</div></div>';
   if (!sets.length) return h + '<div class="state"><b>No hay conjuntos activos con gasto</b></div>';
-  h += '<div class="card pad glass"><div class="sub" style="margin-bottom:10px">Con presupuestos chicos casi nunca se llega a 50 por semana con el evento final. Cuando falta mucho, conviene juntar conjuntos o optimizar un evento anterior del embudo, que pasa más seguido.</div>';
+  h += '<div class="card pad glass"><div class="sub" style="margin-bottom:10px">Meta aprende rápido cuando junta unos 50 resultados por semana.</div>';
   h += sets.map(function (s) {
     var perDay = s.res7 / 7, cpr = s.m.cpr, need = cpr ? 50 * cpr / 7 : null, ratio = need && s.budget ? need / s.budget : null;
     var lv = s.res7 >= 50 ? "g" : (ratio && ratio <= 2 ? "y" : "r");
@@ -2629,7 +2634,7 @@ AB.saveHook = function (adId) {
 T.hookBank = function (A) {
   var vids = A.ads.filter(function (a) { return a.isVideo && a.m.impr >= 300 && a.m.hook >= 0.25; }).sort(function (a, b) { return b.m.hook - a.m.hook; }).slice(0, 5);
   var bank = S.hookBank || [];
-  var h = '<div class="card pad glass reveal" style="margin-top:14px"><div class="eyebrow">Banco de hooks ganadores</div><div class="sub" style="margin:2px 0 10px">Guarda los inicios que frenan el dedo, con 25% o más de hook, para repetirlos con otras fotos o clientes.</div>';
+  var h = '<div class="card pad glass reveal" style="margin-top:14px"><div class="eyebrow">Banco de hooks ganadores</div><div class="sub" style="margin:2px 0 10px">Los inicios que funcionaron, para repetirlos.</div>';
   if (vids.length) h += '<div style="display:flex;flex-direction:column;gap:6px">' + vids.map(function (a) {
     var saved = bank.some(function (x) { return x.adId === a.id; });
     return '<div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><span><b>' + F.esc(a.name) + '</b> <span class="sub">hook ' + F.pct(a.m.hook, 0) + '</span></span>' + (saved ? F.chip("g", "Guardado") : '<button class="btn btn-sm" data-hksave="' + F.esc(a.id) + '">Guardar</button>') + '</div>';
@@ -2650,7 +2655,7 @@ var AUD = {
 T.audBuilder = function (A) {
   var a = S.aud = S.aud || { kind: "web30", pixel: (A.pixels[0] || {}).id || "", event: "", page: "" };
   var cfg = AUD[a.kind], pages = (S.wiz && S.wiz.pages) || [];
-  return '<div class="sec-head"><h2>Crear audiencia</h2><div class="hint">Las tres que más sirven con presupuesto chico</div></div><div class="card pad glass">' +
+  return '<div class="sec-head"><h2>Crear una audiencia</h2><div class="hint">Las tres que más sirven con presupuesto chico</div></div><div class="card pad glass">' +
     '<div class="grid g3">' + Object.keys(AUD).map(function (k) { return '<button type="button" class="card pad wopt" data-audk="' + k + '" style="text-align:left;cursor:pointer;' + (a.kind === k ? "outline:2px solid var(--gold);" : "") + '"><b>' + AUD[k].title + '</b><div class="sub" style="margin-top:4px">' + AUD[k].text + '</div></button>'; }).join("") + '</div>' +
     '<div class="row2" style="margin-top:12px">' +
     (cfg.need.indexOf("pixel") >= 0 ? '<div class="field"><label>Píxel</label><select id="audPixel">' + A.pixels.map(function (p) { return '<option value="' + F.esc(p.id) + '"' + (p.id === a.pixel ? " selected" : "") + '>' + F.esc(p.name) + '</option>'; }).join("") + '</select></div>' : '') +
@@ -2732,8 +2737,8 @@ AB.countUp = function (rootEl) {
 var AB = root.AB, S = AB.S, G = AB.G, F = AB.F, UI = AB.UI, T = AB.T, Ch = AB.Ch, E = root.AdsEngine, $ = AB.$;
 
 var TABS = [
-  ["resumen", "Resumen"], ["coach", "Coach"], ["campanas", "Campañas"], ["creativos", "Creativos"], ["hooks", "Hooks"], ["escalado", "Escalado"],
-  ["rentabilidad", "Rentabilidad"], ["segmentos", "Segmentos"], ["reglas", "Reglas"], ["laboratorio", "Laboratorio A/B"], ["crear", "Crear"], ["cuentas", "Cuentas"], ["ajustes", "Ajustes"]
+  ["resumen", "Resumen"], ["coach", "Qué hacer"], ["campanas", "Campañas"], ["creativos", "Piezas"], ["hooks", "Videos y textos"], ["escalado", "Escalar"],
+  ["rentabilidad", "Ganancia"], ["segmentos", "Tu público"], ["laboratorio", "Pruebas A/B"], ["reglas", "Alertas"], ["cuentas", "Píxel y audiencias"], ["ajustes", "Preferencias"], ["crear", "Crear anuncio"]
 ];
 var LS = "adsboard_v2_";
 
@@ -2800,32 +2805,31 @@ function showApp() {
   $("gate").classList.add("hidden"); $("app").classList.remove("hidden"); $("logoutBtn").classList.remove("hidden");
   $("accountBar").style.display = "flex";
   $("accountSelect").innerHTML = S.accounts.map(function (a) { return '<option value="' + F.esc(a.id) + '"' + (a.id === S.acct ? " selected" : "") + '>' + F.esc(a.name || a.id) + " · " + F.esc(a.currency || "") + '</option>'; }).join("");
-  $("rangeSel").value = S.range; $("metricSel").value = S.metric;
+  $("rangeSel").value = S.range; if ($("metricSel")) $("metricSel").value = S.metric;
   setPill(); buildTabs();
 }
 function setPill() {
   var p = $("modePill"), edit = S.canEdit && !S.demo, txt;
   if (S.mode === "gate") { p.className = "modepill"; txt = "Sin conectar"; }
-  else if (S.demo) { p.className = "modepill demo"; txt = "Demo con datos ficticios"; }
-  else if (edit) { p.className = "modepill edit"; txt = "Modo edición"; }
+  else if (S.demo) { p.className = "modepill demo"; txt = "Datos de ejemplo"; }
+  else if (edit) { p.className = "modepill edit"; txt = "Edición activa"; }
   else { p.className = "modepill"; txt = "Solo lectura"; }
   p.innerHTML = "<i></i>" + txt;
   var b = $("editBtn"); b.classList.toggle("hidden", S.mode === "gate" || S.demo || S.canEdit);
 }
 var GROUPS = [
-  ["inicio", "Inicio", ["resumen", "coach"], '<path d="M3 12l9-8 9 8v8a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z"/>'],
+  ["hoy", "Hoy", ["resumen", "coach"], '<path d="M3 12l9-8 9 8v8a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z"/>'],
   ["anuncios", "Anuncios", ["campanas", "creativos", "hooks"], '<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 14l3-3 2 2 3-4"/>'],
-  ["escalar", "Escalar", ["escalado", "rentabilidad", "segmentos", "laboratorio"], '<path d="M3 17l5-5 4 4 8-9"/><path d="M15 7h5v5"/>'],
-  ["medicion", "Medición", ["reglas", "cuentas"], '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>'],
   ["crear", "Crear", ["crear"], '<path d="M12 5v14M5 12h14"/>'],
-  ["ajustes", "Ajustes", ["ajustes"], '<circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 00-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 00-2-1.2L14 3h-4l-.5 2.6a7 7 0 00-2 1.2l-2.4-1-2 3.4 2 1.6A7 7 0 005 12c0 .4 0 .8.1 1.2l-2 1.6 2 3.4 2.4-1a7 7 0 002 1.2L10 21h4l.5-2.6a7 7 0 002-1.2l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2z"/>']
+  ["crecer", "Crecer", ["escalado", "rentabilidad", "segmentos", "laboratorio"], '<path d="M3 17l5-5 4 4 8-9"/><path d="M15 7h5v5"/>'],
+  ["cuenta", "Cuenta", ["reglas", "cuentas", "ajustes"], '<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>']
 ];
 function groupOf(tab) { for (var i = 0; i < GROUPS.length; i++) if (GROUPS[i][2].indexOf(tab) >= 0) return GROUPS[i]; return GROUPS[0]; }
 var LABEL = {}; TABS.forEach(function (t) { LABEL[t[0]] = t[1]; });
 function buildTabs() {
   var urgent = S.A ? S.A.coach.filter(function (c) { return c.sev === "r"; }).length : 0, g = groupOf(S.tab);
   $("tabs").innerHTML = GROUPS.map(function (x) {
-    return '<button class="tab grp' + (x === g ? " active" : "") + '" data-grp="' + x[0] + '"' + (x === g ? ' aria-current="page"' : '') + '><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + x[3] + '</svg><span>' + x[1] + '</span>' + (x[0] === "inicio" && urgent ? '<span class="cnt">' + urgent + '</span>' : "") + '</button>';
+    return '<button class="tab grp' + (x === g ? " active" : "") + (x[0] === "crear" ? " grp-create" : "") + '" data-grp="' + x[0] + '"' + (x === g ? ' aria-current="page"' : '') + '><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + x[3] + '</svg><span>' + x[1] + '</span>' + (x[0] === "hoy" && urgent ? '<span class="cnt">' + urgent + '</span>' : "") + '</button>';
   }).join("");
   $("subtabs").innerHTML = g[2].length > 1 ? g[2].map(function (t) {
     return '<button class="stab' + (S.tab === t ? " active" : "") + '" data-tab="' + t + '" role="tab" aria-selected="' + (S.tab === t) + '">' + LABEL[t] + (t === "coach" && urgent ? '<span class="cnt">' + urgent + '</span>' : "") + '</button>';
@@ -2833,13 +2837,13 @@ function buildTabs() {
 }
 function headerAlerts() {
   var A = S.A, h = "";
-  if (S.demo) h += '<div class="alert on demo"><div><b>Estás viendo datos ficticios</b><div class="sub">Todo funciona igual que con tu cuenta real, incluidas las acciones de editar y crear, pero nada sale hacia Meta.</div></div></div>';
-  if (A && S.prefs.showBadAlert) {
+  if (false) h += '<div class="alert on demo"><div><b>Estás viendo datos ficticios</b><div class="sub">Todo funciona igual que con tu cuenta real, incluidas las acciones de editar y crear, pero nada sale hacia Meta.</div></div></div>';
+  if (A && false) {
     var bad = A.ads.filter(function (a) { return a.effStatus === "DISAPPROVED" || a.effStatus === "WITH_ISSUES"; });
     if (bad.length) h += '<div class="alert on bad"><div><b>' + bad.length + (bad.length === 1 ? " anuncio con problemas" : " anuncios con problemas") + '</b><div class="sub">' + bad.slice(0, 3).map(function (a) { return F.esc(a.name); }).join(", ") + (bad.length > 3 ? "…" : "") + '. Revísalos en Ads Manager o apela la decisión.</div></div></div>';
   }
   if (A && A.errors && A.errors.length) h += '<div class="alert on bad"><div><b>Algunas secciones no cargaron</b><div class="sub">' + A.errors.map(function (e) { return F.esc(e.tag + ": " + e.msg); }).join(" · ") + '</div></div></div>';
-  if (S.token && !S.demo && !S.canEdit) h += '<div class="alert on"><div><b>Estás en modo solo lectura</b><div class="sub">Puedes ver todo el análisis. Para pausar, cambiar presupuestos o crear campañas desde aquí pulsa «Activar modo edición».</div></div></div>';
+  if (false && S.token && !S.demo && !S.canEdit) h += '<div class="alert on"><div><b>Estás en modo solo lectura</b><div class="sub">Puedes ver todo el análisis. Para pausar, cambiar presupuestos o crear campañas desde aquí pulsa «Activar modo edición».</div></div></div>';
   $("alerts").innerHTML = h;
 }
 
@@ -2981,6 +2985,7 @@ document.addEventListener("click", function (e) {
   if (id === "btnEdit") { AB.login(true); return; }
   if (id === "btnDemo") { AB.startDemo(); return; }
   if (id === "glossBtn") { AB.openGlossary(); return; }
+  if (id === "createBtn") { goto("crear"); return; }
   if (id === "themeBtn") { AB.toggleTheme(); return; }
   if (id === "slAdd") { AB.addSale(); return; }
   if (id === "slUseClose") { S.goal.close = t.getAttribute("data-close"); AB.saveLocal(); AB.recompute(); UI.toast("Tasa de cierre actualizada con tus ventas reales"); return; }
@@ -3047,8 +3052,8 @@ document.addEventListener("change", function (e) {
 function init() {
   UI.tip();
   $("rangeSel").innerHTML = [["7", "Últimos 7 días"], ["14", "Últimos 14 días"], ["30", "Últimos 30 días"], ["60", "Últimos 60 días"], ["90", "Últimos 90 días"]].map(function (r) { return '<option value="' + r[0] + '">' + r[1] + '</option>'; }).join("");
-  $("metricSel").innerHTML = Object.keys(E.METRIC_LABELS).map(function (k) { return '<option value="' + k + '">' + F.esc(E.METRIC_LABELS[k]) + '</option>'; }).join("");
-  $("rangeSel").value = S.range; $("metricSel").value = S.metric;
+  if ($("metricSel")) $("metricSel").innerHTML = Object.keys(E.METRIC_LABELS).map(function (k) { return '<option value="' + k + '">' + F.esc(E.METRIC_LABELS[k]) + '</option>'; }).join("");
+  $("rangeSel").value = S.range; if ($("metricSel")) $("metricSel").value = S.metric;
   AB.applyTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light");
   showGate(); loadSDK();
   if (/[?&]demo=1/.test(location.search)) AB.startDemo();

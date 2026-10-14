@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -370,51 +370,190 @@ svg.chart path[fill="none"]{stroke-dasharray:2400;stroke-dashoffset:2400;animati
 .drawer.on{visibility:visible;}
 #accountSelect{flex:0 1 auto;min-width:240px;}
 
+/* ==========================================================================
+   MARCA MARKETOGRAPHERS (fuente: marketographers.com/assets/global.css)
+   Negro #0c0c0c, superficies en degradado suave, Working para titulares,
+   Poppins para texto, amarillo #fddc5b como único acento, botones pill.
+   ========================================================================== */
+@font-face{font-family:'Working';src:url('/assets/fonts/Working-400.otf') format('opentype');font-weight:400 800;font-display:swap;}
+:root,[data-theme="dark"]{
+  --cream:#0c0c0c;--cream-alt:#151515;--paper:#0c0c0c;--surface:#1a1a1a;--surface-2:#1d1d1d;--white:#1a1a1a;
+  --ink:#f8f8f8;--ink-on-gold:#181818;--muted:#b3b3b3;--text-2:#b3b3b3;
+  --gold:#fddc5b;--gold-deep:#f2c935;--accent:#fddc5b;--accent-ink:#181818;
+  --line:rgba(255,255,255,.1);--hair:rgba(255,255,255,.1);--hair-strong:rgba(255,255,255,.18);
+  --good:#4ade80;--good-soft:rgba(74,222,128,.12);--warn:#fddc5b;--warn-soft:rgba(253,220,91,.12);--bad:#ff5c5c;--bad-soft:rgba(255,92,92,.12);--info:#93b4ff;--info-soft:rgba(147,180,255,.12);
+  --font-display:'Working','Poppins',system-ui,sans-serif;--ease:cubic-bezier(.22,1,.36,1);
+  --r-md:20px;--r-lg:24px;--r-sm:14px;
+  color-scheme:dark;
+}
+body{background:var(--cream);color:var(--ink);font-size:14.5px;line-height:1.55;}
+::selection{background:var(--gold);color:var(--ink-on-gold);}
+h1,h2,h3{font-family:var(--font-display);font-weight:400;letter-spacing:-.02em;line-height:1.1;}
+h4{font-weight:600;letter-spacing:-.01em;}
+mark{background:none;color:var(--gold);} mark.neg{color:var(--bad);}
+.wrap{max-width:1120px;padding:18px 24px 120px;}
+
+/* cabecera */
+.topbar{margin-bottom:18px;}
+.brand{gap:10px;align-items:baseline;}
+.brand .wordmark{font-family:var(--font-display);font-size:24px;letter-spacing:-.02em;color:var(--ink);}
+.brand .by{font-size:12px;color:var(--muted);}
+.brand .by em{font-style:normal;color:var(--gold);}
+.modepill{background:transparent;border:1px solid var(--line);color:var(--muted);font-weight:500;}
+.modepill.demo i{background:var(--gold);} .modepill.edit{background:rgba(253,220,91,.1);border-color:rgba(253,220,91,.35);color:var(--ink);}
+
+/* botones pill */
+.btn{border-radius:999px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:var(--ink);font-weight:600;padding:10px 18px;min-height:40px;transition:transform .18s var(--ease),background .2s;}
+.btn:hover:not(:disabled){background:rgba(255,255,255,.12);transform:none;}
+.btn:active:not(:disabled){transform:scale(.96);}
+.btn-gold,.btn-gold:hover:not(:disabled){background:var(--gold);border-color:var(--gold);color:var(--ink-on-gold);}
+.btn-gold:hover:not(:disabled){background:#ffe57a;}
+.btn-ghost{background:transparent;border-color:transparent;color:var(--muted);}
+.btn-ghost:hover:not(:disabled){background:rgba(255,255,255,.06);color:var(--ink);}
+.btn-sm{padding:7px 14px;min-height:34px;font-size:13px;}
+.btn-lg{padding:16px 28px;font-size:15px;min-height:52px;}
+.btn-danger{background:var(--bad);border-color:var(--bad);color:#181818;}
+.iconbtn{background:rgba(255,255,255,.06);border-color:var(--line);color:var(--ink);border-radius:12px;}
+
+/* navegación: pill flotante de vidrio, igual que el sitio */
+.navrow{position:sticky;top:12px;z-index:30;display:flex;align-items:center;gap:12px;margin-bottom:22px;}
+.tabs{position:static;flex:1;margin:0;padding:6px;border-radius:999px;background:rgba(20,20,20,.72);border:1px solid rgba(255,255,255,.12);-webkit-backdrop-filter:blur(16px) saturate(160%);backdrop-filter:blur(16px) saturate(160%);box-shadow:0 20px 40px -24px rgba(0,0,0,.9);}
+.tab{border-radius:999px;color:var(--muted);padding:9px 16px;font-weight:500;}
+.tab:not(.active):hover{background:rgba(255,255,255,.06);color:var(--ink);}
+.tab.active,[data-theme="dark"] .tab.active{background:rgba(255,255,255,.12);color:var(--ink);}
+.tab.grp-create{display:none;}
+.tab .cnt,.stab .cnt{background:var(--gold);color:var(--ink-on-gold);}
+#createBtn{flex:0 0 auto;}
+.subtabs,[data-theme="dark"] .subtabs{background:transparent;padding:0;gap:6px;margin:0 0 20px;}
+.stab{border:1px solid var(--line);border-radius:999px;color:var(--muted);background:transparent;font-weight:500;padding:7px 16px;}
+.stab.active,[data-theme="dark"] .stab.active{background:var(--ink);color:#0c0c0c;border-color:var(--ink);box-shadow:none;}
+#accountBar{background:transparent;border:0;padding:0;margin:0 0 16px;gap:10px;}
+#accountBar .lb{display:none;}
+#accountSelect{background:transparent;border:0;font-family:var(--font-display);font-size:22px;font-weight:400;color:var(--ink);padding:0 4px 0 0;min-width:0;max-width:60%;}
+#refreshBtn{margin-left:auto;}
+
+/* tarjetas con la superficie de la marca */
+.card,.glass,.state,.rrow,.prefrow,.cc,.ad,.fgroup,.alert{background:linear-gradient(160deg,#1d1d1d,#151515);border:1px solid var(--line);color:var(--ink);}
+.card,.glass,.cc,.state{border-radius:var(--r-md);}
+.pad{padding:22px 24px;}
+.eyebrow,.kpi .eyebrow{color:var(--muted);font-weight:500;font-size:13px;}
+.sec-head{margin:36px 2px 14px;align-items:center;}
+.sec-head h2{font-family:var(--font-display);font-size:26px;font-weight:400;}
+.sec-head .hint{display:none;}
+.sub,.kpi .note,.field .hint,.legend{color:var(--muted);}
+
+/* portada de Hoy */
+.hero{padding:30px 32px;margin-bottom:12px;}
+.hero-h{font-size:clamp(28px,4.4vw,46px);max-width:880px;}
+.hero-p{margin-top:14px;color:var(--muted);font-size:15.5px;max-width:720px;} .hero-p b{color:var(--ink);font-weight:600;}
+.hero-cta{margin-top:20px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:14px 16px;border-radius:16px;background:rgba(253,220,91,.08);border:1px solid rgba(253,220,91,.25);color:var(--ink);font-size:14px;}
+.kpis{margin-bottom:12px;}
+.kpi{padding:20px 22px;}
+.kpi .val{font-family:var(--font-display);font-weight:400;font-size:38px;letter-spacing:-.02em;}
+.chartcard h3{font-size:19px;margin-bottom:10px;display:flex;gap:8px;align-items:center;}
+details.more{margin-top:30px;}
+details.more>summary,details.why>summary{cursor:pointer;color:var(--muted);font-weight:500;list-style:none;display:inline-flex;align-items:center;gap:8px;}
+details.more>summary::-webkit-details-marker,details.why>summary::-webkit-details-marker{display:none;}
+details.more>summary::before,details.why>summary::before{content:"";width:7px;height:7px;border-right:1.6px solid currentColor;border-bottom:1.6px solid currentColor;transform:rotate(-45deg);transition:transform .2s var(--ease);}
+details[open]>summary::before{transform:rotate(45deg);}
+
+/* recomendaciones: título, qué hacer y botón; el porqué se abre si lo quieres */
+.coach{gap:12px;}
+.cc{padding:20px 22px;gap:10px;}
+.cc h4{font-size:16px;}
+.cc .fixline{margin:0;color:#d9d9d9;font-size:14px;}
+.cc details.why p{margin:8px 0 0;color:var(--muted);font-size:13.5px;}
+.cc .acts{gap:8px;}
+
+/* campos */
+#rangeSel,.field select,.field input,.field textarea,#hookSel,#metricSel,#defaultLevelSelect,select[id^="vrSet-"]{background-color:#151515;border:1px solid rgba(255,255,255,.14);color:var(--ink);border-radius:14px;}
+#rangeSel{border-radius:999px;}
+.field label{color:var(--muted);font-weight:500;}
+.chip.n{background:rgba(255,255,255,.07);color:var(--muted);}
+.chip.y{color:var(--gold);}
+.alert{border-radius:16px;}
+.alert.bad{background:rgba(255,92,92,.08);border-color:rgba(255,92,92,.25)!important;}
+
+/* barras */
+.bars .track,.progress,.ftrack{background:rgba(255,255,255,.08);}
+.bars .fill,.ffill,.progress>i{background:var(--gold);}
+.bars .fill.y{background:var(--gold);}
+
+/* portada de conexión */
+#gate{max-width:720px;padding:80px 0 40px;}
+#gate h1{font-size:clamp(40px,7vw,72px);margin-bottom:18px;}
+#gate .lead{font-size:17px;max-width:520px;color:var(--muted);}
+#gate .fine{max-width:520px;}
+
+/* tabla, hojas, modales */
+.modal,.drawer{background:#151515;color:var(--ink);border:1px solid var(--line);}
+.modal h3{font-size:24px;}
+.overlay{background:rgba(0,0,0,.6);}
+.toast{background:#f8f8f8;color:#0c0c0c;border-radius:999px;}
+.toast.bad{background:var(--bad);color:#181818;}
+.steps .st{background:rgba(255,255,255,.06);border-radius:999px;color:var(--muted);}
+.steps .st.on{background:var(--ink);color:#0c0c0c;}
+.steps .st.done{background:rgba(74,222,128,.12);color:var(--good);}
+.tbl td{border-color:var(--line);}
+footer{color:#7a7a7a;}
+
+@media (max-width:760px){
+  .wrap{padding:14px 16px 120px;}
+  .navrow{position:static;margin:0;}
+  #createBtn{display:none;}
+  .tabs{position:fixed;left:12px;right:12px;bottom:max(12px,env(safe-area-inset-bottom));top:auto;border-radius:24px;padding:6px;}
+  .tab.grp{flex:1 1 0;flex-direction:column;gap:3px;font-size:10.5px;padding:7px 2px;min-height:54px;border-radius:18px;}
+  .tab.grp-create{display:flex;color:var(--ink-on-gold);}
+  .tab.grp-create svg{background:var(--gold);border-radius:50%;padding:4px;width:28px;height:28px;}
+  .tab.grp-create span{color:var(--muted);}
+  .subtabs{flex-wrap:nowrap;overflow-x:auto;}
+  .hero{padding:22px 20px;}
+  .kpi .val{font-size:30px;}
+  #accountSelect{font-size:18px;max-width:100%;}
+}
+.thumb .tl .chip{background:rgba(12,12,12,.72);color:#f8f8f8;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);}
+.thumb .ph{color:rgba(255,255,255,.55);font-family:var(--font-display);font-weight:400;}
+.scorebadge{background:#0c0c0c;color:#f8f8f8;}
+@media (max-width:760px){
+  .topbar{margin-bottom:10px;} #glossBtn{display:none;}
+  #accountBar{flex-wrap:wrap;} #periodNote{display:none;} #refreshBtn{margin-left:0;}
+}
+[data-theme="dark"] .btn-gold:hover:not(:disabled){background:#ffe57a;color:#181818;} [data-theme="dark"] .btn-danger:hover:not(:disabled){background:#ff7a7a;color:#181818;} [data-theme="dark"] .btn-ghost{background:transparent;border-color:transparent;color:var(--muted);} [data-theme="dark"] .btn-ghost:hover:not(:disabled){background:rgba(255,255,255,.06);color:var(--ink);}
+
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="topbar">
-    <div class="brand"><div class="fallback">M</div><div class="txt"><b>Adsboard</b><small>The Marketographers</small></div></div>
+    <div class="brand"><span class="wordmark">ads board</span><span class="by">the marketo<em>g</em>raphers</span></div>
     <div class="bar-actions">
       <span class="modepill" id="modePill"><i></i>Sin conectar</span>
-      <button class="btn btn-sm btn-gold hidden" id="editBtn">Activar modo edición</button>
-      <button class="btn btn-sm" id="themeBtn" aria-label="Cambiar a modo oscuro">Modo oscuro</button>
-      <button class="btn btn-sm" id="glossBtn">Glosario</button>
-      <button class="btn btn-sm hidden" id="logoutBtn">Salir</button>
+      <button class="btn btn-sm btn-gold hidden" id="editBtn">Activar edición</button>
+      <button class="btn btn-sm btn-ghost" id="glossBtn">Glosario</button>
+      <button class="btn btn-sm btn-ghost hidden" id="logoutBtn">Salir</button>
     </div>
   </div>
 
   <section id="gate">
-    <h1>Tus anuncios de Meta, con números que sí se pueden leer</h1>
-    <p class="lead">Conecta tu cuenta y el Adsboard te dice qué anuncio es caro o barato con respaldo estadístico, cuándo un creativo se saturó, hasta dónde rinde subir el presupuesto y qué hacer hoy.</p>
+    <h1>Tus anuncios, <mark>en simple.</mark></h1>
+    <p class="lead">Conecta tu cuenta de Meta y te digo qué anuncio te sale caro, cuál conviene subir y qué hacer hoy.</p>
     <div class="gate-btns">
-      <button class="btn btn-gold btn-lg" id="btnRead">Conectar con Facebook (solo lectura)</button>
-      <button class="btn btn-lg" id="btnDemo">Ver demo con datos ficticios</button>
+      <button class="btn btn-gold btn-lg" id="btnRead">Conectar con Facebook</button>
+      <button class="btn btn-lg" id="btnDemo">Probar con datos de ejemplo</button>
     </div>
-    <p class="fine" style="margin-top:14px">La conexión de solo lectura es la opción por defecto y no puede cambiar nada en tu cuenta. Si más adelante quieres pausar anuncios, cambiar presupuestos o crear campañas desde aquí, puedes activar el modo edición, que es opcional y te pide confirmación en cada cambio.</p>
-    <div class="feat">
-      <div><b>Semáforo con confianza</b>Barato o caro con intervalo estadístico, sin cortar anuncios por mala suerte de tres días.</div>
-      <div><b>Saturación de creativos</b>Frecuencia, caída de CTR y alza de costo en un solo puntaje.</div>
-      <div><b>Hook y retención</b>Diagnóstico del inicio y del cuerpo de tus videos.</div>
-      <div><b>Rendimientos decrecientes</b>Cuánto rinde de verdad subir el presupuesto.</div>
-      <div><b>Rentabilidad</b>Tu costo máximo por resultado según ticket, margen y cierre.</div>
-      <div><b>Crear en pausa</b>Campañas a landing o WhatsApp sin gastar hasta que las actives.</div>
-    </div>
-    <p class="fine">Tus datos viajan directo de tu navegador a Meta. El token vive solo en la memoria de esta pestaña y ningún servidor de The Marketographers los recibe.</p>
+    <p class="fine">Solo lectura: no puede cambiar nada en tu cuenta. Tus datos van directo de tu navegador a Meta y no pasan por ningún servidor nuestro.</p>
   </section>
 
   <div id="app" class="hidden">
     <div id="accountBar">
       <span class="lb">Cuenta</span><select id="accountSelect"></select>
       <select id="rangeSel" aria-label="Rango"></select>
-      <select id="metricSel" aria-label="Resultado a contar"></select>
       <span class="sub" id="periodNote" style="margin-left:4px"></span>
       <span style="flex:1"></span>
       <button class="btn btn-sm" id="refreshBtn">Actualizar</button>
     </div>
     <div id="alerts"></div>
-    <nav class="tabs" id="tabs" aria-label="Secciones"></nav>
+    <div class="navrow"><nav class="tabs" id="tabs" aria-label="Secciones"></nav><button class="btn btn-gold" id="createBtn">Crear anuncio</button></div>
     <div class="subtabs" id="subtabs" role="tablist"></div>
     <div id="panel"></div>
   </div>
@@ -430,6 +569,6 @@ svg.chart path[fill="none"]{stroke-dasharray:2400;stroke-dashoffset:2400;animati
 <div id="loader"><div style="position:fixed;inset:0;background:rgba(250,249,246,.7);z-index:90;display:flex;align-items:center;justify-content:center"><div class="card pad" style="display:flex;gap:12px;align-items:center"><div class="spinner"></div><div class="t">Cargando…</div></div></div></div>
 
 <script>try{if(localStorage.getItem("adsboard_theme")==="dark")document.documentElement.setAttribute("data-theme","dark")}catch(e){}</script>
-<script src="adsboard.js?v=6a782572f2"></script>
+<script src="adsboard.js?v=5679cf7b0f"></script>
 </body>
 </html>

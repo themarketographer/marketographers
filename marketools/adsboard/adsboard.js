@@ -1,0 +1,3059 @@
+/* ==========================================================================
+   ENGINE: matemática pura del Adsboard (sin DOM, testeable en Node)
+   Todo lo que se calcula aquí tiene una fórmula explicada en el glosario.
+   ========================================================================== */
+(function (root) {
+"use strict";
+var E = {};
+
+/* ------------------------------ utilidades ------------------------------ */
+function num(v) { var n = parseFloat(v); return isFinite(n) ? n : 0; }
+function clamp(x, a, b) { return Math.max(a, Math.min(b, x)); }
+function sum(arr, f) { var s = 0; for (var i = 0; i < arr.length; i++) s += f ? f(arr[i]) : arr[i]; return s; }
+function mean(a) { return a.length ? sum(a) / a.length : 0; }
+function median(a) {
+  if (!a.length) return null;
+  var s = a.slice().sort(function (x, y) { return x - y; }), m = Math.floor(s.length / 2);
+  return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+}
+function stdev(a) {
+  if (a.length < 2) return 0;
+  var m = mean(a); return Math.sqrt(sum(a, function (x) { return (x - m) * (x - m); }) / (a.length - 1));
+}
+E.num = num; E.clamp = clamp; E.sum = sum; E.mean = mean; E.median = median; E.stdev = stdev;
+
+/* Distribución normal: CDF (Abramowitz-Stegun 7.1.26) e inversa (Acklam) */
+E.normCdf = function (z) {
+  var t = 1 / (1 + 0.2316419 * Math.abs(z));
+  var d = 0.3989423 * Math.exp(-z * z / 2);
+  var p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
+  return z > 0 ? 1 - p : p;
+};
+E.zInv = function (p) {
+  var a = [-3.969683028665376e+01, 2.209460984245205e+02, -2.759285104469687e+02, 1.383577518672690e+02, -3.066479806614716e+01, 2.506628277459239e+00];
+  var b = [-5.447609879822406e+01, 1.615858368580409e+02, -1.556989798598866e+02, 6.680131188771972e+01, -1.328068155288572e+01];
+  var c = [-7.784894002430293e-03, -3.223964580411365e-01, -2.400758277161838e+00, -2.549732539343734e+00, 4.374664141464968e+00, 2.938163982698783e+00];
+  var d = [7.784695709041462e-03, 3.224671290700398e-01, 2.445134137142996e+00, 3.754408661907416e+00];
+  var pl = 0.02425, q, r;
+  if (p < pl) { q = Math.sqrt(-2 * Math.log(p)); return (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1); }
+  if (p > 1 - pl) { q = Math.sqrt(-2 * Math.log(1 - p)); return -(((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1); }
+  q = p - 0.5; r = q * q;
+  return (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q / (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1);
+};
+/* Cuantil chi-cuadrado (Wilson-Hilferty) */
+E.chi2Q = function (p, nu) {
+  var z = E.zInv(p), k = 2 / (9 * nu);
+  return nu * Math.pow(1 - k + z * Math.sqrt(k), 3);
+};
+/* Intervalo de confianza de un conteo Poisson (Garwood). level = 0.9 -> 90% */
+E.poissonCI = function (k, level) {
+  var a = (1 - (level || 0.9)) / 2;
+  var lo = k === 0 ? 0 : E.chi2Q(a, 2 * k) / 2;
+  var hi = E.chi2Q(1 - a, 2 * k + 2) / 2;
+  return { lo: lo, hi: hi };
+};
+/* Costo por resultado con intervalo: gasto / conteo (cuenta alta => CPR bajo) */
+E.cprCI = function (spend, k, level) {
+  var ci = E.poissonCI(k, level);
+  return { lo: ci.hi > 0 ? spend / ci.hi : 0, hi: ci.lo > 0 ? spend / ci.lo : Infinity };
+};
+/* Regresión lineal simple */
+E.linreg = function (xs, ys) {
+  var n = xs.length; if (n < 2) return { slope: 0, intercept: ys[0] || 0, r2: 0, n: n };
+  var mx = mean(xs), my = mean(ys), sxx = 0, sxy = 0, syy = 0;
+  for (var i = 0; i < n; i++) { sxx += (xs[i] - mx) * (xs[i] - mx); sxy += (xs[i] - mx) * (ys[i] - my); syy += (ys[i] - my) * (ys[i] - my); }
+  var slope = sxx ? sxy / sxx : 0;
+  return { slope: slope, intercept: my - slope * mx, r2: (sxx && syy) ? (sxy * sxy) / (sxx * syy) : 0, n: n };
+};
+
+/* ------------------------- extracción de resultados ---------------------- */
+E.RESULT_TYPES = {
+  messages: ["onsite_conversion.messaging_conversation_started_7d", "onsite_conversion.total_messaging_connection"],
+  leads: ["lead", "onsite_conversion.lead_grouped", "offsite_conversion.fb_pixel_lead"],
+  purchases: ["purchase", "omni_purchase", "offsite_conversion.fb_pixel_purchase"],
+  checkout: ["initiate_checkout", "omni_initiated_checkout", "offsite_conversion.fb_pixel_initiate_checkout"],
+  engagement: ["post_engagement"],
+  clicks: ["link_click"],
+  lpv: ["landing_page_view", "omni_landing_page_view"]
+};
+E.METRIC_LABELS = { auto: "Automático (según objetivo)", messages: "Mensajes", leads: "Clientes potenciales", purchases: "Compras", checkout: "Inicios de pago", engagement: "Interacción", clicks: "Clics al enlace", lpv: "Visitas a la página" };
+E.AUTO_BY_OBJECTIVE = {
+  OUTCOME_SALES: ["purchases", "checkout", "leads"],
+  OUTCOME_LEADS: ["leads", "messages"],
+  OUTCOME_ENGAGEMENT: ["messages", "engagement"],
+  OUTCOME_TRAFFIC: ["lpv", "clicks"],
+  OUTCOME_AWARENESS: [],
+  OUTCOME_APP_PROMOTION: []
+};
+E.act = function (list, types) {
+  if (!list || !list.length) return 0;
+  for (var t = 0; t < types.length; t++) {
+    for (var i = 0; i < list.length; i++) if (list[i].action_type === types[t]) return num(list[i].value);
+  }
+  return 0;
+};
+/* metric = clave elegida por el usuario; objective = objetivo de la campaña */
+E.pickResult = function (actions, metric, objective) {
+  if (metric && metric !== "auto") return E.act(actions, E.RESULT_TYPES[metric] || []);
+  var order = E.AUTO_BY_OBJECTIVE[objective] || ["purchases", "checkout", "leads", "messages", "lpv", "clicks"];
+  for (var i = 0; i < order.length; i++) {
+    var v = E.act(actions, E.RESULT_TYPES[order[i]]);
+    if (v > 0) return v;
+  }
+  return 0;
+};
+E.actionValue = function (list, types) { return E.act(list, types); };
+
+/* --------------------------- normalizar filas ---------------------------- */
+E.videoCount = function (list) { return list && list.length ? num(list[0].value) : 0; };
+E.normRow = function (r, metric, objectiveOf) {
+  var obj = objectiveOf ? objectiveOf(r) : "";
+  var v3 = E.act(r.actions, ["video_view"]);
+  var plays = E.videoCount(r.video_play_actions);
+  return {
+    date: r.date_start || null,
+    adId: r.ad_id, adName: r.ad_name, adsetId: r.adset_id, adsetName: r.adset_name,
+    campaignId: r.campaign_id, campaignName: r.campaign_name,
+    spend: num(r.spend), impr: num(r.impressions), reach: num(r.reach), freq: num(r.frequency),
+    clicks: r.inline_link_clicks !== undefined ? num(r.inline_link_clicks) : E.act(r.actions, ["link_click"]),
+    results: E.pickResult(r.actions, metric, obj),
+    lpv: E.act(r.actions, E.RESULT_TYPES.lpv),
+    v3: v3, plays: plays || v3,
+    thru: E.videoCount(r.video_thruplay_watched_actions),
+    p25: E.videoCount(r.video_p25_watched_actions), p50: E.videoCount(r.video_p50_watched_actions),
+    p75: E.videoCount(r.video_p75_watched_actions), p100: E.videoCount(r.video_p100_watched_actions),
+    avgWatch: E.videoCount(r.video_avg_time_watched_actions),
+    revenue: E.act(r.action_values, E.RESULT_TYPES.purchases),
+    q: { quality: r.quality_ranking || null, engagement: r.engagement_rate_ranking || null, conversion: r.conversion_rate_ranking || null }
+  };
+};
+
+/* ------------------------------ agregación ------------------------------- */
+E.aggregate = function (rows) {
+  var m = { spend: 0, impr: 0, reach: 0, clicks: 0, results: 0, lpv: 0, v3: 0, plays: 0, thru: 0, p25: 0, p50: 0, p75: 0, p100: 0, revenue: 0, avgWatchW: 0, days: 0 };
+  var dates = {};
+  rows.forEach(function (r) {
+    m.spend += r.spend; m.impr += r.impr; m.clicks += r.clicks; m.results += r.results; m.lpv += r.lpv;
+    m.v3 += r.v3; m.plays += r.plays; m.thru += r.thru; m.p25 += r.p25; m.p50 += r.p50; m.p75 += r.p75; m.p100 += r.p100;
+    m.revenue += r.revenue; m.avgWatchW += r.avgWatch * r.v3;
+    if (r.date && r.spend > 0) dates[r.date] = 1;
+  });
+  m.days = Object.keys(dates).length;
+  return E.derive(m);
+};
+E.derive = function (m) {
+  m.ctr = m.impr ? m.clicks / m.impr : null;
+  m.cpm = m.impr ? m.spend / m.impr * 1000 : null;
+  m.cpc = m.clicks ? m.spend / m.clicks : null;
+  m.cpr = m.results > 0 ? m.spend / m.results : null;
+  m.cvr = m.clicks ? m.results / m.clicks : null;
+  m.isVideo = m.v3 > 0;
+  m.hook = m.impr && m.v3 ? m.v3 / m.impr : null;
+  m.hold = m.v3 ? m.thru / m.v3 : null;
+  m.avgWatch = m.v3 && m.avgWatchW ? m.avgWatchW / m.v3 : null;
+  m.retention = m.v3 ? [1, m.p25 / m.v3, m.p50 / m.v3, m.p75 / m.v3, m.p100 / m.v3] : null;
+  m.roas = m.spend && m.revenue ? m.revenue / m.spend : null;
+  return m;
+};
+E.groupBy = function (rows, key) {
+  var g = {};
+  rows.forEach(function (r) { var k = r[key]; if (k === undefined || k === null) return; (g[k] = g[k] || []).push(r); });
+  return g;
+};
+E.dailySeries = function (rows, since, until) {
+  var by = E.groupBy(rows, "date");
+  var days = Object.keys(by).sort();
+  var out = days.map(function (d) { var a = E.aggregate(by[d]); a.date = d; return a; });
+  return out;
+};
+E.addDays = function (iso, n) { var d = new Date(iso + "T12:00:00Z"); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+E.fillDays = function (series, since, until) {
+  if (!since || !until) return series;
+  var map = {}; series.forEach(function (s) { map[s.date] = s; });
+  var out = [], d = since, guard = 0;
+  while (d <= until && guard++ < 400) {
+    out.push(map[d] || E.derive({ date: d, spend: 0, impr: 0, reach: 0, clicks: 0, results: 0, lpv: 0, v3: 0, plays: 0, thru: 0, p25: 0, p50: 0, p75: 0, p100: 0, revenue: 0, avgWatchW: 0, days: 0 }));
+    d = E.addDays(d, 1);
+  }
+  return out;
+};
+
+/* ------------------------- 1. Semáforo de costo -------------------------- */
+/* Compara el CPR con el objetivo usando un intervalo de confianza del 90%.
+   Cuando la muestra es chica el veredicto lo dice en vez de inventar un color. */
+E.verdictCost = function (m, target, opts) {
+  opts = opts || {};
+  var k = m.results, spend = m.spend;
+  var out = { level: "n", label: "Sin datos", why: "", cpr: m.cpr, ci: null, confidence: 0, needResults: null };
+  if (!target || target <= 0) { out.why = "Define un costo objetivo en la pestaña Rentabilidad para activar el semáforo."; return out; }
+  if (k === 0) {
+    var lowBound = spend / 2.996; // límite inferior 95% con cero resultados
+    out.ci = { lo: lowBound, hi: Infinity };
+    if (spend >= 3 * target) { out.level = "r"; out.label = "Corta"; out.why = "Gastó " + (spend / target).toFixed(1) + " veces tu objetivo sin un solo resultado. Con esa inversión, uno bueno ya habría aparecido."; }
+    else if (spend >= 1.5 * target) { out.level = "y"; out.label = "Vigila"; out.why = "Lleva " + (spend / target).toFixed(1) + " veces tu objetivo sin resultados. A 3 veces se corta."; }
+    else { out.level = "n"; out.label = "Muy pronto"; out.why = "Todavía no gastó ni 1,5 veces tu objetivo. Sin muestra no hay veredicto."; }
+    return out;
+  }
+  var ci = E.cprCI(spend, k, 0.9);
+  out.ci = ci;
+  out.confidence = clamp(1 - ((isFinite(ci.hi) ? ci.hi : 3 * m.cpr) - ci.lo) / (2 * m.cpr), 0, 1);
+  out.needResults = Math.max(0, Math.ceil(Math.pow(1.645 / 0.3, 2)) - k);
+  if (ci.hi < target) { out.level = "g"; out.label = "Barato"; out.why = "Aun en el peor escenario del rango (" + "hasta " + "$" + ci.hi.toFixed(2) + ") queda bajo tu objetivo."; }
+  else if (ci.lo > target) { out.level = "r"; out.label = "Caro"; out.why = "Aun en el mejor escenario del rango (desde $" + ci.lo.toFixed(2) + ") queda sobre tu objetivo."; }
+  else {
+    out.level = "y";
+    out.label = m.cpr <= target ? "Inclina a barato" : "Inclina a caro";
+    out.why = "El rango real va de $" + ci.lo.toFixed(2) + " a $" + (isFinite(ci.hi) ? ci.hi.toFixed(2) : "más") + " y tu objetivo cae dentro. Faltan datos para decidir.";
+  }
+  return out;
+};
+
+/* ---------------------- 2. Hook y retención de video --------------------- */
+E.HOOK_REF = { good: 0.25, excellent: 0.32, weak: 0.15 };
+E.HOLD_REF = { good: 0.30, weak: 0.15 };
+E.hookLevels = function (m, refs) {
+  refs = refs || {};
+  var hook = m.hook, hold = m.hold;
+  var hookMed = refs.hookMedian, holdMed = refs.holdMedian;
+  function lv(v, ref, medv) {
+    if (v === null) return null;
+    var byAbs = v >= ref.good ? 2 : (v >= ref.weak ? 1 : 0);
+    if (medv) { var r = v / medv; var byRel = r >= 1.15 ? 2 : (r >= 0.8 ? 1 : 0); return Math.round((byAbs + byRel) / 2 + 0.0001); }
+    return byAbs;
+  }
+  return { hook: lv(hook, E.HOOK_REF, hookMed), hold: lv(hold, E.HOLD_REF, holdMed) };
+};
+/* Diagnóstico: dice qué parte del video arreglar. */
+E.hookDiagnosis = function (m, refs) {
+  if (!m.isVideo) return null;
+  var L = E.hookLevels(m, refs);
+  var h = L.hook, o = L.hold;
+  var D = { hookLevel: h, holdLevel: o };
+  if (h === null || o === null) return null;
+  if (h <= 0 && o >= 1) { D.level = "y"; D.title = "El inicio pierde gente, el cuerpo la retiene"; D.text = "Quien pasa los 3 primeros segundos se queda. Cambia solo el arranque: frase, plano o movimiento en el segundo 1 y deja el resto igual."; D.key = "hook"; }
+  else if (h >= 1 && o <= 0) { D.level = "y"; D.title = "El inicio atrae, el cuerpo decepciona"; D.text = "El hook promete algo que el resto del video tarda en cumplir. Acerca la prueba, el antes y después o la respuesta hacia los segundos 4 a 8."; D.key = "body"; }
+  else if (h <= 0 && o <= 0) { D.level = "r"; D.title = "Inicio y cuerpo flojos"; D.text = "El concepto entero necesita cambio: otro ángulo, otro tipo de cliente o otro formato. Retocar detalles rinde poco."; D.key = "concept"; }
+  else if (h >= 2 && o >= 2) { D.level = "g"; D.title = "Video ganador"; D.text = "Frena el scroll y retiene. Guarda este hook, repítelo con otras fotos o testimonios y conviértelo en tu plantilla."; D.key = "winner"; }
+  else { D.level = "g"; D.title = "Video sano"; D.text = "Inicio y retención dentro de lo esperable. El costo por resultado decide si escala."; D.key = "ok"; }
+  return D;
+};
+
+/* --------------------------- 3. Saturación -------------------------------- */
+E.fatigue = function (adDaily, totalFreq) {
+  var days = adDaily.filter(function (d) { return d.impr >= 150; });
+  var out = { score: null, level: "n", label: "Pocos datos", freq: totalFreq || null, ctrDrop: null, cprRise: null, cpmRise: null, daysLeft: null, n: days.length };
+  if (days.length < 5 && !totalFreq) return out;
+  var third = Math.max(2, Math.ceil(days.length / 3));
+  var early = E.aggregate(days.slice(0, third).map(asRow)), late = E.aggregate(days.slice(-third).map(asRow));
+  function asRow(d) { return d; }
+  var parts = [], weights = [];
+  if (totalFreq) { parts.push(clamp((totalFreq - 1.5) / 2, 0, 1) * 100); weights.push(0.4); }
+  if (days.length >= 5 && early.ctr && late.ctr !== null) {
+    out.ctrDrop = (early.ctr - late.ctr) / early.ctr;
+    parts.push(clamp(out.ctrDrop / 0.35, 0, 1) * 100); weights.push(0.4);
+  }
+  if (days.length >= 5 && early.cpr && late.cpr) {
+    out.cprRise = (late.cpr - early.cpr) / early.cpr;
+    parts.push(clamp(out.cprRise / 0.5, 0, 1) * 100); weights.push(0.2);
+  }
+  if (days.length >= 5 && early.cpm && late.cpm) out.cpmRise = (late.cpm - early.cpm) / early.cpm;
+  if (!parts.length) return out;
+  var w = sum(weights);
+  out.score = Math.round(sum(parts.map(function (p, i) { return p * weights[i]; })) / w);
+  out.level = out.score < 25 ? "g" : (out.score < 50 ? "y" : "r");
+  out.label = out.score < 25 ? "Fresco" : (out.score < 50 ? "Calentando" : (out.score < 75 ? "Saturándose" : "Quemado"));
+  if (totalFreq && days.length >= 3 && totalFreq < 3.5) {
+    var rate = (totalFreq - 1) / days.length;
+    out.daysLeft = rate > 0.001 ? Math.min(60, Math.round((3.5 - totalFreq) / rate)) : null;
+  }
+  return out;
+};
+
+/* --------------------- 4. Rendimientos decrecientes ---------------------- */
+/* Ajusta resultados = a * gasto^b. b < 1 significa que cada dólar extra rinde menos. */
+E.diminishing = function (series, ctx) {
+  ctx = ctx || {};
+  var pts = series.filter(function (d) { return d.spend > 0 && d.results > 0; });
+  var totalSpend = sum(series, function (d) { return d.spend; }), totalRes = sum(series, function (d) { return d.results; });
+  var out = { mode: "none", b: null, r2: null, n: pts.length, cv: null, avgCpr: totalRes ? totalSpend / totalRes : null, marginalCpr: null, points: pts, early: null, late: null, cum: [], spend0: totalSpend / Math.max(1, series.filter(function (d) { return d.spend > 0; }).length), res0: null };
+  var activeDays = series.filter(function (d) { return d.spend > 0; }).length;
+  out.res0 = activeDays ? totalRes / activeDays : 0;
+  var cs = 0, cr = 0;
+  series.forEach(function (d) { cs += d.spend; cr += d.results; out.cum.push({ date: d.date, s: cs, r: cr }); });
+  // mitades temporales
+  if (series.length >= 6) {
+    var h = Math.floor(series.length / 2);
+    var a = E.aggregate(series.slice(0, h)), b2 = E.aggregate(series.slice(h));
+    out.early = a; out.late = b2;
+  }
+  var cvS = pts.length >= 2 ? stdev(pts.map(function (d) { return d.spend; })) / mean(pts.map(function (d) { return d.spend; })) : 0;
+  out.cv = cvS;
+  var fit0 = null;
+  if (pts.length >= 6 && cvS >= 0.12) { fit0 = E.linreg(pts.map(function (d) { return Math.log(d.spend); }), pts.map(function (d) { return Math.log(d.results); })); }
+  if (fit0 && fit0.r2 >= 0.15) {
+    var xs = pts.map(function (d) { return Math.log(d.spend); }), ys = pts.map(function (d) { return Math.log(d.results); });
+    var fit = E.linreg(xs, ys);
+    out.mode = "fit"; out.b = clamp(fit.slope, 0.05, 1.4); out.r2 = fit.r2; out.a = Math.exp(fit.intercept);
+    out.confidence = fit.r2 >= 0.5 && pts.length >= 10 ? "alta" : (fit.r2 >= 0.25 ? "media" : "baja");
+  } else if (out.early && out.late && out.early.cpr && out.late.cpr) {
+    out.mode = "trend"; out.b = clamp(out.early.cpr / out.late.cpr, 0.3, 1.1); out.confidence = "baja";
+  } else if (out.avgCpr) {
+    out.mode = "prior"; out.b = 0.8; out.confidence = "supuesto";
+  }
+  if (out.b !== null && out.avgCpr) out.marginalCpr = out.avgCpr / out.b;
+  return out;
+};
+/* ¿Qué pasa si el gasto cambia x% (0.2 = +20%)? */
+E.scenario = function (d, x) {
+  if (!d || d.b === null) return null;
+  var S0 = d.spend0, R0 = d.res0;
+  var mult = Math.pow(1 + x, d.b);
+  var R1 = R0 * mult, S1 = S0 * (1 + x);
+  var dS = S1 - S0, dR = R1 - R0;
+  return { spend1: S1, res1: R1, extraSpend: dS, extraRes: dR, marginalCpr: dR > 0.0001 ? dS / dR : null, cpr1: R1 > 0 ? S1 / R1 : null };
+};
+E.scaleVerdict = function (d) {
+  if (!d || d.b === null) return null;
+  if (d.b >= 0.9) return { level: "g", label: "Puedes escalar", text: "Cada gasto extra rinde casi lo mismo que el anterior. Sube 20% cada 3 días y vigila el costo." };
+  if (d.b >= 0.7) return { level: "y", label: "Escala con cuidado", text: "El rendimiento cae poco a poco. Sube de a 10% a 20% y mide antes del siguiente paso." };
+  return { level: "r", label: "Techo cerca", text: "Cada dólar extra rinde bastante menos que el anterior. Suma creativos y audiencias nuevas antes de subir presupuesto." };
+};
+
+/* ------------------------------ 5. Ritmo -------------------------------- */
+E.pacing = function (series, dailyBudget, info, todayISO) {
+  var last7 = series.slice(-7), avg7 = last7.length ? sum(last7, function (d) { return d.spend; }) / last7.length : 0;
+  var out = { avg7: avg7, dailyBudget: dailyBudget || 0, fill: null, projMonth: null, daysLeft: null };
+  if (dailyBudget > 0) out.fill = avg7 / dailyBudget;
+  var t = todayISO ? new Date(todayISO + "T12:00:00Z") : new Date();
+  var dim = new Date(Date.UTC(t.getUTCFullYear(), t.getUTCMonth() + 1, 0)).getUTCDate();
+  var left = dim - t.getUTCDate();
+  out.projMonth = avg7 * left;
+  out.daysLeft = left;
+  if (info) {
+    var cap = num(info.spend_cap), spent = num(info.amount_spent);
+    if (cap > 0) out.capLeft = cap - spent;
+  }
+  return out;
+};
+
+/* --------------------------- 6. Rentabilidad ----------------------------- */
+E.profitGoal = function (g) {
+  var ticket = num(g.ticket), margin = clamp(num(g.margin), 0, 100) / 100, close = clamp(num(g.close), 0, 100) / 100;
+  var gainPerSale = ticket * margin;
+  var breakEven = gainPerSale * close;
+  return { ticket: ticket, margin: margin, close: close, gainPerSale: gainPerSale, breakEven: breakEven, target: breakEven / 3, ok: breakEven > 0 };
+};
+E.entityProfit = function (m, g) {
+  var P = E.profitGoal(g);
+  if (!P.ok) return null;
+  var sales = m.results * P.close, revenue = sales * P.ticket, gain = sales * P.gainPerSale;
+  return { sales: sales, revenue: revenue, gain: gain, net: gain - m.spend, roi: m.spend ? (gain - m.spend) / m.spend : null };
+};
+
+/* ---------------------- 7. Prueba A/B con significancia ------------------ */
+E.abTest = function (a, b) {
+  // a, b = { n: intentos, x: éxitos }
+  var p1 = a.n ? a.x / a.n : 0, p2 = b.n ? b.x / b.n : 0;
+  var out = { p1: p1, p2: p2, lift: p1 ? (p2 - p1) / p1 : null, z: 0, p: 1, conf: 0, winner: null, needN: null, ok: a.n > 0 && b.n > 0 };
+  if (!out.ok) return out;
+  var pp = (a.x + b.x) / (a.n + b.n);
+  var se = Math.sqrt(pp * (1 - pp) * (1 / a.n + 1 / b.n));
+  out.z = se ? (p2 - p1) / se : 0;
+  out.p = 2 * (1 - E.normCdf(Math.abs(out.z)));
+  out.conf = 1 - out.p;
+  if (out.conf >= 0.95) out.winner = p2 > p1 ? "b" : "a";
+  var diff = Math.abs(p2 - p1);
+  if (diff > 0) {
+    var zA = 1.96, zB = 0.8416;
+    out.needN = Math.ceil(Math.pow(zA + zB, 2) * (p1 * (1 - p1) + p2 * (1 - p2)) / (diff * diff));
+  }
+  return out;
+};
+
+/* ------------------------- 8. Puntaje creativo --------------------------- */
+function ratioScore(r) { return clamp((r - 0.5) / 1.0, 0, 1) * 100; }
+E.creativeScore = function (m, ctx, fat) {
+  ctx = ctx || {};
+  var comps = [], w = [];
+  function add(name, val, weight) { if (val === null || val === undefined || isNaN(val)) return; comps.push({ name: name, v: Math.round(val) }); w.push(weight); }
+  if (m.isVideo) {
+    if (m.hook !== null) add("Hook", (ratioScore(m.hook / (ctx.hookMedian || E.HOOK_REF.good)) + clamp(m.hook / E.HOOK_REF.excellent, 0, 1) * 100) / 2, 0.2);
+    if (m.hold !== null) add("Retención", (ratioScore(m.hold / (ctx.holdMedian || E.HOLD_REF.good)) + clamp(m.hold / 0.4, 0, 1) * 100) / 2, 0.1);
+  }
+  if (m.ctr !== null) add("CTR", ratioScore(m.ctr / (ctx.ctrMedian || 0.012)), m.isVideo ? 0.15 : 0.25);
+  if (ctx.target && m.impr > 500) {
+    if (m.cpr) add("Costo", ratioScore(ctx.target / m.cpr), m.isVideo ? 0.35 : 0.45);
+    else if (m.spend >= 2 * ctx.target) add("Costo", 0, m.isVideo ? 0.35 : 0.45);
+  }
+  if (fat && fat.score !== null) add("Frescura", 100 - fat.score, m.isVideo ? 0.2 : 0.3);
+  if (!comps.length) return { score: null, parts: [] };
+  var W = sum(w);
+  var score = Math.round(sum(comps.map(function (c, i) { return c.v * w[i]; })) / W);
+  return { score: score, parts: comps, grade: score >= 75 ? "Élite" : (score >= 55 ? "Sólido" : (score >= 35 ? "Regular" : "Débil")) };
+};
+
+/* ------------------------- 9. Concentración de gasto --------------------- */
+E.spendShare = function (list) {
+  var S = sum(list, function (x) { return x.m.spend; }), R = sum(list, function (x) { return x.m.results; });
+  return list.map(function (x) {
+    var ss = S ? x.m.spend / S : 0, rs = R ? x.m.results / R : 0;
+    return { id: x.id, spendShare: ss, resShare: rs, index: ss > 0.02 ? rs / ss : null };
+  });
+};
+
+/* ------------------------ 10. Día de la semana --------------------------- */
+E.DOW = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+E.byDow = function (series) {
+  var b = [0, 1, 2, 3, 4, 5, 6].map(function (i) { return { i: i, label: E.DOW[i], spend: 0, results: 0, clicks: 0, impr: 0, n: 0 }; });
+  series.forEach(function (d) {
+    if (d.spend <= 0) return;
+    var i = new Date(d.date + "T12:00:00Z").getUTCDay();
+    b[i].spend += d.spend; b[i].results += d.results; b[i].clicks += d.clicks; b[i].impr += d.impr; b[i].n++;
+  });
+  b.forEach(function (x) { x.cpr = x.results > 0 ? x.spend / x.results : null; x.ctr = x.impr ? x.clicks / x.impr : null; });
+  return b;
+};
+
+/* ----------------------- 11. Estado de fase de aprendizaje --------------- */
+E.learning = function (adset, res7) {
+  var info = adset.learning_stage_info || {};
+  var st = info.status || null;
+  var need = 50, cur = Math.min(need, Math.round(res7 || 0));
+  var out = { status: st, need: need, cur: cur, pct: cur / need };
+  if (st === "LEARNING") { out.level = "y"; out.label = "Aprendiendo"; }
+  else if (st === "SUCCESS") { out.level = "g"; out.label = "Aprendizaje listo"; }
+  else if (st === "FAIL") { out.level = "r"; out.label = "Aprendizaje limitado"; }
+  else { out.level = "n"; out.label = "Sin dato"; }
+  return out;
+};
+
+/* --------------------------- 12. Diversidad ------------------------------ */
+/* Cuenta cuántos creativos activos hay. Meta premia conceptos distintos. */
+E.diversity = function (adsActive) {
+  var n = adsActive.length;
+  if (n >= 6) return { level: "g", label: "Buena variedad", n: n };
+  if (n >= 3) return { level: "y", label: "Variedad justa", n: n };
+  return { level: "r", label: "Poca variedad", n: n };
+};
+
+root.AdsEngine = E;
+if (typeof module !== "undefined" && module.exports) module.exports = E;
+})(typeof window !== "undefined" ? window : globalThis);
+
+;
+/* ==========================================================================
+   MOCK: servidor Graph simulado para el modo demo y para las pruebas.
+   Devuelve la misma forma de datos que la API real, incluidas las escrituras.
+   ========================================================================== */
+(function (root) {
+"use strict";
+var M = {};
+
+function rng(seedStr) {
+  var h = 1779033703 ^ seedStr.length;
+  for (var i = 0; i < seedStr.length; i++) { h = Math.imul(h ^ seedStr.charCodeAt(i), 3432918353); h = (h << 13) | (h >>> 19); }
+  return function () {
+    h = Math.imul(h ^ (h >>> 16), 2246822507); h = Math.imul(h ^ (h >>> 13), 3266489909); h ^= h >>> 16;
+    return (h >>> 0) / 4294967296;
+  };
+}
+function iso(d) { return d.toISOString().slice(0, 10); }
+function addDays(s, n) { var d = new Date(s + "T12:00:00Z"); d.setUTCDate(d.getUTCDate() + n); return iso(d); }
+function todayISO() { return iso(new Date()); }
+
+/* ---------- Estado del universo simulado ---------- */
+function build() {
+  var U = { nextId: 9000, campaigns: [], adsets: [], ads: [], creatives: [], images: {}, log: [] };
+  var C = [
+    { id: "c1", name: "Retratos | Prospección fría", objective: "OUTCOME_ENGAGEMENT", status: "ACTIVE" },
+    { id: "c2", name: "Bodas 2026 | Captación de leads", objective: "OUTCOME_LEADS", status: "ACTIVE" },
+    { id: "c3", name: "Retargeting | Visitaron la landing", objective: "OUTCOME_ENGAGEMENT", status: "ACTIVE" },
+    { id: "c4", name: "Book de producto | Ventas Q4", objective: "OUTCOME_SALES", status: "ACTIVE" },
+    { id: "c5", name: "Promo Día de la Madre", objective: "OUTCOME_ENGAGEMENT", status: "PAUSED" }
+  ];
+  C.forEach(function (c) { c.effective_status = c.status; c.buying_type = "AUCTION"; U.campaigns.push(c); });
+  var A = [
+    { id: "s1", cid: "c1", name: "Mujeres 25-45 | Cochabamba", budget: 8, step: [24, 12], learn: "SUCCESS", b: 0.85 },
+    { id: "s2", cid: "c1", name: "Lookalike 1% compradores", budget: 6, step: null, learn: "SUCCESS", b: 0.8 },
+    { id: "s3", cid: "c2", name: "Comprometidas recientes", budget: 15, step: [30, 10], learn: "LEARNING", b: 0.6 },
+    { id: "s4", cid: "c3", name: "Visitantes 30 días", budget: 4, step: null, learn: "SUCCESS", b: 0.95 },
+    { id: "s5", cid: "c4", name: "Amplio Bolivia | Advantage+", budget: 10, step: [26, 14], learn: "FAIL", b: 0.7 },
+    { id: "s6", cid: "c5", name: "Madres 30-55", budget: 5, step: null, learn: "SUCCESS", b: 0.8, off: true }
+  ];
+  A.forEach(function (a) {
+    U.adsets.push({ id: a.id, name: a.name, campaign_id: a.cid, status: a.off ? "PAUSED" : "ACTIVE", effective_status: a.off ? "PAUSED" : "ACTIVE",
+      daily_budget: a.budget * 100, optimization_goal: a.cid === "c2" ? "LEAD_GENERATION" : (a.cid === "c4" ? "OFFSITE_CONVERSIONS" : "CONVERSATIONS"),
+      learning_stage_info: { status: a.learn }, _cfg: a, targeting: { geo_locations: { countries: ["BO"] }, age_min: 25, age_max: 55 } });
+  });
+  /* perfil por anuncio: ctr base, hook, hold, cvr (clic→resultado), fatiga, edad (días desde inicio) */
+  var D = [
+    { id: "a1", sid: "s1", name: "Reel | 3 errores al elegir fotógrafo", video: true, ctr: 0.021, hook: 0.36, hold: 0.34, cvr: 0.11, fat: 0.004, age: 44, w: 3 },
+    { id: "a2", sid: "s1", name: "Carrusel | Antes y después de la luz", video: false, ctr: 0.013, cvr: 0.08, fat: 0.02, age: 44, w: 2 },
+    { id: "a3", sid: "s2", name: "Reel | Sesión real en 60 segundos", video: true, ctr: 0.017, hook: 0.19, hold: 0.31, cvr: 0.10, fat: 0.006, age: 30, w: 2 },
+    { id: "a4", sid: "s3", name: "Video testimonial | Ana y Marco", video: true, ctr: 0.012, hook: 0.27, hold: 0.12, cvr: 0.035, fat: 0.011, age: 40, w: 3 },
+    { id: "a5", sid: "s3", name: "Estático | Agenda tu fecha 2026", video: false, ctr: 0.008, cvr: 0.03, fat: 0.028, age: 40, w: 1 },
+    { id: "a6", sid: "s4", name: "Reel | Recordatorio última semana", video: true, ctr: 0.052, hook: 0.31, hold: 0.29, cvr: 0.24, fat: 0.017, age: 36, w: 1 },
+    { id: "a7", sid: "s5", name: "Video | Producto en acción", video: true, ctr: 0.011, hook: 0.13, hold: 0.09, cvr: 0.04, fat: 0.008, age: 26, w: 2 },
+    { id: "a8", sid: "s5", name: "Estático | Catálogo Q4", video: false, ctr: 0.007, cvr: 0.05, fat: 0.006, age: 26, w: 1 },
+    { id: "a9", sid: "s6", name: "Reel | Día de la Madre", video: true, ctr: 0.015, hook: 0.24, hold: 0.22, cvr: 0.06, fat: 0.01, age: 40, w: 1 },
+    { id: "a10", sid: "s2", name: "Estático | Retrato editorial", video: false, ctr: 0.009, cvr: 0.06, fat: 0.01, age: 6, w: 1 }
+  ];
+  D.forEach(function (d) {
+    var aset = U.adsets.filter(function (x) { return x.id === d.sid; })[0];
+    var st = aset.status === "PAUSED" ? "PAUSED" : "ACTIVE";
+    U.ads.push({ id: d.id, name: d.name, adset_id: d.sid, campaign_id: aset.campaign_id, status: st, effective_status: (d.id === "a5" ? "DISAPPROVED" : st), _cfg: d,
+      created_time: addDays(todayISO(), -d.age) + "T10:00:00+0000",
+      creative: { id: "cr" + d.id, thumbnail_url: null, video_id: d.video ? "v" + d.id : null } });
+  });
+  return U;
+}
+var U = build();
+M.reset = function () { U = build(); M.U = U; };
+M.U = U;
+
+/* ---------- Generador de datos diarios por anuncio ---------- */
+function adDay(ad, date) {
+  var cfg = ad._cfg, aset = U.adsets.filter(function (x) { return x.id === ad.adset_id; })[0];
+  var a = aset._cfg;
+  var start = addDays(todayISO(), -cfg.age);
+  if (date < start) return null;
+  var ageDays = Math.round((new Date(date) - new Date(start)) / 864e5);
+  var r = rng(ad.id + date);
+  var daysAgo = Math.round((new Date(todayISO()) - new Date(date)) / 864e5);
+  var budgetDay = a.budget * ((a.step && daysAgo <= a.step[0]) ? (1 + (a.step[1] / a.budget)) : 1);
+  if (a.step && daysAgo > a.step[0]) budgetDay = a.budget;
+  if (a.step && daysAgo <= a.step[0]) budgetDay = a.step[1] + a.budget;
+  // el presupuesto actual manda para los últimos días si el usuario lo cambió
+  if (aset._budgetChangedOn && date >= aset._budgetChangedOn) budgetDay = aset.daily_budget / 100;
+  var sib = U.ads.filter(function (x) { return x.adset_id === ad.adset_id && x._cfg.age >= (todayISO() > date ? Math.max(0, daysAgo) * 0 : 0); });
+  var wsum = sib.reduce(function (s, x) { return s + x._cfg.w; }, 0);
+  var spend = budgetDay * (cfg.w / wsum) * (0.85 + r() * 0.3);
+  if (ad.status === "PAUSED" && ad._pausedOn && date >= ad._pausedOn) spend = 0;
+  if (aset.status === "PAUSED" && (a.off || (aset._pausedOn && date >= aset._pausedOn))) spend = 0;
+  if (a.off && daysAgo < 16) spend = 0;
+  var ramp = ageDays < 3 ? 0.55 : 1;
+  spend *= ramp;
+  if (spend < 0.02) return null;
+  var scaleFactor = Math.pow(budgetDay / a.budget, 0.32);
+  var cpm = (3.1 + r() * 0.6) * (1 + 0.006 * ageDays) * scaleFactor * (cfg.video ? 0.92 : 1.05) * (1 + (new Date(date + "T12:00:00Z").getUTCDay() === 0 ? 0.08 : 0));
+  var impr = Math.round(spend / cpm * 1000);
+  var ctr = cfg.ctr * Math.exp(-cfg.fat * ageDays) * (0.9 + r() * 0.2);
+  var clicks = Math.round(impr * ctr);
+  var results = Math.round(clicks * cfg.cvr * Math.pow(scaleFactor, -1) * (0.7 + r() * 0.6));
+  var reach = Math.round(impr / (1 + (ageDays * 0.06 + r() * 0.15)));
+  var row = { ad_id: ad.id, ad_name: ad.name, adset_id: ad.adset_id, adset_name: aset.name, campaign_id: ad.campaign_id, campaign_name: U.campaigns.filter(function (c) { return c.id === ad.campaign_id; })[0].name,
+    date_start: date, date_stop: date, spend: spend.toFixed(2), impressions: String(impr), reach: String(reach), frequency: (impr / Math.max(1, reach)).toFixed(2),
+    inline_link_clicks: String(clicks), actions: [], _r: results };
+  var obj = U.campaigns.filter(function (c) { return c.id === ad.campaign_id; })[0].objective;
+  var resType = obj === "OUTCOME_LEADS" ? "lead" : (obj === "OUTCOME_SALES" ? "initiate_checkout" : "onsite_conversion.messaging_conversation_started_7d");
+  row.actions.push({ action_type: "link_click", value: String(clicks) });
+  row.actions.push({ action_type: "landing_page_view", value: String(Math.round(clicks * 0.78)) });
+  if (results > 0) row.actions.push({ action_type: resType, value: String(results) });
+  if (cfg.video) {
+    var h = cfg.hook * (0.92 + r() * 0.16) * Math.exp(-cfg.fat * ageDays * 0.4), v3 = Math.round(impr * h);
+    var thru = Math.round(v3 * cfg.hold * (0.9 + r() * 0.2));
+    row.actions.push({ action_type: "video_view", value: String(v3) });
+    row.video_play_actions = [{ action_type: "video_view", value: String(Math.round(v3 * 1.05)) }];
+    row.video_thruplay_watched_actions = [{ action_type: "video_view", value: String(thru) }];
+    row.video_p25_watched_actions = [{ action_type: "video_view", value: String(Math.round(v3 * (0.62 + cfg.hold * 0.4))) }];
+    row.video_p50_watched_actions = [{ action_type: "video_view", value: String(Math.round(v3 * (0.44 + cfg.hold * 0.4))) }];
+    row.video_p75_watched_actions = [{ action_type: "video_view", value: String(Math.round(v3 * (0.28 + cfg.hold * 0.35))) }];
+    row.video_p100_watched_actions = [{ action_type: "video_view", value: String(Math.round(v3 * (0.14 + cfg.hold * 0.3))) }];
+    row.video_avg_time_watched_actions = [{ action_type: "video_view", value: (5 + cfg.hold * 14).toFixed(1) }];
+  }
+  return row;
+}
+function rangeDates(p) {
+  var until = addDays(todayISO(), -1), since;
+  if (p.time_range) { var t = typeof p.time_range === "string" ? JSON.parse(p.time_range) : p.time_range; return { since: t.since, until: t.until }; }
+  var map = { last_7d: 7, last_14d: 14, last_30d: 30, last_90d: 90, last_60d: 60 };
+  var n = map[p.date_preset] || 14;
+  since = addDays(until, -(n - 1));
+  return { since: since, until: until };
+}
+function allRows(p) {
+  var R = rangeDates(p), rows = [];
+  U.ads.forEach(function (ad) {
+    for (var d = R.since; d <= R.until; d = addDays(d, 1)) { var r = adDay(ad, d); if (r) rows.push(r); }
+  });
+  return rows;
+}
+var SUMF = ["spend", "impressions", "inline_link_clicks"];
+function collapse(rows, keyFn, keepFields) {
+  var g = {};
+  rows.forEach(function (r) {
+    var k = keyFn(r);
+    if (!g[k]) { g[k] = JSON.parse(JSON.stringify(r)); g[k]._n = 1; g[k]._reach = +r.reach; g[k]._impr = +r.impressions; delete g[k].date_start; delete g[k].date_stop; return; }
+    var t = g[k]; t._n++;
+    SUMF.forEach(function (f) { t[f] = String(+t[f] + +r[f]); });
+    t._reach += +r.reach * 0.55; t._impr += +r.impressions;
+    var lists = ["actions", "video_play_actions", "video_thruplay_watched_actions", "video_p25_watched_actions", "video_p50_watched_actions", "video_p75_watched_actions", "video_p100_watched_actions"];
+    lists.forEach(function (L) {
+      if (!r[L]) return; if (!t[L]) { t[L] = JSON.parse(JSON.stringify(r[L])); return; }
+      r[L].forEach(function (x) { var f = t[L].filter(function (y) { return y.action_type === x.action_type; })[0]; if (f) f.value = String(+f.value + +x.value); else t[L].push(JSON.parse(JSON.stringify(x))); });
+    });
+    if (r.video_avg_time_watched_actions) t.video_avg_time_watched_actions = r.video_avg_time_watched_actions;
+  });
+  return Object.keys(g).map(function (k) {
+    var t = g[k]; var adc = U.ads.filter(function (x) { return x.id === t.ad_id; })[0]; var fatk = adc ? adc._cfg.fat : 0.012; var nn = t._n;
+    t.frequency = Math.min(6, 1 + 0.05 * nn * (1 + fatk * 40)).toFixed(2); t.reach = String(Math.round(t._impr / +t.frequency));
+    var ctrv = (+t.inline_link_clicks) / Math.max(1, +t.impressions);
+    t.quality_ranking = ctrv > 0.016 ? "ABOVE_AVERAGE" : (ctrv > 0.010 ? "AVERAGE" : "BELOW_AVERAGE_35");
+    t.engagement_rate_ranking = ctrv > 0.014 ? "ABOVE_AVERAGE" : (ctrv > 0.009 ? "AVERAGE" : "BELOW_AVERAGE_20");
+    t.conversion_rate_ranking = ctrv > 0.02 ? "ABOVE_AVERAGE" : (ctrv > 0.008 ? "AVERAGE" : "BELOW_AVERAGE_10");
+    t.date_start = rows.length ? rows[0].date_start : todayISO(); delete t._n; delete t._reach; delete t._impr; delete t._r;
+    return t;
+  });
+}
+function breakdownRows(rows, level, breakdowns) {
+  var base = collapse(rows, function () { return "all"; })[0];
+  if (!base) return [];
+  var out = [];
+  var bd = (breakdowns || "").split(",");
+  function part(weights, fn) {
+    var tot = weights.reduce(function (s, w) { return s + w[1]; }, 0);
+    weights.forEach(function (w) {
+      var f = w[1] / tot, eff = w[2] || 1, r = JSON.parse(JSON.stringify(base));
+      r.spend = (+base.spend * f).toFixed(2); r.impressions = String(Math.round(+base.impressions * f / (w[3] || 1)));
+      r.inline_link_clicks = String(Math.round(+base.inline_link_clicks * f * eff));
+      r.actions = (base.actions || []).map(function (a) { return { action_type: a.action_type, value: String(Math.round(+a.value * f * eff)) }; });
+      ["video_play_actions", "video_thruplay_watched_actions", "video_p25_watched_actions", "video_p50_watched_actions", "video_p75_watched_actions", "video_p100_watched_actions"].forEach(function (L) { delete r[L]; });
+      fn(r, w); out.push(r);
+    });
+  }
+  if (bd.indexOf("publisher_platform") >= 0) {
+    part([["facebook|feed", 0.22, 0.8], ["instagram|feed", 0.19, 1.05], ["instagram|instagram_stories", 0.2, 0.95], ["instagram|instagram_reels", 0.27, 1.25], ["facebook|facebook_reels", 0.07, 0.9], ["facebook|facebook_stories", 0.03, 0.55], ["audience_network|an_classic", 0.02, 0.3]], function (r, w) { var p = w[0].split("|"); r.publisher_platform = p[0]; r.platform_position = p[1]; });
+  } else if (bd.indexOf("age") >= 0) {
+    var ages = [["18-24", 0.06, 0.7], ["25-34", 0.31, 1.2], ["35-44", 0.28, 1.15], ["45-54", 0.17, 0.85], ["55-64", 0.1, 0.55], ["65+", 0.08, 0.35]];
+    ages.forEach(function (a) { ["female", "male"].forEach(function (g) {
+      var gw = g === "female" ? 0.72 : 0.28, ge = g === "female" ? 1.1 : 0.7;
+      part([[a[0], a[1] * gw, a[2] * ge]], function (r, w) { r.age = a[0]; r.gender = g; });
+    }); });
+  } else if (bd.indexOf("hourly_stats_aggregated_by_advertiser_time_zone") >= 0) {
+    var hw = []; for (var h = 0; h < 24; h++) { var w = h < 6 ? 0.012 : (h < 9 ? 0.04 : (h < 18 ? 0.045 : (h < 23 ? 0.078 : 0.03))); hw.push([h, w, h >= 19 && h <= 22 ? 1.3 : (h < 6 ? 0.5 : 1)]); }
+    part(hw, function (r, w) { var a = String(w[0]).padStart(2, "0"); r.hourly_stats_aggregated_by_advertiser_time_zone = a + ":00:00 - " + a + ":59:59"; });
+  } else if (bd.indexOf("body_asset") >= 0) {
+    part([["Ana nos escribió un jueves y reservó el viernes. Cuéntame tu fecha y te respondo hoy.", 0.42, 1.3], ["Sesión desde $120, sin letra pequeña. Escríbeme y te cotizo hoy.", 0.34, 1.0], ["¿Tienes fecha y aún no tienes fotógrafo? Cuéntame qué buscas.", 0.24, 0.75]], function (r, w) { r.body_asset = { id: "b" + w[1], text: w[0] }; });
+  } else if (bd.indexOf("image_asset") >= 0) {
+    part([["Retrato luz natural", 0.4, 1.3, 1, "b45e2c"], ["Pareja en estudio", 0.35, 0.95, 1, "16264b"], ["Detalle de manos", 0.25, 0.7, 1, "3d2418"]], function (r, w) { r.image_asset = { hash: "h" + w[1], name: w[0], url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Crect width='64' height='64' fill='%23"+w[4]+"'/%3E%3C/svg%3E" }; });
+  } else if (bd.indexOf("title_asset") >= 0) {
+    part([["Álbum listo en 15 días", 0.4, 1.25], ["Tu boda sin estrés", 0.33, 0.95], ["Cupos de octubre", 0.27, 0.8]], function (r, w) { r.title_asset = { id: "t" + w[1], text: w[0] }; });
+  } else { out.push(base); }
+  return out;
+}
+
+/* ---------- Router ---------- */
+var ACCT = "act_10001";
+function ok(o) { return Promise.resolve(o); }
+function fail(msg, code, sub) { var e = new Error(msg); e.fb = { message: msg, code: code || 100, error_subcode: sub }; return Promise.reject(e); }
+function fld(obj, fields) { return obj; }
+function delay(v) { return new Promise(function (res) { setTimeout(function () { res(v); }, 40); }); }
+function pick(list, f) { return list.filter(f); }
+function num(v) { return parseFloat(v) || 0; }
+
+M.graph = function (method, path, p, body) {
+  p = p || {}; body = body || {};
+  var seg = path.replace(/^\/+/, "").split("/");
+  return delay().then(function () {
+    if (method === "GET") {
+      if (seg[0] === "me" && seg.length === 1) return { id: "demo-user", name: "Alumno Demo" };
+      if (seg[0] === "me" && seg[1] === "adaccounts") return { data: [{ id: ACCT, name: "Estudio Graphica (demo)", currency: "USD", account_status: 1, timezone_name: "America/La_Paz", amount_spent: "184300", balance: "4200", spend_cap: "0" }, { id: "act_10002", name: "Cuenta secundaria (demo)", currency: "USD", account_status: 1 }] };
+      if (seg[0] === "me" && seg[1] === "accounts") return { data: [{ id: "p100", name: "Estudio Graphica", access_token: "x" }, { id: "p101", name: "The Marketographers" }] };
+      if (seg[0] === ACCT || seg[0] === "act_10002") {
+        var kind = seg[1];
+        if (!kind) return { id: seg[0], name: "Estudio Graphica (demo)", currency: "USD", amount_spent: "184300", balance: "4200", spend_cap: "0", account_status: 1, timezone_name: "America/La_Paz" };
+        if (seg[0] === "act_10002") return { data: [] };
+        if (kind === "insights") {
+          var rows = allRows(p), lvl = p.level || "account";
+          if (p.breakdowns) return { data: breakdownRows(rows, lvl, p.breakdowns) };
+          if (p.action_attribution_windows) return { data: collapse(rows, function () { return "all"; }).map(function (r) { r.actions = (r.actions || []).map(function (a) { var v = +a.value; return { action_type: a.action_type, value: a.value, "1d_click": String(Math.round(v * 0.74)), "7d_click": String(Math.round(v * 0.88)), "1d_view": String(Math.round(v * 0.12)) }; }); return r; }) };
+          if (p.time_increment === "1" || p.time_increment === 1) {
+            return { data: rows.map(function (r) { var c = JSON.parse(JSON.stringify(r)); delete c._r; return c; }) };
+          }
+          var keyFn = lvl === "ad" ? function (r) { return r.ad_id; } : (lvl === "adset" ? function (r) { return r.adset_id; } : (lvl === "campaign" ? function (r) { return r.campaign_id; } : function () { return "all"; }));
+          return { data: collapse(rows, keyFn) };
+        }
+        if (kind === "campaigns") return { data: U.campaigns.map(function (c) { return { id: c.id, name: c.name, status: c.status, effective_status: c.status, objective: c.objective, buying_type: "AUCTION" }; }) };
+        if (kind === "adsets") return { data: U.adsets.map(function (a) { return { id: a.id, name: a.name, status: a.status, effective_status: a.effective_status, campaign_id: a.campaign_id, daily_budget: String(a.daily_budget), optimization_goal: a.optimization_goal, learning_stage_info: a.learning_stage_info, targeting: a.targeting, billing_event: "IMPRESSIONS", bid_strategy: "LOWEST_COST_WITHOUT_CAP" }; }) };
+        if (kind === "ads") return { data: U.ads.map(function (a) { return { id: a.id, name: a.name, status: a.status, effective_status: a.effective_status, adset_id: a.adset_id, campaign_id: a.campaign_id, created_time: a.created_time, creative: a.creative }; }) };
+        if (kind === "adspixels") return { data: [{ id: "px1", name: "Pixel Estudio Graphica", last_fired_time: new Date(Date.now() - 3600e3).toISOString(), is_created_by_business: true }, { id: "px2", name: "Desactivada 1", last_fired_time: null }] };
+        if (kind === "customaudiences") return { data: [
+          { id: "au1", name: "Compradores 90 días", subtype: "CUSTOM", approximate_count_lower_bound: 820, approximate_count_upper_bound: 950, delivery_status: { code: 200, description: "Lista" } },
+          { id: "au2", name: "Lookalike 1% compradores BO", subtype: "LOOKALIKE", approximate_count_lower_bound: 41000, approximate_count_upper_bound: 45000, delivery_status: { code: 200, description: "Lista" } },
+          { id: "au3", name: "Visitantes landing 30d", subtype: "WEBSITE", approximate_count_lower_bound: 1100, approximate_count_upper_bound: 1300, delivery_status: { code: 300, description: "Actualizando" } }] };
+        if (kind === "promote_pages") return { data: [{ id: "p100", name: "Estudio Graphica" }] };
+      }
+      if (seg[0] === "search") return { data: [{ key: "2672543", name: p.q || "Ciudad", type: "city", country_code: "BO", region: "Cochabamba" }] };
+      if (seg[0] === ACCT && seg[1] === "adrules_library") return { data: U.rules || [] };
+      if (seg[0] === ACCT && seg[1] === "value_rule_set") return { data: U.vrules || [] };
+      if (seg[0] === "dataset_quality") return { web: [{ event_name: "PageView", event_match_quality: { composite_score: 6.2, diagnostics: [{ solution: "Envía el correo o teléfono con hash cuando la persona los escriba." }] } }, { event_name: "eligio_camino_directo", event_match_quality: { composite_score: 4.1, diagnostics: [{ solution: "Este evento llega solo desde el navegador. Envíalo también por API de conversiones." }] } }] };
+      if (seg[0] === "px1" && seg[1] === "stats") {
+        return { data: [{ start_time: "x", data: [{ value: "PageView", count: 1840 }, { value: "ViewContent", count: 812 }, { value: "AddToCart", count: 240 }, { value: "ClickCheckoutLanding", count: 96 }, { value: "InitiateCheckout", count: 61 }, { value: "eligio_camino_directo", count: 38 }] }] };
+      }
+      var c = U.campaigns.filter(function (x) { return x.id === seg[0]; })[0] || U.adsets.filter(function (x) { return x.id === seg[0]; })[0] || U.ads.filter(function (x) { return x.id === seg[0]; })[0];
+      if (c && seg.length === 1) return { id: c.id, name: c.name, status: c.status, effective_status: c.effective_status || c.status, daily_budget: c.daily_budget !== undefined ? String(c.daily_budget) : undefined };
+      return fail("Ruta GET no soportada en demo: " + path, 100);
+    }
+    /* ---------- POST ---------- */
+    if (seg[0] === ACCT) {
+      var k2 = seg[1], id;
+      if (k2 === "campaigns") {
+        id = "c" + (U.nextId++); var nc = { id: id, name: body.name, objective: body.objective, status: body.status || "PAUSED", effective_status: body.status || "PAUSED", buying_type: "AUCTION" };
+        U.campaigns.push(nc); U.log.push(["create_campaign", body]); return { id: id };
+      }
+      if (k2 === "adsets") {
+        if (!body.campaign_id) return fail("Falta campaign_id", 100);
+        id = "s" + (U.nextId++); U.adsets.push({ id: id, name: body.name, campaign_id: body.campaign_id, status: body.status || "PAUSED", effective_status: body.status || "PAUSED", daily_budget: +body.daily_budget, optimization_goal: body.optimization_goal, learning_stage_info: {}, targeting: body.targeting, _cfg: { budget: (+body.daily_budget) / 100, w: 1, b: 0.8 } });
+        U.log.push(["create_adset", body]); return { id: id };
+      }
+      if (k2 === "customaudiences") { id = "au" + (U.nextId++); U.newAuds = U.newAuds || []; U.newAuds.push({ id: id, name: body.name, rule: body.rule }); U.log.push(["create_aud", body]); return { id: id }; }
+      if (k2 === "value_rule_set") { id = "vr" + (U.nextId++); U.vrules = U.vrules || []; var rr = typeof body.rules === "string" ? JSON.parse(body.rules) : body.rules; U.vrules.push({ id: id, name: body.name, rules: { data: rr } }); U.log.push(["create_vrule", body]); return { id: id }; }
+      if (k2 === "adrules_library") { id = "r" + (U.nextId++); U.rules = U.rules || []; U.rules.push({ id: id, name: body.name, status: body.status || "ENABLED", evaluation_spec: JSON.parse(body.evaluation_spec || "{}"), execution_spec: JSON.parse(body.execution_spec || "{}"), schedule_spec: JSON.parse(body.schedule_spec || "{}") }); U.log.push(["create_rule", body]); return { id: id }; }
+      if (k2 === "adimages") { var hash = "hash" + (U.nextId++); U.images[hash] = 1; U.log.push(["adimage"]); return { images: { file: { hash: hash, url: "" } } }; }
+      if (k2 === "adcreatives") { id = "cr" + (U.nextId++); U.creatives.push({ id: id, spec: body.object_story_spec }); U.log.push(["create_creative", body]); return { id: id }; }
+      if (k2 === "ads") {
+        id = "a" + (U.nextId++);
+        var as = U.adsets.filter(function (x) { return x.id === body.adset_id; })[0];
+        U.ads.push({ id: id, name: body.name, adset_id: body.adset_id, campaign_id: as ? as.campaign_id : null, status: body.status || "PAUSED", effective_status: "PAUSED", creative: { id: body.creative && body.creative.creative_id }, created_time: new Date().toISOString(), _cfg: { age: 0, ctr: 0.01, cvr: 0.05, fat: 0.01, w: 1, video: false } });
+        U.log.push(["create_ad", body]); return { id: id };
+      }
+    }
+    var tgt = U.campaigns.filter(function (x) { return x.id === seg[0]; })[0] || U.adsets.filter(function (x) { return x.id === seg[0]; })[0] || U.ads.filter(function (x) { return x.id === seg[0]; })[0];
+    if (!tgt) return fail("Objeto no encontrado: " + seg[0], 100);
+    if (seg[1] === "copies") {
+      var copy = JSON.parse(JSON.stringify(tgt)); copy.id = tgt.id[0] + (U.nextId++); copy.name = tgt.name + " - Copia"; copy.status = "PAUSED"; copy.effective_status = "PAUSED";
+      var list = U.campaigns.indexOf(tgt) >= 0 ? U.campaigns : (U.adsets.indexOf(tgt) >= 0 ? U.adsets : U.ads); list.push(copy);
+      U.log.push(["copy", seg[0]]); return { copied_campaign_id: copy.id, copied_adset_id: copy.id, copied_ad_id: copy.id, ad_object_ids: [{ source_id: tgt.id, copied_id: copy.id, ad_object_type: "ad" }] };
+    }
+    if (body.status) { if (["ACTIVE", "PAUSED", "ARCHIVED"].indexOf(body.status) < 0) return fail("Estado inválido", 100); tgt.status = body.status; tgt.effective_status = body.status; if (body.status === "PAUSED") tgt._pausedOn = todayISO(); }
+    if (body.name) tgt.name = body.name;
+    if (body.value_rule_set_id) tgt.value_rule_set_id = body.value_rule_set_id;
+    if (body.daily_budget !== undefined) {
+      var nb = +body.daily_budget;
+      if (nb < 100) return fail("El presupuesto diario mínimo es 1,00 en esta moneda.", 100, 1885272);
+      tgt.daily_budget = nb; tgt._budgetChangedOn = todayISO();
+    }
+    U.log.push(["update", seg[0], body]);
+    return { success: true };
+  });
+};
+root.AdsMock = M;
+if (typeof module !== "undefined" && module.exports) module.exports = M;
+})(typeof window !== "undefined" ? window : globalThis);
+
+;
+/* ==========================================================================
+   COACH: convierte números en decisiones. Cada regla explica el porqué.
+   Entrada: A = contexto analizado por la app. Salida: lista ordenada.
+   ========================================================================== */
+(function (root) {
+"use strict";
+var E = root.AdsEngine || (typeof require !== "undefined" ? require("./engine.js") : null);
+var C = {};
+
+var SEV = { r: 3, y: 2, i: 1, g: 0 };
+
+function pct(x, d) { return (x * 100).toFixed(d === undefined ? 0 : d) + "%"; }
+
+C.run = function (A) {
+  var out = [], money = A.fmt.money;
+  var target = A.target;
+  function add(o) { o.sev = o.sev || "i"; o.impact = o.impact || 0; out.push(o); }
+
+  /* --- Punto de partida: sin objetivo no hay semáforo --- */
+  if (!A.goal || !A.goal.ok) {
+    add({ id: "goal", sev: "i", tab: "rentabilidad", title: "Define tu costo objetivo", why: "Sin saber cuánto vale un cliente, ningún costo por resultado se puede juzgar como barato o caro.",
+      fix: "Ingresa ticket promedio, margen y tasa de cierre en Rentabilidad. Te calcula el costo máximo por resultado y el objetivo.", action: { type: "goto", tab: "rentabilidad", label: "Abrir Rentabilidad" } });
+  }
+
+  var activeAds = A.ads.filter(function (a) { return a.status === "ACTIVE" || a.effStatus === "ACTIVE"; });
+
+  A.ads.forEach(function (ad) {
+    var m = ad.m, active = ad.effStatus === "ACTIVE" || ad.status === "ACTIVE";
+    if (ad.effStatus === "DISAPPROVED" || ad.effStatus === "WITH_ISSUES") {
+      add({ id: "rej-" + ad.id, sev: "r", title: "Anuncio con problemas de aprobación: " + ad.name, why: "Meta lo frenó por política o por un error de configuración. Cada día así es entrega perdida.",
+        fix: "Ábrelo en Ads Manager, lee el motivo y corrige. Evita promesas de resultado garantizado y frases que asumen atributos personales de quien mira.", entity: { type: "ad", id: ad.id }, impact: 1 });
+    }
+    if (!active || m.spend <= 0) return;
+
+    var v = ad.verdict;
+    if (v && v.level === "r" && m.results === 0) {
+      add({ id: "cut-" + ad.id, sev: "r", title: "Pausa \"" + ad.name + "\"", why: v.why, evidence: money(m.spend) + " gastados, 0 resultados.",
+        fix: "Con esta inversión sin resultados, seguir cuesta más de lo que enseña. Pausa y reemplaza con un concepto distinto.", entity: { type: "ad", id: ad.id }, action: { type: "pause", label: "Pausar anuncio" }, impact: m.spend });
+    } else if (v && v.level === "r") {
+      var waste = m.spend * (1 - target / m.cpr);
+      add({ id: "exp-" + ad.id, sev: "r", title: "\"" + ad.name + "\" sale caro con confianza", why: v.why, evidence: "CPR " + money(m.cpr) + " contra objetivo " + money(target) + ".",
+        fix: "Pausa o reemplaza. El exceso de gasto sobre tu objetivo en este anuncio ronda " + money(waste) + ".", entity: { type: "ad", id: ad.id }, action: { type: "pause", label: "Pausar anuncio" }, impact: waste });
+    } else if (v && v.level === "g" && ad.share && ad.share.spendShare < 0.35 && ad.siblings > 1) {
+      add({ id: "win-" + ad.id, sev: "g", title: "\"" + ad.name + "\" rinde por encima de tu objetivo", why: v.why, evidence: "Recibe " + pct(ad.share.spendShare) + " del gasto de su conjunto y aporta " + pct(ad.share.resShare) + " de los resultados.",
+        fix: "Meta todavía le da poco. Usa su concepto como base de dos variantes nuevas con otro visual y el mismo mensaje.", entity: { type: "ad", id: ad.id }, action: { type: "duplicate", label: "Duplicar en pausa" } });
+    }
+
+    var f = ad.fat;
+    if (f && f.score !== null && f.score >= 50) {
+      var why = "Frecuencia " + (f.freq ? f.freq.toFixed(1) : "?") + (f.ctrDrop !== null ? ", CTR " + (f.ctrDrop > 0 ? "bajó " : "subió ") + pct(Math.abs(f.ctrDrop)) + " entre el inicio y el final del rango" : "") + (f.cprRise !== null && f.cprRise > 0.1 ? ", costo por resultado subió " + pct(f.cprRise) : "") + ".";
+      add({ id: "fat-" + ad.id, sev: f.score >= 75 ? "r" : "y", title: "Saturación en \"" + ad.name + "\" (" + f.label + ")", why: why,
+        fix: "La audiencia ya lo vio demasiado. Cambia el visual o el hook manteniendo la promesa, y prepara un reemplazo antes de que el costo se dispare.", entity: { type: "ad", id: ad.id }, action: { type: "duplicate", label: "Duplicar para renovar" }, impact: m.spend * 0.25 });
+    }
+
+    var dg = ad.diag;
+    if (dg && dg.key !== "ok" && m.impr > 3000) {
+      var sev = dg.key === "winner" ? "g" : (dg.level === "r" ? "r" : "y");
+      add({ id: "hook-" + ad.id, sev: sev, title: dg.title + ": " + ad.name, why: dg.text,
+        evidence: "Hook " + pct(m.hook, 0) + " de las impresiones pasa los 3 segundos; retención " + pct(m.hold, 0) + " llega al ThruPlay.", entity: { type: "ad", id: ad.id }, tab: "creativos" });
+    }
+
+    if (m.clicks >= 80 && A.medians.cvr && m.cvr !== null && m.ctr !== null && A.medians.ctr && m.ctr >= 1.4 * A.medians.ctr && m.cvr <= 0.5 * A.medians.cvr) {
+      add({ id: "clk-" + ad.id, sev: "y", title: "Muchos clics, pocos resultados en \"" + ad.name + "\"", why: "Atrae interés (CTR " + pct(m.ctr, 1) + ") y solo " + pct(m.cvr, 1) + " de los clics termina en resultado, la mitad de tu promedio.",
+        fix: "Revisa lo que ocurre después del clic: velocidad de la página, coincidencia entre la promesa del anuncio y la landing, y rapidez de respuesta en WhatsApp.", entity: { type: "ad", id: ad.id } });
+    }
+    if (ad.share && ad.share.spendShare < 0.15 && ad.siblings >= 3 && m.days >= 7 && m.results === 0) {
+      add({ id: "starved-" + ad.id, sev: "i", title: "\"" + ad.name + "\" no fue evaluado", why: "Recibió menos del 15% del gasto de su conjunto en " + m.days + " días. Sin muestra, el veredicto queda vacío.",
+        fix: "No lo marques como perdedor. Si quieres probarlo en serio, muévelo a un conjunto propio o usa la prueba de creativos de Meta.", entity: { type: "ad", id: ad.id } });
+    }
+  });
+
+  A.adsets.forEach(function (s) {
+    if (s.status !== "ACTIVE") return;
+    var m = s.m;
+    if (s.freq && s.freq >= 3.5 && m.spend > 0) {
+      add({ id: "freq-" + s.id, sev: s.freq >= 4.5 ? "r" : "y", title: "Frecuencia alta en \"" + s.name + "\": " + s.freq.toFixed(1), why: "La misma gente ve tus anuncios 3,5 veces o más. En audiencias frías eso suele acompañar caídas de CTR y subidas de costo.",
+        fix: "Amplía la audiencia, suma creativos distintos o baja el presupuesto de este conjunto.", entity: { type: "adset", id: s.id }, impact: m.spend * 0.15 });
+    }
+    if (s.pacing && s.pacing.fill !== null && s.pacing.fill < 0.6 && s.budget > 0 && m.days >= 4) {
+      add({ id: "under-" + s.id, sev: "y", title: "\"" + s.name + "\" gasta " + pct(s.pacing.fill) + " de su presupuesto", why: "Meta no logra colocar todo el presupuesto diario. Suele ocurrir por audiencia chica, anuncios en revisión o pocos creativos con buena puntuación.",
+        fix: "Revisa el tamaño de la audiencia, amplía la segmentación y confirma que los anuncios estén aprobados.", entity: { type: "adset", id: s.id } });
+    }
+    if (s.learning && s.learning.status === "FAIL") {
+      add({ id: "learn-" + s.id, sev: "r", title: "Aprendizaje limitado en \"" + s.name + "\"", why: "Este conjunto no junta los ~50 eventos semanales que el algoritmo necesita para optimizar.",
+        fix: "Optimiza por un evento más arriba del embudo (InitiateCheckout, Lead o Conversaciones), fusiona conjuntos parecidos o sube el presupuesto con la regla de 20% cada 3 días.", entity: { type: "adset", id: s.id } });
+    } else if (s.learning && s.learning.status === "LEARNING") {
+      add({ id: "learning-" + s.id, sev: "i", title: "\"" + s.name + "\" está aprendiendo (" + s.learning.cur + " de 50 eventos)", why: "Cada edición significativa reinicia el aprendizaje. Los primeros 7 a 14 días sirven para reunir datos.",
+        fix: "Deja el conjunto quieto hasta cerrar la fase. Juzga después, no antes.", entity: { type: "adset", id: s.id } });
+    }
+    if (s.dim && s.dim.b !== null && s.dim.mode === "fit" && s.dim.b < 0.7 && s.dim.confidence !== "baja") {
+      add({ id: "dim-" + s.id, sev: "y", title: "Rendimientos decrecientes en \"" + s.name + "\"", why: "Elasticidad " + s.dim.b.toFixed(2) + ": duplicar el gasto solo multiplica los resultados por " + Math.pow(2, s.dim.b).toFixed(2) + ". El costo del siguiente resultado ya ronda " + money(s.dim.marginalCpr) + ".",
+        fix: "Antes de subir presupuesto, suma creativos y audiencias nuevas. Ver detalle en Escalado.", entity: { type: "adset", id: s.id }, tab: "escalado" });
+    }
+    var actAds = A.ads.filter(function (a) { return a.adsetId === s.id && a.effStatus === "ACTIVE"; });
+    if (m.spend > 0 && actAds.length === 1 && A.ads.length > 1) {
+      add({ id: "div-" + s.id, sev: "y", title: "\"" + s.name + "\" corre con un solo creativo", why: "Meta reparte la entrega entre conceptos distintos. Con uno solo no hay competencia interna y la saturación llega más rápido.",
+        fix: "Suma al menos dos creativos que difieran en cliente, motivo, formato o presentador. Cambiar solo el texto en pantalla cuenta como el mismo creativo.", entity: { type: "adset", id: s.id } });
+    }
+  });
+
+  /* Rentabilidad por campaña */
+  if (A.goal && A.goal.ok) {
+    A.campaigns.forEach(function (c) {
+      if (c.status !== "ACTIVE" || !c.profit || c.m.spend < target * 2) return;
+      if (c.profit.net < 0 && c.m.results >= 5) {
+        add({ id: "loss-" + c.id, sev: "r", title: "\"" + c.name + "\" pierde dinero según tu calculadora", why: "Gastó " + money(c.m.spend) + " y con tu tasa de cierre esperada devuelve " + money(c.profit.gain) + " de ganancia limpia.",
+          fix: "Sube el cierre (respuesta más rápida, oferta más clara) o baja el costo por resultado antes de escalar.", entity: { type: "campaign", id: c.id }, impact: -c.profit.net });
+      }
+    });
+  }
+
+  /* Cuenta */
+  var acc = A.account;
+  if (acc.cpmRise !== null && acc.cpmRise > 0.3) {
+    add({ id: "cpm", sev: "y", title: "El CPM subió " + pct(acc.cpmRise) + " en el rango", why: "Pagas 30% más por cada mil impresiones que al principio. Puede venir de competencia en la subasta, temporada alta o audiencias que se agotan.",
+      fix: "Revisa si coincide con fechas de alta demanda. Si no, renueva creativos para recuperar CTR, que baja el costo efectivo." });
+  }
+  if (A.pacing && A.pacing.capLeft !== undefined && A.pacing.capLeft > 0 && A.pacing.projMonth > A.pacing.capLeft) {
+    add({ id: "cap", sev: "r", title: "Tu límite de gasto de cuenta se agota antes de fin de mes", why: "Al ritmo actual gastarías " + money(A.pacing.projMonth) + " y quedan " + money(A.pacing.capLeft) + " de límite.", fix: "Ajusta el límite en Ads Manager o baja presupuestos." });
+  }
+  (A.pixels || []).forEach(function (p) {
+    if (acc.spend > 0 && p.last_fired_time) {
+      var hrs = (Date.now() - new Date(p.last_fired_time).getTime()) / 36e5;
+      if (hrs > 72 && p.is_created_by_business !== false && !/desactiv/i.test(p.name || "")) add({ id: "px-" + p.id, sev: "r", title: "El píxel \"" + p.name + "\" lleva " + Math.round(hrs / 24) + " días sin disparar", why: "Sin eventos Meta deja de aprender de tus conversiones.", fix: "Revisa que el código siga en la landing y que Probar eventos reciba visitas." });
+    }
+  });
+  var dow = A.dow.filter(function (d) { return d.n >= 3 && d.cpr; });
+  if (dow.length >= 5) {
+    var best = dow.slice().sort(function (a, b) { return a.cpr - b.cpr; })[0], worst = dow.slice().sort(function (a, b) { return b.cpr - a.cpr; })[0];
+    if (worst.cpr / best.cpr >= 1.35) {
+      add({ id: "dow", sev: "i", tab: "segmentos", title: "Los " + worst.label.toLowerCase() + " cuestan " + pct(worst.cpr / best.cpr - 1) + " más que los " + best.label.toLowerCase(), why: "Mejor día: " + best.label + " (" + money(best.cpr) + "). Peor día: " + worst.label + " (" + money(worst.cpr) + ").",
+        fix: "Con presupuesto diario Meta reparte solo. Si tienes presupuesto vitalicio puedes programar más entrega en el mejor día." });
+    }
+  }
+  var dv = A.diversity;
+  if (dv && dv.level === "r" && A.account.spend > 0) {
+    add({ id: "divacc", sev: "y", title: "Solo " + dv.n + " creativo" + (dv.n === 1 ? "" : "s") + " activo" + (dv.n === 1 ? "" : "s") + " en la cuenta", why: "El sistema de entrega de Meta arranca desde el creativo. Más conceptos distintos significan más oportunidades de encontrar personas que respondan.",
+      fix: "Apunta a 3 conceptos que difieran en al menos 3 de estos ejes: cliente, motivo, etapa de consciencia, tipo de anuncio, formato y presentador." });
+  }
+  if (A.scale && A.scale.level === "g" && A.account.spend > 0 && A.account.verdict && A.account.verdict.level === "g") {
+    add({ id: "scale", sev: "g", tab: "escalado", title: "Tu cuenta tiene margen para escalar", why: "Costo dentro del objetivo y elasticidad de " + A.scale.b.toFixed(2) + ".", fix: "Sube 20% cada 3 días. Un salto mayor reinicia el aprendizaje." });
+  }
+
+  /* --- Reponer antes de que se queme --- */
+  activeAds.forEach(function (ad) {
+    var f = ad.fat; if (!f || f.daysLeft === null || f.daysLeft > 5 || (f.score !== null && f.score >= 50)) return;
+    add({ id: "rep-" + ad.id, sev: "y", title: "Prepara el reemplazo de \"" + ad.name + "\"", why: "Al ritmo actual su frecuencia llega a 3.5 en unos " + f.daysLeft + " días. Ahí el costo suele subir.",
+      fix: "Ten listo un creativo nuevo con el mismo ángulo y otro inicio. Súbelo antes de que este se canse.", entity: { type: "ad", id: ad.id }, action: { type: "duplicate", label: "Duplicar para renovar" }, impact: ad.m.spend * 0.1 });
+  });
+  /* --- Evento demasiado escaso para optimizar --- */
+  A.adsets.forEach(function (s) {
+    if (!(s.status === "ACTIVE" || s.effStatus === "ACTIVE") || s.opt !== "OFFSITE_CONVERSIONS" || s.m.spend <= 0 || s.res7 >= 10) return;
+    add({ id: "evt-" + s.id, sev: "y", title: "\"" + s.name + "\" optimiza un evento que casi no pasa", why: "Tuvo " + s.res7 + " conversiones en 7 días. Con menos de 10 por semana Meta no aprende a quién mostrarle el anuncio y sale caro.",
+      fix: "Optimiza un evento anterior del embudo, por ejemplo inicio de pago en vez de compra, o junta conjuntos para sumar señal. Cuando pases de 50 por semana vuelve al evento final.", entity: { type: "adset", id: s.id }, tab: "escalado", impact: s.m.spend * 0.2 });
+  });
+  /* --- Conjuntos que compiten por el mismo público --- */
+  var act = A.adsets.filter(function (s) { return (s.effStatus === "ACTIVE" || s.status === "ACTIVE") && s.m && s.m.spend > 0; });
+  function geoKey(t) { var g = (t && t.geo_locations) || {}; return JSON.stringify({ c: (g.countries || []).slice().sort(), ci: (g.cities || []).map(function (x) { return x.key; }).sort(), r: (g.regions || []).map(function (x) { return x.key; }).sort() }); }
+  function ages(t) { return [(t && t.age_min) || 18, (t && t.age_max) || 65]; }
+  for (var i = 0; i < act.length; i++) for (var j = i + 1; j < act.length; j++) {
+    var a = act[i], b = act[j], ta = a.raw && a.raw.targeting, tb = b.raw && b.raw.targeting;
+    if (!ta || !tb || a.opt !== b.opt || geoKey(ta) !== geoKey(tb)) continue;
+    var x = ages(ta), y = ages(tb), lo = Math.max(x[0], y[0]), hi = Math.min(x[1], y[1]);
+    var share = (hi - lo) / Math.max(1, Math.min(x[1] - x[0], y[1] - y[0]));
+    if (share < 0.6) continue;
+    add({ id: "ovl-" + a.id + "-" + b.id, sev: "y", title: "Dos conjuntos persiguen al mismo público", why: "«" + a.name + "» y «" + b.name + "» apuntan a la misma zona, edades parecidas y optimizan lo mismo. En la subasta Meta evita que compitan entre sí y le da la entrega a uno solo, así que el otro gasta caro o no sale.",
+      evidence: "Edades compartidas: " + lo + " a " + hi + ". Objetivo de optimización: " + (a.opt || "igual") + ".", fix: "Junta los anuncios en un solo conjunto o separa los públicos, por ejemplo excluyendo en uno la audiencia del otro.", entity: { type: "adset", id: a.id }, tab: "campanas", impact: Math.min(a.m.spend, b.m.spend) * 0.1 });
+  }
+  out.sort(function (a, b) { return (SEV[b.sev] - SEV[a.sev]) || (b.impact - a.impact); });
+  return out;
+};
+root.AdsCoach = C;
+if (typeof module !== "undefined" && module.exports) module.exports = C;
+})(typeof window !== "undefined" ? window : globalThis);
+
+;
+/* ==========================================================================
+   CORE: estado, formato, API de Graph, almacenamiento, modales, avisos
+   ========================================================================== */
+(function (root) {
+"use strict";
+var E = root.AdsEngine;
+var AB = root.AB = { cfg: {}, S: {}, UI: {}, G: {}, F: {}, store: {}, T: {} };
+
+AB.cfg = {
+  APP_ID: "1602285984897758",
+  CONFIG_READ: "2334408800710806",   // Dashboard Alumnos: ads_read
+  CONFIG_EDIT: "1087820267373799",   // Dashboard Alumnos Edicion: ads_read + ads_management + páginas
+  GRAPH_VER: "v25.0"
+};
+
+/* ---------------------------- almacenamiento ---------------------------- */
+AB.store.get = function (k, d) { try { var r = localStorage.getItem(k); return r ? JSON.parse(r) : d; } catch (e) { return d; } };
+AB.store.set = function (k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+
+/* ------------------------------- estado --------------------------------- */
+var S = AB.S = {
+  token: null, mode: "gate", demo: false, canEdit: false, userId: "demo", userName: "",
+  accounts: [], acct: null, acctInfo: null, currency: "", offset: 100,
+  range: "30", customFrom: null, customTo: null, metric: "auto",
+  level: "campaign", tab: "resumen", q: "", statusFilter: "all",
+  goal: { ticket: "", margin: "", close: "" },
+  prefs: { theme: "light", fxCode: "", fxRate: "", showHero: true, showAds: true, showBadAlert: true, defaultLevel: "campaign", freqAlert: 3.5 },
+  data: null, A: null, seg: null, since: null, until: null
+};
+var ZERO_DEC = ["JPY", "KRW", "VND", "CLP", "PYG", "ISK", "UGX", "XAF", "XOF", "KMF", "GNF", "RWF", "VUV", "DJF", "BIF"];
+AB.F.offsetFor = function (cur) { return ZERO_DEC.indexOf(cur) >= 0 ? 1 : 100; };
+
+/* ------------------------------- formato -------------------------------- */
+var F = AB.F;
+F.esc = function (s) { var d = document.createElement("div"); d.textContent = (s === null || s === undefined) ? "" : String(s); return d.innerHTML.replace(/"/g, "&quot;"); };
+F.sym = function () { var c = S.currency; if (!c || c === "USD") return "$"; if (c === "BOB") return "Bs "; return c + " "; };
+F.money = function (n, dec) {
+  if (n === null || n === undefined || isNaN(n) || !isFinite(n)) return "—";
+  var d = dec !== undefined ? dec : (Math.abs(n) < 100 ? 2 : 0);
+  return (n < 0 ? "-" : "") + F.sym() + Math.abs(n).toLocaleString("es-BO", { minimumFractionDigits: d, maximumFractionDigits: d });
+};
+F.num = function (n, d) { if (n === null || n === undefined || isNaN(n)) return "—"; return n.toLocaleString("es-BO", { maximumFractionDigits: d === undefined ? 0 : d, minimumFractionDigits: 0 }); };
+F.pct = function (x, d) { if (x === null || x === undefined || isNaN(x) || !isFinite(x)) return "—"; return (x * 100).toLocaleString("es-BO", { maximumFractionDigits: d === undefined ? 1 : d, minimumFractionDigits: d === undefined ? 0 : d }) + "%"; };
+F.compact = function (n) { if (n === null || n === undefined) return "—"; if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(1) + " M"; if (Math.abs(n) >= 1e4) return (n / 1e3).toFixed(1) + " k"; return F.num(n); };
+F.date = function (iso) { if (!iso) return ""; var d = new Date(iso + "T12:00:00Z"); return d.toLocaleDateString("es-BO", { day: "2-digit", month: "short", timeZone: "UTC" }); };
+F.ago = function (ts) { var s = (Date.now() - ts) / 1000; if (s < 90) return "hace un momento"; if (s < 3600) return "hace " + Math.round(s / 60) + " min"; if (s < 86400) return "hace " + Math.round(s / 3600) + " h"; return "hace " + Math.round(s / 86400) + " d"; };
+F.initials = function (s) { var w = (s || "?").trim().split(/\s+/).filter(function (x) { return /[a-zA-Z0-9]/.test(x); }); return ((w[0] || "?")[0] + ((w[1] || "")[0] || "")).toUpperCase(); };
+F.grad = function (seed) { var h = 0; for (var i = 0; i < (seed || "").length; i++) h = (h * 31 + seed.charCodeAt(i)) % 360; return "linear-gradient(140deg,hsl(" + h + ",62%,60%),hsl(" + ((h + 42) % 360) + ",58%,46%))"; };
+F.statusEs = function (s) { return { ACTIVE: "Activo", PAUSED: "Pausado", ARCHIVED: "Archivado", DELETED: "Eliminado", DISAPPROVED: "Rechazado", PENDING_REVIEW: "En revisión", WITH_ISSUES: "Con problemas", CAMPAIGN_PAUSED: "Campaña pausada", ADSET_PAUSED: "Conjunto pausado", IN_PROCESS: "Procesando" }[s] || s || "—"; };
+F.objEs = function (o) { var map = { OUTCOME_LEADS: "Clientes potenciales", OUTCOME_SALES: "Ventas", OUTCOME_ENGAGEMENT: "Interacción", OUTCOME_TRAFFIC: "Tráfico", OUTCOME_AWARENESS: "Reconocimiento", OUTCOME_APP_PROMOTION: "App" }; return map[o] || (o || "").replace("OUTCOME_", "").toLowerCase(); };
+F.rankEs = function (r) { if (!r) return null; if (r === "ABOVE_AVERAGE") return { t: "Sobre el promedio", l: "g" }; if (r === "AVERAGE") return { t: "Promedio", l: "y" }; if (/BELOW/.test(r)) return { t: "Bajo el promedio", l: "r" }; return { t: r, l: "n" }; };
+F.icon = { g: "●", y: "▲", r: "✕", n: "○", i: "ℹ" };
+F.chip = function (level, text, tip) { return '<span class="chip ' + level + '"' + (tip ? ' data-tip="' + F.esc(tip) + '"' : '') + '><span class="ic">' + (F.icon[level] || "") + '</span>' + F.esc(text) + '</span>'; };
+F.help = function (key) { return '<button type="button" class="help" data-gl="' + key + '" aria-label="Qué significa esto">?</button>'; };
+
+/* ------------------------------ Graph API ------------------------------- */
+var G = AB.G;
+function toForm(obj) {
+  var p = new URLSearchParams();
+  Object.keys(obj || {}).forEach(function (k) {
+    var v = obj[k]; if (v === undefined || v === null || k.charAt(0) === "_") return;
+    p.append(k, (typeof v === "object") ? JSON.stringify(v) : String(v));
+  });
+  return p;
+}
+function fbError(j, status) {
+  var e = j && j.error ? j.error : { message: "Error de red (" + status + ")" };
+  var msg = e.error_user_msg || e.message || "Error desconocido";
+  var err = new Error(msg); err.fb = e; err.status = status;
+  if (e.code === 190) err.userMsg = "Tu sesión de Facebook venció. Vuelve a conectar.";
+  else if (e.code === 200 || e.code === 10 || e.code === 3 || e.code === 283) err.userMsg = "Falta un permiso para esta acción. Activa el modo edición y acepta los permisos.";
+  else if ([4, 17, 32, 613, 80000, 80004].indexOf(e.code) >= 0) err.userMsg = "Meta pidió bajar el ritmo de consultas. Espera unos minutos y actualiza.";
+  else err.userMsg = msg;
+  return err;
+}
+G.req = function (method, path, params, body) {
+  if (S.demo) return root.AdsMock.graph(method, path, params, body);
+  var url = "https://graph.facebook.com/" + AB.cfg.GRAPH_VER + "/" + path.replace(/^\/+/, "");
+  var opts = { method: method };
+  if (method === "GET") {
+    var q = toForm(params); q.append("access_token", S.token); url += "?" + q.toString();
+  } else {
+    var f = toForm(body); f.append("access_token", S.token);
+    if (body && body.__formData) { opts.body = body.__formData; body.__formData.append("access_token", S.token); }
+    else { opts.body = f; opts.headers = { "Content-Type": "application/x-www-form-urlencoded" }; }
+  }
+  return fetch(url, opts).then(function (r) { return r.json().then(function (j) { if (!r.ok || j.error) throw fbError(j, r.status); return j; }); });
+};
+G.get = function (path, params) { return G.req("GET", path, params || {}); };
+G.post = function (path, body) { return G.req("POST", path, {}, body || {}); };
+/* sigue la paginación hasta maxPages */
+G.all = function (path, params, maxPages) {
+  var out = [], pages = 0;
+  function step(p) {
+    return p.then(function (j) {
+      out = out.concat(j.data || []); pages++;
+      if (j.paging && j.paging.next && pages < (maxPages || 8) && !S.demo) {
+        return step(fetch(j.paging.next).then(function (r) { return r.json().then(function (jj) { if (jj.error) throw fbError(jj, r.status); return jj; }); }));
+      }
+      return out;
+    });
+  }
+  return step(G.get(path, params));
+};
+
+/* --------------------------- interfaz: utilidades ----------------------- */
+var UI = AB.UI;
+var $ = function (id) { return document.getElementById(id); };
+AB.$ = $;
+UI.toast = function (msg, kind) {
+  var t = document.createElement("div"); t.className = "toast " + (kind || ""); t.textContent = msg; $("toasts").appendChild(t);
+  setTimeout(function () { t.style.opacity = "0"; t.style.transition = "opacity .3s"; setTimeout(function () { t.remove(); }, 320); }, kind === "bad" ? 6500 : 3400);
+};
+UI.tip = function () {
+  var tip = $("tip");
+  document.addEventListener("mouseover", function (e) {
+    var t = e.target.closest && e.target.closest("[data-tip]");
+    if (!t) return;
+    tip.textContent = t.getAttribute("data-tip"); tip.style.opacity = 1; place(e);
+  });
+  document.addEventListener("mousemove", function (e) { if (tip.style.opacity === "1" && e.target.closest && e.target.closest("[data-tip]")) place(e); });
+  document.addEventListener("mouseout", function (e) { var t = e.target.closest && e.target.closest("[data-tip]"); if (t) tip.style.opacity = 0; });
+  function place(e) { var x = Math.min(window.innerWidth - 300, e.clientX + 14), y = e.clientY + 16; tip.style.left = Math.max(8, x) + "px"; tip.style.top = y + "px"; }
+};
+UI.showTip = function (html, x, y) { var tip = $("tip"); tip.innerHTML = html; tip.style.opacity = 1; tip.style.left = Math.max(8, Math.min(window.innerWidth - 300, x + 14)) + "px"; tip.style.top = (y + 16) + "px"; };
+UI.hideTip = function () { $("tip").style.opacity = 0; };
+
+UI.openDrawer = function (html) { $("drawer").innerHTML = '<button class="btn btn-sm closex" data-close="1" aria-label="Cerrar">Cerrar ✕</button>' + html; $("overlay").classList.add("on"); $("drawer").classList.add("on"); $("drawer").scrollTop = 0; };
+UI.closeAll = function () { $("overlay").classList.remove("on"); $("drawer").classList.remove("on"); $("modal").classList.remove("on"); };
+UI.modal = function (html, wire) { $("modal").innerHTML = html; $("modal").classList.add("on"); $("overlay").classList.add("on"); if (wire) wire($("modal")); };
+UI.confirm = function (o) {
+  return new Promise(function (res) {
+    UI.modal('<h3>' + F.esc(o.title) + '</h3>' + (o.html || "") +
+      '<div class="mb"><button class="btn" id="cfNo">Cancelar</button><button class="btn ' + (o.danger ? "btn-danger" : "btn-gold") + '" id="cfYes">' + F.esc(o.ok || "Confirmar") + '</button></div>',
+      function (m) { m.querySelector("#cfNo").onclick = function () { UI.closeAll(); res(false); }; m.querySelector("#cfYes").onclick = function () { UI.closeAll(); res(true); }; });
+  });
+};
+UI.loading = function (on, text) { var l = $("loader"); l.classList.toggle("on", !!on); if (text) l.querySelector(".t").textContent = text; };
+
+/* -------------------------- rangos de fechas --------------------------- */
+AB.rangeParams = function () {
+  if (S.range === "custom" && S.customFrom && S.customTo) return { time_range: JSON.stringify({ since: S.customFrom, until: S.customTo }), _since: S.customFrom, _until: S.customTo };
+  var n = parseInt(S.range, 10) || 30;
+  var until = new Date(Date.now() - 864e5).toISOString().slice(0, 10);
+  var since = E.addDays(until, -(n - 1));
+  return { time_range: JSON.stringify({ since: since, until: until }), _since: since, _until: until };
+};
+
+root.AB = AB;
+})(window);
+
+;
+/* ==========================================================================
+   CHARTS: gráficos SVG/HTML sin dependencias. Todos con hover.
+   ========================================================================== */
+(function (root) {
+"use strict";
+var AB = root.AB, F = AB.F, UI = AB.UI, E = root.AdsEngine;
+var Ch = AB.Ch = {};
+var REG = {}, uid = 0;
+
+var C = { gold: "#F5B729", goldDeep: "#c98a12", ink: "#141414", muted: "#68655f", good: "#1c9a5b", bad: "#C23B26", blue: "#3a5a8c" };
+Ch.C = C;
+
+function niceMax(v) {
+  if (v <= 0) return 1;
+  var p = Math.pow(10, Math.floor(Math.log10(v))), n = v / p;
+  var m = n <= 1 ? 1 : (n <= 2 ? 2 : (n <= 2.5 ? 2.5 : (n <= 5 ? 5 : 10)));
+  return m * p;
+}
+
+/* Línea/área con hover. opts.series: [{name,color,points:[{label,y}]}] */
+Ch.line = function (o) {
+  var id = "ch" + (uid++), W = 560, H = o.h || 170, pl = 44, pr = 10, pt = 10, pb = 22;
+  var S0 = o.series[0], n = S0.points.length;
+  var all = []; o.series.forEach(function (s) { s.points.forEach(function (p) { if (p.y !== null && p.y !== undefined) all.push(p.y); }); });
+  if (!n || !all.length) return '<div class="state" style="padding:22px">Sin datos en este rango.</div>';
+  var mx = niceMax(Math.max.apply(null, all.concat(o.ref ? [o.ref.y] : []))), mn = 0;
+  var sx = function (i) { return n > 1 ? pl + (W - pl - pr) * i / (n - 1) : pl + (W - pl - pr) / 2; };
+  var sy = function (v) { return pt + (H - pt - pb) * (1 - (v - mn) / (mx - mn)); };
+  var yf = o.yFmt || F.num, g = "";
+  for (var t = 0; t <= 4; t++) { var v = mn + (mx - mn) * t / 4, y = sy(v); g += '<line class="grid" x1="' + pl + '" x2="' + (W - pr) + '" y1="' + y + '" y2="' + y + '"/><text x="' + (pl - 6) + '" y="' + (y + 3.5) + '" text-anchor="end">' + F.esc(yf(v)) + '</text>'; }
+  var step = Math.max(1, Math.ceil(n / 7)), xl = "";
+  for (var i = 0; i < n; i += step) xl += '<text x="' + sx(i) + '" y="' + (H - 5) + '" text-anchor="middle">' + F.esc(S0.points[i].short || S0.points[i].label) + '</text>';
+  var paths = "", dots = "";
+  o.series.forEach(function (s, si) {
+    var d = "", started = false, last = null;
+    s.points.forEach(function (p, i) {
+      if (p.y === null || p.y === undefined) { started = false; return; }
+      d += (started ? " L" : "M") + sx(i).toFixed(1) + "," + sy(p.y).toFixed(1); started = true; last = i;
+    });
+    if (o.area && si === 0) {
+      var first = s.points.findIndex(function (p) { return p.y !== null && p.y !== undefined; });
+      if (first >= 0 && last !== null) paths += '<path d="' + d + ' L' + sx(last).toFixed(1) + ',' + sy(0) + ' L' + sx(first).toFixed(1) + ',' + sy(0) + ' Z" fill="' + s.color + '" opacity=".14"/>';
+    }
+    paths += '<path d="' + d + '" fill="none" stroke="' + s.color + '" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>';
+    dots += '<circle class="hdot" data-s="' + si + '" r="5" fill="#fff" stroke="' + s.color + '" stroke-width="2.5"/>';
+  });
+  var ref = "";
+  if (o.ref) { var ry = sy(o.ref.y); ref = '<line x1="' + pl + '" x2="' + (W - pr) + '" y1="' + ry + '" y2="' + ry + '" stroke="' + C.bad + '" stroke-dasharray="5 4" stroke-width="1.4"/><text x="' + (W - pr) + '" y="' + (ry - 4) + '" text-anchor="end" style="fill:' + C.bad + ';font-weight:700">' + F.esc(o.ref.label) + '</text>'; }
+  REG[id] = { series: o.series, n: n, W: W, H: H, sx: sx, sy: sy, yFmt: yf, pl: pl, pr: pr };
+  var leg = o.series.length > 1 ? '<div class="legend">' + o.series.map(function (s) { return '<span><i style="background:' + s.color + '"></i>' + F.esc(s.name) + '</span>'; }).join("") + '</div>' : "";
+  return '<div class="chartbox"><svg class="chart" data-chart="' + id + '" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + F.esc(o.title || "Gráfico") + '">' + g + xl + paths + ref + '<line class="hline" y1="' + pt + '" y2="' + (H - pb) + '"/>' + dots + '<rect class="hit" x="' + pl + '" y="0" width="' + (W - pl - pr) + '" height="' + H + '" fill="transparent"/></svg></div>' + leg;
+};
+
+/* Dispersión con curva ajustada (rendimientos decrecientes) */
+Ch.scatter = function (o) {
+  var id = "ch" + (uid++), W = 560, H = 230, pl = 46, pr = 14, pt = 12, pb = 30;
+  var pts = o.points; if (!pts.length) return '<div class="state" style="padding:22px">Sin días con resultados para graficar.</div>';
+  var maxX = niceMax(Math.max.apply(null, pts.map(function (p) { return p.x; }).concat(o.curve ? [o.curve.maxX || 0] : []))), maxY = niceMax(Math.max.apply(null, pts.map(function (p) { return p.y; }).concat(o.curve ? [o.curve.fn(maxX) * 1.02] : [])));
+  var sx = function (v) { return pl + (W - pl - pr) * v / maxX; }, sy = function (v) { return pt + (H - pt - pb) * (1 - v / maxY); };
+  var g = "";
+  for (var t = 0; t <= 4; t++) { var vy = maxY * t / 4, vx = maxX * t / 4; g += '<line class="grid" x1="' + pl + '" x2="' + (W - pr) + '" y1="' + sy(vy) + '" y2="' + sy(vy) + '"/><text x="' + (pl - 6) + '" y="' + (sy(vy) + 3.5) + '" text-anchor="end">' + F.esc(F.num(vy, 1)) + '</text><text x="' + sx(vx) + '" y="' + (H - 10) + '" text-anchor="middle">' + F.esc(F.money(vx, 0)) + '</text>'; }
+  var curve = "";
+  if (o.curve) { var d = ""; for (var i = 0; i <= 60; i++) { var xv = maxX * i / 60; if (xv <= 0) continue; d += (d ? " L" : "M") + sx(xv).toFixed(1) + "," + sy(o.curve.fn(xv)).toFixed(1); } curve = '<path d="' + d + '" fill="none" stroke="' + C.ink + '" stroke-width="2" stroke-dasharray="6 4"/>'; }
+  var dots = pts.map(function (p, i) { return '<circle cx="' + sx(p.x).toFixed(1) + '" cy="' + sy(p.y).toFixed(1) + '" r="5" fill="' + C.gold + '" stroke="#fff" stroke-width="2" data-tip="' + F.esc((p.label || "") + " · gasto " + F.money(p.x) + " · " + F.num(p.y, 1) + " resultados") + '"/>'; }).join("");
+  var cur = "";
+  if (o.current) cur = '<circle cx="' + sx(o.current.x).toFixed(1) + '" cy="' + sy(o.current.y).toFixed(1) + '" r="7" fill="' + C.ink + '" stroke="#fff" stroke-width="2.5" data-tip="Tu promedio diario actual"/>';
+  return '<div class="chartbox"><svg class="chart" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + F.esc(o.title || "Dispersión") + '">' + g + curve + dots + cur +
+    '<text x="' + pl + '" y="10" style="font-weight:700">Resultados por día</text><text x="' + (W - pr) + '" y="' + (H - 0) + '" text-anchor="end">Gasto por día</text></svg></div>';
+};
+
+/* Barras horizontales. items:[{label,value,text,level,tip}] */
+Ch.bars = function (items, o) {
+  o = o || {};
+  var mx = Math.max.apply(null, items.map(function (i) { return i.value || 0; }).concat([0.0001]));
+  return '<div class="bars">' + items.map(function (it) {
+    return '<div class="brow"' + (it.tip ? ' data-tip="' + F.esc(it.tip) + '"' : '') + '><div class="lbl">' + F.esc(it.label) + '</div><div class="track"><div class="fill ' + (it.level || "") + '" style="width:' + Math.max(1.5, (it.value || 0) / mx * 100) + '%"></div></div><div class="v">' + F.esc(it.text) + '</div></div>';
+  }).join("") + '</div>';
+};
+
+/* Mapa de calor: rows/cols con valor y texto; escala secuencial dorada. lowIsGood invierte. */
+Ch.heat = function (rows, cols, cell, o) {
+  o = o || {};
+  var vals = []; rows.forEach(function (r) { cols.forEach(function (c) { var x = cell(r, c); if (x && x.v !== null && x.v !== undefined) vals.push(x.v); }); });
+  var lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
+  var html = '<div style="overflow-x:auto"><div class="heat" style="' + (cols.length > 10 ? 'min-width:620px;' : '') + 'grid-template-columns:' + (o.first || "70px") + ' repeat(' + cols.length + ',1fr)"><div class="cell hd"></div>' + cols.map(function (c) { return '<div class="cell hd">' + F.esc(c.label) + '</div>'; }).join("");
+  rows.forEach(function (r) {
+    html += '<div class="cell hd" style="justify-content:flex-start">' + F.esc(r.label) + '</div>';
+    cols.forEach(function (c) {
+      var x = cell(r, c);
+      if (!x || x.v === null || x.v === undefined) { html += '<div class="cell" style="background:var(--cream-alt);color:var(--muted)" data-tip="' + F.esc((x && x.tip) || "Sin datos suficientes") + '">·</div>'; return; }
+      var t = hi > lo ? (x.v - lo) / (hi - lo) : 0.5; if (o.lowIsGood) t = 1 - t;
+      var a = 0.12 + 0.78 * t;
+      html += '<div class="cell" style="background:rgba(245,183,41,' + a.toFixed(2) + ');color:var(--ink)" data-tip="' + F.esc(x.tip || "") + '">' + F.esc(x.text) + '</div>';
+    });
+  });
+  return html + '</div></div>';
+};
+
+/* Medidor semicircular 0..100 */
+Ch.gauge = function (value, level, label) {
+  var col = level === "g" ? C.good : (level === "r" ? C.bad : (level === "y" ? C.goldDeep : "#bdb9b0"));
+  var r = 52, cx = 65, cy = 62, a0 = Math.PI, v = Math.max(0, Math.min(100, value === null ? 0 : value));
+  var ang = a0 + Math.PI * v / 100;
+  function pt(a) { return [cx + r * Math.cos(a), cy + r * Math.sin(a)]; }
+  var s = pt(a0), e = pt(ang), e0 = pt(2 * Math.PI), large = v > 50 ? 1 : 0;
+  return '<svg viewBox="0 0 130 78" width="130" height="78" role="img" aria-label="' + F.esc(label || "") + '"><path d="M' + s[0] + ',' + s[1] + ' A' + r + ',' + r + ' 0 0 1 ' + e0[0] + ',' + e0[1] + '" fill="none" stroke="#ebe8e1" stroke-width="11" stroke-linecap="round"/>' +
+    (v > 0 ? '<path d="M' + s[0] + ',' + s[1] + ' A' + r + ',' + r + ' 0 ' + large + ' 1 ' + e[0].toFixed(1) + ',' + e[1].toFixed(1) + '" fill="none" stroke="' + col + '" stroke-width="11" stroke-linecap="round"/>' : '') +
+    '<text x="65" y="60" text-anchor="middle" style="font-size:22px;font-weight:800;fill:var(--ink);font-family:inherit">' + (value === null ? "—" : Math.round(value)) + '</text></svg>';
+};
+
+/* Curva de retención de video */
+Ch.retention = function (m) {
+  if (!m.retention) return "";
+  var lab = ["3 s", "25%", "50%", "75%", "100%"], W = 520, H = 150, pl = 36, pr = 12, pt = 12, pb = 24;
+  var sx = function (i) { return pl + (W - pl - pr) * i / 4; }, sy = function (v) { return pt + (H - pt - pb) * (1 - v); };
+  var pts = m.retention.map(function (v, i) { return { x: sx(i), y: sy(v), v: v }; });
+  var d = pts.map(function (p, i) { return (i ? "L" : "M") + p.x.toFixed(1) + "," + p.y.toFixed(1); }).join(" ");
+  var g = [0, 0.25, 0.5, 0.75, 1].map(function (v) { return '<line class="grid" x1="' + pl + '" x2="' + (W - pr) + '" y1="' + sy(v) + '" y2="' + sy(v) + '"/><text x="' + (pl - 5) + '" y="' + (sy(v) + 3.5) + '" text-anchor="end">' + Math.round(v * 100) + '%</text>'; }).join("");
+  var xl = lab.map(function (l, i) { return '<text x="' + sx(i) + '" y="' + (H - 6) + '" text-anchor="middle">' + l + '</text>'; }).join("");
+  var dots = pts.map(function (p, i) { return '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="5" fill="' + C.gold + '" stroke="#fff" stroke-width="2" data-tip="' + F.esc((i === 0 ? "Pasó los 3 segundos" : "Llegó al " + lab[i] + " del video") + ": " + F.pct(p.v, 0) + " de quienes pasaron los 3 s") + '"/>'; }).join("");
+  return '<svg class="chart" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Curva de retención del video">' + g + xl + '<path d="' + d + ' L' + pts[4].x + ',' + sy(0) + ' L' + pts[0].x + ',' + sy(0) + ' Z" fill="' + C.gold + '" opacity=".16"/><path d="' + d + '" fill="none" stroke="' + C.goldDeep + '" stroke-width="2.4"/>' + dots + '</svg>';
+};
+
+Ch.spark = function (vals, color) {
+  var W = 120, H = 30; if (vals.length < 2) return "";
+  var mx = Math.max.apply(null, vals.concat([0.0001])), n = vals.length;
+  var d = vals.map(function (v, i) { return (i ? "L" : "M") + (W * i / (n - 1)).toFixed(1) + "," + (H - 3 - (H - 6) * v / mx).toFixed(1); }).join(" ");
+  return '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" aria-hidden="true"><path d="' + d + '" fill="none" stroke="' + (color || C.goldDeep) + '" stroke-width="2" stroke-linecap="round"/></svg>';
+};
+
+/* Conecta hover a todos los svg[data-chart] dentro de root */
+Ch.bind = function (rootEl) {
+  Array.prototype.forEach.call(rootEl.querySelectorAll("svg[data-chart]"), function (svg) {
+    var meta = REG[svg.getAttribute("data-chart")]; if (!meta) return;
+    var line = svg.querySelector(".hline"), dots = svg.querySelectorAll(".hdot");
+    function move(cx, cy) {
+      var r = svg.getBoundingClientRect(), rel = (cx - r.left) / r.width * meta.W;
+      var i = meta.n > 1 ? Math.round((rel - meta.pl) / (meta.W - meta.pl - meta.pr) * (meta.n - 1)) : 0;
+      i = Math.max(0, Math.min(meta.n - 1, i));
+      var x = meta.sx(i); line.setAttribute("x1", x); line.setAttribute("x2", x); line.style.opacity = 1;
+      var html = '<b>' + F.esc(meta.series[0].points[i].label) + '</b>';
+      meta.series.forEach(function (s, si) {
+        var p = s.points[i], dot = dots[si];
+        if (p.y === null || p.y === undefined) { dot.style.opacity = 0; html += '<br>' + F.esc(s.name) + ": sin datos"; return; }
+        dot.setAttribute("cx", x); dot.setAttribute("cy", meta.sy(p.y)); dot.style.opacity = 1;
+        html += '<br>' + F.esc(s.name) + ": " + F.esc(meta.yFmt(p.y));
+      });
+      UI.showTip(html, cx, cy);
+    }
+    function leave() { line.style.opacity = 0; Array.prototype.forEach.call(dots, function (d) { d.style.opacity = 0; }); UI.hideTip(); }
+    svg.addEventListener("mousemove", function (e) { move(e.clientX, e.clientY); });
+    svg.addEventListener("mouseleave", leave);
+    svg.addEventListener("touchmove", function (e) { if (e.touches[0]) move(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
+    svg.addEventListener("touchend", leave);
+  });
+};
+})(window);
+
+;
+/* ==========================================================================
+   DATA: carga desde Graph y análisis completo (estructura A)
+   ========================================================================== */
+(function (root) {
+"use strict";
+var AB = root.AB, S = AB.S, G = AB.G, F = AB.F, E = root.AdsEngine, Coach = root.AdsCoach;
+
+var INS = "ad_id,ad_name,adset_id,adset_name,campaign_id,campaign_name,spend,impressions,reach,frequency,inline_link_clicks,actions,action_values," +
+  "video_play_actions,video_thruplay_watched_actions,video_p25_watched_actions,video_p50_watched_actions,video_p75_watched_actions,video_p100_watched_actions,video_avg_time_watched_actions";
+
+function safe(p, tag, R) { return p.catch(function (e) { R.errors.push({ tag: tag, msg: e.userMsg || e.message, code: e.fb && e.fb.code }); if (e.fb && e.fb.code === 190) throw e; return null; }); }
+
+AB.loadData = function () {
+  var acct = S.acct, rp = AB.rangeParams(), R = { errors: [], since: rp._since, until: rp._until };
+  var base = { time_range: rp.time_range };
+  var jobs = [
+    safe(G.all(acct + "/insights", Object.assign({ level: "ad", time_increment: 1, fields: INS, limit: 500 }, base), 10).then(function (d) { R.daily = d; }), "insights diarios", R),
+    safe(G.all(acct + "/insights", Object.assign({ level: "ad", fields: INS + ",quality_ranking,engagement_rate_ranking,conversion_rate_ranking", limit: 500 }, base), 4).then(function (d) { R.totals = d; }), "insights totales", R),
+    safe(G.all(acct + "/campaigns", { fields: "id,name,status,effective_status,objective,daily_budget,lifetime_budget,buying_type", limit: 200 }, 3).then(function (d) { R.camps = d; }), "campañas", R),
+    safe(G.all(acct + "/adsets", { fields: "id,name,status,effective_status,campaign_id,daily_budget,lifetime_budget,optimization_goal,learning_stage_info,targeting,bid_strategy", limit: 200 }, 3).then(function (d) { R.adsets = d; }), "conjuntos", R),
+    safe(G.all(acct + "/ads", { fields: "id,name,status,effective_status,adset_id,campaign_id,created_time,creative.thumbnail_width(480).thumbnail_height(480){id,thumbnail_url,image_url,video_id}", limit: 200 }, 3).then(function (d) { R.ads = d; }), "anuncios", R),
+    safe(G.get(acct + "/adspixels", { fields: "id,name,last_fired_time,is_created_by_business" }).then(function (j) { R.pixels = j.data || []; }), "píxeles", R),
+    safe(G.get(acct + "/customaudiences", { fields: "id,name,subtype,approximate_count_lower_bound,approximate_count_upper_bound,delivery_status", limit: 60 }).then(function (j) { R.auds = j.data || []; }), "audiencias", R),
+    safe(G.get(acct, { fields: "name,currency,amount_spent,balance,spend_cap,account_status,timezone_name" }).then(function (j) { R.info = j; }), "cuenta", R)
+  ];
+  return Promise.all(jobs).then(function () {
+    if (!R.daily) { var e = new Error(R.errors.length ? R.errors[0].msg : "No se pudieron leer los datos"); e.userMsg = e.message; throw e; }
+    R.totals = R.totals || []; R.camps = R.camps || []; R.adsets = R.adsets || []; R.ads = R.ads || []; R.pixels = R.pixels || []; R.auds = R.auds || [];
+    return R;
+  });
+};
+
+AB.analyze = function (R) {
+  var offset = S.offset, since = R.since, until = R.until;
+  var objMap = {}; R.camps.forEach(function (c) { objMap[c.id] = c.objective; });
+  var objOf = function (r) { return objMap[r.campaign_id] || ""; };
+  var rows = R.daily.map(function (r) { return E.normRow(r, S.metric, objOf); });
+  var totals = R.totals.map(function (r) { return E.normRow(r, S.metric, objOf); });
+  var totRaw = {}; R.totals.forEach(function (r) { totRaw[r.ad_id] = r; });
+
+  var goal = E.profitGoal(S.goal);
+  var accM = E.aggregate(rows);
+  var manual = parseFloat(S.goal.manual);
+  var target = manual > 0 ? manual : (goal.ok ? goal.target : accM.cpr);
+  var targetSource = manual > 0 ? "manual" : (goal.ok ? "calculadora" : "promedio");
+  var fmt = { money: F.money };
+
+  function seriesOf(list) { return E.fillDays(E.dailySeries(list), since, until); }
+  var accSeries = seriesOf(rows);
+  var byAd = E.groupBy(rows, "adId"), byAdset = E.groupBy(rows, "adsetId"), byCamp = E.groupBy(rows, "campaignId");
+
+  /* ---- medianas de la cuenta para comparar creativos entre sí ---- */
+  var ads = [];
+  var adMeta = {}; R.ads.forEach(function (a) { adMeta[a.id] = a; });
+  var seen = {};
+  Object.keys(byAd).concat(R.ads.map(function (a) { return a.id; })).forEach(function (id) {
+    if (seen[id]) return; seen[id] = 1;
+    var meta = adMeta[id] || {}, rr = byAd[id] || [];
+    var m = E.aggregate(rr);
+    var t = totRaw[id];
+    if (t) { m.reach = E.num(t.reach); m.freq = E.num(t.frequency); m.q = { quality: t.quality_ranking, engagement: t.engagement_rate_ranking, conversion: t.conversion_rate_ranking }; }
+    else { m.freq = null; m.q = {}; }
+    var first = rr[0] || {};
+    var cr = meta.creative || {};
+    ads.push({ id: id, name: meta.name || first.adName || id, status: meta.status || "UNKNOWN", effStatus: meta.effective_status || meta.status || "UNKNOWN",
+      adsetId: meta.adset_id || first.adsetId, campaignId: meta.campaign_id || first.campaignId, m: m, series: seriesOf(rr), created: meta.created_time,
+      thumb: cr.image_url || cr.thumbnail_url || null, isVideo: !!cr.video_id || m.isVideo });
+  });
+  var pool = ads.filter(function (a) { return a.m.impr > 1000; });
+  var medians = {
+    ctr: E.median(pool.map(function (a) { return a.m.ctr; }).filter(function (x) { return x !== null; })),
+    cvr: E.median(pool.map(function (a) { return a.m.cvr; }).filter(function (x) { return x !== null && x > 0; })),
+    hook: E.median(pool.filter(function (a) { return a.m.hook !== null; }).map(function (a) { return a.m.hook; })),
+    hold: E.median(pool.filter(function (a) { return a.m.hold !== null; }).map(function (a) { return a.m.hold; })),
+    cpr: E.median(pool.map(function (a) { return a.m.cpr; }).filter(function (x) { return x !== null; }))
+  };
+  var vids = pool.filter(function (a) { return a.m.hook !== null; });
+  var refs = { hookMedian: vids.length >= 4 ? medians.hook : null, holdMedian: vids.length >= 4 ? medians.hold : null };
+
+  var adsByAdset = E.groupBy(ads, "adsetId");
+  ads.forEach(function (a) {
+    a.verdict = E.verdictCost(a.m, target);
+    a.fat = E.fatigue(a.series, a.m.freq);
+    a.diag = E.hookDiagnosis(a.m, refs);
+    a.score = E.creativeScore(a.m, { hookMedian: refs.hookMedian, holdMedian: refs.holdMedian, ctrMedian: medians.ctr, target: target }, a.fat);
+    var sibs = (adsByAdset[a.adsetId] || []);
+    a.siblings = sibs.filter(function (x) { return x.effStatus === "ACTIVE" || x.m.spend > 0; }).length;
+    var shares = E.spendShare(sibs.map(function (x) { return { id: x.id, m: x.m }; }));
+    a.share = shares.filter(function (s) { return s.id === a.id; })[0];
+  });
+
+  /* ---- conjuntos ---- */
+  var adsets = R.adsets.map(function (s) {
+    var rr = byAdset[s.id] || [], m = E.aggregate(rr), ser = seriesOf(rr);
+    var sAds = adsByAdset[s.id] || [];
+    var im = sum(sAds, function (a) { return a.m.impr; }), fw = im ? sum(sAds, function (a) { return (a.m.freq || 0) * a.m.impr; }) / im : null;
+    var budget = s.daily_budget ? E.num(s.daily_budget) / offset : 0;
+    var res7 = E.sum(ser.slice(-7), function (d) { return d.results; });
+    return { id: s.id, name: s.name, status: s.status, effStatus: s.effective_status, campaignId: s.campaign_id, m: m, series: ser, budget: budget, freq: fw,
+      opt: s.optimization_goal, learning: E.learning(s, res7), res7: res7, verdict: E.verdictCost(m, target), dim: E.diminishing(ser), pacing: E.pacing(ser, budget, null), raw: s };
+  });
+  function sum(a, f) { return E.sum(a, f); }
+  /* ---- campañas ---- */
+  var adsetsByCamp = E.groupBy(adsets, "campaignId");
+  var campaigns = R.camps.map(function (c) {
+    var rr = byCamp[c.id] || [], m = E.aggregate(rr), ser = seriesOf(rr);
+    var actSets = (adsetsByCamp[c.id] || []).filter(function (x) { return x.status === "ACTIVE"; });
+    var budget = c.daily_budget ? E.num(c.daily_budget) / offset : sum(actSets, function (x) { return x.budget; });
+    return { id: c.id, name: c.name, status: c.status, effStatus: c.effective_status, objective: c.objective, m: m, series: ser, budget: budget, cbo: !!c.daily_budget, verdict: E.verdictCost(m, target), profit: E.entityProfit(m, S.goal), dim: E.diminishing(ser) };
+  });
+
+  /* ---- cuenta ---- */
+  var activeSets = adsets.filter(function (s) { return s.status === "ACTIVE"; });
+  var dailyBudget = sum(activeSets, function (s) { return s.budget; }) || sum(campaigns.filter(function (c) { return c.status === "ACTIVE" && c.cbo; }), function (c) { return c.budget; });
+  var third = Math.max(2, Math.ceil(accSeries.filter(function (d) { return d.impr > 0; }).length / 3));
+  var act = accSeries.filter(function (d) { return d.impr > 0; });
+  var early = E.aggregate(act.slice(0, third)), late = E.aggregate(act.slice(-third));
+  var account = { m: accM, series: accSeries, spend: accM.spend, cpmRise: (act.length >= 6 && early.cpm) ? (late.cpm - early.cpm) / early.cpm : null, verdict: E.verdictCost(accM, target) };
+  var dim = E.diminishing(accSeries);
+  var pacing = E.pacing(accSeries, dailyBudget, R.info || null);
+  var activeAds = ads.filter(function (a) { return a.effStatus === "ACTIVE"; });
+
+  var A = {
+    fmt: fmt, since: since, until: until, rows: rows, target: target, targetSource: targetSource, goal: goal, medians: medians, refs: refs,
+    account: account, campaigns: campaigns, adsets: adsets, ads: ads, dow: E.byDow(accSeries), dim: dim, scale: E.scaleVerdict(dim), pacing: pacing,
+    diversity: E.diversity(activeAds), pixels: R.pixels, auds: R.auds, info: R.info, errors: R.errors, dailyBudget: dailyBudget
+  };
+  var kinds = ["purchases", "checkout", "leads", "messages"], best = null, bv = 0;
+  kinds.forEach(function (k) { var t = E.sum(R.totals, function (r) { return E.act(r.actions, E.RESULT_TYPES[k]); }); if (t > bv) { bv = t; best = k; } });
+  A.primaryMetric = S.metric !== "auto" ? S.metric : (best || "lpv");
+  A.coach = Coach.run(A);
+  return A;
+};
+
+/* ----------------------- desgloses (carga bajo demanda) ------------------ */
+AB.loadSegments = function () {
+  var acct = S.acct, rp = AB.rangeParams(), base = { level: "account", time_range: rp.time_range, fields: "spend,impressions,inline_link_clicks,actions", limit: 200 };
+  function one(bd) { return G.all(acct + "/insights", Object.assign({ breakdowns: bd }, base), 3).catch(function (e) { return { error: e.userMsg || e.message }; }); }
+  return Promise.all([one("publisher_platform,platform_position"), one("age,gender"), one("hourly_stats_aggregated_by_advertiser_time_zone")]).then(function (r) { return { place: r[0], age: r[1], hour: r[2] }; });
+};
+AB.mapSeg = function (rows) {
+  var objAll = null;
+  return (rows || []).map(function (r) {
+    var res = E.pickResult(r.actions, (S.A && S.A.primaryMetric) || S.metric, "");
+    var spend = E.num(r.spend), impr = E.num(r.impressions), clicks = E.num(r.inline_link_clicks);
+    return { r: r, spend: spend, impr: impr, clicks: clicks, results: res, cpr: res > 0 ? spend / res : null, ctr: impr ? clicks / impr : null };
+  });
+};
+})(window);
+
+;
+/* ==========================================================================
+   TABS A: Resumen, Coach, Campañas, Creativos (+ detalle)
+   ========================================================================== */
+(function (root) {
+"use strict";
+var AB = root.AB, S = AB.S, F = AB.F, Ch = AB.Ch, E = root.AdsEngine, T = AB.T;
+
+/* ------------------------------ componentes ------------------------------ */
+function editTip() { return S.canEdit ? "" : ' disabled data-tip="Activa el modo edición para ejecutar cambios desde aquí"'; }
+T.act = function (act, type, id, label, cls) {
+  return '<button class="btn btn-sm ' + (cls || "") + '" data-act="' + act + '" data-type="' + type + '" data-id="' + F.esc(id) + '"' + editTip() + '>' + F.esc(label) + '</button>';
+};
+T.kpi = function (o) {
+  return '<div class="card kpi"><div class="eyebrow">' + F.esc(o.label) + (o.gl ? F.help(o.gl) : "") + '</div><div class="val">' + o.val + '</div>' +
+    (o.chip || "") + (o.delta || "") + '<div class="note">' + (o.note || "") + '</div></div>';
+};
+T.delta = function (a, b, invert, label) {
+  if (!a || a <= 0 || b === null || b === undefined) return "";
+  var p = (b - a) / a, cls = Math.abs(p) < 0.02 ? "flat" : ((p > 0) !== !!invert ? "up" : "down");
+  return '<div class="delta ' + cls + '">' + (p >= 0 ? "▲ " : "▼ ") + Math.abs(p * 100).toFixed(0) + "% " + (label || "2ª mitad vs 1ª") + '</div>';
+};
+function halves(series, f) {
+  var s = series.filter(function (d) { return d.spend > 0; }); if (s.length < 4) return null;
+  var h = Math.floor(s.length / 2); return [E.aggregate(s.slice(0, h)), E.aggregate(s.slice(h))];
+}
+function verdictChip(v) { return v ? F.chip(v.level, v.label, v.why) : ""; }
+T.verdictChip = verdictChip;
+function tab(name) { return '<div class="tabpanel' + (S.tab === name ? " active" : "") + '" id="panel-' + name + '"></div>'; }
+
+/* ------------------------------- Resumen --------------------------------- */
+T.resumen = function (A) {
+  var m = A.account.m, ser = A.account.series, hv = halves(ser);
+  var spendD = hv ? T.delta(hv[0].spend, hv[1].spend, true) : "";
+  var cprD = hv && hv[0].cpr && hv[1].cpr ? T.delta(hv[0].cpr, hv[1].cpr, true) : "";
+  var cpmD = hv && hv[0].cpm && hv[1].cpm ? T.delta(hv[0].cpm, hv[1].cpm, true) : "";
+  var ctrD = hv && hv[0].ctr && hv[1].ctr ? T.delta(hv[0].ctr, hv[1].ctr, false) : "";
+  var act = A.ads.filter(function (a) { return a.effStatus === "ACTIVE"; });
+  var im = E.sum(act, function (a) { return a.m.impr; }), fw = im ? E.sum(act, function (a) { return (a.m.freq || 0) * a.m.impr; }) / im : null;
+  var ci = A.account.verdict && A.account.verdict.ci;
+  var days = m.days || 0;
+  var html = '<div class="grid g6">' +
+    T.kpi({ label: "Gasto", gl: "gasto", val: F.money(m.spend), delta: spendD, note: days + " días con gasto · " + F.money(days ? m.spend / days : 0) + " por día" }) +
+    T.kpi({ label: "Resultados", gl: "resultado", val: F.num(m.results), note: S.metric === "auto" ? "resultado principal de cada campaña" : E.METRIC_LABELS[S.metric] }) +
+    T.kpi({ label: "Costo por resultado", gl: "cpr", val: F.money(m.cpr), chip: verdictChip(A.account.verdict), delta: cprD,
+      note: ci ? "Rango 90%: " + F.money(ci.lo) + " a " + (isFinite(ci.hi) ? F.money(ci.hi) : "más") + " · objetivo " + F.money(A.target) + " (" + A.targetSource + ")" : "" }) +
+    T.kpi({ label: "CTR de enlace", gl: "ctr", val: F.pct(m.ctr, 2), delta: ctrD, note: A.medians.ctr ? "mediana de tus anuncios: " + F.pct(A.medians.ctr, 2) : "" }) +
+    T.kpi({ label: "CPM", gl: "cpm", val: F.money(m.cpm), delta: cpmD, note: "por cada mil impresiones" }) +
+    T.kpi({ label: "Frecuencia", gl: "frecuencia", val: fw ? F.num(fw, 2) : "—", chip: fw ? (fw >= 3.5 ? F.chip("r", "Alta") : (fw >= 2.5 ? F.chip("y", "Subiendo") : F.chip("g", "Sana"))) : "", note: "veces que una persona ve tus anuncios" }) +
+    '</div>';
+
+  if (S.prefs.showHero) {
+    var spendPts = ser.map(function (d) { return { label: F.date(d.date) + ": gasto", short: F.date(d.date), y: d.spend }; });
+    var rolling = ser.map(function (d, i) {
+      var w = ser.slice(Math.max(0, i - 6), i + 1), sp = E.sum(w, function (x) { return x.spend; }), rs = E.sum(w, function (x) { return x.results; });
+      return { label: F.date(d.date) + ": CPR 7 días", short: F.date(d.date), y: (rs > 0 && i >= 2) ? sp / rs : null };
+    });
+    html += '<div class="grid g2" style="margin-top:14px"><div class="card pad"><div class="eyebrow">Gasto diario ' + F.help("gasto") + '</div>' +
+      Ch.line({ series: [{ name: "Gasto", color: Ch.C.gold, points: spendPts }], area: true, yFmt: function (v) { return F.money(v, 0); }, title: "Gasto diario" }) + '</div>' +
+      '<div class="card pad"><div class="eyebrow">Costo por resultado (media móvil 7 días) ' + F.help("cpr") + '</div>' +
+      Ch.line({ series: [{ name: "CPR", color: Ch.C.ink, points: rolling }], yFmt: function (v) { return F.money(v); }, ref: A.target ? { y: A.target, label: "objetivo " + F.money(A.target) } : null, title: "Costo por resultado" }) + '</div></div>';
+  }
+
+  var top = A.coach.filter(function (c) { return c.sev === "r" || c.sev === "y" || c.sev === "g"; }).slice(0, 4);
+  html += '<div class="sec-head"><h2>Lo que conviene hacer hoy</h2><div class="hint"><a href="#" data-goto="coach">Ver las ' + A.coach.length + ' recomendaciones</a></div></div>';
+  html += top.length ? '<div class="coach">' + top.map(T.coachCard).join("") + '</div>' : '<div class="state"><b>Todo en orden por ahora</b>El coach no encontró alertas con los datos de este rango.</div>';
+
+  if (S.prefs.showAds) {
+    var live = act.filter(function (a) { return a.m.spend > 0; }).sort(function (a, b) { return b.m.spend - a.m.spend; });
+    html += '<div class="sec-head"><h2>Anuncios corriendo</h2><div class="hint">' + live.length + ' con gasto en el rango · toca uno para ver su diagnóstico</div></div>';
+    html += live.length ? '<div class="ads">' + live.slice(0, 8).map(T.adCard).join("") + '</div>' : '<div class="state"><b>No hay anuncios activos con gasto</b>Cuando publiques y Meta apruebe un anuncio, aparece aquí con su diagnóstico.</div>';
+  }
+  return html;
+};
+
+/* -------------------------------- Coach ---------------------------------- */
+T.coachCard = function (c) {
+  var acts = "";
+  if (c.action) {
+    if (c.action.type === "goto") acts += '<button class="btn btn-sm btn-gold" data-goto="' + c.action.tab + '">' + F.esc(c.action.label) + '</button>';
+    else if (c.entity) acts += T.act(c.action.type, c.entity.type, c.entity.id, c.action.label, "btn-gold");
+  }
+  if (c.entity && c.entity.type === "ad") acts += '<button class="btn btn-sm" data-open="ad:' + F.esc(c.entity.id) + '">Ver diagnóstico</button>';
+  else if (c.tab) acts += '<button class="btn btn-sm" data-goto="' + c.tab + '">Ir a ' + F.esc(c.tab) + '</button>';
+  var tagText = { r: "Urgente", y: "Atención", g: "Oportunidad", i: "Dato útil" }[c.sev];
+  return '<div class="cc ' + c.sev + '"><div style="display:flex;gap:10px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap"><h4>' + F.esc(c.title) + '</h4>' + F.chip(c.sev, tagText) + '</div>' +
+    '<div class="why"><span class="lbl">Por qué</span>' + F.esc(c.why) + '</div>' + (c.evidence ? '<div class="ev">' + F.esc(c.evidence) + '</div>' : '') +
+    '<div class="fix"><span class="lbl">Qué hacer</span>' + F.esc(c.fix) + '</div>' + (acts ? '<div class="acts">' + acts + '</div>' : '') + '</div>';
+};
+T.coach = function (A) {
+  var f = S.coachFilter || "all";
+  var list = A.coach.filter(function (c) { return f === "all" || (f === "urgent" && (c.sev === "r" || c.sev === "y")) || (f === "opp" && (c.sev === "g" || c.sev === "i")); });
+  var waste = E.sum(A.coach.filter(function (c) { return c.sev === "r" && c.impact > 0 && (c.id.indexOf("cut-") === 0 || c.id.indexOf("exp-") === 0); }), function (c) { return c.impact; });
+  return '<div class="filters"><div class="seg" id="coachSeg"><button data-cf="all" class="' + (f === "all" ? "on" : "") + '">Todo (' + A.coach.length + ')</button><button data-cf="urgent" class="' + (f === "urgent" ? "on" : "") + '">Urgente y atención</button><button data-cf="opp" class="' + (f === "opp" ? "on" : "") + '">Oportunidades y datos</button></div>' +
+    '<button class="btn" id="copyReport">Copiar resumen para WhatsApp</button> <button class="btn" id="mailReport">Enviar por correo</button></div>' +
+    (waste > 0 ? '<div class="alert on bad"><div><b>Gasto por encima de tu objetivo: ' + F.money(waste) + '</b><div class="sub">Suma estimada de lo que pagaron de más los anuncios marcados en rojo dentro de este rango.</div></div></div>' : '') +
+    (list.length ? '<div class="coach">' + list.map(T.coachCard).join("") + '</div>' : '<div class="state"><b>Sin recomendaciones en esta vista</b>Cambia el filtro o amplía el rango de fechas.</div>');
+};
+T.weeklyReport = function (A) {
+  var m = A.account.m, L = [];
+  L.push("*Resumen Adsboard* (" + F.date(A.since) + " al " + F.date(A.until) + ")");
+  L.push("Gasto: " + F.money(m.spend) + " | Resultados: " + F.num(m.results) + " | Costo por resultado: " + F.money(m.cpr) + " (objetivo " + F.money(A.target) + ")");
+  L.push("CTR " + F.pct(m.ctr, 2) + " | CPM " + F.money(m.cpm));
+  var best = A.ads.filter(function (a) { return a.score.score !== null && a.m.spend > 0; }).sort(function (a, b) { return b.score.score - a.score.score; })[0];
+  if (best) L.push("Mejor creativo: " + best.name + " (puntaje " + best.score.score + ")");
+  var urgent = A.coach.filter(function (c) { return c.sev === "r"; }).slice(0, 3);
+  if (urgent.length) { L.push("Urgente:"); urgent.forEach(function (c) { L.push("- " + c.title); }); }
+  return L.join("\n");
+};
+
+/* ------------------------------- Campañas -------------------------------- */
+T.rowActs = function (item, type) {
+  var isOn = item.status === "ACTIVE";
+  return '<div class="rowacts">' +
+    '<button class="iconbtn" data-act="' + (isOn ? "pause" : "activate") + '" data-type="' + type + '" data-id="' + F.esc(item.id) + '" aria-label="' + (isOn ? "Pausar" : "Activar") + '" ' + (S.canEdit ? 'data-tip="' + (isOn ? "Pausar" : "Activar") + '"' : 'disabled data-tip="Activa el modo edición"') + '>' + (isOn ? "❚❚" : "▶") + '</button>' +
+    (type !== "ad" && (type === "adset" || item.cbo) ? '<button class="iconbtn" data-act="budget" data-type="' + type + '" data-id="' + F.esc(item.id) + '" ' + (S.canEdit ? 'data-tip="Cambiar presupuesto diario"' : 'disabled data-tip="Activa el modo edición"') + '>$</button>' : '') +
+    '<button class="iconbtn" data-act="duplicate" data-type="' + type + '" data-id="' + F.esc(item.id) + '" ' + (S.canEdit ? 'data-tip="Duplicar en pausa"' : 'disabled data-tip="Activa el modo edición"') + '>⧉</button>' +
+    '<button class="iconbtn" data-act="rename" data-type="' + type + '" data-id="' + F.esc(item.id) + '" ' + (S.canEdit ? 'data-tip="Renombrar"' : 'disabled data-tip="Activa el modo edición"') + '>✎</button></div>';
+};
+T.row = function (it, type) {
+  var v = it.verdict, m = it.m, lv = v ? v.level : "n";
+  var ci = v && v.ci ? "rango " + F.money(v.ci.lo) + " a " + (isFinite(v.ci.hi) ? F.money(v.ci.hi) : "más") : "";
+  var edited = S.edits && S.edits[it.id] ? '<span class="chip i" data-tip="Cada edición significativa reinicia el aprendizaje. Espera antes de juzgar.">Editado ' + F.ago(S.edits[it.id]) + '</span>' : "";
+  var sub = F.statusEs(it.effStatus || it.status) + (it.objective ? " · " + F.objEs(it.objective) : "") + (it.budget ? " · " + F.money(it.budget) + "/día" : "");
+  return '<div class="rrow"><div class="rname"><div class="dotbar ' + lv + '"></div><div class="t"><b data-tip="' + F.esc(it.name) + '">' + F.esc(it.name) + '</b><span>' + F.esc(sub) + '</span></div></div>' +
+    '<div class="kv"><div class="k">Gasto</div><div class="v">' + F.money(m.spend) + '</div></div>' +
+    '<div class="kv"><div class="k">Resultados</div><div class="v">' + F.num(m.results) + '</div></div>' +
+    '<div class="kv"><div class="k">Costo x result.</div><div class="v">' + F.money(m.cpr) + '</div><div class="s">' + ci + '</div></div>' +
+    '<div class="kv"><div class="k">CTR</div><div class="v">' + F.pct(m.ctr, 2) + '</div></div>' +
+    '<div class="kv"><div class="k">Veredicto</div><div class="v">' + (it.status === "ACTIVE" || type === "ad" ? verdictChip(v) : F.chip("n", F.statusEs(it.status))) + edited + '</div></div>' +
+    T.rowActs(it, type) + '</div>';
+};
+T.campanas = function (A) {
+  var lvl = S.level, list = lvl === "campaign" ? A.campaigns : (lvl === "adset" ? A.adsets : A.ads);
+  var q = (S.q || "").toLowerCase();
+  list = list.filter(function (x) { return (!q || x.name.toLowerCase().indexOf(q) >= 0) && (S.statusFilter === "all" || (S.statusFilter === "active" ? x.status === "ACTIVE" : x.status !== "ACTIVE")); });
+  list = list.slice().sort(function (a, b) { return b.m.spend - a.m.spend; });
+  var html = '<div class="filters"><div class="seg" id="levelSeg"><button data-level="campaign" class="' + (lvl === "campaign" ? "on" : "") + '">Campañas</button><button data-level="adset" class="' + (lvl === "adset" ? "on" : "") + '">Conjuntos</button><button data-level="ad" class="' + (lvl === "ad" ? "on" : "") + '">Anuncios</button></div>' +
+    '<div class="fgroup"><label>Buscar</label><input id="qInput" value="' + F.esc(S.q || "") + '" placeholder="nombre..." style="width:150px"></div>' +
+    '<div class="fgroup"><label>Estado</label><select id="statusSel"><option value="all"' + (S.statusFilter === "all" ? " selected" : "") + '>Todos</option><option value="active"' + (S.statusFilter === "active" ? " selected" : "") + '>Activos</option><option value="off"' + (S.statusFilter === "off" ? " selected" : "") + '>Pausados</option></select></div>' +
+    '<button class="btn" id="csvBtn">Exportar CSV</button></div>' +
+    '<div class="legend"><span><i style="background:var(--good)"></i>Barato con confianza</span><span><i style="background:var(--warn)"></i>Zona gris o vigilar</span><span><i style="background:var(--bad)"></i>Caro con confianza</span><span><i style="background:var(--line)"></i>Muy pronto para juzgar</span>' +
+    '<span>Objetivo: ' + F.money(A.target) + ' (' + A.targetSource + ') ' + F.help("semaforo") + '</span></div>';
+  html += list.length ? '<div class="rows">' + list.map(function (x) { return T.row(x, lvl); }).join("") + '</div>' : '<div class="state"><b>Sin resultados</b>Prueba otro nivel, otro estado o amplía el rango de fechas.</div>';
+  return html;
+};
+
+/* ------------------------------- Creativos ------------------------------- */
+T.adCard = function (a) {
+  var sc = a.score, lv = sc.score === null ? "n" : (sc.score >= 65 ? "g" : (sc.score >= 40 ? "y" : "r"));
+  var media = a.thumb ? '<img src="' + F.esc(a.thumb) + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' : '<div class="ph" style="background:' + F.grad(a.name) + '">' + F.esc(F.initials(a.name)) + '</div>';
+  var m = a.m;
+  return '<div class="ad" data-open="ad:' + F.esc(a.id) + '" tabindex="0"><div class="thumb">' + media + '<div class="veil"></div>' +
+    '<div class="tl">' + (a.isVideo ? '<span class="chip n">▶ Video</span>' : '<span class="chip n">Imagen</span>') + (a.effStatus !== "ACTIVE" ? F.chip("n", F.statusEs(a.effStatus)) : "") + '</div>' +
+    '<div class="tr"><div class="scorebadge ' + lv + '" data-tip="Puntaje creativo 0 a 100: combina hook, retención, CTR, costo y frescura. ' + (sc.grade || "") + '">' + (sc.score === null ? "—" : sc.score) + '</div></div>' +
+    '<div class="name">' + F.esc(a.name) + '</div></div>' +
+    '<div class="ad-body"><div class="mini2"><div><div class="k">Gasto</div><div class="v">' + F.money(m.spend) + '</div></div><div><div class="k">Costo x result.</div><div class="v">' + F.money(m.cpr) + '</div></div>' +
+    (a.isVideo ? '<div><div class="k">Hook ' + F.help("hook") + '</div><div class="v">' + F.pct(m.hook, 0) + '</div></div><div><div class="k">Retención ' + F.help("hold") + '</div><div class="v">' + F.pct(m.hold, 0) + '</div></div>' :
+      '<div><div class="k">CTR</div><div class="v">' + F.pct(m.ctr, 2) + '</div></div><div><div class="k">Resultados</div><div class="v">' + F.num(m.results) + '</div></div>') + '</div>' +
+    '<div style="display:flex;gap:6px;flex-wrap:wrap">' + verdictChip(a.verdict) + (a.fat.score !== null ? F.chip(a.fat.level, a.fat.label, "Saturación " + a.fat.score + " de 100") : "") + '</div>' +
+    '<div class="ad-foot"><span>' + F.esc((S.A.campaigns.filter(function (c) { return c.id === a.campaignId; })[0] || {}).name || "") + '</span><span>' + F.compact(m.impr) + ' impr.</span></div></div></div>';
+};
+T.creativos = function (A) {
+  var only = S.creativeOnlyActive !== false;
+  var list = A.ads.filter(function (a) { return a.m.spend > 0 && (!only || a.effStatus === "ACTIVE"); }).sort(function (a, b) { return (b.score.score === null ? -1 : b.score.score) - (a.score.score === null ? -1 : a.score.score); });
+  var podium = list.filter(function (a) { return a.score.score !== null; });
+  var html = '<div class="filters"><div class="seg" id="credSeg"><button data-co="1" class="' + (only ? "on" : "") + '">Solo activos</button><button data-co="0" class="' + (!only ? "on" : "") + '">Todos con gasto</button></div>' +
+    '<div class="sub">Ordenados por puntaje creativo ' + F.help("puntaje") + '</div></div>';
+  if (podium.length >= 2) {
+    var best = podium[0], worst = podium[podium.length - 1];
+    html += '<div class="grid g2" style="margin-bottom:14px"><div class="card pad" data-open="ad:' + F.esc(best.id) + '" style="cursor:pointer"><div class="eyebrow">Mejor creativo</div><div class="big" style="margin:4px 0">' + best.score.score + ' <span class="sub">' + F.esc(best.score.grade) + '</span></div><div class="sub">' + F.esc(best.name) + '</div></div>' +
+      '<div class="card pad" data-open="ad:' + F.esc(worst.id) + '" style="cursor:pointer"><div class="eyebrow">Candidato a reemplazo</div><div class="big" style="margin:4px 0">' + worst.score.score + ' <span class="sub">' + F.esc(worst.score.grade) + '</span></div><div class="sub">' + F.esc(worst.name) + '</div></div></div>';
+  }
+  html += list.length ? '<div class="ads">' + list.map(T.adCard).join("") + '</div>' : '<div class="state"><b>Sin creativos con gasto en este rango</b>Amplía el rango de fechas o cambia el filtro.</div>';
+  return html;
+};
+
+/* -------------------- detalle de creativo (drawer) ---------------------- */
+T.adDetail = function (id) {
+  var A = S.A, a = A.ads.filter(function (x) { return x.id === id; })[0]; if (!a) return "";
+  var m = a.m, sc = a.score;
+  var camp = A.campaigns.filter(function (c) { return c.id === a.campaignId; })[0] || {}, aset = A.adsets.filter(function (c) { return c.id === a.adsetId; })[0] || {};
+  var html = '<h2 style="font-size:20px;margin:6px 60px 4px 0">' + F.esc(a.name) + '</h2><div class="sub">' + F.esc(camp.name || "") + ' › ' + F.esc(aset.name || "") + ' · ' + F.statusEs(a.effStatus) + '</div>';
+  html += '<div class="grid g3" style="margin:14px 0"><div class="card pad" style="text-align:center"><div class="eyebrow" style="justify-content:center">Puntaje creativo ' + F.help("puntaje") + '</div>' + Ch.gauge(sc.score, sc.score === null ? "n" : (sc.score >= 65 ? "g" : (sc.score >= 40 ? "y" : "r")), "Puntaje") + '<div class="sub">' + F.esc(sc.grade || "Sin datos") + '</div></div>' +
+    '<div class="card pad" style="text-align:center"><div class="eyebrow" style="justify-content:center">Saturación ' + F.help("saturacion") + '</div>' + Ch.gauge(a.fat.score, a.fat.level, "Saturación") + '<div class="sub">' + F.esc(a.fat.label) + (a.fat.daysLeft !== null ? " · ~" + a.fat.daysLeft + " d a frecuencia 3,5" : "") + '</div></div>' +
+    '<div class="card pad"><div class="eyebrow">Costo por resultado</div><div class="big" style="margin:6px 0">' + F.money(m.cpr) + '</div>' + verdictChip(a.verdict) + '</div></div>';
+  html += '<div class="card pad" style="margin-bottom:14px"><div class="sub">' + F.esc(a.verdict.why) + '</div>' + (a.verdict.needResults ? '<div class="sub" style="margin-top:6px">Con unos ' + a.verdict.needResults + ' resultados más el rango se estrecha a ±30%.</div>' : '') + '</div>';
+  if (sc.parts && sc.parts.length) html += '<div class="card pad" style="margin-bottom:14px"><div class="eyebrow">De qué se compone el puntaje</div>' + Ch.bars(sc.parts.map(function (p) { return { label: p.name, value: p.v, text: p.v + "/100", level: p.v >= 65 ? "g" : (p.v >= 40 ? "y" : "r") }; })) + '</div>';
+  if (m.isVideo) {
+    html += '<div class="card pad" style="margin-bottom:14px"><div class="eyebrow">Curva de retención ' + F.help("hook") + '</div>' + Ch.retention(m) +
+      '<div class="grid g3" style="margin-top:8px"><div class="kv"><div class="k">Hook (3 s ÷ impresiones)</div><div class="v">' + F.pct(m.hook, 1) + '</div></div><div class="kv"><div class="k">Retención (ThruPlay ÷ 3 s)</div><div class="v">' + F.pct(m.hold, 1) + '</div></div><div class="kv"><div class="k">Tiempo medio</div><div class="v">' + (m.avgWatch ? m.avgWatch.toFixed(1) + " s" : "—") + '</div></div></div>' +
+      (a.diag ? '<div class="fix" style="margin-top:10px;background:var(--cream);border:1px solid var(--line);border-radius:10px;padding:10px 12px"><b>' + F.esc(a.diag.title) + '</b><div class="sub" style="color:#3d3b37;margin-top:3px">' + F.esc(a.diag.text) + '</div></div>' : '') + '</div>';
+  }
+  var s = a.series;
+  var ctrPts = s.map(function (d) { return { label: F.date(d.date) + ": CTR", short: F.date(d.date), y: d.impr > 100 ? d.ctr : null }; });
+  html += '<div class="card pad" style="margin-bottom:14px"><div class="eyebrow">CTR diario ' + F.help("ctr") + '</div>' + Ch.line({ series: [{ name: "CTR", color: Ch.C.goldDeep, points: ctrPts }], area: true, yFmt: function (v) { return F.pct(v, 1); }, h: 150 }) +
+    '<div class="sub" style="margin-top:6px">Frecuencia acumulada: <b>' + (m.freq ? F.num(m.freq, 2) : "—") + '</b>' + (a.fat.ctrDrop !== null ? " · CTR " + (a.fat.ctrDrop >= 0 ? "cayó " : "subió ") + F.pct(Math.abs(a.fat.ctrDrop), 0) + " entre inicio y final" : "") + (a.fat.cpmRise !== null ? " · CPM " + (a.fat.cpmRise >= 0 ? "subió " : "bajó ") + F.pct(Math.abs(a.fat.cpmRise), 0) : "") + '</div></div>';
+  var q = m.q || {}, qs = [["Calidad", q.quality], ["Interacción", q.engagement], ["Conversión", q.conversion]].filter(function (x) { return x[1]; });
+  if (qs.length) html += '<div class="card pad" style="margin-bottom:14px"><div class="eyebrow">Diagnóstico de Meta ' + F.help("ranking") + '</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">' + qs.map(function (x) { var r = F.rankEs(x[1]); return F.chip(r.l, x[0] + ": " + r.t); }).join("") + '</div></div>';
+  html += '<div class="card pad" style="margin-bottom:14px"><div class="eyebrow">Números del rango</div><div class="grid g4" style="margin-top:8px">' +
+    [["Gasto", F.money(m.spend)], ["Resultados", F.num(m.results)], ["Impresiones", F.compact(m.impr)], ["Alcance", F.compact(m.reach)], ["CTR", F.pct(m.ctr, 2)], ["CPM", F.money(m.cpm)], ["CPC", F.money(m.cpc)], ["Clic→resultado", F.pct(m.cvr, 1)]].map(function (x) { return '<div class="kv"><div class="k">' + x[0] + '</div><div class="v">' + x[1] + '</div></div>'; }).join("") + '</div></div>';
+  html += '<div style="display:flex;gap:8px;flex-wrap:wrap">' + T.act(a.status === "ACTIVE" ? "pause" : "activate", "ad", a.id, a.status === "ACTIVE" ? "Pausar anuncio" : "Activar anuncio", a.status === "ACTIVE" ? "" : "btn-gold") + T.act("duplicate", "ad", a.id, "Duplicar en pausa") + T.act("rename", "ad", a.id, "Renombrar") +
+    '<button class="btn" data-ab="' + F.esc(a.id) + '">Comparar en laboratorio A/B</button></div>';
+  return html;
+};
+})(window);
+
+;
+/* GLOSARIO: qué es cada número, de dónde sale y cómo leerlo */
+(function (root) {
+"use strict";
+var AB = root.AB, F = AB.F, UI = AB.UI;
+var GL = AB.GL = {
+  gasto: { t: "Gasto", def: "Dinero que Meta cobró por tus anuncios dentro del rango elegido.", f: "Suma de gasto diario de todos los anuncios", read: "Compáralo con tu presupuesto diario. Si gastas mucho menos, algo limita la entrega." },
+  resultado: { t: "Resultado", def: "La acción que buscas: mensaje, lead, compra o inicio de pago. En modo automático el Adsboard elige la acción según el objetivo de cada campaña.", f: "Conteo de la acción elegida en el rango", read: "Puedes forzar una acción en el filtro Contar como resultado." },
+  cpr: { t: "Costo por resultado (CPR)", def: "Cuánto pagas por cada acción buscada.", f: "Gasto ÷ resultados", read: "Un número solo engaña con pocos resultados. Por eso el Adsboard muestra un rango con 90% de confianza junto al valor." },
+  ctr: { t: "CTR de enlace", def: "De cada 100 veces que se muestra el anuncio, cuántas terminan en clic al enlace.", f: "Clics al enlace ÷ impresiones", read: "Mide qué tan atractivo es el anuncio. En LATAM un 1% a 2% suele ser saludable. Compáralo con tu propia mediana." },
+  cpm: { t: "CPM", def: "Lo que pagas por mil impresiones. Refleja la competencia en la subasta y la calidad de tu anuncio.", f: "Gasto ÷ impresiones × 1000", read: "Si sube con el tiempo, la audiencia se satura o hay temporada alta." },
+  cpc: { t: "CPC", def: "Costo de cada clic al enlace.", f: "Gasto ÷ clics al enlace", read: "Sirve para comparar anuncios. Un CPC bajo con pocos resultados apunta a problema en la landing." },
+  frecuencia: { t: "Frecuencia", def: "Promedio de veces que una misma persona vio tus anuncios.", f: "Impresiones ÷ alcance", read: "Sobre 3,5 en audiencias frías suele acompañar caídas de CTR. En retargeting tolera más." },
+  hook: { t: "Hook (frenar el scroll)", def: "Porcentaje de impresiones en las que la persona vio al menos 3 segundos del video. Mide si el inicio frena el dedo.", f: "Reproducciones de 3 s ÷ impresiones", read: "Bajo 15% el inicio falla. Entre 25% y 30% es buen nivel. Sobre 32% es excelente. Compáralo con tus videos." },
+  hold: { t: "Retención", def: "De quienes pasaron los 3 segundos, cuántos llegaron a ThruPlay (15 segundos o el video completo si dura menos).", f: "ThruPlays ÷ reproducciones de 3 s", read: "Hook alto y retención baja indica que el cuerpo no cumple la promesa del inicio. Hook bajo y retención alta indica que solo hay que rehacer el arranque." },
+  saturacion: { t: "Saturación del creativo", def: "Puntaje de 0 a 100 que resume cuánto se agotó un anuncio. Mezcla la frecuencia (40%), la caída del CTR entre el inicio y el final del rango (40%) y la subida del CPR (20%).", f: "0,4 × frecuencia + 0,4 × caída de CTR + 0,2 × alza de CPR", read: "Menos de 25 fresco, 25 a 49 calentando, 50 a 74 saturándose, 75 o más quemado. Los días estimados asumen que la frecuencia sigue subiendo al ritmo actual." },
+  semaforo: { t: "Semáforo con intervalo de confianza", def: "Compara el CPR con tu objetivo usando un rango estadístico (Poisson, 90%). Verde exige que aun el peor escenario del rango quede bajo tu objetivo. Rojo exige que aun el mejor escenario quede sobre él.", f: "Rango del CPR = gasto ÷ [límite superior, límite inferior] del conteo de resultados", read: "Con pocos resultados el rango es ancho y el semáforo dice Zona gris. Es la forma honesta de no cortar un anuncio bueno por mala suerte de 3 días." },
+  puntaje: { t: "Puntaje creativo", def: "Nota de 0 a 100 que combina hook, retención, CTR, costo por resultado y frescura. Cada pieza se compara con la mediana de tus propios anuncios.", f: "Promedio ponderado: costo 35%, frescura 20%, hook 20%, CTR 15%, retención 10% (videos)", read: "Sirve para ordenar y encontrar candidatos a reemplazo. El veredicto de costo manda sobre el puntaje." },
+  ranking: { t: "Diagnóstico de Meta", def: "Meta compara tu anuncio con otros que compiten por la misma audiencia: calidad percibida, tasa de interacción y tasa de conversión esperada.", f: "Ranking relativo calculado por Meta", read: "Bajo el promedio en dos de tres suele explicar un CPM alto." },
+  elasticidad: { t: "Elasticidad y rendimientos decrecientes", def: "Cuánto suben los resultados cuando subes el gasto. Se ajusta la curva resultados = a × gasto^b con tus datos diarios.", f: "b = pendiente de ln(resultados) contra ln(gasto)", read: "b=1: cada dólar rinde igual. b=0,7: duplicar el gasto solo multiplica los resultados por 1,62. Con b bajo, primero suma creativos y audiencias." },
+  costomarginal: { t: "Costo marginal", def: "Lo que cuesta el siguiente resultado, distinto del promedio histórico.", f: "CPR promedio ÷ b", read: "Si el costo marginal supera tu costo máximo por resultado, el escalado pierde dinero aunque el promedio se vea bien." },
+  breakeven: { t: "Costo máximo por resultado (punto de equilibrio)", def: "Lo máximo que puedes pagar por resultado sin perder dinero.", f: "Ticket × margen × tasa de cierre", read: "El objetivo recomendado es un tercio de ese valor, para que quede espacio de ganancia." },
+  ab: { t: "Prueba A/B", def: "Compara dos proporciones (por ejemplo CTR) con un test z de dos colas. Dice si la diferencia observada es probablemente real.", f: "z = (p2 − p1) ÷ √(p(1−p)(1/n1 + 1/n2))", read: "95% de confianza o más marca un ganador. Menos de eso significa que falta muestra. Mirar cada día y parar cuando sale bien infla los falsos positivos." },
+  aprendizaje: { t: "Fase de aprendizaje", def: "Periodo en que Meta explora quién responde. Necesita unos 50 eventos de optimización por semana en cada conjunto.", f: "Eventos en 7 días ÷ 50", read: "Cada edición significativa la reinicia. Espera 7 a 14 días antes de juzgar." },
+  ritmo: { t: "Ritmo de gasto", def: "Compara lo que gastas de verdad con el presupuesto diario configurado y proyecta el resto del mes.", f: "Gasto medio de 7 días ÷ presupuesto diario", read: "Bajo 60% Meta no logra colocar el presupuesto: audiencia chica, puja limitada o anuncios en revisión." },
+  cvr: { t: "Clic a resultado", def: "De cada 100 clics, cuántos terminan en la acción buscada.", f: "Resultados ÷ clics al enlace", read: "CTR alto con esto bajo apunta a la landing, la oferta o la velocidad de respuesta." }
+};
+AB.openGlossary = function (key) {
+  var keys = Object.keys(GL);
+  var html = '<h3>Glosario: el porqué de cada número</h3><div class="field"><input id="glq" placeholder="Buscar un término..."></div><div id="glList">' + keys.map(function (k) { return glItem(k); }).join("") + '</div><div class="mb"><button class="btn" data-close="1">Cerrar</button></div>';
+  UI.modal(html, function (m) {
+    m.querySelector("#glq").addEventListener("input", function (e) { var q = e.target.value.toLowerCase(); Array.prototype.forEach.call(m.querySelectorAll(".gl"), function (g) { g.style.display = g.textContent.toLowerCase().indexOf(q) >= 0 ? "" : "none"; }); });
+    if (key) { var el = m.querySelector('[data-k="' + key + '"]'); if (el) { el.scrollIntoView(); el.style.background = "rgba(245,183,41,.16)"; } }
+  });
+  function glItem(k) { var g = GL[k]; return '<div class="gl" data-k="' + k + '" style="padding:12px 8px;border-radius:10px"><h4>' + F.esc(g.t) + '</h4><div>' + F.esc(g.def) + '</div><code class="f">' + F.esc(g.f) + '</code><div class="sub">' + F.esc(g.read) + '</div></div>'; }
+};
+})(window);
+
+;
+/* ==========================================================================
+   TABS B: Escalado, Rentabilidad, Segmentos, Laboratorio A/B, Cuentas, Ajustes
+   ========================================================================== */
+(function (root) {
+"use strict";
+var AB = root.AB, S = AB.S, F = AB.F, Ch = AB.Ch, E = root.AdsEngine, T = AB.T;
+function offTip() { return S.canEdit ? "" : ' disabled data-tip="Activa el modo edición para ejecutar cambios desde aquí"'; }
+
+/* -------------------------------- Escalado -------------------------------- */
+T.escalado = function (A) {
+  var scope = S.scaleScope || "account", sset = A.adsets.filter(function (x) { return x.id === scope; })[0];
+  var d = sset ? sset.dim : A.dim, name = sset ? sset.name : "Toda la cuenta";
+  var opts = '<option value="account"' + (scope === "account" ? " selected" : "") + '>Toda la cuenta</option>' + A.adsets.filter(function (s) { return s.m.spend > 0; }).map(function (s) { return '<option value="' + F.esc(s.id) + '"' + (scope === s.id ? " selected" : "") + '>' + F.esc(s.name) + '</option>'; }).join("");
+  var html = '<div class="filters"><div class="fgroup"><label>Analizar</label><select id="scaleScope">' + opts + '</select></div></div>';
+  if (!d || d.b === null) return html + '<div class="state"><b>Aún no hay datos para ajustar la curva</b>Necesita al menos unos días con gasto y resultados.</div>';
+  var modeText = { fit: "Ajuste estadístico con " + d.n + " días (R² " + F.num(d.r2 || 0, 2) + ", confianza " + d.confidence + ").", trend: "Estimación por tendencia: tu gasto casi no varió día a día, así que comparo la primera mitad del rango con la segunda.", prior: "Sin datos suficientes. Uso un supuesto de b=0,8, típico de cuentas pequeñas. Toma las cifras como orden de magnitud." }[d.mode];
+  var sv = E.scaleVerdict(d), sc20 = E.scenario(d, 0.2);
+  var pts, curve = null, cur = null;
+  if (d.mode === "fit") {
+    pts = d.points.map(function (p) { return { x: p.spend, y: p.results, label: F.date(p.date) }; });
+    curve = { fn: function (x) { return d.a * Math.pow(x, d.b); }, maxX: Math.max.apply(null, pts.map(function (p) { return p.x; })) * 1.6 };
+    cur = { x: d.spend0, y: d.res0 };
+  } else {
+    pts = d.cum.filter(function (c) { return c.s > 0; }).map(function (c) { return { x: c.s, y: c.r, label: F.date(c.date) }; });
+    var S1 = pts.length ? pts[pts.length - 1].x : 1, R1 = pts.length ? pts[pts.length - 1].y : 1;
+    curve = { fn: function (x) { return R1 * Math.pow(x / S1, d.b); }, maxX: S1 * 1.5 };
+  }
+  html += '<div class="grid g21"><div class="card pad"><div class="eyebrow">' + (d.mode === "fit" ? "Resultados por día contra gasto por día" : "Resultados acumulados contra gasto acumulado") + ' ' + F.help("elasticidad") + '</div>' +
+    Ch.scatter({ points: pts, curve: curve, current: cur, title: "Curva de rendimientos" }) +
+    '<div class="sub" style="margin-top:6px">' + F.esc(modeText) + ' Línea punteada: curva ajustada.' + '</div></div>' +
+    '<div class="card pad"><div class="eyebrow">Elasticidad de ' + F.esc(name) + '</div><div class="big" style="margin:6px 0">b = ' + F.num(d.b, 2) + '</div>' + (sv ? F.chip(sv.level, sv.label) : "") +
+    '<p class="sub" style="margin-top:10px">' + (sv ? F.esc(sv.text) : "") + '</p>' +
+    '<div class="kv" style="margin-top:8px"><div class="k">CPR promedio</div><div class="v">' + F.money(d.avgCpr) + '</div></div>' +
+    '<div class="kv" style="margin-top:8px"><div class="k">Costo del siguiente resultado ' + F.help("costomarginal") + '</div><div class="v">' + F.money(d.marginalCpr) + '</div></div>' +
+    (A.target && d.marginalCpr ? '<div class="sub" style="margin-top:8px">' + (d.marginalCpr > A.target ? "Ya supera tu objetivo de " + F.money(A.target) + ": escalar aquí pierde eficiencia." : "Sigue bajo tu objetivo de " + F.money(A.target) + ".") + '</div>' : '') + '</div></div>';
+
+  html += '<div class="sec-head"><h2>Simulador: ¿y si cambio el presupuesto?</h2><div class="hint">Usa la elasticidad de arriba</div></div>';
+  html += '<div class="card pad"><div class="row2"><div><div class="field"><label>Cambio de presupuesto: <b id="simPct">+20%</b></label><input type="range" id="simRange" min="-40" max="150" step="5" value="20"></div><div id="simQuick" style="display:flex;gap:6px;flex-wrap:wrap">' + [-30, 10, 20, 50, 100].map(function (x) { return '<button class="btn btn-sm" data-sim="' + x + '">' + (x > 0 ? "+" : "") + x + '%</button>'; }).join("") + '</div></div><div id="simOut"></div></div></div>';
+
+  var p = A.pacing;
+  html += '<div class="sec-head"><h2>Ritmo de gasto ' + F.help("ritmo") + '</h2><div class="hint">Lo real contra lo configurado</div></div><div class="grid g3">' +
+    T.kpi({ label: "Gasto medio (7 días)", val: F.money(p.avg7), note: "por día" }) +
+    T.kpi({ label: "Presupuesto diario activo", val: F.money(p.dailyBudget), note: p.fill !== null ? "Se está usando el " + F.pct(p.fill, 0) : "No se pudo leer" , chip: p.fill !== null ? F.chip((p.fill < 0.6 || p.fill > 1.25) ? "y" : "g", p.fill < 0.6 ? "Subejecución" : (p.fill > 1.25 ? "Gasta más que lo configurado" : "En ritmo")) : "" }) +
+    T.kpi({ label: "Proyección hasta fin de mes", val: F.money(p.projMonth), note: p.daysLeft + (p.daysLeft === 1 ? " día restante" : " días restantes") + " al ritmo actual" }) + '</div>';
+
+  html += '<div class="sec-head"><h2>Regla segura de escalado</h2><div class="hint">20% cada 3 días, nunca de golpe</div></div><div class="rows">' + A.adsets.filter(function (s) { return s.status === "ACTIVE"; }).map(function (s) {
+    var rec = T.scaleRec(s, A);
+    return '<div class="rrow scalerow"><div class="rname"><div class="dotbar ' + rec.level + '"></div><div class="t"><b>' + F.esc(s.name) + '</b><span>' + F.money(s.budget) + '/día</span></div></div>' +
+      '<div class="kv"><div class="k">CPR</div><div class="v">' + F.money(s.m.cpr) + '</div></div><div class="kv"><div class="k">b</div><div class="v">' + (s.dim.b !== null ? F.num(s.dim.b, 2) : "—") + '</div></div><div class="kv"><div class="k">Frecuencia</div><div class="v">' + (s.freq ? F.num(s.freq, 1) : "—") + '</div></div>' +
+      '<div>' + F.chip(rec.level, rec.label) + '<div class="sub">' + F.esc(rec.text) + '</div></div>' +
+      (rec.act ? '<button class="btn btn-sm btn-gold" data-act="budgetpct" data-type="adset" data-id="' + F.esc(s.id) + '" data-pct="' + rec.act + '"' + offTip() + '>' + (rec.act > 0 ? "Subir " : "Bajar ") + Math.abs(rec.act) + '%</button>' : '<span></span>') + '</div>';
+  }).join("") + '</div>';
+  return html;
+};
+T.scaleRec = function (s, A) {
+  var edited = S.edits && S.edits[s.id] && (Date.now() - S.edits[s.id]) < 3 * 864e5;
+  if (edited) return { level: "n", label: "Espera", text: "Editado hace poco. Deja pasar 3 días antes del siguiente cambio." };
+  if (s.learning.status === "LEARNING") return { level: "n", label: "En aprendizaje", text: "Mover presupuesto ahora reinicia el aprendizaje." };
+  if (s.verdict.level === "r") return { level: "r", label: "Reduce o pausa", text: "Cuesta más que tu objetivo con confianza.", act: -20 };
+  if (s.freq && s.freq >= 3.5) return { level: "y", label: "Renueva creativos", text: "Frecuencia alta. Suma piezas nuevas antes de subir." };
+  if (s.verdict.level === "g" && (s.dim.b === null || s.dim.b >= 0.75) && s.budget > 0) return { level: "g", label: "Sube 20%", text: "Barato con confianza y con margen de rendimiento.", act: 20 };
+  return { level: "y", label: "Mantén", text: "Sin señal suficiente para mover el presupuesto." };
+};
+T.simOut = function (A, x) {
+  var scope = S.scaleScope || "account", sset = A.adsets.filter(function (q) { return q.id === scope; })[0], d = sset ? sset.dim : A.dim;
+  var sc = E.scenario(d, x / 100); if (!sc) return "";
+  var lvl = sc.marginalCpr && A.target ? (sc.marginalCpr <= A.target ? "g" : "r") : "n";
+  return '<div class="grid g2"><div class="kv"><div class="k">Gasto diario</div><div class="v">' + F.money(sc.spend1) + '</div><div class="s">' + (x >= 0 ? "+" : "") + F.money(sc.extraSpend) + '</div></div>' +
+    '<div class="kv"><div class="k">Resultados por día</div><div class="v">' + F.num(sc.res1, 1) + '</div><div class="s">' + (sc.extraRes >= 0 ? "+" : "") + F.num(sc.extraRes, 1) + '</div></div>' +
+    '<div class="kv"><div class="k">CPR promedio nuevo</div><div class="v">' + F.money(sc.cpr1) + '</div></div>' +
+    '<div class="kv"><div class="k">Costo de los resultados extra</div><div class="v">' + F.money(sc.marginalCpr) + '</div>' + (sc.marginalCpr ? F.chip(lvl, lvl === "g" ? "Bajo tu objetivo" : "Sobre tu objetivo") : "") + '</div></div>' + (x > 20 ? '<div class="sub" style="margin-top:8px">Un salto mayor a 20% reinicia el aprendizaje. Divídelo en pasos de 3 días.</div>' : "");
+};
+
+/* ------------------------------ Rentabilidad ------------------------------ */
+T.profitOut = function (A) {
+  var P = E.profitGoal(S.goal);
+  if (!P.ok) return '<div class="sub">Completa ticket, margen y tasa de cierre para calcular.</div>';
+  return '<div class="grid g4">' +
+    T.kpi({ label: "Ganancia limpia por venta", val: F.money(P.gainPerSale), note: "ticket × margen" }) +
+    T.kpi({ label: "Costo máximo por resultado " + "", gl: "breakeven", val: F.money(P.breakEven), note: "por encima de esto pierdes dinero" }) +
+    T.kpi({ label: "Costo objetivo recomendado", val: F.money(P.target), note: "un tercio del máximo" }) +
+    T.kpi({ label: "ROAS de equilibrio", val: P.margin ? F.num(1 / P.margin, 2) + "x" : "—", note: "ingreso ÷ gasto para no perder" }) + '</div>';
+};
+T.planOut = function (A) {
+  var P = E.profitGoal(S.goal), want = parseFloat(S.goal.want);
+  if (!P.ok || !(want > 0)) return '<div class="sub">Escribe cuánto quieres ganar al mes para ver cuántos resultados y qué presupuesto necesitas.</div>';
+  function calc(cpr) { var den = P.gainPerSale - cpr / P.close; if (den <= 0) return null; var sales = want / den, results = sales / P.close; return { sales: sales, results: results, budget: results * cpr }; }
+  var a = calc(A.target), b = A.account.m.cpr ? calc(A.account.m.cpr) : null;
+  function box(t, c, cpr) { return '<div class="card pad"><div class="eyebrow">' + t + ' (CPR ' + F.money(cpr) + ')</div>' + (c ? '<div class="big" style="margin:6px 0">' + F.money(c.budget, 0) + '</div><div class="sub">de inversión mensual · ' + F.num(c.results) + ' resultados · ' + F.num(c.sales, 1) + ' ventas</div>' : '<div class="sub" style="margin-top:8px">Con este costo no hay ganancia posible. Baja el CPR o sube el ticket, el margen o el cierre.</div>') + '</div>'; }
+  return '<div class="grid g2">' + box("Con tu objetivo", a, A.target) + (b ? box("Con tu costo real", b, A.account.m.cpr) : "") + '</div>';
+};
+T.profitTable = function (A) {
+  var rows = A.campaigns.filter(function (c) { return c.m.spend > 0; }).sort(function (a, b) { return b.m.spend - a.m.spend; });
+  var html = rows.length ? '<div class="card pad" style="overflow:auto"><table class="tbl"><thead><tr><th>Campaña</th><th class="r">Gasto</th><th class="r">Resultados</th><th class="r">Ventas est.</th><th class="r">Ganancia limpia</th><th class="r">Neto</th><th class="r">ROI</th><th>Veredicto</th></tr></thead><tbody>' + rows.map(function (c) {
+    var p = c.profit; if (!p) return '<tr><td>' + F.esc(c.name) + '</td><td class="r">' + F.money(c.m.spend) + '</td><td class="r">' + F.num(c.m.results) + '</td><td colspan="5" class="sub">Completa la calculadora</td></tr>';
+    return '<tr><td>' + F.esc(c.name) + '</td><td class="r">' + F.money(c.m.spend) + '</td><td class="r">' + F.num(c.m.results) + '</td><td class="r">' + F.num(p.sales, 1) + '</td><td class="r">' + F.money(p.gain) + '</td><td class="r"><b>' + F.money(p.net) + '</b></td><td class="r">' + (p.roi !== null ? F.pct(p.roi, 0) : "—") + '</td><td>' + (p.net >= 0 ? F.chip("g", "Rentable") : F.chip("r", "Pierde")) + '</td></tr>';
+  }).join("") + '</tbody></table></div>' : '<div class="state"><b>Sin campañas con gasto</b>Amplía el rango de fechas.</div>';
+  return html;
+};
+T.rentabilidad = function (A) {
+  var g = S.goal;
+  var html = '<div class="card pad"><div class="eyebrow">Tu negocio en tres números ' + F.help("breakeven") + '</div><div class="row3" style="margin-top:10px">' +
+    '<div class="field"><label>Ticket promedio por venta (' + F.esc(S.currency || "USD") + ')</label><input type="number" min="0" step="any" id="gTicket" value="' + F.esc(g.ticket) + '" placeholder="Ej. 250"></div>' +
+    '<div class="field"><label>Margen sobre ese ticket (%)</label><input type="number" min="0" max="100" step="any" id="gMargin" value="' + F.esc(g.margin) + '" placeholder="Ej. 60"><span class="hint">Lo que queda tras tus costos directos.</span></div>' +
+    '<div class="field"><label>Tasa de cierre (%)</label><input type="number" min="0" max="100" step="any" id="gClose" value="' + F.esc(g.close) + '" placeholder="Ej. 20"><span class="hint">De cada 100 resultados, cuántos compran. Si no sabes, empieza con 20.</span></div></div>' +
+    '<div class="row2"><div class="field"><label>Costo objetivo manual (opcional)</label><input type="number" min="0" step="any" id="gManual" value="' + F.esc(g.manual || "") + '" placeholder="Anula el cálculo automático"></div><div class="field"><label>Ganancia mensual que quieres</label><input type="number" min="0" step="any" id="gWant" value="' + F.esc(g.want || "") + '" placeholder="Ej. 1500"></div></div></div>';
+  html += '<div id="profitOut" style="margin-top:14px">' + T.profitOut(A) + '</div>';
+  html += '<div class="sec-head"><h2>¿Cuánto necesitas invertir?</h2></div><div id="planOut">' + T.planOut(A) + '</div>';
+  html += '<div class="sec-head"><h2>Veredicto por campaña</h2><div class="hint">Con tu tasa de cierre esperada</div></div><div id="profitTable">' + T.profitTable(A) + '</div>';
+  return html;
+};
+
+/* -------------------------------- Segmentos ------------------------------- */
+T.segmentos = function (A) {
+  var seg = S.seg;
+  var dowRows = A.dow.filter(function (d) { return d.n > 0; });
+  var html = "";
+  if (!seg) return '<div class="state"><div class="spinner"></div>Cargando desgloses…</div>';
+  var avgCpr = A.account.m.cpr;
+  function lvl(c) { return !c || !avgCpr ? "" : (c <= avgCpr * 0.85 ? "g" : (c >= avgCpr * 1.3 ? "r" : "y")); }
+  /* ubicaciones */
+  var place = seg.place && !seg.place.error ? AB.mapSeg(seg.place) : null;
+  html += '<div class="grid g2"><div class="card pad"><div class="eyebrow">Ubicaciones: costo por resultado</div>';
+  if (place && place.length) {
+    var pl = place.map(function (p) { var l = ({ facebook: "Facebook", instagram: "Instagram", audience_network: "Audience Network", messenger: "Messenger" }[p.r.publisher_platform] || p.r.publisher_platform) + " " + String(p.r.platform_position || "").replace(/_/g, " ").replace(/^instagram |^facebook /, ""); return { l: l, p: p }; })
+      .filter(function (x) { return x.p.spend > 0; }).sort(function (a, b) { return b.p.spend - a.p.spend; }).slice(0, 8);
+    html += Ch.bars(pl.map(function (x) { return { label: x.l, value: x.p.cpr || 0, text: x.p.cpr ? F.money(x.p.cpr) : "sin res.", level: lvl(x.p.cpr), tip: F.money(x.p.spend) + " gastados · " + F.num(x.p.results) + " resultados · " + F.pct(x.p.ctr, 2) + " CTR" }; }));
+    var withRes = pl.filter(function (x) { return x.p.cpr && x.p.results >= 5; }).sort(function (a, b) { return a.p.cpr - b.p.cpr; });
+    if (withRes.length >= 2) html += '<div class="sub" style="margin-top:8px">Más barata: <b>' + F.esc(withRes[0].l) + '</b> (' + F.money(withRes[0].p.cpr) + '). Más cara: <b>' + F.esc(withRes[withRes.length - 1].l) + '</b> (' + F.money(withRes[withRes.length - 1].p.cpr) + '). Con Advantage+ Meta ya reparte hacia las baratas.</div>';
+  } else html += '<div class="sub">' + F.esc((seg.place && seg.place.error) || "Sin datos") + '</div>';
+  html += '</div>';
+  /* día de la semana */
+  html += '<div class="card pad"><div class="eyebrow">Día de la semana: costo por resultado</div>' + (dowRows.length ? Ch.bars(dowRows.map(function (d) { return { label: d.label, value: d.cpr || 0, text: d.cpr ? F.money(d.cpr) : "sin res.", level: lvl(d.cpr), tip: d.n + " días · " + F.money(d.spend) + " gastados · " + F.num(d.results) + " resultados" }; })) : '<div class="sub">Sin datos</div>') + '</div></div>';
+  /* edad x género */
+  var age = seg.age && !seg.age.error ? AB.mapSeg(seg.age) : null;
+  html += '<div class="grid g2" style="margin-top:14px"><div class="card pad"><div class="eyebrow">Edad y género: costo por resultado (más oscuro = más barato)</div>';
+  if (age && age.length) {
+    var ages = []; age.forEach(function (x) { if (ages.indexOf(x.r.age) < 0) ages.push(x.r.age); }); ages.sort();
+    var gs = [{ id: "female", label: "Mujeres" }, { id: "male", label: "Hombres" }];
+    html += Ch.heat(ages.map(function (a) { return { label: a }; }), gs, function (r, c) {
+      var x = age.filter(function (q) { return q.r.age === r.label && q.r.gender === c.id; })[0];
+      if (!x || x.results < 3) return { v: null, tip: x ? F.money(x.spend) + " gastados, " + x.results + " resultados. Muy pocos para un veredicto." : "Sin datos" };
+      return { v: x.cpr, text: F.money(x.cpr), tip: F.money(x.spend) + " gastados · " + F.num(x.results) + " resultados · " + F.pct(x.ctr, 2) + " CTR" };
+    }, { lowIsGood: true, first: "60px" });
+    var cells = age.filter(function (x) { return x.results >= 5 && x.cpr; }).sort(function (a, b) { return a.cpr - b.cpr; });
+    if (cells.length >= 2) html += '<div class="sub" style="margin-top:8px">Segmento más barato: <b>' + F.esc(cells[0].r.gender === "female" ? "mujeres " : "hombres ") + F.esc(cells[0].r.age) + '</b> (' + F.money(cells[0].cpr) + '). Más caro: <b>' + F.esc(cells[cells.length - 1].r.gender === "female" ? "mujeres " : "hombres ") + F.esc(cells[cells.length - 1].r.age) + '</b> (' + F.money(cells[cells.length - 1].cpr) + ').</div>';
+  } else html += '<div class="sub">' + F.esc((seg.age && seg.age.error) || "Sin datos") + '</div>';
+  html += '</div>';
+  /* hora */
+  var hr = seg.hour && !seg.hour.error ? AB.mapSeg(seg.hour) : null;
+  html += '<div class="card pad"><div class="eyebrow">Hora del día: resultados por cada mil gastado (más oscuro = más rendimiento)</div>';
+  if (hr && hr.length) {
+    var byH = {}; hr.forEach(function (x) { var h = parseInt(String(x.r.hourly_stats_aggregated_by_advertiser_time_zone).slice(0, 2), 10); byH[h] = x; });
+    var cols = []; for (var h = 0; h < 24; h++) cols.push({ label: String(h), h: h });
+    html += Ch.heat([{ label: "Hora" }], cols, function (r, c) { var x = byH[c.h]; if (!x || x.spend <= 0 || x.results < 1) return { v: null, tip: "Sin datos suficientes" }; var v = x.results / x.spend * 1000; return { v: v, text: "", tip: c.h + ":00 a " + c.h + ":59 · " + F.money(x.spend) + " gastados · " + F.num(x.results) + " resultados · CPR " + F.money(x.cpr) }; }, { first: "44px" });
+    var top = Object.keys(byH).map(function (k) { return byH[k]; }).filter(function (x) { return x.results >= 3 && x.cpr; }).sort(function (a, b) { return a.cpr - b.cpr; });
+    if (top.length >= 3) html += '<div class="sub" style="margin-top:8px">Horas más baratas: ' + top.slice(0, 3).map(function (x) { return parseInt(String(x.r.hourly_stats_aggregated_by_advertiser_time_zone).slice(0, 2), 10) + ":00"; }).join(", ") + ' (zona horaria de tu cuenta).</div>';
+  } else html += '<div class="sub">' + F.esc((seg.hour && seg.hour.error) || "Sin datos") + '</div>';
+  html += '</div></div><p class="sub" style="margin-top:12px">Los segmentos con menos de 5 resultados se muestran en gris o quedan fuera de las conclusiones. Con campañas Advantage+ Meta decide la entrega, así que usa esto como lectura y no como filtro obligatorio.</p>';
+  return html;
+};
+
+/* ----------------------------- Laboratorio A/B ---------------------------- */
+var ABM = {
+  ctr: { label: "CTR de enlace (clics ÷ impresiones)", n: function (m) { return m.impr; }, x: function (m) { return m.clicks; } },
+  cvr: { label: "Clic a resultado (resultados ÷ clics)", n: function (m) { return m.clicks; }, x: function (m) { return m.results; } },
+  res: { label: "Resultados por impresión", n: function (m) { return m.impr; }, x: function (m) { return m.results; } },
+  hook: { label: "Hook (reproducciones de 3 s ÷ impresiones)", n: function (m) { return m.impr; }, x: function (m) { return m.v3; } }
+};
+T.abOut = function (A) {
+  var a = A.ads.filter(function (x) { return x.id === S.abA; })[0], b = A.ads.filter(function (x) { return x.id === S.abB; })[0];
+  if (!a || !b || a.id === b.id) return '<div class="state"><b>Elige dos anuncios distintos</b>El laboratorio compara con estadística cuál rinde mejor.</div>';
+  var M = ABM[S.abMetric || "ctr"], ta = { n: M.n(a.m), x: M.x(a.m) }, tb = { n: M.n(b.m), x: M.x(b.m) };
+  var r = E.abTest(ta, tb);
+  if (!r.ok) return '<div class="state"><b>Sin datos suficientes</b>Uno de los anuncios no tiene intentos en esta métrica.</div>';
+  var lvl = r.conf >= 0.95 ? "g" : (r.conf >= 0.8 ? "y" : "n");
+  var pB = E.normCdf(r.z);
+  var verdict = r.winner ? ("Ganador con " + F.pct(r.conf, 1) + " de confianza: " + (r.winner === "b" ? b.name : a.name) + ".") : ("Todavía no hay ganador claro (" + F.pct(r.conf, 0) + " de confianza). Falta muestra o la diferencia es pequeña.");
+  return '<div class="grid g2"><div class="card pad"><div class="eyebrow">A · ' + F.esc(a.name) + '</div><div class="big" style="margin:6px 0">' + F.pct(r.p1, 2) + '</div><div class="sub">' + F.num(ta.x) + ' de ' + F.num(ta.n) + '</div></div>' +
+    '<div class="card pad"><div class="eyebrow">B · ' + F.esc(b.name) + '</div><div class="big" style="margin:6px 0">' + F.pct(r.p2, 2) + '</div><div class="sub">' + F.num(tb.x) + ' de ' + F.num(tb.n) + '</div></div></div>' +
+    '<div class="card pad" style="margin-top:14px"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">' + F.chip(lvl, r.winner ? "Diferencia real" : "Sin veredicto") + '<b>' + F.esc(verdict) + '</b></div>' +
+    '<div class="grid g3" style="margin-top:12px"><div class="kv"><div class="k">Diferencia relativa</div><div class="v">' + (r.lift === null ? "—" : (r.lift >= 0 ? "+" : "") + F.pct(r.lift, 1)) + '</div></div><div class="kv"><div class="k">Valor p</div><div class="v">' + r.p.toFixed(3) + '</div></div><div class="kv"><div class="k">Probabilidad de que B supere a A</div><div class="v">' + F.pct(pB, 0) + '</div></div></div>' +
+    '<div class="progress" style="margin-top:12px" data-tip="Confianza estadística"><i style="width:' + Math.round(r.conf * 100) + '%;background:' + (lvl === "g" ? "var(--good)" : "var(--gold)") + '"></i></div>' +
+    (r.needN && !r.winner ? '<div class="sub" style="margin-top:8px">Para confirmar una diferencia de este tamaño hacen falta unos <b>' + F.num(r.needN) + '</b> intentos por variante (80% de potencia). Hoy tienes ' + F.num(ta.n) + ' y ' + F.num(tb.n) + '.</div>' : '') +
+    '<div class="sub" style="margin-top:8px">Los dos anuncios compitieron en la misma subasta y Meta no repartió la entrega de forma pareja. Toma esto como guía fuerte. Para una prueba limpia usa la prueba de creativos de Meta durante 7 días. Mirar el resultado cada día y parar cuando sale bien infla los falsos positivos ' + F.help("ab") + '.</div></div>';
+};
+T.laboratorio = function (A) {
+  var pool = A.ads.filter(function (a) { return a.m.impr > 300; });
+  if (pool.length < 2) return '<div class="state"><b>Necesitas al menos dos anuncios con impresiones</b>Vuelve cuando haya datos de dos piezas.</div>';
+  if (!S.abA) { S.abA = pool[0].id; S.abB = pool[1].id; }
+  function sel(id, cur) { return '<select id="' + id + '">' + pool.map(function (a) { return '<option value="' + F.esc(a.id) + '"' + (a.id === cur ? " selected" : "") + '>' + F.esc(a.name) + '</option>'; }).join("") + '</select>'; }
+  var html = '<div class="card pad"><div class="row3"><div class="field"><label>Anuncio A</label>' + sel("abA", S.abA) + '</div><div class="field"><label>Anuncio B</label>' + sel("abB", S.abB) + '</div><div class="field"><label>Métrica</label><select id="abM">' + Object.keys(ABM).map(function (k) { return '<option value="' + k + '"' + ((S.abMetric || "ctr") === k ? " selected" : "") + '>' + F.esc(ABM[k].label) + '</option>'; }).join("") + '</select></div></div></div><div id="abOut" style="margin-top:14px">' + T.abOut(A) + '</div>';
+  html += '<div class="sec-head"><h2>Calculadora de muestra</h2><div class="hint">¿Cuánta entrega necesitas para probar algo?</div></div><div class="card pad"><div class="row3"><div class="field"><label>Tasa actual (%)</label><input type="number" id="ssBase" step="any" value="1.2"></div><div class="field"><label>Mejora mínima que quieres detectar (%)</label><input type="number" id="ssLift" step="any" value="20"></div><div class="field"><label>Costo por mil impresiones (CPM)</label><input type="number" id="ssCpm" step="any" value="' + (A.account.m.cpm ? A.account.m.cpm.toFixed(2) : "4") + '"></div><div class="field"><label>Presupuesto diario por variante</label><input type="number" id="ssBudget" step="any" placeholder="Ej. 5"></div></div><div id="ssOut"></div></div>';
+  return html;
+};
+T.ssOut = function () {
+  var p1 = parseFloat(AB.$("ssBase").value) / 100, lift = parseFloat(AB.$("ssLift").value) / 100, cpm = parseFloat(AB.$("ssCpm").value);
+  if (!(p1 > 0) || !(lift > 0)) return "";
+  var p2 = p1 * (1 + lift), n = Math.ceil(Math.pow(1.96 + 0.8416, 2) * (p1 * (1 - p1) + p2 * (1 - p2)) / Math.pow(p2 - p1, 2));
+  return '<div class="grid g3"><div class="kv"><div class="k">Impresiones por variante</div><div class="v">' + F.num(n) + '</div></div><div class="kv"><div class="k">Impresiones totales (2 variantes)</div><div class="v">' + F.num(n * 2) + '</div></div><div class="kv"><div class="k">Inversión aproximada</div><div class="v">' + (cpm > 0 ? F.money(n * 2 / 1000 * cpm) : "—") + '</div></div></div>' + (function () {
+    var b = AB.$("ssBudget") ? parseFloat(AB.$("ssBudget").value) : NaN; if (!(b > 0) || !(cpm > 0)) return "";
+    var days = Math.ceil(n / (b / cpm * 1000));
+    return '<div class="sub" style="margin-top:10px">' + F.chip(days <= 14 ? "g" : (days <= 30 ? "y" : "r"), days + " días") + ' Con ' + F.money(b) + ' por día y variante tardarías unos ' + days + ' días. ' + (days > 30 ? "No vale la pena. Prueba diferencias más grandes, como dos ángulos distintos, que se detectan con menos muestra." : (days > 14 ? "Es largo, el mercado cambia en ese tiempo. Busca una diferencia más grande." : "Es razonable.")) + '</div>';
+  })();
+};
+
+/* -------------------------------- Cuentas --------------------------------- */
+T.cuentas = function (A) {
+  var html = '<div class="sec-head" style="margin-top:0"><h2>Píxeles</h2><div class="hint">Eventos de conversión conectados a tu cuenta</div></div><div class="grid g3">';
+  html += A.pixels.length ? A.pixels.map(function (p) {
+    var hrs = p.last_fired_time ? (Date.now() - new Date(p.last_fired_time).getTime()) / 36e5 : null;
+    var chip = hrs === null ? F.chip("n", "Nunca disparó") : (hrs < 24 ? F.chip("g", "Activo hoy") : (hrs < 72 ? F.chip("y", "Hace " + Math.round(hrs / 24) + " d") : F.chip("r", "Inactivo " + Math.round(hrs / 24) + " d")));
+    return '<div class="card pad"><div class="eyebrow">' + F.esc(p.id) + '</div><h4 style="margin:4px 0 6px">' + F.esc(p.name) + '</h4>' + chip + '<div style="margin-top:10px"><button class="btn btn-sm" data-px="' + F.esc(p.id) + '">Ver eventos de 7 días</button> <button class="btn btn-sm" data-pxq="' + F.esc(p.id) + '">Calidad de datos</button></div><div id="px-' + F.esc(p.id) + '"></div><div id="pxq-' + F.esc(p.id) + '"></div></div>';
+  }).join("") : '<div class="state" style="grid-column:1/-1"><b>No encontramos píxeles</b>Si acabas de instalarlo puede tardar en aparecer.</div>';
+  html += '</div><div class="sec-head"><h2>Audiencias</h2><div class="hint">Públicos guardados y personalizados</div></div><div class="grid g3">';
+  html += A.auds.length ? A.auds.map(function (a) {
+    var lo = a.approximate_count_lower_bound, hi = a.approximate_count_upper_bound, ready = a.delivery_status && a.delivery_status.code === 200;
+    return '<div class="card pad"><h4 style="margin-bottom:6px">' + F.esc(a.name) + '</h4><div style="display:flex;gap:6px;flex-wrap:wrap">' + F.chip("n", { CUSTOM: "Personalizada", LOOKALIKE: "Similar", WEBSITE: "Sitio web", ENGAGEMENT: "Interacción" }[a.subtype] || a.subtype || "—") + F.chip(ready ? "g" : "y", a.delivery_status ? a.delivery_status.description : "—") + '</div><div class="sub" style="margin-top:8px">Tamaño: ' + (lo !== undefined ? F.num(lo) + " a " + F.num(hi) : "—") + '</div></div>';
+  }).join("") : '<div class="state" style="grid-column:1/-1"><b>Todavía no hay audiencias</b>Cuando crees una audiencia guardada o personalizada aparece aquí.</div>';
+  return html + '</div>';
+};
+
+/* -------------------------------- Ajustes --------------------------------- */
+T.ajustes = function (A) {
+  var P = S.prefs;
+  function sw(k, l, d) { return '<div class="prefrow"><div><div class="lbl">' + l + '</div><div class="desc">' + d + '</div></div><div class="switch' + (P[k] ? " on" : "") + '" data-pref="' + k + '" role="switch" aria-checked="' + !!P[k] + '" tabindex="0"><div class="knob"></div></div></div>'; }
+  var log = (S.editLog || []).slice(0, 25);
+  return '<div style="max-width:640px">' + sw("showHero", "Gráficos de gasto y costo", "Muestra las curvas grandes en Resumen") + sw("showAds", "Anuncios corriendo", "Muestra las tarjetas con diagnóstico en Resumen") + sw("showBadAlert", "Alerta de rechazados", "Aviso arriba de todo cuando hay anuncios con problemas") +
+    '<div class="prefrow"><div><div class="lbl">Nivel por defecto en Campañas</div></div><select id="defaultLevelSelect" style="border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-weight:600"><option value="campaign">Campañas</option><option value="adset">Conjuntos</option><option value="ad">Anuncios</option></select></div>' +
+    '<p class="sub">Tus preferencias, tu calculadora y la bitácora se guardan solo en este navegador, asociadas a tu usuario de Facebook.</p>' +
+    '<div class="sec-head"><h2>Herramientas</h2></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="openGl">Abrir glosario</button><button class="btn" id="csvBtn2">Exportar campañas a CSV</button><button class="btn" id="clearLocal">Borrar datos locales</button></div>' +
+    '<div class="sec-head"><h2>Bitácora de cambios hechos desde el Adsboard</h2></div>' + (log.length ? '<div class="card pad">' + log.map(function (l) { return '<div style="padding:6px 0;border-top:1px solid var(--line)"><b>' + F.esc(l.what) + '</b> <span class="sub">' + F.esc(l.name || "") + ' · ' + F.ago(l.t) + '</span></div>'; }).join("") + '</div>' : '<div class="sub">Aún no hiciste cambios desde aquí.</div>') +
+    '<div class="sec-head"><h2>Privacidad</h2></div><p class="sub">El token de acceso vive solo en la memoria de esta pestaña. Las consultas van directo de tu navegador a Meta. Ningún servidor de The Marketographers recibe tus datos. Al pulsar Salir o cerrar la pestaña el token desaparece. Puedes revocar permisos en Facebook, sección Configuración, Integraciones comerciales.</p></div>';
+};
+})(window);
+
+;
+/* ==========================================================================
+   ACCIONES: pausar, activar, presupuesto, duplicar, renombrar (todo con confirmación)
+   ========================================================================== */
+(function (root) {
+"use strict";
+var AB = root.AB, S = AB.S, G = AB.G, F = AB.F, UI = AB.UI;
+var Act = AB.Act = {};
+var TYPE_ES = { campaign: "la campaña", adset: "el conjunto", ad: "el anuncio" };
+var TYPE_UP = { campaign: "Campaña", adset: "Conjunto", ad: "Anuncio" };
+
+Act.find = function (type, id) {
+  var A = S.A; if (!A) return null;
+  var list = type === "campaign" ? A.campaigns : (type === "adset" ? A.adsets : A.ads);
+  return list.filter(function (x) { return x.id === id; })[0] || null;
+};
+function typeOfId(id) {
+  var A = S.A; if (!A) return null;
+  if (A.campaigns.some(function (x) { return x.id === id; })) return "campaign";
+  if (A.adsets.some(function (x) { return x.id === id; })) return "adset";
+  if (A.ads.some(function (x) { return x.id === id; })) return "ad";
+  return null;
+}
+function logEdit(what, it) {
+  S.edits = S.edits || {}; S.edits[it.id] = Date.now();
+  S.editLog = S.editLog || []; S.editLog.unshift({ t: Date.now(), what: what, name: it.name, id: it.id });
+  S.editLog = S.editLog.slice(0, 60);
+  AB.saveLocal();
+}
+function fail(e) {
+  UI.toast(e.userMsg || e.message || "No se pudo completar la acción", "bad");
+  return false;
+}
+function stableRender() { AB.render(); }
+
+/* pausar / activar */
+Act.setStatus = function (type, id, status) {
+  var it = Act.find(type, id); if (!it) return Promise.resolve(false);
+  var on = status === "ACTIVE";
+  var body = '<p class="sub">' + TYPE_UP[type] + ': <b>' + F.esc(it.name) + '</b></p>';
+  if (on) {
+    var spend = it.budget ? F.money(it.budget) + " por día" : "según el presupuesto configurado";
+    body += '<div class="alert on edit" style="margin-top:10px"><div><b>Esto empieza a gastar dinero real</b><div class="sub">Meta cobrará ' + F.esc(spend) + ' a tu método de pago apenas el anuncio pase la revisión.' + (type !== "ad" ? " Revisa antes que sus anuncios estén listos." : "") + '</div></div></div>';
+    if (S.demo) body += '<div class="sub" style="margin-top:8px">Estás en modo demo: no se gasta nada.</div>';
+  } else body += '<p class="sub">Dejará de entregar de inmediato. Al reactivarlo, Meta puede volver a evaluar la entrega.</p>';
+  return UI.confirm({ title: on ? "¿Activar " + TYPE_ES[type] + "?" : "¿Pausar " + TYPE_ES[type] + "?", html: body, ok: on ? "Activar" : "Pausar", danger: false }).then(function (ok) {
+    if (!ok) return false;
+    UI.loading(true, on ? "Activando…" : "Pausando…");
+    return G.post(id, { status: status }).then(function () {
+      it.status = status; it.effStatus = status; logEdit(on ? "Activó" : "Pausó", it);
+      UI.loading(false); UI.toast((on ? "Activado: " : "Pausado: ") + it.name); stableRender(); return true;
+    }).catch(function (e) { UI.loading(false); return fail(e); });
+  });
+};
+
+/* presupuesto */
+function lastChangeWarning(it) {
+  var t = S.edits && S.edits[it.id];
+  if (t && Date.now() - t < 3 * 864e5) return "Este objeto se editó " + F.ago(t) + ". Cambios seguidos reinician el aprendizaje. Lo recomendable es esperar 3 días.";
+  return "";
+}
+Act.setBudget = function (type, id, newValue) {
+  var it = Act.find(type, id); if (!it) return Promise.resolve(false);
+  var cur = it.budget || 0;
+  function ask(prefill) {
+    return new Promise(function (res) {
+      UI.modal('<h3>Presupuesto diario</h3><p class="sub">' + TYPE_UP[type] + ': <b>' + F.esc(it.name) + '</b><br>Hoy: <b>' + F.money(cur) + '</b> por día</p>' +
+        '<div class="field"><label>Nuevo presupuesto diario (' + F.esc(S.currency || "USD") + ')</label><input type="number" min="0" step="any" id="nbVal" value="' + (prefill || "") + '"></div><div id="nbInfo" class="sub"></div>' +
+        '<div class="mb"><button class="btn" id="nbNo">Cancelar</button><button class="btn btn-gold" id="nbYes">Guardar</button></div>', function (m) {
+          var inp = m.querySelector("#nbVal"), info = m.querySelector("#nbInfo");
+          function upd() {
+            var v = parseFloat(inp.value), h = "";
+            if (v > 0 && cur > 0) {
+              var p = (v - cur) / cur * 100;
+              h = "Cambio: <b>" + (p >= 0 ? "+" : "") + p.toFixed(0) + "%</b>. ";
+              if (p > 20) h += '<span style="color:var(--bad)">Subir más de 20% de una vez reinicia el aprendizaje y puede disparar controles en cuentas nuevas. Mejor sube en pasos cada 3 días.</span>';
+              else if (p < -30) h += '<span style="color:var(--warn)">Bajar mucho de golpe también puede reiniciar el aprendizaje.</span>';
+              else h += "Dentro del rango seguro.";
+            }
+            var w = lastChangeWarning(it); if (w) h += '<br><span style="color:var(--warn)">' + F.esc(w) + '</span>';
+            info.innerHTML = h;
+          }
+          inp.addEventListener("input", upd); upd(); inp.focus();
+          m.querySelector("#nbNo").onclick = function () { UI.closeAll(); res(null); };
+          m.querySelector("#nbYes").onclick = function () { var v = parseFloat(inp.value); if (!(v > 0)) { info.innerHTML = '<span style="color:var(--bad)">Escribe un monto mayor que cero.</span>'; return; } UI.closeAll(); res(v); };
+          inp.addEventListener("keydown", function (e) { if (e.key === "Enter") m.querySelector("#nbYes").click(); });
+        });
+    });
+  }
+  var p = newValue ? UI.confirm({ title: "¿Cambiar el presupuesto?", html: '<p class="sub">' + F.esc(it.name) + '<br><b>' + F.money(cur) + '</b> → <b>' + F.money(newValue) + '</b> por día (' + ((newValue - cur) / cur * 100 >= 0 ? "+" : "") + ((newValue - cur) / cur * 100).toFixed(0) + '%)</p>' + (lastChangeWarning(it) ? '<p class="sub" style="color:var(--warn)">' + F.esc(lastChangeWarning(it)) + '</p>' : ''), ok: "Aplicar" }).then(function (ok) { return ok ? newValue : null; }) : ask("");
+  return p.then(function (v) {
+    if (!v) return false;
+    UI.loading(true, "Guardando presupuesto…");
+    var minor = Math.round(v * S.offset);
+    return G.post(id, { daily_budget: minor }).then(function () {
+      return G.get(id, { fields: "daily_budget" }).catch(function () { return null; });
+    }).then(function (back) {
+      var real = back && back.daily_budget ? Number(back.daily_budget) / S.offset : v;
+      it.budget = real; logEdit("Presupuesto " + F.money(cur) + " → " + F.money(real), it);
+      UI.loading(false);
+      var mism = Math.abs(real - v) > 0.011;
+      UI.toast("Presupuesto guardado. Meta lo registra en " + F.money(real) + " por día." + (mism ? " Difiere de lo que pediste, revisa la moneda de la cuenta." : ""), mism ? "bad" : "");
+      stableRender(); return true;
+    }).catch(function (e) { UI.loading(false); return fail(e); });
+  });
+};
+Act.budgetPct = function (type, id, pct) {
+  var it = Act.find(type, id); if (!it || !it.budget) { UI.toast("No se pudo leer el presupuesto actual.", "bad"); return Promise.resolve(false); }
+  var nv = Math.round(it.budget * (1 + pct / 100) * 100) / 100;
+  return Act.setBudget(type, id, nv);
+};
+
+/* duplicar */
+Act.duplicate = function (type, id) {
+  var it = Act.find(type, id); if (!it) return Promise.resolve(false);
+  return UI.confirm({ title: "¿Duplicar " + TYPE_ES[type] + "?", html: '<p class="sub"><b>' + F.esc(it.name) + '</b><br>La copia se crea en <b>pausa</b>, así que no gasta hasta que la actives tú.' + (type === "campaign" ? " Incluye sus conjuntos y anuncios." : (type === "adset" ? " Incluye sus anuncios." : "")) + '</p>', ok: "Duplicar" }).then(function (ok) {
+    if (!ok) return false;
+    UI.loading(true, "Duplicando…");
+    var body = { status_option: "PAUSED" }; if (type !== "ad") body.deep_copy = true;
+    return G.post(id + "/copies", body).then(function () {
+      logEdit("Duplicó", it); UI.toast("Copia creada en pausa. Actualizando datos…");
+      return AB.refresh(true);
+    }).then(function () { UI.loading(false); return true; }).catch(function (e) { UI.loading(false); return fail(e); });
+  });
+};
+
+/* renombrar */
+Act.rename = function (type, id) {
+  var it = Act.find(type, id); if (!it) return Promise.resolve(false);
+  return new Promise(function (res) {
+    UI.modal('<h3>Renombrar ' + TYPE_ES[type].replace("la ", "").replace("el ", "") + '</h3><div class="field"><label>Nombre</label><input id="rnVal" value="' + F.esc(it.name) + '" maxlength="200"></div><div class="mb"><button class="btn" id="rnNo">Cancelar</button><button class="btn btn-gold" id="rnYes">Guardar</button></div>', function (m) {
+      var inp = m.querySelector("#rnVal"); inp.focus(); inp.select();
+      m.querySelector("#rnNo").onclick = function () { UI.closeAll(); res(null); };
+      function go() { var v = inp.value.trim(); if (!v) return; UI.closeAll(); res(v); }
+      m.querySelector("#rnYes").onclick = go; inp.addEventListener("keydown", function (e) { if (e.key === "Enter") go(); });
+    });
+  }).then(function (v) {
+    if (!v || v === it.name) return false;
+    UI.loading(true, "Guardando…");
+    return G.post(id, { name: v }).then(function () { var old = it.name; it.name = v; logEdit("Renombró «" + old + "»", it); UI.loading(false); UI.toast("Nombre actualizado"); stableRender(); return true; })
+      .catch(function (e) { UI.loading(false); return fail(e); });
+  });
+};
+
+/* despachador */
+Act.run = function (act, type, id, extra) {
+  if (!S.canEdit) { UI.toast("Activa el modo edición para ejecutar cambios desde aquí.", "bad"); return Promise.resolve(false); }
+  type = type || typeOfId(id);
+  if (act === "pause") return Act.setStatus(type, id, "PAUSED");
+  if (act === "activate") return Act.setStatus(type, id, "ACTIVE");
+  if (act === "budget") return Act.setBudget(type, id);
+  if (act === "budgetpct") return Act.budgetPct(type, id, extra);
+  if (act === "duplicate") return Act.duplicate(type, id);
+  if (act === "rename") return Act.rename(type, id);
+  return Promise.resolve(false);
+};
+})(window);
+
+;
+/* ==========================================================================
+   CREAR: asistente que arma campaña + conjunto + creativo + anuncio, todo en pausa
+   ========================================================================== */
+(function (root) {
+"use strict";
+var AB = root.AB, S = AB.S, G = AB.G, F = AB.F, UI = AB.UI, T = AB.T;
+
+var W = S.wiz = { step: 1, kind: "traffic", name: "", pageId: "", url: "", wa: "", budget: "", country: "BO", city: "", radius: 40, pixel: "", event: "", events: null, excl: [], p2: "", p3: "", h2: "", h3: "", ageMin: 22, ageMax: 55, gender: "0",
+  primary: "", headline: "", cta: "LEARN_MORE", file: null, fileName: "", fileB64: "", fileUrl: "", pages: null, run: null };
+var CTAS = { LEARN_MORE: "Más información", BOOK_TRAVEL: "Reservar", CONTACT_US: "Contáctanos", GET_QUOTE: "Solicitar cotización", SIGN_UP: "Registrarte", SHOP_NOW: "Comprar" };
+var COUNTRIES = { BO: "Bolivia", AR: "Argentina", CL: "Chile", CO: "Colombia", EC: "Ecuador", MX: "México", PE: "Perú", PY: "Paraguay", UY: "Uruguay", ES: "España", US: "Estados Unidos" };
+AB.wizReset = function () { var p = W.pages; Object.keys(W).forEach(function (k) { delete W[k]; }); Object.assign(W, { step: 1, kind: "traffic", name: "", pageId: "", url: "", wa: "", budget: "", country: "BO", city: "", radius: 40, pixel: "", event: "", events: null, excl: [], p2: "", p3: "", h2: "", h3: "", ageMin: 22, ageMax: 55, gender: "0", primary: "", headline: "", cta: "LEARN_MORE", file: null, fileName: "", fileB64: "", fileUrl: "", pages: p, run: null }); };
+
+function steps() {
+  var names = ["Objetivo", "Público y presupuesto", "Anuncio", "Revisar y crear"];
+  return '<div class="steps">' + names.map(function (n, i) { var k = i + 1; return '<div class="st ' + (W.step === k ? "on" : (W.step > k ? "done" : "")) + '">' + k + ". " + n + '</div>'; }).join("") + '</div>';
+}
+function warnIfRead() {
+  return S.canEdit ? "" : '<div class="alert on edit"><div><b>Necesitas el modo edición para crear</b><div class="sub">Puedes preparar todo aquí y, al llegar al último paso, activar el modo edición desde el botón de arriba a la derecha. Todo lo que se cree queda en pausa.</div></div></div>';
+}
+function convBlock(A) {
+  var px = A.pixels || [];
+  var sel = px.filter(function (x) { return x.id === W.pixel; })[0];
+  return '<div class="card pad" style="margin:10px 0;background:rgba(245,183,41,.08)"><div class="eyebrow">Medición</div><div class="row2"><div class="field"><label>Píxel</label><select id="wPixel"><option value="">Elige un píxel</option>' +
+    px.map(function (x) { return '<option value="' + F.esc(x.id) + '"' + (x.id === W.pixel ? " selected" : "") + '>' + F.esc(x.name) + '</option>'; }).join("") + '</select></div>' +
+    '<div class="field"><label>Evento que quieres optimizar</label><input id="wEvent" list="wEvList" value="' + F.esc(W.event) + '" placeholder="Ej. InitiateCheckout o eligio_camino_directo"><datalist id="wEvList">' + (W.events || []).map(function (e) { return '<option value="' + F.esc(e) + '">'; }).join("") + '</datalist>' +
+    '<span class="hint">' + (W.pixel ? (W.events ? "Eventos recibidos en los últimos 7 días. Puedes escribir uno propio." : "Leyendo eventos del píxel…") : "Elige primero el píxel.") + '</span></div></div></div>';
+}
+var STD = { addpaymentinfo: "ADD_PAYMENT_INFO", addtocart: "ADD_TO_CART", addtowishlist: "ADD_TO_WISHLIST", completeregistration: "COMPLETE_REGISTRATION", viewcontent: "CONTENT_VIEW", contact: "CONTACT", initiatecheckout: "INITIATE_CHECKOUT", lead: "LEAD", purchase: "PURCHASE", schedule: "SCHEDULE", search: "SEARCH", subscribe: "SUBSCRIBE", submitapplication: "SUBMIT_APPLICATION", starttrial: "START_TRIAL" };
+AB.wizEvents = function () {
+  if (!W.pixel || W.events) return Promise.resolve();
+  return G.get(W.pixel + "/stats", { aggregation: "event", start_time: Math.floor(Date.now() / 1000) - 7 * 86400 }).then(function (j) {
+    var set = {}; ((j.data || [])[0] && (j.data[0].data || []) || []).forEach(function (r) { set[r.value] = 1; });
+    (j.data || []).forEach(function (b) { (b.data || []).forEach(function (r) { set[r.value] = 1; }); });
+    W.events = Object.keys(set);
+  }).catch(function () { W.events = []; });
+};
+function dupCard(A) {
+  var cs = A.campaigns.slice().sort(function (a, b) { return b.m.spend - a.m.spend; }).slice(0, 6);
+  if (!cs.length) return "";
+  return '<div class="sec-head"><h2>O parte de una campaña que ya tienes</h2><div class="hint">Se copia completa, con conjuntos y anuncios, en pausa</div></div><div class="card pad glass">' + cs.map(function (c) {
+    return '<div style="display:flex;justify-content:space-between;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)"><div><b>' + F.esc(c.name) + '</b><div class="sub">' + (c.m.spend ? F.money(c.m.spend) + " gastados en el periodo" : "Sin gasto en el periodo") + '</div></div><button class="btn btn-sm" data-act="duplicate" data-type="campaign" data-id="' + F.esc(c.id) + '"' + (S.canEdit ? "" : " disabled") + '>Duplicar completa</button></div>';
+  }).join("") + '</div>';
+}
+function exclBlock(A) {
+  var auds = A.auds || [];
+  if (!auds.length) return '<div class="sub" style="margin-top:8px">Sin audiencias para excluir. Créalas en Medición, pestaña Cuentas.</div>';
+  return '<div class="field" style="margin-top:10px"><label>Excluir audiencias (opcional)</label><select id="wExcl" multiple size="' + Math.min(4, auds.length) + '">' + auds.map(function (a) { return '<option value="' + F.esc(a.id) + '"' + (W.excl.indexOf(a.id) >= 0 ? " selected" : "") + '>' + F.esc(a.name) + '</option>'; }).join("") + '</select><span class="hint">Excluye a tus clientes actuales para no pagar por gente que ya te compró. Con Control o Cmd eliges varias.</span></div>';
+}
+function varBlock() {
+  if (W.kind === "whatsapp") return "";
+  return '<details style="margin-top:6px"' + (W.p2 || W.h2 ? " open" : "") + '><summary style="cursor:pointer;font-weight:700">Variaciones de texto (anuncio flexible)</summary><div class="sub" style="margin:6px 0">Agrega hasta 2 textos y 2 títulos más. Meta los combina y el Laboratorio de copy te dice cuál gana.</div>' +
+    '<div class="row2"><div class="field"><label>Texto 2</label><textarea id="wP2" rows="2" maxlength="500">' + F.esc(W.p2) + '</textarea></div><div class="field"><label>Texto 3</label><textarea id="wP3" rows="2" maxlength="500">' + F.esc(W.p3) + '</textarea></div></div>' +
+    '<div class="row2"><div class="field"><label>Título 2</label><input id="wH2" maxlength="60" value="' + F.esc(W.h2) + '"></div><div class="field"><label>Título 3</label><input id="wH3" maxlength="60" value="' + F.esc(W.h3) + '"></div></div></details>';
+}
+function hookHints() {
+  var b = (S.hookBank || []).filter(function (x) { return x.acct === S.acct; }).slice(0, 4);
+  if (!b.length) return "";
+  return '<div class="sub" style="margin-top:8px">Tus hooks ganadores para inspirarte: ' + b.map(function (x) { return "<b>" + F.esc(x.name) + "</b> (" + F.pct(x.hook, 0) + ")"; }).join(", ") + '</div>';
+}
+T.crear = function (A) {
+  if (W.run) return T.crearProgress();
+  var h = warnIfRead() + steps();
+  if (W.step === 1) {
+    h += '<div class="grid g3">' +
+      '<div class="card pad wopt" data-wk="traffic" style="cursor:pointer;' + (W.kind === "traffic" ? "outline:2px solid var(--gold);" : "") + '"><div class="eyebrow">Recomendada si tienes landing</div><h3 style="margin:6px 0">Tráfico a mi landing</h3><p class="sub">Optimiza por visitas reales a la página (no solo clics). Necesitas el píxel instalado para medir lo que pase después.</p></div>' +
+      '<div class="card pad wopt" data-wk="whatsapp" style="cursor:pointer;' + (W.kind === "whatsapp" ? "outline:2px solid var(--gold);" : "") + '"><div class="eyebrow">Para cerrar ventas por chat</div><h3 style="margin:6px 0">Mensajes a WhatsApp</h3><p class="sub">Optimiza por conversaciones iniciadas. Responder rápido (idealmente en minutos) pesa tanto como el anuncio.</p></div>' +
+      '<div class="card pad wopt" data-wk="conversion" style="cursor:pointer;' + (W.kind === "conversion" ? "outline:2px solid var(--gold);" : "") + '"><div class="eyebrow">Con píxel y evento propio</div><h3 style="margin:6px 0">Conversión en sitio web</h3><p class="sub">Optimiza por un evento de tu píxel, estándar o personalizado, como una reserva o un inicio de compra. Es la configuración de tu borrador de estudiographica.</p></div></div>' +
+      '<div class="card pad" style="margin-top:14px"><div class="row2"><div class="field"><label>Nombre de la campaña</label><input id="wName" value="' + F.esc(W.name) + '" placeholder="' + (W.kind === "whatsapp" ? "Ej. WhatsApp retratos" : "Ej. Landing bodas 2026") + '"></div>' +
+      '<div class="field"><label>Página de Facebook que publica el anuncio</label><select id="wPage"><option value="">Cargando páginas…</option></select><span class="hint" id="wPageHint">Se necesita para poder publicar el anuncio.</span></div></div></div>' +
+      '<div class="mb" style="display:flex;justify-content:flex-end;margin-top:14px"><button class="btn btn-gold" data-wnext="1">Continuar</button></div>' + dupCard(A);
+  } else if (W.step === 2) {
+    h += '<div class="card pad"><div class="row2">' +
+      (W.kind !== "whatsapp" ? '<div class="field"><label>Dirección de tu landing</label><input id="wUrl" type="url" value="' + F.esc(W.url) + '" placeholder="https://tudominio.com/reservas"><span class="hint">Debe empezar con https://</span></div>' :
+        '<div class="field"><label>Número de WhatsApp Business (con código de país)</label><input id="wWa" value="' + F.esc(W.wa) + '" placeholder="+59170000000"><span class="hint">Debe estar vinculado a tu página de Facebook.</span></div>') +
+      '<div class="field"><label>Presupuesto diario (' + F.esc(S.currency || "USD") + ')</label><input id="wBudget" type="number" min="0" step="any" value="' + F.esc(W.budget) + '" placeholder="' + (A.target ? Math.max(1, Math.round(A.target * 5)) : 5) + '"><span class="hint" id="wBudgetHint"></span></div></div>' +
+      (W.kind === "conversion" ? convBlock(A) : "") + '<div class="row3" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px"><div class="field"><label>País</label><select id="wCountry">' + Object.keys(COUNTRIES).map(function (k) { return '<option value="' + k + '"' + (W.country === k ? " selected" : "") + '>' + COUNTRIES[k] + '</option>'; }).join("") + '</select></div>' +
+      '<div class="field"><label>Ciudad (opcional)</label><input id="wCity" value="' + F.esc(W.city) + '" placeholder="Ej. Cochabamba"><span class="hint">Con radio de ' + W.radius + ' km. Vacío usa todo el país.</span></div><div class="field"><label>Edad mínima</label><input id="wAgeMin" type="number" min="18" max="64" value="' + W.ageMin + '"></div><div class="field"><label>Edad máxima</label><input id="wAgeMax" type="number" min="19" max="65" value="' + W.ageMax + '"></div>' +
+      '<div class="field"><label>Género</label><select id="wGender"><option value="0"' + (W.gender === "0" ? " selected" : "") + '>Todos</option><option value="2"' + (W.gender === "2" ? " selected" : "") + '>Mujeres</option><option value="1"' + (W.gender === "1" ? " selected" : "") + '>Hombres</option></select></div></div>' +
+      exclBlock(A) + '<p class="sub" style="margin-top:8px">Usa audiencia amplia con Advantage+ activado: la edad y el país son sugerencias y Meta busca a quien más probabilidad tiene de responder. Ubicaciones automáticas.</p></div>' +
+      '<div class="mb" style="display:flex;justify-content:space-between;margin-top:14px"><button class="btn" data-wprev="1">Atrás</button><button class="btn btn-gold" data-wnext="2">Continuar</button></div>';
+  } else if (W.step === 3) {
+    h += '<div class="grid g21"><div class="card pad"><div class="field"><label>Imagen del anuncio (JPG o PNG, máximo 8 MB)</label><input type="file" id="wFile" accept="image/jpeg,image/png"><span class="hint">Recomendado 1080 × 1350 (4:5). ' + (W.fileName ? "Elegida: " + F.esc(W.fileName) : "") + '</span></div>' +
+      '<div class="field"><label>Texto principal</label><textarea id="wPrimary" rows="4" maxlength="500" placeholder="Lo primero que se lee. Cuenta una escena o promete un resultado concreto, sin garantías absolutas.">' + F.esc(W.primary) + '</textarea></div>' +
+      '<div class="row2"><div class="field"><label>Título</label><input id="wHead" maxlength="60" value="' + F.esc(W.headline) + '" placeholder="Ej. Reserva tu sesión de fotos"></div>' +
+      '<div class="field"><label>Botón</label><select id="wCta">' + (W.kind === "whatsapp" ? '<option value="WHATSAPP_MESSAGE" selected>Enviar mensaje de WhatsApp</option>' : Object.keys(CTAS).map(function (k) { return '<option value="' + k + '"' + (W.cta === k ? " selected" : "") + '>' + CTAS[k] + '</option>'; }).join("")) + '</select></div></div>' + varBlock() + hookHints() + '</div>' +
+      '<div class="card pad"><div class="eyebrow">Vista previa</div><div id="wPrev" style="margin-top:8px"></div></div></div>' +
+      '<div class="mb" style="display:flex;justify-content:space-between;margin-top:14px"><button class="btn" data-wprev="2">Atrás</button><button class="btn btn-gold" data-wnext="3">Continuar</button></div>';
+  } else {
+    var pg = (W.pages || []).filter(function (p) { return p.id === W.pageId; })[0];
+    var rows = [["Objetivo", W.kind === "traffic" ? "Tráfico, visitas a la página" : (W.kind === "conversion" ? "Conversión en sitio web: " + W.event : "Mensajes de WhatsApp")], ["Campaña", W.name], ["Página", pg ? pg.name : W.pageId], [W.kind === "whatsapp" ? "WhatsApp" : "Landing", W.kind === "whatsapp" ? W.wa : W.url],
+      ["Presupuesto", F.money(parseFloat(W.budget)) + " por día"], ["Público", (W.city ? W.city + " +" + W.radius + " km, " : "") + COUNTRIES[W.country] + ", " + W.ageMin + " a " + W.ageMax + " años, " + { "0": "todos", "1": "hombres", "2": "mujeres" }[W.gender]], ["Anuncio", W.headline + " · " + (W.fileName || "sin imagen")], ["Variaciones", ([W.p2, W.p3].filter(Boolean).length + [W.h2, W.h3].filter(Boolean).length) ? "Anuncio flexible con " + (1 + [W.p2, W.p3].filter(Boolean).length) + " textos y " + (1 + [W.h2, W.h3].filter(Boolean).length) + " títulos" : "Un solo texto"], ["Excluye", W.excl.length ? W.excl.length + " audiencias" : "Nadie"]];
+    h += '<div class="card pad"><div class="eyebrow">Resumen</div>' + rows.map(function (r) { return '<div style="display:flex;gap:12px;padding:8px 0;border-top:1px solid var(--line)"><div class="sub" style="min-width:110px">' + r[0] + '</div><div><b>' + F.esc(r[1]) + '</b></div></div>'; }).join("") + '</div>' +
+      '<div class="alert on edit" style="margin-top:12px"><div><b>Todo se crea en pausa</b><div class="sub">No se gasta un centavo hasta que tú actives la campaña. Después de crearla, revísala en Ads Manager y actívala cuando esté lista.</div></div></div>' +
+      '<div class="mb" style="display:flex;justify-content:space-between;margin-top:14px"><button class="btn" data-wprev="3">Atrás</button><button class="btn btn-gold" id="wCreate"' + (S.canEdit ? "" : " disabled") + '>Crear en pausa</button></div>';
+  }
+  return h;
+};
+
+T.crearProgress = function () {
+  var r = W.run;
+  var h = '<div class="card pad"><div class="eyebrow">Creando tu campaña</div>' + r.steps.map(function (s) {
+    var ic = s.state === "ok" ? F.chip("g", "Listo") : (s.state === "run" ? F.chip("y", "En curso") : (s.state === "err" ? F.chip("r", "Falló") : F.chip("n", "Pendiente")));
+    return '<div style="display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid var(--line)"><div><b>' + F.esc(s.label) + '</b>' + (s.err ? '<div class="sub" style="color:var(--bad)">' + F.esc(s.err) + '</div>' : '') + '</div>' + ic + '</div>';
+  }).join("") + '</div>';
+  if (r.done) {
+    var num = String(S.acct || "").replace("act_", "");
+    h += '<div class="alert on ' + (r.ok ? "edit" : "bad") + '" style="margin-top:12px"><div><b>' + (r.ok ? "Campaña creada en pausa" : "Se creó una parte") + '</b><div class="sub">' + (r.ok ? "Revisa el anuncio en Ads Manager y actívala cuando quieras." : "Lo ya creado quedó en pausa y no gasta. Puedes verlo en Ads Manager, corregir el problema y volver a intentar.") + '</div></div></div>' +
+      '<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">' + (S.demo ? "" : '<a class="btn btn-gold" target="_blank" rel="noopener" href="https://adsmanager.facebook.com/adsmanager/manage/campaigns?act=' + F.esc(num) + '">Abrir en Ads Manager</a>') + '<button class="btn" id="wReset">' + (r.ok ? "Crear otra" : "Volver al asistente") + '</button><button class="btn" data-goto="campanas">Ver mis campañas</button></div>';
+  }
+  return h;
+};
+
+/* ---------------- validación y ejecución ---------------- */
+AB.wizValidate = function (step) {
+  var e = null;
+  if (step === 1) { if (!W.name.trim()) e = "Ponle un nombre a la campaña."; else if (!W.pageId) e = "Elige la página de Facebook que publicará el anuncio."; }
+  if (step === 2) {
+    if (W.kind !== "whatsapp" && !/^https:\/\/[^\s.]+\.[^\s]+$/.test(W.url.trim())) e = "La dirección de la landing debe empezar con https://";
+    else if (W.kind === "whatsapp" && !/^\+?\d{8,15}$/.test(W.wa.replace(/[\s\-()]/g, ""))) e = "Escribe el número con código de país, por ejemplo +59170000000.";
+    else if (W.kind === "conversion" && !W.pixel) e = "Elige el píxel que medirá la conversión.";
+    else if (W.kind === "conversion" && !W.event.trim()) e = "Escribe o elige el evento que quieres optimizar.";
+    else if (!(parseFloat(W.budget) > 0)) e = "Escribe un presupuesto diario mayor que cero.";
+    else if (W.ageMin < 18 || W.ageMax <= W.ageMin || W.ageMax > 65) e = "Revisa el rango de edad (18 a 65, con máximo mayor que el mínimo).";
+  }
+  if (step === 3) {
+    if (!W.fileB64) e = "Sube la imagen del anuncio.";
+    else if (!W.primary.trim()) e = "Escribe el texto principal.";
+    else if (!W.headline.trim()) e = "Escribe el título.";
+  }
+  return e;
+};
+function toB64(file) { return new Promise(function (res, rej) { var fr = new FileReader(); fr.onload = function () { res(String(fr.result).split(",")[1]); }; fr.onerror = function () { rej(new Error("No se pudo leer la imagen")); }; fr.readAsDataURL(file); }); }
+AB.wizFile = function (file) {
+  if (!file) return Promise.resolve();
+  if (!/^image\/(jpeg|png)$/.test(file.type)) { UI.toast("Usa una imagen JPG o PNG.", "bad"); return Promise.resolve(); }
+  if (file.size > 8 * 1024 * 1024) { UI.toast("La imagen pesa más de 8 MB.", "bad"); return Promise.resolve(); }
+  return toB64(file).then(function (b) { W.fileB64 = b; W.fileName = file.name; if (W.fileUrl) URL.revokeObjectURL(W.fileUrl); W.fileUrl = URL.createObjectURL(file); });
+};
+AB.wizPreview = function () {
+  var el = AB.$("wPrev"); if (!el) return;
+  var pg = (W.pages || []).filter(function (p) { return p.id === W.pageId; })[0];
+  el.innerHTML = '<div style="border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff"><div style="padding:10px 12px;display:flex;gap:8px;align-items:center"><div style="width:32px;height:32px;border-radius:50%;background:' + F.grad(pg ? pg.name : "p") + '"></div><div><b style="font-size:13px">' + F.esc(pg ? pg.name : "Tu página") + '</b><div class="sub" style="font-size:11px">Publicidad</div></div></div>' +
+    '<div style="padding:0 12px 10px;font-size:13px;white-space:pre-wrap">' + F.esc(W.primary || "Tu texto principal aparece aquí.") + '</div>' + (W.fileUrl ? '<img src="' + W.fileUrl + '" alt="" style="width:100%;max-height:300px;object-fit:cover">' : '<div style="height:160px;background:var(--cream-alt);display:flex;align-items:center;justify-content:center" class="sub">Sin imagen</div>') +
+    '<div style="padding:10px 12px;display:flex;justify-content:space-between;align-items:center;background:var(--cream-alt)"><b style="font-size:13px">' + F.esc(W.headline || "Tu título") + '</b><span class="btn btn-sm">' + F.esc(W.kind === "whatsapp" ? "Enviar mensaje" : (CTAS[W.cta] || "Más información")) + '</span></div></div>';
+};
+AB.loadPages = function () {
+  if (W.pages && W.pages.length) return Promise.resolve(W.pages);
+  return G.all("me/accounts", { fields: "id,name", limit: 100 }, 2).catch(function () { return []; }).then(function (p) {
+    if (p.length) return p;
+    return G.all(S.acct + "/promote_pages", { fields: "id,name", limit: 100 }, 1).catch(function () { return []; });
+  }).then(function (p) { W.pages = p.map(function (x) { return { id: x.id, name: x.name }; }); return W.pages; });
+};
+
+AB.wizCreate = function () {
+  var e1 = AB.wizValidate(1) || AB.wizValidate(2) || AB.wizValidate(3);
+  if (e1) { UI.toast(e1, "bad"); return; }
+  if (!S.canEdit) { UI.toast("Activa el modo edición para crear.", "bad"); return; }
+  var traffic = W.kind !== "whatsapp", conv = W.kind === "conversion", acct = S.acct, ids = {};
+  var budgetMinor = Math.round(parseFloat(W.budget) * S.offset);
+  var targeting = { geo_locations: { countries: [W.country] }, age_min: W.ageMin, age_max: W.ageMax, targeting_automation: { advantage_audience: 1 } };
+  if (W.gender !== "0") targeting.genders = [parseInt(W.gender, 10)];
+  if (W.excl && W.excl.length) targeting.excluded_custom_audiences = W.excl.map(function (id) { return { id: id }; });
+  var bodies = [W.primary, W.p2, W.p3].map(function (x) { return (x || "").trim(); }).filter(Boolean), titles = [W.headline, W.h2, W.h3].map(function (x) { return (x || "").trim(); }).filter(Boolean);
+  var flex = W.kind !== "whatsapp" && (bodies.length > 1 || titles.length > 1);
+  var wa = "+" + W.wa.replace(/[^\d]/g, "");
+  var run = W.run = { done: false, ok: false, steps: [
+    { label: "Campaña", state: "run" }, { label: "Conjunto de anuncios", state: "" }, { label: "Subir imagen", state: "" }, { label: "Creativo", state: "" }, { label: "Anuncio", state: "" }] };
+  AB.renderTab();
+  function mark(i, st, err) { run.steps[i].state = st; if (err) run.steps[i].err = err; if (st === "ok" && run.steps[i + 1]) run.steps[i + 1].state = "run"; AB.renderTab(); }
+  var cityStep = (W.city.trim() ? G.get("search", { type: "adgeolocation", location_types: JSON.stringify(["city"]), q: W.city.trim(), country_code: W.country, limit: 1 }).then(function (j) {
+      var c = (j.data || [])[0]; if (c) { targeting.geo_locations = { cities: [{ key: c.key, radius: W.radius, distance_unit: "kilometer" }] }; }
+      else UI.toast("No encontré la ciudad «" + W.city + "». Se usará todo el país.", "bad");
+    }).catch(function () { UI.toast("No pude buscar la ciudad. Se usará todo el país.", "bad"); }) : Promise.resolve());
+  var chain = cityStep.then(function () { return G.post(acct + "/campaigns", { name: W.name.trim(), objective: conv ? "OUTCOME_SALES" : (traffic ? "OUTCOME_TRAFFIC" : "OUTCOME_ENGAGEMENT"), status: "PAUSED", special_ad_categories: [], is_adset_budget_sharing_enabled: false }); }).then(function (j) {
+    ids.campaign = j.id; mark(0, "ok");
+    var aset = { name: W.name.trim() + " · Conjunto", campaign_id: ids.campaign, status: "PAUSED", daily_budget: budgetMinor, billing_event: "IMPRESSIONS", bid_strategy: "LOWEST_COST_WITHOUT_CAP", targeting: targeting };
+    if (conv) {
+      var ev = W.event.trim(), std = STD[ev.toLowerCase().replace(/[^a-z]/g, "")];
+      aset.optimization_goal = "OFFSITE_CONVERSIONS"; aset.destination_type = "WEBSITE";
+      aset.promoted_object = std ? { pixel_id: W.pixel, custom_event_type: std } : { pixel_id: W.pixel, custom_event_type: "OTHER", custom_event_str: ev };
+    } else if (traffic) { aset.optimization_goal = "LANDING_PAGE_VIEWS"; aset.destination_type = "WEBSITE"; }
+    else { aset.optimization_goal = "CONVERSATIONS"; aset.destination_type = "WHATSAPP"; aset.promoted_object = { page_id: W.pageId, whatsapp_phone_number: wa }; }
+    if (flex) aset.is_dynamic_creative = true;
+    return G.post(acct + "/adsets", aset);
+  }).then(function (j) { ids.adset = j.id; mark(1, "ok"); return G.post(acct + "/adimages", { bytes: W.fileB64 }); })
+    .then(function (j) {
+      var k = Object.keys(j.images || {})[0]; if (!k) throw new Error("Meta no devolvió el identificador de la imagen.");
+      ids.hash = j.images[k].hash; mark(2, "ok");
+      var link = traffic ? W.url.trim() : "https://api.whatsapp.com/send";
+      var cta = traffic ? { type: W.cta, value: { link: link } } : { type: "WHATSAPP_MESSAGE", value: { app_destination: "WHATSAPP" } };
+      if (flex) return G.post(acct + "/adcreatives", { name: W.name.trim() + " · Creativo flexible", object_story_spec: { page_id: W.pageId }, asset_feed_spec: { images: [{ hash: ids.hash }], bodies: bodies.map(function (t) { return { text: t }; }), titles: titles.map(function (t) { return { text: t }; }), link_urls: [{ website_url: link }], call_to_action_types: [W.cta], ad_formats: ["SINGLE_IMAGE"] } });
+      return G.post(acct + "/adcreatives", { name: W.name.trim() + " · Creativo", object_story_spec: { page_id: W.pageId, link_data: { link: link, message: W.primary.trim(), name: W.headline.trim(), image_hash: ids.hash, call_to_action: cta } } });
+    }).then(function (j) { ids.creative = j.id; mark(3, "ok"); return G.post(acct + "/ads", { name: W.name.trim() + " · Anuncio 1", adset_id: ids.adset, creative: { creative_id: ids.creative }, status: "PAUSED" }); })
+    .then(function (j) {
+      ids.ad = j.id; mark(4, "ok"); run.done = true; run.ok = true;
+      S.editLog = S.editLog || []; S.editLog.unshift({ t: Date.now(), what: "Creó campaña en pausa", name: W.name, id: ids.campaign }); AB.saveLocal();
+      AB.renderTab(); UI.toast("Campaña creada en pausa"); AB.refresh(true);
+    }).catch(function (e) {
+      var i = run.steps.findIndex(function (s) { return s.state === "run"; }); if (i < 0) i = 0;
+      run.steps[i].state = "err"; run.steps[i].err = e.userMsg || e.message; run.done = true; run.ok = false;
+      AB.renderTab(); UI.toast("No se pudo completar la creación: " + (e.userMsg || e.message), "bad");
+    });
+  return chain;
+};
+})(window);
+
+;
+/* ==========================================================================
+   HOOKS: ranking de videos, embudo y laboratorio de copy (titulares y textos)
+   ========================================================================== */
+(function (root) {
+"use strict";
+var AB = root.AB, S = AB.S, G = AB.G, F = AB.F, UI = AB.UI, T = AB.T, Ch = AB.Ch, E = root.AdsEngine;
+
+/* desglose por texto y titular (anuncios flexibles o de contenido dinámico) */
+AB.loadCopy = function () {
+  var acct = S.acct, rp = AB.rangeParams(), base = { level: "account", time_range: rp.time_range, fields: "spend,impressions,inline_link_clicks,actions", limit: 200 };
+  function one(bd) { return G.all(acct + "/insights", Object.assign({ breakdowns: bd }, base), 3).catch(function (e) { return { error: e.userMsg || e.message }; }); }
+  return Promise.all([one("body_asset"), one("title_asset"), one("image_asset")]).then(function (r) { return { body: r[0], title: r[1], image: r[2] }; });
+};
+function assetText(v) { return v && typeof v === "object" ? (v.text || v.name || v.hash || v.id || "") : String(v || ""); }
+AB.mapCopy = function (rows, key) {
+  if (!rows || rows.error) return null;
+  var list = AB.mapSeg(rows).map(function (x) {
+    return { text: assetText(x.r[key]), thumb: (x.r[key] && x.r[key].url) || "", spend: x.spend, impr: x.impr, clicks: x.clicks, results: x.results, cpr: x.cpr, ctr: x.ctr };
+  }).filter(function (x) { return x.text && x.spend > 0; });
+  var withRes = list.filter(function (x) { return x.results > 0; }).sort(function (a, b) { return a.cpr - b.cpr; });
+  var best = withRes[0] || null, second = withRes[1] || null;
+  list.forEach(function (x) {
+    x.ci = x.results > 0 ? E.cprCI(x.spend, x.results, 0.9) : null;
+    x.test = null;
+    if (best && x !== best && best.impr && x.impr) x.test = E.abTest({ n: x.impr, x: x.results }, { n: best.impr, x: best.results });
+  });
+  list.sort(function (a, b) { return (a.cpr || 1e9) - (b.cpr || 1e9); });
+  return { list: list, best: best, second: second };
+};
+
+function imageBlock(data, A) {
+  var h = '<div class="card pad glass reveal" style="margin-top:14px"><div class="eyebrow">Qué foto funciona</div><div class="sub" style="margin:2px 0 10px">Costo por resultado de cada imagen dentro de tus anuncios flexibles. Útil para decidir qué foto repetir.</div>';
+  if (!data || !data.list.length) return h + '<div class="sub">Sin datos de imágenes. Aparece cuando un anuncio usa varias fotos.</div></div>';
+  h += '<div class="grid g3">' + data.list.slice(0, 6).map(function (x, i) {
+    var lv = !x.cpr ? "n" : (A.target && x.cpr <= A.target ? "g" : (A.target && x.cpr > A.target * 1.5 ? "r" : "y"));
+    return '<div class="kv" style="display:flex;gap:10px;align-items:center">' + (x.thumb ? '<img src="' + F.esc(x.thumb) + '" alt="" style="width:56px;height:56px;border-radius:12px;object-fit:cover">' : '<div style="width:56px;height:56px;border-radius:12px;background:var(--cream-alt)"></div>') +
+      '<div><div class="k">' + F.esc(x.text.slice(0, 28)) + '</div><div class="v">' + (x.cpr ? F.money(x.cpr) : "sin res.") + '</div>' + F.chip(lv, i === 0 && x.cpr ? "La mejor foto" : F.num(x.results) + " resultados") + '</div></div>';
+  }).join("") + '</div></div>';
+  return h;
+}
+function copyBlock(title, sub, data, A) {
+  var h = '<div class="card pad glass"><div class="eyebrow">' + title + '</div><div class="sub" style="margin:2px 0 10px">' + sub + '</div>';
+  if (!data) return h + '<div class="sub">Este desglose no está disponible. Aparece cuando tus anuncios usan varios textos o titulares (anuncio flexible o contenido dinámico).</div></div>';
+  if (!data.list.length) return h + '<div class="sub">Aún no hay gasto en variaciones. Crea un anuncio con 2 o 3 versiones y vuelve en unos días.</div></div>';
+  var tgt = A.target;
+  h += Ch.bars(data.list.slice(0, 6).map(function (x) {
+    var lv = !x.cpr ? "" : (tgt && x.cpr <= tgt ? "g" : (tgt && x.cpr > tgt * 1.5 ? "r" : "y"));
+    var short = x.text.length > 46 ? x.text.slice(0, 44) + "…" : x.text;
+    return { label: short, value: x.cpr || 0, text: x.cpr ? F.money(x.cpr) : "sin res.", level: lv,
+      tip: F.money(x.spend) + " gastados, " + F.num(x.results) + " resultados, " + F.pct(x.ctr, 2) + " CTR" + (x.ci ? ". Rango probable " + F.money(x.ci.lo) + " a " + (isFinite(x.ci.hi) ? F.money(x.ci.hi) : "más") : "") };
+  }));
+  if (data.best) {
+    var verdict = "";
+    var rivals = data.list.filter(function (x) { return x.test; });
+    var sure = rivals.length && rivals.every(function (x) { return x.test.conf >= 0.95; });
+    var need = rivals.reduce(function (m, x) { return Math.max(m, x.test.needN || 0); }, 0);
+    verdict = sure ? F.chip("g", "Ganador confirmado", "Con 95% de confianza este texto rinde mejor que los demás.") : F.chip("y", "Todavía no es concluyente", "La diferencia puede ser azar. Deja correr más tiempo.");
+    h += '<div class="sub" style="margin-top:10px">Va ganando <b>«' + F.esc(data.best.text.slice(0, 80)) + '»</b> con ' + F.money(data.best.cpr) + ' por resultado. ' + verdict +
+      (!sure && need ? ' Necesitas unas ' + F.num(need) + ' impresiones por variación para fiarte.' : '') + '</div>';
+  }
+  return h + '</div>';
+}
+
+T.hooks = function (A) {
+  var vids = A.ads.filter(function (a) { return a.isVideo && a.m.impr >= 300; }).sort(function (a, b) { return (b.m.hook || 0) - (a.m.hook || 0); });
+  var html = '<div class="card pad glass reveal" style="margin-bottom:14px"><div class="eyebrow">Hooks y retención</div>' +
+    '<h2 style="margin:4px 0 6px">Descubre qué frena el dedo y qué lo retiene</h2>' +
+    '<div class="sub">Hook ' + F.help("hook") + ' = personas que ven 3 segundos dividido entre impresiones. Retención ' + F.help("hold") + ' = quienes llegan a ThruPlay dividido entre quienes vieron 3 segundos. Si el hook es bajo, el problema es el inicio. Si el hook sube y la retención cae, el problema es el cuerpo del video.</div></div>';
+  if (!vids.length) {
+    html += '<div class="card pad glass reveal" style="margin-bottom:14px"><div class="sub">Todavía no hay videos con suficientes impresiones en este periodo. Los hooks se miden en reels y videos, no en fotos.</div></div>';
+  } else {
+    var rows = vids.slice(0, 8);
+    html += '<div class="grid g2" style="margin-bottom:14px"><div class="card pad glass reveal"><div class="eyebrow">Ranking por hook</div>' +
+      Ch.bars(rows.map(function (a) { return { label: a.name, value: a.m.hook || 0, text: F.pct(a.m.hook, 0), level: a.diag && a.diag.hookLevel > 0 ? "g" : (a.diag && a.diag.hookLevel < 0 ? "r" : "y"), tip: "Hook " + F.pct(a.m.hook, 1) + ", retención " + F.pct(a.m.hold, 1) }; })) + '</div>' +
+      '<div class="card pad glass reveal"><div class="eyebrow">Ranking por retención</div>' +
+      Ch.bars(rows.slice().sort(function (a, b) { return (b.m.hold || 0) - (a.m.hold || 0); }).map(function (a) { return { label: a.name, value: a.m.hold || 0, text: F.pct(a.m.hold, 0), level: a.diag && a.diag.holdLevel > 0 ? "g" : (a.diag && a.diag.holdLevel < 0 ? "r" : "y"), tip: "Hook " + F.pct(a.m.hook, 1) + ", retención " + F.pct(a.m.hold, 1) }; })) + '</div></div>';
+    var sel = vids.filter(function (a) { return a.id === S.hookAd; })[0] || vids[0];
+    var m = sel.m, steps = [
+      ["Impresiones", m.impr, 1], ["Vieron 3 segundos", m.v3, m.impr ? m.v3 / m.impr : 0], ["ThruPlay (15 s o completo)", m.thru, m.impr ? m.thru / m.impr : 0],
+      ["Clic en el enlace", m.clicks, m.impr ? m.clicks / m.impr : 0], ["Resultados", m.results, m.impr ? m.results / m.impr : 0]
+    ];
+    html += '<div class="card pad glass reveal" style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center"><div><div class="eyebrow">Embudo del video</div><b>' + F.esc(sel.name) + '</b></div>' +
+      '<select id="hookSel" aria-label="Elegir video">' + vids.map(function (a) { return '<option value="' + F.esc(a.id) + '"' + (a.id === sel.id ? " selected" : "") + '>' + F.esc(a.name) + '</option>'; }).join("") + '</select></div>' +
+      '<div class="funnel">' + steps.map(function (s, i) {
+        return '<div class="frow" style="--i:' + i + '"><div class="fl">' + s[0] + '</div><div class="ftrack"><div class="ffill" style="width:' + Math.max(1.2, s[2] * 100) + '%"></div></div><div class="fv">' + F.num(s[1]) + '</div></div>';
+      }).join("") + '</div>' +
+      (sel.diag ? '<div class="sub" style="margin-top:10px">' + F.chip(sel.diag.level, sel.diag.title) + ' ' + F.esc(sel.diag.text) + '</div>' : '') +
+      '<div style="margin-top:10px"><button class="btn btn-sm" data-open="ad:' + F.esc(sel.id) + '">Ver diagnóstico completo</button></div></div>';
+  }
+  /* laboratorio de copy */
+  var c = S.copy;
+  html += '<div class="eyebrow" style="margin:6px 4px 8px">Laboratorio de copy</div>';
+  if (!c) html += '<div class="state"><div class="spinner"></div>Leyendo variaciones de texto y titular…</div>';
+  else html += '<div class="grid g2">' + copyBlock("Textos principales", "Costo por resultado de cada versión de texto", AB.mapCopy(c.body, "body_asset"), A) +
+    copyBlock("Titulares", "Costo por resultado de cada titular", AB.mapCopy(c.title, "title_asset"), A) + '</div>' + imageBlock(AB.mapCopy(c.image, "image_asset"), A);
+  html += T.angles(A);
+  html += '<div class="card pad glass reveal" style="margin-top:14px"><div class="eyebrow">Cómo probar copy sin mezclar variables</div><div class="sub">Usa un anuncio flexible con una sola foto y 3 textos o 3 titulares. Así cambias una cosa a la vez. Espera unas 50 acciones por versión antes de decidir. Para repetir lo ganador, duplica el anuncio en la pestaña Crear.</div></div>';
+  return html;
+};
+
+/* ---------------------------- Reglas de notificación ---------------------- */
+AB.loadRules = function () {
+  return G.all(S.acct + "/adrules_library", { fields: "id,name,status,evaluation_spec,execution_spec,schedule_spec", limit: 50 }, 1).catch(function (e) { return { error: e.userMsg || e.message }; });
+};
+function presets(A) {
+  var tgt = A.target, minor = S.offset || 100;
+  return {
+    freq: { title: "Frecuencia alta", text: "Te avisa si un anuncio activo muestra tu publicidad a la misma persona más de 3 veces en 7 días. Es la señal temprana de fatiga.",
+      name: "Ads Board: frecuencia mayor a 3 (aviso)", filters: [{ field: "frequency", value: 3, operator: "GREATER_THAN" }, { field: "time_preset", value: "LAST_7D", operator: "EQUAL" }] },
+    cpr: { title: "Costo por encima de tu límite", text: tgt ? "Te avisa si un anuncio activo cuesta más de " + F.money(tgt) + " por resultado en 3 días. Ese es tu límite de rentabilidad." : "Necesitas definir tu límite de costo en Rentabilidad para activar esta regla.",
+      name: "Ads Board: costo por resultado sobre el límite (aviso)", needTarget: true, filters: [{ field: "cost_per", value: Math.round((tgt || 0) * minor), operator: "GREATER_THAN" }, { field: "time_preset", value: "LAST_3D", operator: "EQUAL" }] },
+    spend: { title: "Gasto sin resultados", text: tgt ? "Te avisa si un anuncio gasta " + F.money(tgt * 2) + " (el doble de tu límite) y no trae ni un resultado." : "Necesitas definir tu límite de costo en Rentabilidad para activar esta regla.",
+      name: "Ads Board: gasto sin resultados (aviso)", needTarget: true, filters: [{ field: "spent", value: Math.round((tgt || 0) * 2 * minor), operator: "GREATER_THAN" }, { field: "results", value: 1, operator: "LESS_THAN" }, { field: "time_preset", value: "LIFETIME", operator: "EQUAL" }] }
+  };
+}
+AB.createRule = function (key) {
+  var parts = key.split(":"), pause = parts[1] === "pause"; key = parts[0];
+  var A = S.A, pr = presets(A)[key];
+  if (!pr) return;
+  if (pr.needTarget && !A.target) { UI.toast("Define tu límite de costo en la pestaña Rentabilidad primero.", "bad"); return; }
+  if (!S.canEdit) { UI.toast("Activa el modo edición para crear reglas en Meta.", "bad"); return; }
+  var first = UI.confirm({ title: pause ? "¿Crear una regla que pausa anuncios?" : "¿Crear esta regla en Meta?", html: '<p class="sub"><b>' + F.esc(pr.title) + '</b><br>' + F.esc(pr.text) + '</p><p class="sub">' + (pause ? "Esta regla pausa el anuncio sola, sin preguntarte, y te avisa. Se revisa cada día." : "Solo envía una notificación. No pausa ni cambia nada en tus anuncios. Se revisa cada día.") + '</p>', ok: pause ? "Sí, entiendo" : "Crear regla" });
+  first.then(function (ok) {
+    if (!ok || !pause) return ok;
+    return UI.confirm({ title: "Última confirmación", html: '<p class="sub">Meta pausará cualquier anuncio activo que cumpla la condición, incluso de noche. Puedes borrar la regla en Ads Manager cuando quieras.</p>', ok: "Crear regla que pausa", danger: true });
+  }).then(function (ok) {
+    if (!ok) return;
+    UI.loading(true, "Creando regla…");
+    var filters = [{ field: "entity_type", value: "AD", operator: "EQUAL" }, { field: "effective_status", value: ["ACTIVE"], operator: "IN" }].concat(pr.filters);
+    G.post(S.acct + "/adrules_library", { name: pause ? pr.name.replace("(aviso)", "(pausa)") : pr.name, status: "ENABLED",
+      evaluation_spec: JSON.stringify({ evaluation_type: "SCHEDULE", filters: filters }),
+      execution_spec: JSON.stringify({ execution_type: pause ? "PAUSE" : "NOTIFICATION" }),
+      schedule_spec: JSON.stringify({ schedule_type: "DAILY" }) }).then(function () {
+      S.editLog = S.editLog || []; S.editLog.unshift({ t: Date.now(), what: "Creó regla de aviso", name: pr.name, id: "rule" }); AB.saveLocal();
+      S.rules = null; UI.loading(false); UI.toast("Regla creada. Meta te avisará en su campana de notificaciones."); AB.renderTab();
+    }).catch(function (e) { UI.loading(false); UI.toast(e.userMsg || e.message || "Meta no aceptó la regla", "bad"); });
+  });
+};
+T.reglas = function (A) {
+  var pr = presets(A), r = S.rules;
+  var h = '<div class="card pad glass reveal" style="margin-bottom:14px"><div class="eyebrow">Reglas automáticas de Meta</div><h2 style="margin:4px 0 6px">Que Meta te avise antes de que pierdas plata</h2>' +
+    '<div class="sub">Son reglas que corren dentro de Meta cada día aunque tengas esta página cerrada. Las de aviso te notifican y no tocan tus anuncios. La de gasto sin resultados también puede pausar sola, con doble confirmación, como tope para que un anuncio roto no se coma el presupuesto.</div></div>';
+  h += '<div class="grid g3">' + Object.keys(pr).map(function (k) {
+    var x = pr[k];
+    return '<div class="card pad glass"><div class="eyebrow">Plantilla</div><h4 style="margin:4px 0 6px">' + F.esc(x.title) + '</h4><div class="sub" style="min-height:66px">' + F.esc(x.text) + '</div><div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-sm btn-gold" data-rule="' + k + '">Crear regla de aviso</button>' + (k === "spend" ? '<button class="btn btn-sm" data-rule="spend:pause">Crear regla que pausa</button>' : '') + '</div></div>';
+  }).join("") + '</div>';
+  h += '<div class="sec-head"><h2>Reglas de aviso que ya tienes</h2><div class="hint">Leídas directamente de tu cuenta</div></div>';
+  if (!r) h += '<div class="state"><div class="spinner"></div>Leyendo reglas…</div>';
+  else if (r.error) h += '<div class="state"><b>No se pudieron leer las reglas</b>' + F.esc(r.error) + '</div>';
+  else if (!r.length) h += '<div class="state"><b>Todavía no tienes reglas</b>Crea una desde las plantillas de arriba.</div>';
+  else h += '<div class="grid g2">' + r.map(function (x) {
+    var ex = x.execution_spec && x.execution_spec.execution_type, notif = ex === "NOTIFICATION";
+    return '<div class="card pad glass"><h4 style="margin-bottom:6px">' + F.esc(x.name) + '</h4><div style="display:flex;gap:6px;flex-wrap:wrap">' + F.chip(x.status === "ENABLED" ? "g" : "n", x.status === "ENABLED" ? "Activa" : "Pausada") + F.chip(notif ? "g" : "y", notif ? "Solo avisa" : "Cambia cosas: " + F.esc(String(ex || "acción"))) + '</div></div>';
+  }).join("") + '</div>';
+  return h + T.valueRules(A);
+};
+
+/* ------------------------------ Ángulos ---------------------------------- */
+var ANGLES = [
+  ["Comparación", /compar|vs\b|versus|antes y despu/i, "Muestra tu servicio contra la alternativa barata."],
+  ["Testimonios", /testimon|reseñ|cliente|caso de/i, "Una persona real cuenta su resultado."],
+  ["Ugly ad", /ugly|feo|casero|cruda/i, "Estética cruda, parece contenido orgánico."],
+  ["Oferta", /oferta|promo|descuento|cupo|irresistible/i, "Una razón concreta para actuar hoy."],
+  ["Problema y solución", /problema|soluci|dolor|error/i, "Nombra el dolor y presenta la salida."]
+];
+AB.angleOf = function (name) { for (var i = 0; i < ANGLES.length; i++) if (ANGLES[i][1].test(name || "")) return ANGLES[i][0]; return null; };
+T.angles = function (A) {
+  var active = A.ads.filter(function (a) { return a.effStatus === "ACTIVE" || a.effStatus === "PAUSED" || a.status === "ACTIVE"; });
+  var map = {};
+  ANGLES.forEach(function (x) { map[x[0]] = { spend: 0, results: 0, n: 0, fat: 0, fn: 0 }; });
+  active.forEach(function (a) { var g = AB.angleOf(a.name); if (g) { map[g].spend += a.m.spend; map[g].results += a.m.results; map[g].n++; if (a.fat && a.fat.score !== null) { map[g].fat += a.fat.score; map[g].fn++; } } });
+  var h = '<div class="card pad glass reveal" style="margin-top:14px"><div class="eyebrow">Ángulos que estás probando</div><div class="sub" style="margin:2px 0 10px">Meta reparte mejor cuando tus anuncios son distintos de verdad. Detectamos el ángulo por el nombre del anuncio.</div><div class="grid g3">' +
+    ANGLES.map(function (x) {
+      var d = map[x[0]], cpr = d.results > 0 ? d.spend / d.results : null;
+      return '<div class="kv"><div class="k">' + x[0] + '</div><div class="v">' + (d.n ? F.num(d.n) + (d.n === 1 ? " anuncio" : " anuncios") : "Sin probar") + '</div><div class="sub">' + (cpr ? F.money(cpr) + " por resultado" : F.esc(x[2])) + '</div>' + (d.fn ? F.chip(d.fat / d.fn >= 70 ? "r" : (d.fat / d.fn >= 45 ? "y" : "g"), "Fatiga " + Math.round(d.fat / d.fn) + " de 100") : "") + '</div>';
+    }).join("") + '</div></div>';
+  return h;
+};
+
+/* ------------------------ Calidad de datos del píxel ---------------------- */
+AB.pixelQuality = function (pid) {
+  var box = AB.$("pxq-" + pid); if (!box) return;
+  box.innerHTML = '<div class="sub" style="margin-top:8px">Leyendo calidad…</div>';
+  G.get("dataset_quality", { dataset_id: pid, fields: "web{event_name,event_match_quality,event_coverage,acr,data_freshness}" }).then(function (j) {
+    var web = (j.web || (j.data && j.data[0] && j.data[0].web) || []);
+    if (!web.length) { box.innerHTML = '<div class="sub" style="margin-top:8px">Meta todavía no tiene suficientes eventos para calificar este píxel.</div>'; return; }
+    box.innerHTML = '<div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">' + web.map(function (e) {
+      var q = e.event_match_quality || {}, sc = q.composite_score, cov = e.event_coverage && e.event_coverage.percentage;
+      var lv = sc === undefined ? "n" : (sc >= 7 ? "g" : (sc >= 5 ? "y" : "r"));
+      var tips = (q.diagnostics || []).slice(0, 2).map(function (d) { return d.solution || d.description; }).filter(Boolean);
+      return '<div class="kv"><div class="k">' + F.esc(e.event_name) + '</div><div style="display:flex;gap:6px;flex-wrap:wrap;margin:4px 0">' + F.chip(lv, sc !== undefined ? "Coincidencia " + Number(sc).toFixed(1) + " de 10" : "Sin puntaje", "Qué tan bien Meta reconoce a la persona que hizo el evento. Más de 7 es bueno.") +
+        (cov !== undefined ? F.chip(cov >= 75 ? "g" : "y", "Servidor " + Math.round(cov) + "%", "Porcentaje de eventos que también llegan por API de conversiones.") : F.chip("n", "Sin API de conversiones")) + '</div>' +
+        (tips.length ? '<div class="sub">' + tips.map(F.esc).join(" ") + '</div>' : '') + '</div>';
+    }).join("") + '</div>';
+  }).catch(function (er) { box.innerHTML = '<div class="sub" style="margin-top:8px;color:var(--bad)">' + F.esc(er.userMsg || er.message) + ' Esta lectura necesita acceso al píxel desde tu negocio.</div>'; });
+};
+
+/* ------------------------------ Reglas de valor --------------------------- */
+AB.loadValueRules = function () {
+  return G.get(S.acct + "/value_rule_set", { fields: "id,name,rules{name,adjust_sign,adjust_value,status}" }).then(function (j) { return j.data || []; }).catch(function (e) { return { error: e.userMsg || e.message }; });
+};
+var VR_TYPES = {
+  AGE: { label: "Edad", opts: [["18-24", "18 a 24"], ["25-34", "25 a 34"], ["35-44", "35 a 44"], ["45-54", "45 a 54"], ["55-64", "55 a 64"], ["65+", "65 o más"]], vt: "NONE" },
+  GENDER: { label: "Género", opts: [["FEMALE", "Mujeres"], ["MALE", "Hombres"]], vt: "NONE" },
+  PLACEMENT: { label: "Ubicación del anuncio", opts: [["IG_REELS", "Reels de Instagram"], ["IG_STORIES", "Historias de Instagram"], ["IG_FEED", "Feed de Instagram"], ["FB_FEED", "Feed de Facebook"], ["FB_REELS", "Reels de Facebook"]], vt: "NONE" },
+  DEVICE_PLATFORM: { label: "Dispositivo", opts: [["MOBILE", "Celular"], ["DESKTOP", "Computadora"]], vt: "NONE" },
+  CITY: { label: "Ciudad", opts: null, vt: "LOCATION_CITY" }
+};
+function bestHint(A) {
+  var seg = S.seg; if (!seg || !seg.place || seg.place.error) return "";
+  var rows = AB.mapSeg(seg.place).filter(function (x) { return x.results >= 5; }).sort(function (a, b) { return a.cpr - b.cpr; });
+  if (!rows.length) return "";
+  return '<div class="sub" style="margin-top:6px">Pista de tus datos: la ubicación más barata es <b>' + F.esc(String(rows[0].r.publisher_platform) + " " + String(rows[0].r.platform_position || "").replace(/_/g, " ")) + '</b> con ' + F.money(rows[0].cpr) + ' por resultado.</div>';
+}
+T.valueRules = function (A) {
+  var vr = S.vr = S.vr || { type: "PLACEMENT" }, ty = VR_TYPES[vr.type] || VR_TYPES.PLACEMENT, list = S.vrules;
+  var h = '<div class="sec-head"><h2>Reglas de valor</h2><div class="hint">Le dices a Meta qué público vale más para ti y ajusta la puja</div></div>' +
+    '<div class="grid g2"><div class="card pad glass"><div class="eyebrow">Nueva regla</div><div class="sub" style="margin:2px 0 10px">Ejemplo: si tus reservas vienen sobre todo de Reels, sube su valor 20%. Meta pujará más fuerte ahí sin dejar de mostrar el anuncio en otros lugares.</div>' +
+    '<div class="row2"><div class="field"><label>Según</label><select id="vrType">' + Object.keys(VR_TYPES).map(function (k) { return '<option value="' + k + '"' + (k === vr.type ? " selected" : "") + '>' + VR_TYPES[k].label + '</option>'; }).join("") + '</select></div>' +
+    '<div class="field"><label>Valor</label>' + (ty.opts ? '<select id="vrVal">' + ty.opts.map(function (o) { return '<option value="' + o[0] + '">' + o[1] + '</option>'; }).join("") + '</select>' : '<input id="vrVal" placeholder="Ej. Cochabamba">') + '</div></div>' +
+    '<div class="row2"><div class="field"><label>Ajuste</label><select id="vrSign"><option value="INCREASE">Subir valor</option><option value="DECREASE">Bajar valor</option></select></div><div class="field"><label>Porcentaje</label><input id="vrPct" type="number" min="1" max="90" value="20"><span class="hint">Entre 10% y 30% es un buen inicio.</span></div></div>' +
+    bestHint(A) + '<div style="margin-top:10px"><button class="btn btn-gold btn-sm" data-vrc="1">Crear regla de valor</button></div></div>';
+  h += '<div class="card pad glass"><div class="eyebrow">Tus conjuntos de reglas</div>';
+  if (!list) h += '<div class="sub">Leyendo…</div>';
+  else if (list.error) h += '<div class="sub">' + F.esc(list.error) + '</div>';
+  else if (!list.length) h += '<div class="sub">Todavía no tienes reglas de valor. Funcionan con puja de mayor volumen o con límite de costo.</div>';
+  else {
+    var sets = A.adsets.filter(function (x) { return x.status === "ACTIVE" || x.effStatus === "ACTIVE" || x.effStatus === "PAUSED"; });
+    h += list.map(function (r) {
+      var rules = (r.rules && (r.rules.data || r.rules)) || [];
+      return '<div style="padding:10px 0;border-top:1px solid var(--line)"><b>' + F.esc(r.name) + '</b><div class="sub">' + rules.map(function (x) { return F.esc(x.name) + " (" + (x.adjust_sign === "DECREASE" ? "−" : "+") + x.adjust_value + "%)"; }).join(", ") + '</div>' +
+        (sets.length ? '<div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap"><select id="vrSet-' + F.esc(r.id) + '" aria-label="Conjunto">' + sets.map(function (x) { return '<option value="' + F.esc(x.id) + '">' + F.esc(x.name) + '</option>'; }).join("") + '</select><button class="btn btn-sm" data-vra="' + F.esc(r.id) + '">Aplicar al conjunto</button></div>' : '') + '</div>';
+    }).join("");
+  }
+  return h + '</div></div>';
+};
+AB.createValueRule = function () {
+  if (!S.canEdit) { UI.toast("Activa el modo edición para crear reglas de valor.", "bad"); return; }
+  var type = S.vr.type, ty = VR_TYPES[type], val = (AB.$("vrVal").value || "").trim(), sign = AB.$("vrSign").value, pct = parseInt(AB.$("vrPct").value, 10);
+  if (!val) { UI.toast("Elige o escribe el valor.", "bad"); return; }
+  if (!(pct >= 1 && pct <= (sign === "DECREASE" ? 90 : 1000))) { UI.toast("El porcentaje debe estar entre 1 y " + (sign === "DECREASE" ? 90 : 1000) + ".", "bad"); return; }
+  var label = ty.opts ? ty.opts.filter(function (o) { return o[0] === val; })[0][1] : val;
+  var name = (sign === "INCREASE" ? "Subir " : "Bajar ") + label + " " + pct + "%";
+  UI.confirm({ title: "¿Crear esta regla de valor?", html: '<p class="sub"><b>' + F.esc(name) + '</b><br>Se crea en tu cuenta sin aplicarse a nada. Después eliges a qué conjunto aplicarla.</p>', ok: "Crear" }).then(function (ok) {
+    if (!ok) return;
+    UI.loading(true, "Creando regla de valor…");
+    var keyP = type === "CITY" ? G.get("search", { type: "adgeolocation", location_types: JSON.stringify(["city"]), q: val, limit: 1 }).then(function (j) { var c = (j.data || [])[0]; if (!c) throw new Error("No encontré la ciudad «" + val + "»."); return String(c.key); }) : Promise.resolve(val);
+    keyP.then(function (v) {
+      var crit = { criteria_type: type === "CITY" ? "LOCATION" : type, operator: "CONTAINS", criteria_values: [v], criteria_value_types: [ty.vt] };
+      function send(k) { var rule = { name: name, adjust_sign: sign, adjust_value: pct }; rule[k] = [crit]; return G.post(S.acct + "/value_rule_set", { name: "Ads Board: " + name, rules: [rule] }); }
+      return send("criteria").catch(function () { return send("criterias"); });
+    }).then(function () {
+      S.editLog = S.editLog || []; S.editLog.unshift({ t: Date.now(), what: "Creó regla de valor", name: name, id: "vr" }); AB.saveLocal();
+      UI.loading(false); UI.toast("Regla de valor creada. Ahora aplícala a un conjunto."); S.rules = null; S.vrules = null; AB.renderTab();
+    }).catch(function (e) { UI.loading(false); UI.toast(e.userMsg || e.message || "Meta no aceptó la regla", "bad"); });
+  });
+};
+AB.attachValueRule = function (rid) {
+  if (!S.canEdit) { UI.toast("Activa el modo edición.", "bad"); return; }
+  var sel = AB.$("vrSet-" + rid); if (!sel) return;
+  var sid = sel.value, it = S.A.adsets.filter(function (x) { return x.id === sid; })[0];
+  UI.confirm({ title: "¿Aplicar la regla?", html: '<p class="sub">Conjunto: <b>' + F.esc(it ? it.name : sid) + '</b>. Cambiar la puja puede reiniciar el aprendizaje durante unos días.</p>', ok: "Aplicar" }).then(function (ok) {
+    if (!ok) return;
+    UI.loading(true, "Aplicando…");
+    G.post(sid, { value_rule_set_id: rid, value_rules_applied: true }).then(function () { UI.loading(false); UI.toast("Regla aplicada al conjunto."); if (it) { S.editLog = S.editLog || []; S.editLog.unshift({ t: Date.now(), what: "Aplicó regla de valor", name: it.name, id: sid }); AB.saveLocal(); } })
+      .catch(function (e) { UI.loading(false); UI.toast(e.userMsg || e.message, "bad"); });
+  });
+};
+})(window);
+
+;
+/* ==========================================================================
+   MEDICIÓN REAL Y BAJO PRESUPUESTO: ventas registradas, atribución, tipo de
+   cambio, plan para salir del aprendizaje, banco de hooks, audiencias de
+   exclusión, correo semanal, modo oscuro y animación de números.
+   ========================================================================== */
+(function (root) {
+"use strict";
+var AB = root.AB, S = AB.S, G = AB.G, F = AB.F, UI = AB.UI, T = AB.T, E = root.AdsEngine;
+var $ = AB.$;
+
+/* ----------------------------- ventas registradas ------------------------ */
+function salesInRange(A) {
+  var acct = S.acct;
+  return (S.sales || []).filter(function (x) { return x.acct === acct && x.d >= A.since && x.d <= A.until; });
+}
+T.ventas = function (A) {
+  var list = salesInRange(A), all = (S.sales || []).filter(function (x) { return x.acct === S.acct; });
+  var n = list.length, rev = E.sum(list, function (x) { return x.amount || 0; }), spend = A.account.m.spend, res = A.account.m.results;
+  var cpa = n ? spend / n : null, roas = spend ? rev / spend : null, close = res ? n / res : null;
+  var ads = A.ads.filter(function (a) { return a.m.spend > 0; }).sort(function (a, b) { return b.m.spend - a.m.spend; });
+  var today = new Date().toISOString().slice(0, 10);
+  var h = '<div class="sec-head"><h2>Ventas reales</h2><div class="hint">Las que cerraste por WhatsApp, llamada o en persona</div></div>' +
+    '<div class="grid g21"><div class="card pad glass"><div class="eyebrow">Registrar una venta</div><div class="sub" style="margin:2px 0 10px">Meta no ve las ventas que cierras en un chat. Anótalas aquí y el Ads Board calcula tu costo por venta real y tu tasa de cierre verdadera. Se guardan solo en este navegador.</div>' +
+    '<div class="row3"><div class="field"><label>Fecha</label><input type="date" id="slDate" value="' + today + '"></div>' +
+    '<div class="field"><label>Monto cobrado (' + F.esc(S.currency || "USD") + ')</label><input type="number" min="0" step="any" id="slAmount" placeholder="' + F.esc(S.goal.ticket || "Ej. 250") + '"></div>' +
+    '<div class="field"><label>Vino del anuncio</label><select id="slAd"><option value="">No sé o fue orgánico</option>' + ads.slice(0, 40).map(function (a) { return '<option value="' + F.esc(a.id) + '">' + F.esc(a.name) + '</option>'; }).join("") + '</select></div></div>' +
+    '<div class="field"><label>Nota (opcional)</label><input id="slNote" maxlength="120" placeholder="Ej. Boda 12 de diciembre, cerró por WhatsApp"></div>' +
+    '<button class="btn btn-gold btn-sm" id="slAdd">Guardar venta</button></div>' +
+    '<div class="card pad glass"><div class="eyebrow">En este periodo</div><div class="grid g2" style="margin-top:8px">' +
+    '<div class="kv"><div class="k">Ventas</div><div class="v">' + F.num(n) + '</div></div>' +
+    '<div class="kv"><div class="k">Cobrado</div><div class="v">' + F.money(rev) + '</div></div>' +
+    '<div class="kv"><div class="k">Costo por venta real</div><div class="v">' + (cpa ? F.money(cpa) : "—") + '</div></div>' +
+    '<div class="kv"><div class="k">Retorno real</div><div class="v">' + (roas ? roas.toFixed(1) + "x" : "—") + '</div></div></div>' +
+    (close ? '<div class="sub" style="margin-top:10px">Tu cierre real es <b>' + F.pct(close, 1) + '</b> de los resultados que trae Meta. ' + (Math.abs(close * 100 - (parseFloat(S.goal.close) || 0)) > 2 ? '<button class="btn btn-sm" id="slUseClose" data-close="' + (close * 100).toFixed(1) + '">Usar como tasa de cierre</button>' : 'Coincide con la que usas.') + '</div>' : '<div class="sub" style="margin-top:10px">Con 3 o más ventas registradas, el costo por venta real empieza a ser confiable.</div>') +
+    '</div></div>';
+  if (all.length) {
+    h += '<div class="card pad glass" style="margin-top:14px"><div class="eyebrow">Historial</div>' + all.slice().sort(function (a, b) { return a.d < b.d ? 1 : -1; }).slice(0, 30).map(function (x) {
+      var ad = A.ads.filter(function (a) { return a.id === x.adId; })[0];
+      return '<div style="display:flex;gap:10px;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid var(--line)"><div><b>' + F.money(x.amount) + '</b> <span class="sub">' + F.date(x.d) + (ad ? " · " + F.esc(ad.name) : "") + (x.note ? " · " + F.esc(x.note) : "") + '</span></div><button class="btn btn-sm btn-ghost" data-sldel="' + F.esc(x.id) + '" aria-label="Borrar venta">Borrar</button></div>';
+    }).join("") + '</div>';
+    var byAd = {};
+    list.forEach(function (x) { if (x.adId) { byAd[x.adId] = byAd[x.adId] || { n: 0, rev: 0 }; byAd[x.adId].n++; byAd[x.adId].rev += x.amount || 0; } });
+    var rows = Object.keys(byAd).map(function (id) { var a = A.ads.filter(function (z) { return z.id === id; })[0]; return a ? { a: a, n: byAd[id].n, rev: byAd[id].rev } : null; }).filter(Boolean);
+    if (rows.length) h += '<div class="card pad glass" style="margin-top:14px"><div class="eyebrow">Costo por venta real por anuncio</div>' + AB.Ch.bars(rows.map(function (r) { return { label: r.a.name, value: r.a.m.spend / r.n, text: F.money(r.a.m.spend / r.n), level: A.goal && A.goal.gainPerSale && r.a.m.spend / r.n > A.goal.gainPerSale ? "r" : "g", tip: r.n + " ventas, " + F.money(r.rev) + " cobrados" }; })) + '</div>';
+  }
+  return h;
+};
+AB.addSale = function () {
+  var amt = parseFloat($("slAmount").value), d = $("slDate").value;
+  if (!(amt > 0)) { UI.toast("Escribe el monto cobrado.", "bad"); return; }
+  if (!d) { UI.toast("Elige la fecha de la venta.", "bad"); return; }
+  S.sales = S.sales || [];
+  S.sales.push({ id: "v" + Date.now(), acct: S.acct, d: d, amount: amt, adId: $("slAd").value || "", note: ($("slNote").value || "").trim() });
+  AB.saveLocal(); UI.toast("Venta guardada"); AB.renderTab();
+};
+
+/* ------------------------------- tipo de cambio --------------------------- */
+T.fxOut = function (A) {
+  var rate = parseFloat(S.prefs.fxRate), code = (S.prefs.fxCode || "").toUpperCase() || "local";
+  if (!(rate > 0)) return '<div class="sub">Escribe cuántos ' + F.esc(code) + ' pagas por cada ' + F.esc(S.currency || "USD") + '. Usa el cambio que de verdad te cobra tu banco o tu tarjeta.</div>';
+  function loc(v) { return v === null || v === undefined ? "—" : F.num(v * rate, 2) + " " + F.esc(code); }
+  var daily = A.dailyBudget || 0;
+  return '<div class="grid g3"><div class="kv"><div class="k">Presupuesto diario activo</div><div class="v">' + loc(daily) + '</div><div class="sub">' + F.money(daily) + '</div></div>' +
+    '<div class="kv"><div class="k">Al mes (30 días)</div><div class="v">' + loc(daily * 30) + '</div></div>' +
+    '<div class="kv"><div class="k">Tu costo máximo por resultado</div><div class="v">' + loc(A.target) + '</div></div></div>';
+};
+T.fx = function (A) {
+  return '<div class="sec-head"><h2>En tu moneda</h2><div class="hint">Para cuentas en dólares que pagas en moneda local</div></div><div class="card pad glass"><div class="row2">' +
+    '<div class="field"><label>Tu moneda</label><input id="fxCode" maxlength="4" value="' + F.esc(S.prefs.fxCode || "") + '" placeholder="Ej. BOB"></div>' +
+    '<div class="field"><label>Cuánto pagas por 1 ' + F.esc(S.currency || "USD") + '</label><input id="fxRate" type="number" min="0" step="any" value="' + F.esc(S.prefs.fxRate || "") + '" placeholder="Ej. 12.5"></div></div><div id="fxOut">' + T.fxOut(A) + '</div></div>';
+};
+
+/* ------------------------------ atribución -------------------------------- */
+AB.loadAttr = function () {
+  var rp = AB.rangeParams();
+  return G.all(S.acct + "/insights", { level: "account", time_range: rp.time_range, fields: "spend,actions", action_attribution_windows: JSON.stringify(["1d_click", "7d_click", "1d_view"]), limit: 5 }, 1).catch(function (e) { return { error: e.userMsg || e.message }; });
+};
+T.attrib = function (A) {
+  var h = '<div class="sec-head"><h2>Cuánto le crees a Meta</h2><div class="hint">Resultados según cuándo se cuentan</div></div>';
+  var r = S.attr;
+  if (!r) return h + '<div class="state"><div class="spinner"></div>Comparando ventanas de atribución…</div>';
+  if (r.error) return h + '<div class="state"><b>No se pudo comparar</b>' + F.esc(r.error) + '</div>';
+  var types = E.RESULT_TYPES[A.primaryMetric] || [];
+  function tot(w) { var t = 0; r.forEach(function (row) { (row.actions || []).forEach(function (a) { if (types.indexOf(a.action_type) >= 0) t += Number(a[w] || 0); }); }); return t; }
+  var c1 = tot("1d_click"), c7 = tot("7d_click"), v1 = tot("1d_view"), spend = E.sum(r, function (x) { return E.num(x.spend); });
+  if (!c7 && !v1) return h + '<div class="state"><b>Sin resultados para comparar en este periodo</b></div>';
+  var viewShare = (c7 + v1) ? v1 / (c7 + v1) : 0;
+  return h + '<div class="card pad glass"><div class="grid g3">' +
+    '<div class="kv"><div class="k">Clic, mismo día o al siguiente</div><div class="v">' + F.num(c1) + '</div><div class="sub">' + (c1 ? F.money(spend / c1) + " cada uno" : "") + '</div></div>' +
+    '<div class="kv"><div class="k">Clic, hasta 7 días</div><div class="v">' + F.num(c7) + '</div><div class="sub">' + (c7 ? F.money(spend / c7) + " cada uno" : "") + '</div></div>' +
+    '<div class="kv"><div class="k">Solo vieron el anuncio (1 día)</div><div class="v">' + F.num(v1) + '</div><div class="sub">' + F.pct(viewShare, 0) + ' del total</div></div></div>' +
+    '<div class="sub" style="margin-top:10px">' + (viewShare > 0.3 ? "Casi un tercio o más de tus resultados viene de gente que solo vio el anuncio sin hacer clic. Esos resultados pueden haber pasado igual. Juzga tus anuncios por los de clic." : "La mayoría de tus resultados viene de clics, así que el número que ves en Meta es bastante confiable.") + '</div></div>';
+};
+
+/* -------------------------- Rentabilidad ampliada ------------------------ */
+var baseRent = T.rentabilidad;
+T.rentabilidad = function (A) { return baseRent(A) + T.ventas(A) + T.fx(A) + T.attrib(A); };
+
+/* ----------------------- plan para salir del aprendizaje ----------------- */
+var EVENT_LADDER = [["Purchase / Compra", "InitiateCheckout"], ["Schedule / Agenda", "Lead o Contact"], ["Lead / Registro", "ViewContent o LandingPageView"], ["Evento propio", "InitiateCheckout o ViewContent"]];
+T.learnPlan = function (A) {
+  var sets = A.adsets.filter(function (s) { return (s.status === "ACTIVE" || s.effStatus === "ACTIVE") && s.m.spend > 0; });
+  var h = '<div class="sec-head"><h2>Plan para salir del aprendizaje</h2><div class="hint">Meta necesita unos 50 resultados por semana en cada conjunto</div></div>';
+  if (!sets.length) return h + '<div class="state"><b>No hay conjuntos activos con gasto</b></div>';
+  h += '<div class="card pad glass"><div class="sub" style="margin-bottom:10px">Con presupuestos chicos casi nunca se llega a 50 por semana con el evento final. Cuando falta mucho, conviene juntar conjuntos o optimizar un evento anterior del embudo, que pasa más seguido.</div>';
+  h += sets.map(function (s) {
+    var perDay = s.res7 / 7, cpr = s.m.cpr, need = cpr ? 50 * cpr / 7 : null, ratio = need && s.budget ? need / s.budget : null;
+    var lv = s.res7 >= 50 ? "g" : (ratio && ratio <= 2 ? "y" : "r");
+    var msg = s.res7 >= 50 ? "Ya junta suficiente señal. Puedes escalar con calma." :
+      (!cpr ? "Sin resultados en 7 días. Optimiza un evento anterior del embudo o junta este conjunto con otro." :
+        (ratio <= 2 ? "Te faltan unos " + F.money(need - s.budget) + " por día para llegar. Sube 20% cada 3 días." :
+          "Necesitarías " + F.money(need) + " por día, " + ratio.toFixed(1) + " veces tu presupuesto. Optimiza un evento anterior o junta conjuntos."));
+    return '<div style="padding:10px 0;border-top:1px solid var(--line)"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><b>' + F.esc(s.name) + '</b>' + F.chip(lv, F.num(s.res7) + " de 50 en 7 días") + '</div>' +
+      '<div class="progress" style="margin:8px 0"><i style="width:' + Math.min(100, s.res7 / 50 * 100) + '%;background:' + (lv === "g" ? "var(--good)" : "var(--gold)") + '"></i></div><div class="sub">' + msg + (s.opt === "OFFSITE_CONVERSIONS" && s.res7 < 10 ? " Escalera sugerida: " + EVENT_LADDER.map(function (x) { return x[0] + " pasa a " + x[1]; }).join("; ") + "." : "") + '</div></div>';
+  }).join("") + '</div>';
+  return h;
+};
+var baseEsc = T.escalado;
+T.escalado = function (A) { return baseEsc(A) + T.learnPlan(A); };
+
+/* -------------------------------- banco de hooks --------------------------- */
+AB.saveHook = function (adId) {
+  var a = S.A.ads.filter(function (x) { return x.id === adId; })[0]; if (!a) return;
+  S.hookBank = S.hookBank || [];
+  if (S.hookBank.some(function (x) { return x.adId === adId; })) { UI.toast("Ese hook ya está en tu banco."); return; }
+  S.hookBank.unshift({ adId: adId, name: a.name, hook: a.m.hook, hold: a.m.hold, t: Date.now(), acct: S.acct });
+  AB.saveLocal(); UI.toast("Hook guardado en tu banco"); AB.renderTab();
+};
+T.hookBank = function (A) {
+  var vids = A.ads.filter(function (a) { return a.isVideo && a.m.impr >= 300 && a.m.hook >= 0.25; }).sort(function (a, b) { return b.m.hook - a.m.hook; }).slice(0, 5);
+  var bank = S.hookBank || [];
+  var h = '<div class="card pad glass reveal" style="margin-top:14px"><div class="eyebrow">Banco de hooks ganadores</div><div class="sub" style="margin:2px 0 10px">Guarda los inicios que frenan el dedo, con 25% o más de hook, para repetirlos con otras fotos o clientes.</div>';
+  if (vids.length) h += '<div style="display:flex;flex-direction:column;gap:6px">' + vids.map(function (a) {
+    var saved = bank.some(function (x) { return x.adId === a.id; });
+    return '<div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><span><b>' + F.esc(a.name) + '</b> <span class="sub">hook ' + F.pct(a.m.hook, 0) + '</span></span>' + (saved ? F.chip("g", "Guardado") : '<button class="btn btn-sm" data-hksave="' + F.esc(a.id) + '">Guardar</button>') + '</div>';
+  }).join("") + '</div>';
+  else h += '<div class="sub">Todavía no hay videos con 25% de hook o más en este periodo.</div>';
+  if (bank.length) h += '<div class="eyebrow" style="margin-top:14px">Guardados</div>' + bank.map(function (x) { return '<div class="sub" style="padding:4px 0">' + F.esc(x.name) + ' · hook ' + F.pct(x.hook, 0) + ' · ' + F.date(new Date(x.t).toISOString().slice(0, 10)) + ' <button class="btn btn-sm btn-ghost" data-hkdel="' + F.esc(x.adId) + '">Quitar</button></div>'; }).join("");
+  return h + '</div>';
+};
+var baseHooks = T.hooks;
+T.hooks = function (A) { return baseHooks(A) + T.hookBank(A); };
+
+/* -------------------------- audiencias de exclusión ----------------------- */
+var AUD = {
+  web30: { title: "Visitaron tu sitio, 30 días", text: "Para excluirlos en captación o volver a impactarlos con remarketing.", need: "pixel" },
+  event180: { title: "Hicieron un evento, 180 días", text: "Por ejemplo quienes ya reservaron o pagaron. Exclúyelos para no pagar por clientes que ya tienes.", need: "pixel,event" },
+  page30: { title: "Interactuaron con tu página, 30 días", text: "Gente que ya te ve gratis. Excluirla con presupuesto chico deja la plata para gente nueva.", need: "page" }
+};
+T.audBuilder = function (A) {
+  var a = S.aud = S.aud || { kind: "web30", pixel: (A.pixels[0] || {}).id || "", event: "", page: "" };
+  var cfg = AUD[a.kind], pages = (S.wiz && S.wiz.pages) || [];
+  return '<div class="sec-head"><h2>Crear audiencia</h2><div class="hint">Las tres que más sirven con presupuesto chico</div></div><div class="card pad glass">' +
+    '<div class="grid g3">' + Object.keys(AUD).map(function (k) { return '<button type="button" class="card pad wopt" data-audk="' + k + '" style="text-align:left;cursor:pointer;' + (a.kind === k ? "outline:2px solid var(--gold);" : "") + '"><b>' + AUD[k].title + '</b><div class="sub" style="margin-top:4px">' + AUD[k].text + '</div></button>'; }).join("") + '</div>' +
+    '<div class="row2" style="margin-top:12px">' +
+    (cfg.need.indexOf("pixel") >= 0 ? '<div class="field"><label>Píxel</label><select id="audPixel">' + A.pixels.map(function (p) { return '<option value="' + F.esc(p.id) + '"' + (p.id === a.pixel ? " selected" : "") + '>' + F.esc(p.name) + '</option>'; }).join("") + '</select></div>' : '') +
+    (cfg.need.indexOf("event") >= 0 ? '<div class="field"><label>Evento</label><input id="audEvent" value="' + F.esc(a.event) + '" placeholder="Ej. Purchase o eligio_camino_directo"></div>' : '') +
+    (cfg.need === "page" ? '<div class="field"><label>Página</label><select id="audPage">' + (pages.length ? pages.map(function (p) { return '<option value="' + F.esc(p.id) + '"' + (p.id === a.page ? " selected" : "") + '>' + F.esc(p.name) + '</option>'; }).join("") : '<option value="">Cargando páginas…</option>') + '</select></div>' : '') +
+    '</div><button class="btn btn-gold btn-sm" id="audCreate">Crear audiencia</button></div>';
+};
+AB.createAudience = function () {
+  if (!S.canEdit) { UI.toast("Activa el modo edición para crear audiencias.", "bad"); return; }
+  var a = S.aud, cfg = AUD[a.kind], rule, name;
+  if (a.kind === "web30") {
+    if (!a.pixel) { UI.toast("Elige un píxel.", "bad"); return; }
+    name = "Visitantes del sitio 30 días";
+    rule = { inclusions: { operator: "or", rules: [{ event_sources: [{ id: a.pixel, type: "pixel" }], retention_seconds: 2592000, filter: { operator: "and", filters: [{ field: "url", operator: "i_contains", value: "" }] } }] } };
+  } else if (a.kind === "event180") {
+    if (!a.pixel || !a.event.trim()) { UI.toast("Elige el píxel y escribe el evento.", "bad"); return; }
+    name = "Hicieron " + a.event.trim() + " 180 días";
+    rule = { inclusions: { operator: "or", rules: [{ event_sources: [{ id: a.pixel, type: "pixel" }], retention_seconds: 15552000, filter: { operator: "and", filters: [{ field: "event", operator: "eq", value: a.event.trim() }] } }] } };
+  } else {
+    if (!a.page) { UI.toast("Elige la página.", "bad"); return; }
+    name = "Interactuaron con la página 30 días";
+    rule = { inclusions: { operator: "or", rules: [{ event_sources: [{ id: a.page, type: "page" }], retention_seconds: 2592000, filter: { operator: "and", filters: [{ field: "event", operator: "eq", value: "page_engaged" }] } }] } };
+  }
+  UI.confirm({ title: "¿Crear esta audiencia?", html: '<p class="sub"><b>' + F.esc(name) + '</b><br>' + F.esc(cfg.text) + ' Crear una audiencia no gasta dinero.</p>', ok: "Crear" }).then(function (ok) {
+    if (!ok) return;
+    UI.loading(true, "Creando audiencia…");
+    G.post(S.acct + "/customaudiences", { name: "Ads Board: " + name, rule: JSON.stringify(rule), prefill: true }).then(function () {
+      UI.loading(false); UI.toast("Audiencia creada. Tarda unas horas en llenarse."); S.editLog = S.editLog || []; S.editLog.unshift({ t: Date.now(), what: "Creó audiencia", name: name, id: "aud" }); AB.saveLocal(); AB.refresh(true);
+    }).catch(function (e) { UI.loading(false); UI.toast(e.userMsg || e.message, "bad"); });
+  });
+};
+var baseCuentas = T.cuentas;
+T.cuentas = function (A) { return baseCuentas(A) + T.audBuilder(A); };
+
+/* ------------------------------- correo semanal --------------------------- */
+AB.mailReport = function () {
+  var body = T.weeklyReport(S.A);
+  var href = "mailto:?subject=" + encodeURIComponent("Resumen semanal de anuncios") + "&body=" + encodeURIComponent(body.slice(0, 1800));
+  window.location.href = href;
+};
+
+/* ------------------------------- modo oscuro ------------------------------ */
+AB.applyTheme = function (t) {
+  var dark = t === "dark";
+  if (dark) document.documentElement.setAttribute("data-theme", "dark"); else document.documentElement.removeAttribute("data-theme");
+  try { localStorage.setItem("adsboard_theme", dark ? "dark" : "light"); } catch (e) {}
+  var b = $("themeBtn"); if (b) { b.textContent = dark ? "Modo claro" : "Modo oscuro"; b.setAttribute("aria-label", dark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"); }
+};
+AB.toggleTheme = function () { AB.applyTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark"); };
+
+/* ------------------------- números que cuentan hacia arriba --------------- */
+AB.countUp = function (rootEl) {
+  if (!rootEl || (root.matchMedia && root.matchMedia("(prefers-reduced-motion: reduce)").matches)) return;
+  var els = rootEl.querySelectorAll(".kpi .val, .kv .v");
+  Array.prototype.forEach.call(els, function (el) {
+    if (el.children.length) return;
+    var txt = el.textContent, m = txt.match(/\d[\d.]*(,\d+)?/);
+    if (!m) return;
+    var raw = m[0], dec = m[1] ? m[1].length - 1 : 0, target = parseFloat(raw.replace(/\./g, "").replace(",", "."));
+    if (!(target > 0)) return;
+    var t0 = null, dur = 650;
+    function fmt(v) { return v.toLocaleString("es-BO", { minimumFractionDigits: dec, maximumFractionDigits: dec }); }
+    function step(ts) {
+      if (!t0) t0 = ts; var k = Math.min(1, (ts - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+      el.textContent = txt.replace(raw, fmt(target * e));
+      if (k < 1) root.requestAnimationFrame(step); else el.textContent = txt;
+    }
+    root.requestAnimationFrame(step);
+  });
+};
+})(window);
+
+;
+/* ==========================================================================
+   APP: acceso con Facebook, carga, navegación, eventos
+   ========================================================================== */
+(function (root) {
+"use strict";
+var AB = root.AB, S = AB.S, G = AB.G, F = AB.F, UI = AB.UI, T = AB.T, Ch = AB.Ch, E = root.AdsEngine, $ = AB.$;
+
+var TABS = [
+  ["resumen", "Resumen"], ["coach", "Coach"], ["campanas", "Campañas"], ["creativos", "Creativos"], ["hooks", "Hooks"], ["escalado", "Escalado"],
+  ["rentabilidad", "Rentabilidad"], ["segmentos", "Segmentos"], ["reglas", "Reglas"], ["laboratorio", "Laboratorio A/B"], ["crear", "Crear"], ["cuentas", "Cuentas"], ["ajustes", "Ajustes"]
+];
+var LS = "adsboard_v2_";
+
+/* ------------------------- almacenamiento por usuario ------------------------ */
+AB.saveLocal = function () {
+  AB.store.set(LS + S.userId, { goal: S.goal, prefs: S.prefs, edits: S.edits || {}, editLog: S.editLog || [], sales: S.sales || [], hookBank: S.hookBank || [], metric: S.metric, range: S.range, acct: S.acct });
+};
+AB.loadLocal = function () {
+  var d = AB.store.get(LS + S.userId, null); if (!d) return;
+  if (d.goal) S.goal = Object.assign({ ticket: "", margin: "", close: "", manual: "", want: "" }, d.goal);
+  if (d.prefs) S.prefs = Object.assign(S.prefs, d.prefs);
+  S.edits = d.edits || {}; S.editLog = d.editLog || []; S.sales = d.sales || []; S.hookBank = d.hookBank || [];
+  if (d.metric) S.metric = d.metric; if (d.range) S.range = d.range; S.savedAcct = d.acct || null;
+  if (S.prefs.defaultLevel) S.level = S.prefs.defaultLevel;
+};
+
+/* ---------------------------------- acceso ------------------------------------ */
+var sdkReady = false;
+function loadSDK() {
+  if (root.FB) { sdkReady = true; return; }
+  root.fbAsyncInit = function () { root.FB.init({ appId: AB.cfg.APP_ID, cookie: false, xfbml: false, version: AB.cfg.GRAPH_VER }); sdkReady = true; };
+  var s = document.createElement("script"); s.async = true; s.src = "https://connect.facebook.net/es_LA/sdk.js"; s.onerror = function () { sdkReady = false; }; document.head.appendChild(s);
+}
+AB.login = function (edit) {
+  if (!root.FB || !sdkReady) { UI.toast("Facebook todavía está cargando o algo lo bloquea (revisa bloqueadores de anuncios). Intenta de nuevo en unos segundos.", "bad"); return; }
+  root.FB.login(function (r) {
+    if (!r || !r.authResponse || !r.authResponse.accessToken) { UI.toast("No se completó la conexión con Facebook.", "bad"); return; }
+    S.token = r.authResponse.accessToken; S.demo = false;
+    startSession();
+  }, { config_id: edit ? AB.cfg.CONFIG_EDIT : AB.cfg.CONFIG_READ, response_type: "token", override_default_response_type: true });
+};
+AB.startDemo = function () { S.demo = true; S.token = "demo"; S.userId = "demo"; S.userName = "Alumno Demo"; S.canEdit = true; startSession(); };
+AB.logout = function () {
+  S.token = null; S.data = null; S.A = null; S.seg = null; S.copy = null; S.rules = null; S.attr = null; S.demo = false; S.canEdit = false; S.mode = "gate";
+  try { if (root.FB && root.FB.getLoginStatus) root.FB.logout(function () {}); } catch (e) {}
+  showGate(); UI.toast("Sesión cerrada. Tu token se borró de esta pestaña.");
+};
+
+function startSession() {
+  UI.loading(true, "Conectando…");
+  var p = S.demo ? Promise.resolve({ id: "demo", name: "Alumno Demo" }) : G.get("me", { fields: "id,name" });
+  p.then(function (me) {
+    S.userId = me.id; S.userName = me.name; AB.loadLocal();
+    var perm = S.demo ? Promise.resolve(null) : G.get("me/permissions").catch(function () { return null; });
+    return perm;
+  }).then(function (perm) {
+    if (!S.demo) { var g = (perm && perm.data || []).filter(function (x) { return x.status === "granted"; }).map(function (x) { return x.permission; }); S.canEdit = g.indexOf("ads_management") >= 0; }
+    return G.all("me/adaccounts", { fields: "id,name,currency,account_status", limit: 100 }, 3);
+  }).then(function (accts) {
+    S.accounts = accts.filter(function (a) { return a.account_status === 1 || a.account_status === undefined || S.demo; });
+    if (!S.accounts.length) { UI.loading(false); showGate(); UI.toast("No encontramos cuentas publicitarias activas con tu usuario. Si la app está en modo desarrollo, tu usuario debe tener rol en la app.", "bad"); return; }
+    var pick = S.accounts.filter(function (a) { return a.id === S.savedAcct; })[0] || S.accounts[0];
+    S.acct = pick.id; S.currency = pick.currency; S.offset = F.offsetFor(pick.currency);
+    S.mode = "app"; showApp(); return AB.refresh(false);
+  }).catch(function (e) {
+    UI.loading(false); showGate();
+    UI.toast(e.userMsg || e.message || "No se pudo conectar", "bad");
+  });
+}
+
+/* --------------------------------- vistas ---------------------------------- */
+function showGate() { $("gate").classList.remove("hidden"); $("app").classList.add("hidden"); $("logoutBtn").classList.add("hidden"); setPill(); }
+function showApp() {
+  $("gate").classList.add("hidden"); $("app").classList.remove("hidden"); $("logoutBtn").classList.remove("hidden");
+  $("accountBar").style.display = "flex";
+  $("accountSelect").innerHTML = S.accounts.map(function (a) { return '<option value="' + F.esc(a.id) + '"' + (a.id === S.acct ? " selected" : "") + '>' + F.esc(a.name || a.id) + " · " + F.esc(a.currency || "") + '</option>'; }).join("");
+  $("rangeSel").value = S.range; $("metricSel").value = S.metric;
+  setPill(); buildTabs();
+}
+function setPill() {
+  var p = $("modePill"), edit = S.canEdit && !S.demo, txt;
+  if (S.mode === "gate") { p.className = "modepill"; txt = "Sin conectar"; }
+  else if (S.demo) { p.className = "modepill demo"; txt = "Demo con datos ficticios"; }
+  else if (edit) { p.className = "modepill edit"; txt = "Modo edición"; }
+  else { p.className = "modepill"; txt = "Solo lectura"; }
+  p.innerHTML = "<i></i>" + txt;
+  var b = $("editBtn"); b.classList.toggle("hidden", S.mode === "gate" || S.demo || S.canEdit);
+}
+var GROUPS = [
+  ["inicio", "Inicio", ["resumen", "coach"], '<path d="M3 12l9-8 9 8v8a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z"/>'],
+  ["anuncios", "Anuncios", ["campanas", "creativos", "hooks"], '<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 14l3-3 2 2 3-4"/>'],
+  ["escalar", "Escalar", ["escalado", "rentabilidad", "segmentos", "laboratorio"], '<path d="M3 17l5-5 4 4 8-9"/><path d="M15 7h5v5"/>'],
+  ["medicion", "Medición", ["reglas", "cuentas"], '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>'],
+  ["crear", "Crear", ["crear"], '<path d="M12 5v14M5 12h14"/>'],
+  ["ajustes", "Ajustes", ["ajustes"], '<circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 00-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 00-2-1.2L14 3h-4l-.5 2.6a7 7 0 00-2 1.2l-2.4-1-2 3.4 2 1.6A7 7 0 005 12c0 .4 0 .8.1 1.2l-2 1.6 2 3.4 2.4-1a7 7 0 002 1.2L10 21h4l.5-2.6a7 7 0 002-1.2l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2z"/>']
+];
+function groupOf(tab) { for (var i = 0; i < GROUPS.length; i++) if (GROUPS[i][2].indexOf(tab) >= 0) return GROUPS[i]; return GROUPS[0]; }
+var LABEL = {}; TABS.forEach(function (t) { LABEL[t[0]] = t[1]; });
+function buildTabs() {
+  var urgent = S.A ? S.A.coach.filter(function (c) { return c.sev === "r"; }).length : 0, g = groupOf(S.tab);
+  $("tabs").innerHTML = GROUPS.map(function (x) {
+    return '<button class="tab grp' + (x === g ? " active" : "") + '" data-grp="' + x[0] + '"' + (x === g ? ' aria-current="page"' : '') + '><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + x[3] + '</svg><span>' + x[1] + '</span>' + (x[0] === "inicio" && urgent ? '<span class="cnt">' + urgent + '</span>' : "") + '</button>';
+  }).join("");
+  $("subtabs").innerHTML = g[2].length > 1 ? g[2].map(function (t) {
+    return '<button class="stab' + (S.tab === t ? " active" : "") + '" data-tab="' + t + '" role="tab" aria-selected="' + (S.tab === t) + '">' + LABEL[t] + (t === "coach" && urgent ? '<span class="cnt">' + urgent + '</span>' : "") + '</button>';
+  }).join("") : "";
+}
+function headerAlerts() {
+  var A = S.A, h = "";
+  if (S.demo) h += '<div class="alert on demo"><div><b>Estás viendo datos ficticios</b><div class="sub">Todo funciona igual que con tu cuenta real, incluidas las acciones de editar y crear, pero nada sale hacia Meta.</div></div></div>';
+  if (A && S.prefs.showBadAlert) {
+    var bad = A.ads.filter(function (a) { return a.effStatus === "DISAPPROVED" || a.effStatus === "WITH_ISSUES"; });
+    if (bad.length) h += '<div class="alert on bad"><div><b>' + bad.length + (bad.length === 1 ? " anuncio con problemas" : " anuncios con problemas") + '</b><div class="sub">' + bad.slice(0, 3).map(function (a) { return F.esc(a.name); }).join(", ") + (bad.length > 3 ? "…" : "") + '. Revísalos en Ads Manager o apela la decisión.</div></div></div>';
+  }
+  if (A && A.errors && A.errors.length) h += '<div class="alert on bad"><div><b>Algunas secciones no cargaron</b><div class="sub">' + A.errors.map(function (e) { return F.esc(e.tag + ": " + e.msg); }).join(" · ") + '</div></div></div>';
+  if (S.token && !S.demo && !S.canEdit) h += '<div class="alert on"><div><b>Estás en modo solo lectura</b><div class="sub">Puedes ver todo el análisis. Para pausar, cambiar presupuestos o crear campañas desde aquí pulsa «Activar modo edición».</div></div></div>';
+  $("alerts").innerHTML = h;
+}
+
+/* -------------------------------- datos ---------------------------------- */
+AB.refresh = function (silent) {
+  if (!silent) UI.loading(true, "Leyendo tu cuenta…");
+  return AB.loadData().then(function (R) {
+    S.data = R; S.seg = null; S.copy = null; S.rules = null; S.attr = null; S.vrules = null; return AB.recompute();
+  }).then(function () { UI.loading(false); }).catch(function (e) {
+    UI.loading(false);
+    if (e.fb && e.fb.code === 190) { S.token = null; S.mode = "gate"; showGate(); UI.toast(e.userMsg, "bad"); return; }
+    UI.toast(e.userMsg || e.message || "No se pudieron cargar los datos", "bad");
+    $("panel").innerHTML = '<div class="state"><b>No pudimos leer los datos</b>' + F.esc(e.userMsg || e.message || "") + '<div style="margin-top:12px"><button class="btn btn-gold" id="retryBtn">Reintentar</button></div></div>';
+  });
+};
+AB.recompute = function () {
+  if (!S.data) return;
+  S.A = AB.analyze(S.data); AB.render();
+};
+AB.render = function () { buildTabs(); headerAlerts(); AB.renderTab(); $("periodNote").textContent = S.A ? F.date(S.A.since) + " al " + F.date(S.A.until) : ""; };
+
+AB.renderTab = function () {
+  var A = S.A, panel = $("panel"); if (!A) return;
+  var fn = T[S.tab] || T.resumen;
+  panel.innerHTML = fn(A);
+  Ch.bind(panel);
+  if (S.tab === "escalado" && $("simOut") && $("simRange")) { $("simOut").innerHTML = T.simOut(A, parseInt($("simRange").value, 10)); }
+  if (S.tab === "laboratorio" && $("ssOut")) $("ssOut").innerHTML = T.ssOut();
+  if (S.tab === "ajustes") { var d = $("defaultLevelSelect"); if (d) d.value = S.prefs.defaultLevel || "campaign"; }
+  if (S.tab === "segmentos" && !S.seg && !S.segLoading) {
+    S.segLoading = true;
+    AB.loadSegments().then(function (r) { S.seg = r; S.segLoading = false; if (S.tab === "segmentos") AB.renderTab(); }).catch(function () { S.segLoading = false; S.seg = { place: { error: "No se pudo leer" }, age: { error: "No se pudo leer" }, hour: { error: "No se pudo leer" } }; if (S.tab === "segmentos") AB.renderTab(); });
+  }
+  if (S._animTab !== S.tab) { S._animTab = S.tab; AB.countUp(panel); }
+  if (S.tab === "rentabilidad" && !S.attr && !S.attrLoading) {
+    S.attrLoading = true;
+    AB.loadAttr().then(function (r) { S.attr = r; S.attrLoading = false; if (S.tab === "rentabilidad") AB.renderTab(); });
+  }
+  if (S.tab === "cuentas" && !(S.wiz.pages && S.wiz.pages.length) && !S.pagesLoading) {
+    S.pagesLoading = true;
+    AB.loadPages().then(function () { S.pagesLoading = false; if (S.tab === "cuentas" && S.aud && S.aud.kind === "page") AB.renderTab(); });
+  }
+  if (S.tab === "reglas" && !S.rules && !S.rulesLoading) {
+    S.rulesLoading = true;
+    Promise.all([AB.loadRules(), AB.loadValueRules()]).then(function (r) { S.rules = r[0]; S.vrules = r[1]; S.rulesLoading = false; if (S.tab === "reglas") AB.renderTab(); });
+  }
+  if (S.tab === "hooks" && !S.copy && !S.copyLoading) {
+    S.copyLoading = true;
+    AB.loadCopy().then(function (r) { S.copy = r; S.copyLoading = false; if (S.tab === "hooks") AB.renderTab(); }).catch(function () { S.copyLoading = false; S.copy = { body: { error: "No se pudo leer" }, title: { error: "No se pudo leer" } }; if (S.tab === "hooks") AB.renderTab(); });
+  }
+  if (S.tab === "crear" && !S.wiz.run && S.wiz.kind === "conversion" && S.wiz.step === 2 && S.wiz.pixel && !S.wiz.events) {
+    AB.wizEvents().then(function () { if (S.tab === "crear" && S.wiz.step === 2) AB.renderTab(); });
+  }
+  if (S.tab === "crear" && !S.wiz.run) {
+    AB.loadPages().then(function () {
+      var sel = $("wPage"); if (!sel) return;
+      var pgs = S.wiz.pages || [];
+      sel.innerHTML = '<option value="">Elige una página…</option>' + pgs.map(function (p) { return '<option value="' + F.esc(p.id) + '"' + (S.wiz.pageId === p.id ? " selected" : "") + '>' + F.esc(p.name) + '</option>'; }).join("");
+      if (!pgs.length && $("wPageHint")) $("wPageHint").textContent = "No pudimos leer tus páginas. Esto requiere el modo edición con permiso de páginas.";
+    });
+    if (S.wiz.step === 3) AB.wizPreview();
+    if (S.wiz.step === 2) budgetHint();
+  }
+};
+function budgetHint() {
+  var el = $("wBudgetHint"), A = S.A; if (!el) return;
+  var v = parseFloat($("wBudget").value);
+  if (v > 0 && A && A.target) el.textContent = "Con tu objetivo de " + F.money(A.target) + " por resultado, este presupuesto apunta a unos " + F.num(v / A.target, 1) + " resultados al día. Con menos de 50 a la semana Meta tarda en aprender.";
+  else el.textContent = "Mínimo aproximado: lo que Meta pida para tu moneda.";
+}
+
+/* ---------------------------------- CSV ------------------------------------ */
+AB.exportCsv = function () {
+  var A = S.A; if (!A) return;
+  var list = S.level === "campaign" ? A.campaigns : (S.level === "adset" ? A.adsets : A.ads);
+  var rows = [["nombre", "estado", "gasto", "impresiones", "clics_enlace", "resultados", "costo_por_resultado", "ctr", "cpm", "veredicto"]];
+  list.forEach(function (x) { var m = x.m; rows.push([x.name, x.status, m.spend.toFixed(2), m.impr, m.clicks, m.results, m.cpr === null ? "" : m.cpr.toFixed(2), m.ctr === null ? "" : (m.ctr * 100).toFixed(2) + "%", m.cpm === null ? "" : m.cpm.toFixed(2), x.verdict ? x.verdict.label : ""]); });
+  var csv = "﻿" + rows.map(function (r) { return r.map(function (c) { c = String(c); return /[",\n;]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(","); }).join("\n");
+  var a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" })); a.download = "adsboard-" + S.level + "-" + A.until + ".csv"; document.body.appendChild(a); a.click(); a.remove();
+  UI.toast("CSV descargado");
+};
+function copyText(t) {
+  if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(t).then(function () { return true; }).catch(function () { return fallback(); });
+  return Promise.resolve(fallback());
+  function fallback() { var ta = document.createElement("textarea"); ta.value = t; document.body.appendChild(ta); ta.select(); var ok = false; try { ok = document.execCommand("copy"); } catch (e) {} ta.remove(); return ok; }
+}
+
+/* -------------------------------- eventos ---------------------------------- */
+function goto(tab) { S.lastSub = S.lastSub || {}; S.lastSub[groupOf(tab)[0]] = tab; S.tab = tab; UI.closeAll(); buildTabs(); AB.renderTab(); window.scrollTo({ top: 0, behavior: "smooth" }); }
+function keepFocus(id, fn) { var el = $(id), pos = el ? el.selectionStart : 0; fn(); var n = $(id); if (n) { n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) {} } }
+
+document.addEventListener("click", function (e) {
+  var t = e.target, el;
+  if ((el = t.closest("[data-close]"))) { UI.closeAll(); return; }
+  if (t.id === "overlay") { UI.closeAll(); return; }
+  if ((el = t.closest("[data-gl]"))) { e.preventDefault(); e.stopPropagation(); AB.openGlossary(el.getAttribute("data-gl")); return; }
+  if ((el = t.closest("[data-act]"))) { e.stopPropagation(); if (el.disabled) return; var pct = el.getAttribute("data-pct"); AB.Act.run(el.getAttribute("data-act"), el.getAttribute("data-type"), el.getAttribute("data-id"), pct ? parseFloat(pct) : undefined); return; }
+  if ((el = t.closest("[data-open]"))) { var v = el.getAttribute("data-open").split(":"); if (v[0] === "ad") { UI.openDrawer(T.adDetail(v.slice(1).join(":"))); Ch.bind($("drawer")); } return; }
+  if ((el = t.closest("[data-goto]"))) { e.preventDefault(); goto(el.getAttribute("data-goto")); return; }
+  if ((el = t.closest("[data-tab]"))) { goto(el.getAttribute("data-tab")); return; }
+  if ((el = t.closest("[data-grp]"))) { var gg = GROUPS.filter(function (x) { return x[0] === el.getAttribute("data-grp"); })[0]; S.lastSub = S.lastSub || {}; goto(S.lastSub[gg[0]] || gg[2][0]); return; }
+  if ((el = t.closest("[data-sldel]"))) { var sid2 = el.getAttribute("data-sldel"); S.sales = (S.sales || []).filter(function (x) { return x.id !== sid2; }); AB.saveLocal(); AB.renderTab(); return; }
+  if ((el = t.closest("[data-hksave]"))) { AB.saveHook(el.getAttribute("data-hksave")); return; }
+  if ((el = t.closest("[data-hkdel]"))) { var hid = el.getAttribute("data-hkdel"); S.hookBank = (S.hookBank || []).filter(function (x) { return x.adId !== hid; }); AB.saveLocal(); AB.renderTab(); return; }
+  if ((el = t.closest("[data-audk]"))) { S.aud.kind = el.getAttribute("data-audk"); AB.renderTab(); return; }
+  if ((el = t.closest("[data-rule]"))) { AB.createRule(el.getAttribute("data-rule")); return; }
+  if ((el = t.closest("[data-level]"))) { S.level = el.getAttribute("data-level"); AB.renderTab(); return; }
+  if ((el = t.closest("[data-cf]"))) { S.coachFilter = el.getAttribute("data-cf"); AB.renderTab(); return; }
+  if ((el = t.closest("[data-co]"))) { S.creativeOnlyActive = el.getAttribute("data-co") === "1"; AB.renderTab(); return; }
+  if ((el = t.closest("[data-sim]"))) { var x = parseInt(el.getAttribute("data-sim"), 10); $("simRange").value = x; $("simPct").textContent = (x > 0 ? "+" : "") + x + "%"; $("simOut").innerHTML = T.simOut(S.A, x); return; }
+  if ((el = t.closest("[data-ab]"))) { S.abA = el.getAttribute("data-ab"); var other = S.A.ads.filter(function (a) { return a.id !== S.abA && a.m.impr > 300; })[0]; S.abB = other ? other.id : S.abB; UI.closeAll(); goto("laboratorio"); return; }
+  if ((el = t.closest("[data-pxq]"))) { AB.pixelQuality(el.getAttribute("data-pxq")); return; }
+  if ((el = t.closest("[data-vrc]"))) { AB.createValueRule(); return; }
+  if ((el = t.closest("[data-vra]"))) { AB.attachValueRule(el.getAttribute("data-vra")); return; }
+  if ((el = t.closest("[data-px]"))) {
+    var pid = el.getAttribute("data-px"), box = $("px-" + pid); box.innerHTML = '<div class="sub" style="margin-top:8px">Leyendo…</div>';
+    G.get(pid + "/stats", { aggregation: "event", start_time: Math.floor(Date.now() / 1000) - 7 * 86400 }).then(function (j) {
+      var rows = {}; (j.data || []).forEach(function (b) { (b.data || []).forEach(function (x) { rows[x.value] = (rows[x.value] || 0) + Number(x.count || 0); }); });
+      var items = Object.keys(rows).map(function (k) { return { label: k, value: rows[k], text: F.num(rows[k]) }; }).sort(function (a, b) { return b.value - a.value; });
+      box.innerHTML = items.length ? '<div style="margin-top:10px">' + Ch.bars(items) + '</div>' : '<div class="sub" style="margin-top:8px">No hubo eventos en los últimos 7 días.</div>';
+    }).catch(function (er) { box.innerHTML = '<div class="sub" style="margin-top:8px;color:var(--bad)">' + F.esc(er.userMsg || er.message) + '</div>'; });
+    return;
+  }
+  if ((el = t.closest("[data-pref]"))) { var k = el.getAttribute("data-pref"); S.prefs[k] = !S.prefs[k]; AB.saveLocal(); AB.renderTab(); return; }
+  if ((el = t.closest("[data-wk]"))) { S.wiz.kind = el.getAttribute("data-wk"); if (S.wiz.kind === "whatsapp") S.wiz.cta = "WHATSAPP_MESSAGE"; else if (S.wiz.cta === "WHATSAPP_MESSAGE") S.wiz.cta = "LEARN_MORE"; AB.renderTab(); return; }
+  if ((el = t.closest("[data-wnext]"))) { var st = parseInt(el.getAttribute("data-wnext"), 10), er2 = AB.wizValidate(st); if (er2) { UI.toast(er2, "bad"); return; } S.wiz.step = st + 1; AB.renderTab(); return; }
+  if ((el = t.closest("[data-wprev]"))) { S.wiz.step = parseInt(el.getAttribute("data-wprev"), 10) - 1; AB.renderTab(); return; }
+  var id = t.id || (t.closest("button") && t.closest("button").id);
+  if (id === "wCreate") { AB.wizCreate(); return; }
+  if (id === "wReset") { AB.wizReset(); AB.renderTab(); return; }
+  if (id === "copyReport") { copyText(T.weeklyReport(S.A)).then(function (ok) { UI.toast(ok ? "Resumen copiado. Pégalo en WhatsApp." : "No se pudo copiar", ok ? "" : "bad"); }); return; }
+  if (id === "csvBtn" || id === "csvBtn2") { AB.exportCsv(); return; }
+  if (id === "openGl") { AB.openGlossary(); return; }
+  if (id === "clearLocal") { UI.confirm({ title: "¿Borrar datos locales?", html: '<p class="sub">Se borran tu calculadora, preferencias y bitácora de este navegador. No toca nada en Meta.</p>', ok: "Borrar", danger: true }).then(function (ok) { if (!ok) return; try { Object.keys(localStorage).filter(function (k2) { return k2.indexOf(LS) === 0; }).forEach(function (k2) { localStorage.removeItem(k2); }); } catch (er) {} S.goal = { ticket: "", margin: "", close: "", manual: "", want: "" }; S.edits = {}; S.editLog = []; AB.recompute(); UI.toast("Datos locales borrados"); }); return; }
+  if (id === "retryBtn") { AB.refresh(false); return; }
+  if (id === "refreshBtn") { AB.refresh(false); return; }
+  if (id === "logoutBtn") { AB.logout(); return; }
+  if (id === "editBtn") { UI.modal('<h3>Activar modo edición</h3><p class="sub">Facebook te pedirá permiso para <b>administrar tus anuncios</b> y leer tus páginas. Con eso podrás pausar, cambiar presupuestos, duplicar y crear campañas desde aquí. Cada cambio te pide confirmación y lo que se crea queda en pausa. Puedes revocar el permiso cuando quieras.</p><div class="mb"><button class="btn" id="edNo">Cancelar</button><button class="btn btn-gold" id="edYes">Continuar con Facebook</button></div>', function (m) { m.querySelector("#edNo").onclick = function () { UI.closeAll(); }; m.querySelector("#edYes").onclick = function () { UI.closeAll(); AB.login(true); }; }); return; }
+  if (id === "btnRead") { AB.login(false); return; }
+  if (id === "btnEdit") { AB.login(true); return; }
+  if (id === "btnDemo") { AB.startDemo(); return; }
+  if (id === "glossBtn") { AB.openGlossary(); return; }
+  if (id === "themeBtn") { AB.toggleTheme(); return; }
+  if (id === "slAdd") { AB.addSale(); return; }
+  if (id === "slUseClose") { S.goal.close = t.getAttribute("data-close"); AB.saveLocal(); AB.recompute(); UI.toast("Tasa de cierre actualizada con tus ventas reales"); return; }
+  if (id === "audCreate") { AB.createAudience(); return; }
+  if (id === "mailReport") { AB.mailReport(); return; }
+});
+document.addEventListener("keydown", function (e) {
+  if (e.key === "Escape") UI.closeAll();
+  if ((e.key === "Enter" || e.key === " ") && e.target.matches && e.target.matches(".help,.ad,.switch")) { e.preventDefault(); e.target.click(); }
+});
+
+function softGoal() {
+  if (!S.data) return;
+  S.A = AB.analyze(S.data);
+  if ($("profitOut")) { $("profitOut").innerHTML = T.profitOut(S.A); $("planOut").innerHTML = T.planOut(S.A); $("profitTable").innerHTML = T.profitTable(S.A); }
+  buildTabs();
+}
+document.addEventListener("input", function (e) {
+  var id = e.target.id, v = e.target.value;
+  var gmap = { gTicket: "ticket", gMargin: "margin", gClose: "close", gManual: "manual", gWant: "want" };
+  if (gmap[id]) {
+    S.goal[gmap[id]] = v; AB.saveLocal();
+    softGoal(); return;
+  }
+  if (id === "simRange") { var x = parseInt(v, 10); $("simPct").textContent = (x > 0 ? "+" : "") + x + "%"; $("simOut").innerHTML = T.simOut(S.A, x); return; }
+  if (id === "qInput") { S.q = v; keepFocus("qInput", AB.renderTab); return; }
+  if (id === "fxCode" || id === "fxRate") { S.prefs[id] = v; AB.saveLocal(); $("fxOut").innerHTML = T.fxOut(S.A); return; }
+  if (id === "audEvent") { S.aud.event = v; return; }
+  if (id === "ssBase" || id === "ssLift" || id === "ssCpm" || id === "ssBudget") { $("ssOut").innerHTML = T.ssOut(); return; }
+  var W = S.wiz;
+  var wmap = { wName: "name", wUrl: "url", wWa: "wa", wCity: "city", wEvent: "event", wP2: "p2", wP3: "p3", wH2: "h2", wH3: "h3", wBudget: "budget", wPrimary: "primary", wHead: "headline" };
+  if (wmap[id]) { W[wmap[id]] = v; if (id === "wBudget") budgetHint(); if (id === "wPrimary" || id === "wHead") AB.wizPreview(); return; }
+  if (id === "wAgeMin") W.ageMin = parseInt(v, 10) || 18; if (id === "wAgeMax") W.ageMax = parseInt(v, 10) || 65;
+});
+document.addEventListener("change", function (e) {
+  var id = e.target.id, v = e.target.value, W = S.wiz;
+  if (["gTicket", "gMargin", "gClose", "gManual", "gWant"].indexOf(id) >= 0) { softGoal(); return; }
+  if (id === "hookSel") { S.hookAd = v; AB.renderTab(); return; }
+  if (id === "scaleScope") { S.scaleScope = v; AB.renderTab(); return; }
+  if (id === "statusSel") { S.statusFilter = v; AB.renderTab(); return; }
+  if (id === "abA") { S.abA = v; $("abOut").innerHTML = T.abOut(S.A); return; }
+  if (id === "abB") { S.abB = v; $("abOut").innerHTML = T.abOut(S.A); return; }
+  if (id === "abM") { S.abMetric = v; $("abOut").innerHTML = T.abOut(S.A); return; }
+  if (id === "defaultLevelSelect") { S.prefs.defaultLevel = v; AB.saveLocal(); return; }
+  if (id === "wPage") { W.pageId = v; AB.wizPreview(); return; }
+  if (id === "wCountry") { W.country = v; return; }
+  if (id === "audPixel") { S.aud.pixel = v; return; }
+  if (id === "audPage") { S.aud.page = v; return; }
+  if (id === "wExcl") { W.excl = Array.prototype.filter.call(e.target.options, function (o) { return o.selected; }).map(function (o) { return o.value; }); return; }
+  if (id === "vrType") { S.vr = S.vr || {}; S.vr.type = v; AB.renderTab(); return; }
+  if (id === "wPixel") { W.pixel = v; W.events = null; W.event = ""; AB.renderTab(); return; }
+  if (id === "wGender") { W.gender = v; return; }
+  if (id === "wCta") { W.cta = v; AB.wizPreview(); return; }
+  if (id === "wFile") { AB.wizFile(e.target.files[0]).then(function () { AB.renderTab(); }); return; }
+  if (id === "rangeSel") { S.range = v; AB.saveLocal(); AB.refresh(false); return; }
+  if (id === "metricSel") { S.metric = v; AB.saveLocal(); AB.refresh(false); return; }
+  if (id === "accountSelect") {
+    var a = S.accounts.filter(function (x) { return x.id === v; })[0]; if (!a) return;
+    S.acct = a.id; S.currency = a.currency; S.offset = F.offsetFor(a.currency); S.savedAcct = a.id; AB.saveLocal(); AB.wizReset(); AB.refresh(false);
+  }
+});
+
+/* --------------------------------- arranque -------------------------------- */
+function init() {
+  UI.tip();
+  $("rangeSel").innerHTML = [["7", "Últimos 7 días"], ["14", "Últimos 14 días"], ["30", "Últimos 30 días"], ["60", "Últimos 60 días"], ["90", "Últimos 90 días"]].map(function (r) { return '<option value="' + r[0] + '">' + r[1] + '</option>'; }).join("");
+  $("metricSel").innerHTML = Object.keys(E.METRIC_LABELS).map(function (k) { return '<option value="' + k + '">' + F.esc(E.METRIC_LABELS[k]) + '</option>'; }).join("");
+  $("rangeSel").value = S.range; $("metricSel").value = S.metric;
+  AB.applyTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light");
+  showGate(); loadSDK();
+  if (/[?&]demo=1/.test(location.search)) AB.startDemo();
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
+})(window);

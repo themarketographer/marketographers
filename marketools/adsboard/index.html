@@ -620,6 +620,40 @@ body.guiding{overflow:hidden;}
 @media(max-width:640px){.split-mock{grid-template-columns:1fr;}.split-mock .side{grid-auto-flow:column;overflow-x:auto;}.pop-mock{width:auto;}}
 @media(prefers-reduced-motion:reduce){#guide.on,.g-step.fwd,.g-step.back,.hl .tap{animation:none!important;}}
 .pop-mock .hl{color:#fff;}
+/* ===== movimiento con propósito ===== */
+/* cambio de sección: un fundido corto para que el ojo no pierda el hilo */
+#panel.swap{animation:swap .22s var(--ease) both;}
+@keyframes swap{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+/* el titular de Hoy es el único momento con entrada propia */
+#panel.swap .hero-h{animation:heroin .6s var(--ease) both;}
+@keyframes heroin{from{opacity:0;filter:blur(6px);transform:translateY(8px)}to{opacity:1;filter:none;transform:none}}
+/* avisos que entran desde abajo y se van sin saltos */
+.toast{animation:toastin .28s var(--ease) both;transition:opacity .24s,transform .24s;}
+.toast.out{opacity:0;transform:translateY(8px);}
+@keyframes toastin{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
+/* la barra de navegación gana peso cuando hay contenido debajo */
+.navrow .tabs{transition:box-shadow .2s,background .2s;}
+/* tarjetas clicables: respuesta inmediata al tocar */
+.ad{transition:transform .16s var(--ease),border-color .2s;}
+.ad:active{transform:scale(.985);}
+.cc{transition:border-color .2s;}
+.cc:hover{border-color:rgba(255,255,255,.18);}
+/* mensajes de la clave */
+.keymsg{font-size:14px;min-height:0;}
+.keymsg.bad{padding:12px 14px;border-radius:12px;background:var(--bad-soft);border:1px solid rgba(255,92,92,.25);color:#ffd0d0;}
+.keymsg.ok{padding:12px 14px;border-radius:12px;background:var(--good-soft);color:var(--good);}
+#keyYes:disabled{opacity:.7;cursor:progress;}
+.g-body li .btn{margin-left:6px;vertical-align:middle;}
+/* celular: cabecera más liviana */
+@media (max-width:760px){
+  .brand .by{display:none;}
+  .topbar{align-items:center;}
+  .modepill{font-size:11.5px;padding:5px 10px;}
+  .hero-h{font-size:30px;}
+  .kpis{gap:10px;}
+  .kpi{padding:16px 18px;}
+}
+@media (prefers-reduced-motion:reduce){#panel.swap,.hero-h,.toast{animation:none!important;}}
 
 </style>
 </head>
@@ -637,14 +671,14 @@ body.guiding{overflow:hidden;}
   </div>
 
   <section id="gate">
-    <h1>Tus anuncios, <mark>en simple.</mark></h1>
-    <p class="lead">Conecta tu cuenta de Meta y te digo qué anuncio te sale caro, cuál conviene subir y qué hacer hoy.</p>
+    <h1>¿Cuánto te costó tu último <mark>cliente</mark> de Meta?</h1>
+    <p class="lead">Si tardaste en responder, conecta tu cuenta. Te muestro cuánto pagaste por cada persona que te escribió y qué anuncio conviene apagar.</p>
     <div class="gate-btns">
       <button class="btn btn-gold btn-lg" id="btnGuide">Configurar mi cuenta</button>
       <button class="btn btn-lg" id="btnDemo">Probar con datos de ejemplo</button>
     </div>
     <p class="gate-alt"><button class="linkbtn" id="btnKey">Ya tengo mi clave</button><span aria-hidden="true">·</span><button class="linkbtn" id="btnRead">Soy tester: entrar con Facebook</button></p>
-    <p class="fine">Tus datos van directo de tu equipo a Meta y no pasan por ningún servidor nuestro.</p>
+    <p class="fine">Tus datos viajan de tu equipo a Meta y de vuelta. A nosotros no nos llega ni el nombre de tu cuenta.</p>
   </section>
 
   <div id="app" class="hidden">
@@ -672,6 +706,6 @@ body.guiding{overflow:hidden;}
 <div id="loader"><div style="position:fixed;inset:0;background:rgba(250,249,246,.7);z-index:90;display:flex;align-items:center;justify-content:center"><div class="card pad" style="display:flex;gap:12px;align-items:center"><div class="spinner"></div><div class="t">Cargando…</div></div></div></div>
 
 <script>try{if(localStorage.getItem("adsboard_theme")==="dark")document.documentElement.setAttribute("data-theme","dark")}catch(e){}</script>
-<script src="adsboard.js?v=7a1e0ef51d"></script>
+<script src="adsboard.js?v=352d6ca97a"></script>
 </body>
 </html>

@@ -1029,7 +1029,7 @@ var $ = function (id) { return document.getElementById(id); };
 AB.$ = $;
 UI.toast = function (msg, kind) {
   var t = document.createElement("div"); t.className = "toast " + (kind || ""); t.textContent = msg; $("toasts").appendChild(t);
-  setTimeout(function () { t.style.opacity = "0"; t.style.transition = "opacity .3s"; setTimeout(function () { t.remove(); }, 320); }, kind === "bad" ? 6500 : 3400);
+  setTimeout(function () { t.classList.add("out"); setTimeout(function () { t.remove(); }, 260); }, kind === "bad" ? 6500 : 3400);
 };
 UI.tip = function () {
   var tip = $("tip");
@@ -1423,9 +1423,9 @@ T.resumen = function (A) {
   var head;
   if (!m.results) head = 'Todavía no hay resultados <mark class="neg">en este periodo.</mark>';
   else if (!hasGoal) head = 'Cada resultado te cuesta <mark>' + F.money(m.cpr) + '.</mark>';
-  else if (m.cpr <= tgt) head = 'Cada resultado te cuesta <mark>' + F.money(m.cpr) + '.</mark> Vas bien.';
-  else if (A.goal.breakEven && m.cpr <= A.goal.breakEven) head = 'Cada resultado te cuesta ' + F.money(m.cpr) + '. <mark>Ganas, pero poco.</mark>';
-  else head = 'Cada resultado te cuesta ' + F.money(m.cpr) + '. <mark class="neg">Estás perdiendo plata.</mark>';
+  else if (m.cpr <= tgt) head = 'Cada resultado te cuesta <mark>' + F.money(m.cpr) + '.</mark> Vas bien, ahora toca escalar.';
+  else if (A.goal.breakEven && m.cpr <= A.goal.breakEven) head = 'Cada resultado te cuesta ' + F.money(m.cpr) + '. <mark>Ganas, apenas para el pasaje.</mark>';
+  else head = 'Cada resultado te cuesta ' + F.money(m.cpr) + '. <mark class="neg">Meta está ganando más que tú.</mark>';
   var html = '<section class="hero card"><h1 class="hero-h">' + head + '</h1>' +
     '<p class="hero-p">En ' + (days || "los") + ' días gastaste <b>' + F.money(m.spend) + '</b> y conseguiste <b>' + F.num(m.results) + '</b> ' + (S.metric === "auto" ? "resultados" : F.esc(E.METRIC_LABELS[S.metric]).toLowerCase()) + '.' +
     (hasGoal ? ' Tu límite para ganar plata es <b>' + F.money(A.goal.breakEven) + '</b> por resultado.' : '') + '</p>' +
@@ -2763,7 +2763,7 @@ T.setup = function (A) {
   var g = S.goal, p = S.prefs;
   var clean = g.ticket && g.margin ? Math.round(parseFloat(g.ticket) * parseFloat(g.margin) / 100) : "";
   var close10 = g.close ? Math.round(parseFloat(g.close) / 10) : 2;
-  return '<section class="card setup"><h2>Configúralo en un minuto</h2><p class="sub">Con estas respuestas te digo si cada resultado te deja plata o te la quita.</p>' +
+  return '<section class="card setup"><h2>Cuatro preguntas y te digo si ganas o pierdes.</h2><p class="sub">Las mismas que te haría un contador, sin la factura.</p>' +
     '<div class="setup-grid">' +
     '<div class="field"><label for="suNiche">Qué fotografía vendes</label><select id="suNiche">' + Object.keys(NICHES).map(function (k) { return '<option value="' + k + '"' + (p.niche === k ? " selected" : "") + '>' + NICHES[k].label + '</option>'; }).join("") + '</select></div>' +
     '<div class="field"><label for="suTicket">Cuánto cobras por trabajo (' + F.esc(S.currency || "USD") + ')</label><input id="suTicket" type="number" min="0" step="any" inputmode="decimal" value="' + F.esc(g.ticket) + '" placeholder="Ej. 400"></div>' +
@@ -2790,8 +2790,8 @@ T.reality = function (A) {
 
 /* ------------------------------- cuenta vacía ----------------------------- */
 T.empty = function (A) {
-  return '<section class="card empty"><h2>Todavía no tienes anuncios corriendo en este periodo.</h2>' +
-    '<p class="sub">Cuando publiques uno, aquí vas a ver cuánto te cuesta cada resultado y qué hacer cada día.</p>' +
+  return '<section class="card empty"><h2>Tu cuenta está más tranquila que estudio en enero.</h2>' +
+    '<p class="sub">No hay anuncios corriendo en este periodo. Cuando prendas uno, aquí vas a ver cuánto te cuesta cada cliente y qué tocar cada mañana.</p>' +
     '<div class="empty-acts"><button class="btn btn-gold" data-goto="crear">Crear mi primer anuncio</button>' +
     (S.demo ? '' : '<a class="btn" href="?demo=1" target="_blank" rel="noopener">Ver cómo se ve con datos</a>') +
     '<button class="btn btn-ghost" id="range90">Mirar los últimos 90 días</button></div></section>';
@@ -2974,9 +2974,9 @@ function frame(url, body) {
 }
 function hl(t) { return '<span class="hl">' + t + '<em class="tap"></em></span>'; }
 var GSTEPS = [
-  { id: "hola", title: "Bienvenido al <mark>Ads Board.</mark>", lead: "Te dejo todo listo en 6 pasos. Tómate 15 minutos una sola vez y después entras directo.",
-    body: function () { return '<ol class="roadmap"><li><b>Instala la app</b><span>Queda en tu computadora y se actualiza sola.</span></li><li><b>Crea tu app gratis en Meta</b><span>Es la llave para leer tu cuenta sin pedir permiso a nadie.</span></li><li><b>Crea un usuario del sistema</b><span>Un usuario robot que trabaja para ti.</span></li><li><b>Dale acceso a tu cuenta</b><span>Solo ve lo que tú le asignas.</span></li><li><b>Genera tu clave</b><span>Una contraseña larga que no vence.</span></li><li><b>Pégala y listo</b><span>Ves tus anuncios explicados en simple.</span></li></ol>'; } },
-  { id: "instalar", title: "Instala la app", lead: "Así la abres como cualquier programa y te llegan las mejoras sin hacer nada.",
+  { id: "hola", title: "Quince minutos hoy. <mark>Cero vueltas mañana.</mark>", lead: "Esto se configura una vez, como el trípode antes de la sesión. Después solo abres y miras.",
+    body: function () { return '<ol class="roadmap"><li><b>Instala la app</b><span>Queda en tu compu como cualquier programa y se actualiza sola.</span></li><li><b>Crea tu app gratis en Meta</b><span>Tu llave para leer tu cuenta. Tuya y de nadie más.</span></li><li><b>Crea tu empleado robot</b><span>No cobra, no pide vacaciones y hace que tu clave no venza.</span></li><li><b>Dale acceso a tu cuenta</b><span>Ve solo lo que tú le muestras.</span></li><li><b>Genera tu clave</b><span>Una contraseña larguísima que dura para siempre.</span></li><li><b>Pégala y listo</b><span>Y por fin lees tus anuncios en tu idioma.</span></li></ol>'; } },
+  { id: "instalar", title: "Instala la app", lead: "La abres con un clic, igual que Lightroom, y cada mejora te llega sola.",
     body: function () {
       var u = ua();
       if (deferred) return '<button class="btn btn-gold btn-lg" id="gInstall">Instalar ahora</button><p class="sub">Se abre una ventanita de tu navegador. Pulsa <b>Instalar</b>.</p>';
@@ -2984,20 +2984,20 @@ var GSTEPS = [
       if (u.mac && u.safari) return '<ol class="how"><li>Arriba, en la barra de menú, abre <b>Archivo</b>.</li><li>Elige <b>Agregar al Dock</b>.</li><li>Pulsa <b>Agregar</b>. El ícono aparece en tu Dock.</li></ol>' + frame("Safari", '<div class="menu-mock"><div class="mbar"><span>Safari</span><span class="on">Archivo</span><span>Edición</span><span>Visualización</span></div><div class="mdrop"><div>Nueva ventana</div><div>Nueva pestaña</div><div>' + hl("Agregar al Dock…") + '</div><div>Cerrar ventana</div></div></div>');
       return '<ol class="how"><li>Abre esta página en <b>Google Chrome</b> o <b>Microsoft Edge</b>' + (u.win ? " (Edge ya viene en Windows)" : "") + '.</li><li>A la derecha de la barra de direcciones aparece un ícono de una pantalla con una flecha. Púlsalo.</li><li>Pulsa <b>Instalar</b>.</li></ol>' + frame("marketographers.com/marketools/adsboard", '<div class="url-mock"><span class="url">marketographers.com/marketools/adsboard</span>' + hl('<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M12 8v6M9 11l3 3 3-3M8 20h8"/></svg>') + '</div><div class="pop-mock"><b>¿Instalar app?</b><span>Ads Board</span><div class="pop-acts"><span>Cancelar</span>' + hl("Instalar") + '</div></div>');
     } },
-  { id: "app", title: "Crea tu app gratis en Meta", lead: "Esta app es tuya y solo lee tu cuenta. Meta no la revisa porque no la usas con cuentas de otros.",
+  { id: "app", title: "Crea tu app gratis en Meta", lead: "Cuatro clics y tienes tu propia app. Como es tuya y solo lee tu cuenta, Meta no te pide ninguna revisión.",
     body: function () { return '<ol class="how"><li>Abre <a href="https://developers.facebook.com/apps/creation/" target="_blank" rel="noopener">developers.facebook.com/apps</a> e inicia sesión con tu Facebook. Si te pide registrarte como desarrollador, acepta: es gratis.</li><li>Pulsa <b>Crear app</b>. De nombre pon <b>Mi Ads Board</b> y tu correo.</li><li>En casos de uso marca <b>Crea y administra anuncios con la API de marketing</b>.</li><li>Cuando te pregunte por el portafolio empresarial, elige el tuyo. Pulsa <b>Crear app</b>.</li></ol>' +
       frame("developers.facebook.com/apps/creation", '<div class="form-mock"><div class="lbl">Casos de uso</div><div class="opt">Inicio de sesión con Facebook</div><div class="opt sel">' + hl("Crea y administra anuncios con la API de marketing") + '</div><div class="opt">Gestiona mensajes y contenido en Instagram</div><div class="cta">Siguiente</div></div>'); } },
-  { id: "usuario", title: "Crea un usuario del sistema", lead: "Es un usuario robot de tu negocio. Gracias a él la clave no vence nunca.",
+  { id: "usuario", title: "Crea tu empleado robot", lead: "Meta lo llama usuario del sistema. Trabaja para ti las 24 horas y gracias a él tu clave dura para siempre.",
     body: function () { return '<ol class="how"><li>Abre <a href="https://business.facebook.com/latest/settings/system_users" target="_blank" rel="noopener">Configuración del negocio, Usuarios del sistema</a>.</li><li>Pulsa <b>Agregar</b>. Nombre: <b>Ads Board</b>. Rol: <b>Administrador</b>. Pulsa <b>Crear usuario del sistema</b>.</li></ol>' +
       frame("business.facebook.com/latest/settings/system_users", '<div class="split-mock"><div class="side"><div>Usuarios</div><div class="on">Usuarios del sistema</div><div>Cuentas publicitarias</div><div>Apps</div></div><div class="main"><div class="toprow"><b>Usuarios del sistema</b>' + hl("Agregar") + '</div><div class="empty-row">Todavía no hay usuarios del sistema</div></div></div>'); } },
-  { id: "activos", title: "Dale acceso a tu cuenta y a tu app", lead: "El usuario robot solo ve lo que le asignes.",
+  { id: "activos", title: "Dale las llaves justas", lead: "Tu robot ve solo lo que le asignes. Ni un cajón más.",
     body: function () { return '<ol class="how"><li>Con el usuario <b>Ads Board</b> elegido, pulsa <b>Asignar activos</b>.</li><li>En <b>Cuentas publicitarias</b> marca tu cuenta y activa <b>Control total</b>.</li><li>En <b>Apps</b> marca <b>Mi Ads Board</b> con control total.</li><li>Si quieres crear anuncios desde aquí, en <b>Páginas</b> marca tu página.</li><li>Pulsa <b>Asignar activos</b>.</li></ol>' +
       frame("business.facebook.com/latest/settings/system_users", '<div class="split-mock"><div class="side"><div class="on">Cuentas publicitarias</div><div>Apps</div><div>Páginas</div></div><div class="main"><div class="check-row"><span class="box on"></span>Mi cuenta publicitaria</div><div class="toggle-row">' + hl("Control total") + '</div><div class="cta">Asignar activos</div></div></div>'); } },
-  { id: "clave", title: "Genera tu clave", lead: "Meta la muestra una sola vez. Cópiala antes de cerrar.",
-    body: function () { return '<ol class="how"><li>En el mismo usuario pulsa <b>Generar token</b>.</li><li>Elige la app <b>Mi Ads Board</b>.</li><li>En caducidad elige <b>Nunca</b>.</li><li>Marca estos permisos: <code>ads_read</code>, <code>ads_management</code>, <code>business_management</code>, <code>pages_show_list</code> y <code>pages_read_engagement</code>.</li><li>Pulsa <b>Generar token</b> y después <b>Copiar</b>.</li></ol>' +
+  { id: "clave", title: "Genera tu clave", lead: "Meta te la muestra una sola vez, como el beso en el altar: si no la capturas en ese momento, no se repite.",
+    body: function () { return '<ol class="how"><li>En el mismo usuario pulsa <b>Generar token</b>.</li><li>Elige la app <b>Mi Ads Board</b>.</li><li>En caducidad elige <b>Nunca</b>.</li><li>Marca estos permisos: <code>ads_read</code>, <code>ads_management</code>, <code>business_management</code>, <code>pages_show_list</code> y <code>pages_read_engagement</code>. <button type="button" class="btn btn-sm" id="gCopyPerms">Copiar la lista</button></li><li>Pulsa <b>Generar token</b> y después <b>Copiar</b>.</li></ol>' +
       frame("business.facebook.com/latest/settings/system_users", '<div class="form-mock"><div class="lbl">Caducidad del token</div><div class="opt">60 días</div><div class="opt sel">' + hl("Nunca") + '</div><div class="lbl">Permisos</div><div class="perm"><span class="box on"></span>ads_read</div><div class="perm"><span class="box on"></span>ads_management</div><div class="perm"><span class="box on"></span>business_management</div><div class="cta">Generar token</div></div>'); } },
-  { id: "pegar", title: "Pega tu clave y listo", lead: "Queda guardada solo en este equipo. Nadie más la recibe, tampoco The Marketographers.",
-    body: function () { return '<div class="field"><label for="keyVal">Tu clave</label><textarea id="keyVal" rows="3" autocomplete="off" spellcheck="false" placeholder="Empieza con EAA…"></textarea></div><label class="check"><input type="checkbox" id="keyRemember" checked> Recordar en este equipo</label><p class="sub keywarn">Quien tenga la clave puede manejar tus anuncios. Úsala solo en tu equipo. Si la pierdes, bórrala en Usuarios del sistema y genera otra.</p><button class="btn btn-gold btn-lg" id="keyYes">Conectar mi cuenta</button>'; } }
+  { id: "pegar", title: "Pégala y <mark>listo.</mark>", lead: "Se queda guardada en este equipo. A nosotros no nos llega nada, ni siquiera saber que la pegaste.",
+    body: function () { return '<div class="field"><label for="keyVal">Tu clave</label><textarea id="keyVal" rows="3" autocomplete="off" spellcheck="false" placeholder="Empieza con EAA…"></textarea></div><label class="check"><input type="checkbox" id="keyRemember" checked> Recordar en este equipo</label><p class="sub keywarn">Quien tenga la clave puede manejar tus anuncios. Úsala solo en tu equipo. Si la pierdes, bórrala en Usuarios del sistema y genera otra.</p><div id="keyMsg" role="status" aria-live="polite"></div><button class="btn btn-gold btn-lg" id="keyYes">Conectar mi cuenta</button>'; } }
 ];
 var gi = 0;
 function saveStep() { try { localStorage.setItem("adsboard_guide", String(gi)); } catch (e) {} }
@@ -3019,11 +3019,27 @@ function wire(el) {
   on("gPrev", function () { gi = Math.max(0, gi - 1); renderGuide("back"); });
   on("gDemo", function () { AB.closeGuide(); AB.startDemo(); });
   on("gInstall", function () { AB.install(); });
+  on("gCopyPerms", function () {
+    var t = "ads_read, ads_management, business_management, pages_show_list, pages_read_engagement";
+    (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { UI.toast("Lista copiada."); }).catch(function () { UI.toast(t); });
+  });
   on("keyYes", function () {
+    var btn = el.querySelector("#keyYes"), msg = el.querySelector("#keyMsg");
     var v = (el.querySelector("#keyVal").value || "").replace(/\s+/g, "");
-    if (!/^EA[A-Za-z0-9]{40,}$/.test(v)) { UI.toast("Esa clave no parece válida. Debe empezar con EAA y ser larga.", "bad"); return; }
-    var remember = el.querySelector("#keyRemember").checked;
-    AB.closeGuide(); AB.startWithKey(v, remember);
+    if (!/^EA[A-Za-z0-9]{40,}$/.test(v)) { msg.className = "keymsg bad"; msg.textContent = "Esa clave no parece completa. Empieza con EAA y es muy larga: cópiala de nuevo desde Meta."; return; }
+    var remember = el.querySelector("#keyRemember").checked, prev = S.token;
+    btn.disabled = true; btn.textContent = "Probando tu clave…"; msg.className = "keymsg"; msg.textContent = "";
+    S.token = v;
+    G.get("me", { fields: "id,name" }).then(function (me) {
+      return G.get("me/adaccounts", { fields: "id", limit: 1 }).then(function (a) { return { me: me, n: (a.data || []).length }; });
+    }).then(function (r) {
+      if (!r.n) { S.token = prev; btn.disabled = false; btn.textContent = "Conectar mi cuenta"; msg.className = "keymsg bad"; msg.textContent = "La clave funciona, pero no ve ninguna cuenta publicitaria. Vuelve al paso de las llaves y asígnale tu cuenta al robot."; return; }
+      msg.className = "keymsg ok"; msg.textContent = "Clave correcta. Entrando…";
+      setTimeout(function () { AB.closeGuide(); AB.startWithKey(v, remember); }, 500);
+    }).catch(function (e) {
+      S.token = prev; btn.disabled = false; btn.textContent = "Conectar mi cuenta";
+      msg.className = "keymsg bad"; var raw = e.userMsg || e.message || ""; msg.textContent = /fetch|network|red/i.test(raw) && !e.userMsg ? "No pude hablar con Meta. Revisa tu conexión a internet y prueba otra vez." : "Meta no aceptó la clave. " + (raw || "Revisa que la copiaste completa.");
+    });
   });
 }
 AB.openGuide = function (stepId) {
@@ -3036,7 +3052,13 @@ AB.openGuide = function (stepId) {
 };
 AB.closeGuide = function () { var el = $("guide"); if (el) el.classList.remove("on"); document.body.classList.remove("guiding"); };
 AB.openKey = function () { AB.openGuide("pegar"); };
-document.addEventListener("keydown", function (e) { var el = $("guide"); if (el && el.classList.contains("on") && e.key === "Escape") AB.closeGuide(); });
+document.addEventListener("keydown", function (e) {
+  var el = $("guide"); if (!el || !el.classList.contains("on")) return;
+  if (e.key === "Escape") AB.closeGuide();
+  var typing = /^(INPUT|TEXTAREA|SELECT)$/.test((e.target && e.target.tagName) || "");
+  if (!typing && e.key === "ArrowRight") { var n = el.querySelector("#gNext"); if (n) n.click(); }
+  if (!typing && e.key === "ArrowLeft") { var p = el.querySelector("#gPrev"); if (p) p.click(); }
+});
 AB.startWithKey = function (token, remember) {
   S.token = token; S.demo = false; S.keyMode = true;
   try { if (remember) localStorage.setItem(KEY, token); else localStorage.removeItem(KEY); } catch (e) {}
@@ -3237,7 +3259,9 @@ AB.render = function () { buildTabs(); headerAlerts(); AB.renderTab(); $("period
 AB.renderTab = function () {
   var A = S.A, panel = $("panel"); if (!A) return;
   var fn = T[S.tab] || T.resumen;
+  var changed = S._lastTab !== S.tab; S._lastTab = S.tab;
   panel.innerHTML = fn(A);
+  if (changed) { panel.classList.remove("swap"); void panel.offsetWidth; panel.classList.add("swap"); setTimeout(function () { panel.classList.remove("swap"); }, 700); }
   Ch.bind(panel);
   if (S.tab === "escalado" && $("simOut") && $("simRange")) { $("simOut").innerHTML = T.simOut(A, parseInt($("simRange").value, 10)); }
   if (S.tab === "laboratorio" && $("ssOut")) $("ssOut").innerHTML = T.ssOut();

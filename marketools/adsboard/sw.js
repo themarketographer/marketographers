@@ -1,4 +1,4 @@
-/* Service worker del Ads Board. Versión: 7a1e0ef51d
+/* Service worker del Ads Board. Versión: 352d6ca97a
    Estrategia: la página y el código se piden siempre primero a internet, así cada
    alumno recibe la versión nueva apenas la subes a GitHub. Si no hay conexión,
    se usa la última copia guardada. Las llamadas a Meta nunca se guardan. */

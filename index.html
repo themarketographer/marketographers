@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-<script>try{if(localStorage.getItem("mk-theme")==="light")document.documentElement.setAttribute("data-theme","light")}catch(e){}</script>
+<head><script>try{if(localStorage.getItem("mk-theme")==="light")document.documentElement.setAttribute("data-theme","light")}catch(e){}</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Marketographers | Marketing para fotógrafos - Pablo Villarroel</title>
@@ -49,7 +48,7 @@
 }
 </script>
 
-<!-- JSON-LD: AggregateRating + Review. Mismos testimonios reales que se muestran en el carrusel de testimonios de esta pagina (ver var testimonios en el script antes de <div class="dock" id="dock"><a class="btn btn-p" href="#planes">Únete por $1 al día</a></div></body>), palabra por palabra. -->
+<!-- JSON-LD: AggregateRating + Review. Mismos testimonios reales que se muestran en el carrusel de testimonios de esta pagina (ver var testimonios en el script antes de </body>), palabra por palabra. -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -564,6 +563,22 @@ h1,h2,h3,.wl{text-wrap:balance}
 @media(prefers-reduced-motion:reduce){.thm .sun,.thm .moon{transition:opacity .2s}}
 ::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal}
 
+/* ===== Chips del hero: nunca sobre el play ni el texto del video ===== */
+.stage .chip:first-of-type{top:-18px !important;bottom:auto !important;left:-2% !important}
+.stage .chip:last-of-type{top:auto !important;bottom:-18px !important;right:-2% !important;left:auto !important}
+@media(max-width:900px){
+  .tilt{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;transform:none}
+  .tilt .video{flex:0 0 100%}
+  .stage .chip{position:static !important;transform:none;font-size:.8rem;padding:8px 14px;backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(22,22,22,.9);box-shadow:none}
+}
+
+/* ===== Toggle de facturación: el aviso de 2 meses gratis no se parte ===== */
+.bill button{white-space:nowrap;line-height:1.2}
+@media(max-width:480px){
+  .bill button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:9px 6px;font-size:.88rem}
+  .bill button i{margin:0;font-size:.66rem;padding:2px 8px}
+}
+
 </style>
 </head>
 <body>
@@ -678,33 +693,33 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
 <div class="bar" id="bar"></div>
 
 <nav class="nav" id="nav" aria-label="Principal">
-  <a class="mark" href="#top">the marketo<i>g</i>raphers</a>
-  <a class="l" href="#problema">El problema</a>
-  <a class="l" href="#incluye">Qué incluye</a>
-  <a class="l" href="#casos">Casos</a>
-  <a class="l" href="#planes">Precio</a>
-  <a class="l" href="#faq">Preguntas</a>
-  <a class="btn btn-p cta-planes" href="#planes">Entrar</a>
+  <a data-tx="home_nav.t01" class="mark" href="#top">the marketo<i data-t="home_nav.t02">g</i>raphers</a>
+  <a data-t="home_nav.t03" class="l" href="#problema">El problema</a>
+  <a data-t="home_nav.t04" class="l" href="#incluye">Qué incluye</a>
+  <a data-t="home_nav.t05" class="l" href="#casos">Casos</a>
+  <a data-t="home_nav.t06" class="l" href="#planes">Precio</a>
+  <a data-t="home_nav.t07" class="l" href="#faq">Preguntas</a>
+  <a data-t="home_nav.t08" class="btn btn-p cta-planes" href="#planes">Entrar</a>
 </nav>
 
 <main id="top">
 
 <section class="hero">
     <div class="wrap head">
-    <span class="eyebrow rv">Inscripciones abiertas a la comunidad</span>
-    <h1 class="h-hero rv" style="--i:1">Tu cliente ideal ya eligió. Eligió al fotógrafo <mark>que sí sabe venderse.</mark></h1>
-    <p class="lead rv" style="--i:2">Dale 90 segundos al video. Si no te interesa, no perdiste nada. Si te interesa, te espero más abajo.</p>
+    <span data-t="home_hero.t01" class="eyebrow rv">Inscripciones abiertas a la comunidad</span>
+    <h1 data-t="home_hero.t02" class="h-hero rv" style="--i:1">Tu cliente ideal ya eligió. Eligió al fotógrafo <mark>que sí sabe venderse.</mark></h1>
+    <p data-t="home_hero.t03" class="lead rv" style="--i:2">Dale 90 segundos al video. Si no te interesa, no perdiste nada. Si te interesa, te espero más abajo.</p>
   </div>
   <div class="stage rv" style="--i:3" id="stage">
     <div class="tilt" id="heroTilt">
       <button type="button" class="video" id="videoFrame" data-yt="FE5oEd88x98" aria-label="Reproducir el video">
-        <img src="/assets/hero-hook.jpg" alt="Pablo Villarroel, con las manos abiertas, en el video de The Marketographers" width="1280" height="720" fetchpriority="high">
-        <span class="poster hook"><small>Dale play</small><b>Hay fotógrafos peores que tú <mark>cobrando más</mark>. ¿Quieres saber por qué?</b></span><span class="play"><svg viewBox="0 0 24 24" width="30" height="30" fill="#181818" style="margin-left:4px"><path d="M8 5v14l11-7z"/></svg></span>
-      </button><span class="chip" style="left:-2%;top:10%"><b>+500</b> fotógrafos adentro</span><span class="chip" style="right:-2%;bottom:14%"><b>17</b> países</span>
+        <img data-ta="src:home_hero.i1_src|alt:home_hero.i1_alt" src="/assets/hero-hook.jpg" alt="Pablo Villarroel, con las manos abiertas, en el video de The Marketographers" width="1280" height="720" fetchpriority="high">
+        <span class="poster hook"><small data-t="home_hero.t04">Dale play</small><b data-t="home_hero.t05">Hay fotógrafos peores que tú <mark>cobrando más</mark>. ¿Quieres saber por qué?</b></span><span class="play"><svg viewBox="0 0 24 24" width="30" height="30" fill="#181818" style="margin-left:4px"><path d="M8 5v14l11-7z"/></svg></span>
+      </button><span data-t="home_hero.t06" class="chip" style="left:-2%;top:10%"><b>+500</b> fotógrafos adentro</span><span data-t="home_hero.t07" class="chip" style="right:-2%;bottom:14%"><b>17</b> países</span>
     </div>
   </div>
-  <p class="cap">Con sonido. Sí, digo groserías.</p>
-  <p class="cta"><a class="btn btn-g cta-planes" href="#planes">Ya estoy listo para entrar <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></p>
+  <p data-t="home_hero.t08" class="cap">Con sonido. Sí, digo groserías.</p>
+  <p class="cta"><a data-tx="home_hero.t09" class="btn btn-g cta-planes" href="#planes">Ya estoy listo para entrar <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></p>
 </section>
 
 <div class="ticker" aria-hidden="true"><div class="tk"><span>Marketing</span><i></i><span>Ventas</span><i></i><span>Branding</span><i></i><span>StorySelling</span><i></i><span>Persuasión</span><i></i><span>Negocio</span><i></i><span>Marketing</span><i></i><span>Ventas</span><i></i><span>Branding</span><i></i><span>StorySelling</span><i></i><span>Persuasión</span><i></i><span>Negocio</span><i></i></div></div>
@@ -712,16 +727,16 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
 <section class="statement" aria-label="Puente">
   <div class="ring"></div>
   <div class="wrap">
-    <p id="stmt" data-k="cambiar,Sigamos.">Si llegaste hasta aquí, ya sabes que algo tiene que cambiar. Sigamos.</p>
+    <p data-t="home_frase.t01" id="stmt" data-k="cambiar,Sigamos.">Si llegaste hasta aquí, ya sabes que algo tiene que cambiar. Sigamos.</p>
   </div>
 </section>
 
-<section class="scenes" id="escenas"><div class="wrap-w"><div class="top center"><span class="eyebrow neg rv">Tres escenas de ejemplo</span><p class="wl" data-wl="Si una de estas escenas te suena, tu problema se llama ventas.">Si una de estas escenas te suena, tu problema se llama ventas.</p></div><div class="sgrid"><article class="sc rv" style="--i:0"><span class="when">Viernes, 10:47 pm</span><div class="chat"><p class="b in">Hola, ¿cuánto cobras por una sesión?</p><p class="b out">¿$50?</p><p class="b in">Uy, otro me cobra $30</p><p class="b out">Te la dejo en $35</p><p class="seen">Visto 10:52 pm</p></div><h3>Negociaste contra ti</h3><p>Pusiste el precio mirando al vecino y lo bajaste antes de que te lo pidieran.</p></article><article class="sc rv" style="--i:1"><span class="when">Domingo, 8:15 pm</span><div class="viral"><div class="vn"><b data-count="2300">2300</b><small>me gusta</small></div><div class="vn zero"><b>0</b><small>consultas</small></div></div><h3>El reel que se hizo viral</h3><p>Los likes se sienten como aplausos, y los aplausos no pagan el alquiler.</p></article><article class="sc rv" style="--i:2"><span class="when">Lunes, 9:02 am</span><div class="agenda"><p><i></i>Semana 1<b>Boda de la prima</b></p><p class="empty"><i></i>Semana 2<b>Libre</b></p><p class="empty"><i></i>Semana 3<b>Libre</b></p><p class="empty"><i></i>Semana 4<b>¿Alguna recomendación?</b></p></div><h3>Cada mes es una ruleta</h3><p>Vives del boca a boca, y el boca a boca no responde mensajes.</p></article></div><p class="escap rv">Las tres tienen arreglo, y el arreglo se enseña en clase, con tarea para ese mismo día.</p></div></section><section class="problem" id="problema">
+<section class="scenes" id="escenas"><div class="wrap-w"><div class="top center"><span data-t="home_escenas.t01" class="eyebrow neg rv">Tres escenas de ejemplo</span><p data-t="home_escenas.t02" class="wl" data-wl="Si una de estas escenas te suena, tu problema se llama ventas.">Si una de estas escenas te suena, tu problema se llama ventas.</p></div><div class="sgrid"><article class="sc rv" style="--i:0"><span data-t="home_escenas.t03" class="when">Viernes, 10:47 pm</span><div class="chat"><p data-t="home_escenas.t04" class="b in">Hola, ¿cuánto cobras por una sesión?</p><p class="b out">¿$50?</p><p data-t="home_escenas.t05" class="b in">Uy, otro me cobra $30</p><p data-t="home_escenas.t06" class="b out">Te la dejo en $35</p><p data-t="home_escenas.t07" class="seen">Visto 10:52 pm</p></div><h3 data-t="home_escenas.t08">Negociaste contra ti</h3><p data-t="home_escenas.t09">Pusiste el precio mirando al vecino y lo bajaste antes de que te lo pidieran.</p></article><article class="sc rv" style="--i:1"><span data-t="home_escenas.t10" class="when">Domingo, 8:15 pm</span><div class="viral"><div class="vn"><b data-count="2300">2300</b><small data-t="home_escenas.t11">me gusta</small></div><div class="vn zero"><b>0</b><small data-t="home_escenas.t12">consultas</small></div></div><h3 data-t="home_escenas.t13">El reel que se hizo viral</h3><p data-t="home_escenas.t14">Los likes se sienten como aplausos, y los aplausos no pagan el alquiler.</p></article><article class="sc rv" style="--i:2"><span data-t="home_escenas.t15" class="when">Lunes, 9:02 am</span><div class="agenda"><p data-tx="home_escenas.t16"><i></i>Semana 1<b data-t="home_escenas.t17">Boda de la prima</b></p><p data-tx="home_escenas.t18" class="empty"><i></i>Semana 2<b data-t="home_escenas.t19">Libre</b></p><p data-tx="home_escenas.t20" class="empty"><i></i>Semana 3<b data-t="home_escenas.t21">Libre</b></p><p data-tx="home_escenas.t22" class="empty"><i></i>Semana 4<b data-t="home_escenas.t23">¿Alguna recomendación?</b></p></div><h3 data-t="home_escenas.t24">Cada mes es una ruleta</h3><p data-t="home_escenas.t25">Vives del boca a boca, y el boca a boca no responde mensajes.</p></article></div><p data-t="home_escenas.t26" class="escap rv">Las tres tienen arreglo, y el arreglo se enseña en clase, con tarea para ese mismo día.</p></div></section><section class="problem" id="problema">
   <div class="wrap-w">
     <div class="top">
-      <span class="eyebrow neg rv">¿Te has sentido así?</span>
-      <h2 class="h-sec rv" style="--i:1">El <mark class="neg">95%</mark> de los fotógrafos fracasan en sus primeros 3 años</h2>
-      <p class="lead rv" style="--i:2;margin-top:20px">Nadie les enseñó a vender, a posicionarse ni a crear una marca que atraiga clientes que paguen. Mientras tú editas hasta las 3am, otro está cerrando la venta que debía ser tuya.</p>
+      <span data-t="home_problema.t01" class="eyebrow neg rv">¿Te has sentido así?</span>
+      <h2 data-t="home_problema.t02" class="h-sec rv" style="--i:1">El <mark class="neg">95%</mark> de los fotógrafos fracasan en sus primeros 3 años</h2>
+      <p data-t="home_problema.t03" class="lead rv" style="--i:2;margin-top:20px">Nadie les enseñó a vender, a posicionarse ni a crear una marca que atraiga clientes que paguen. Mientras tú editas hasta las 3am, otro está cerrando la venta que debía ser tuya.</p>
     </div>
     <div class="pgrid" id="pgrid"></div>
     <div class="stats" id="stats"></div>
@@ -732,8 +747,8 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
   <div class="wrap-w">
     <div class="th">
       <div class="txt">
-        <span class="eyebrow rv">¿Qué incluye la membresía?</span>
-        <h2 class="h-sec rv" style="--i:1">Todo lo que necesitas para <mark>vivir de tu arte</mark></h2>
+        <span data-t="home_incluye.t01" class="eyebrow rv">¿Qué incluye la membresía?</span>
+        <h2 data-t="home_incluye.t02" class="h-sec rv" style="--i:1">Todo lo que necesitas para <mark>vivir de tu arte</mark></h2>
       </div>
     </div>
   </div>
@@ -741,15 +756,15 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
     <div class="track" id="inc-track" tabindex="0" aria-label="Qué incluye la membresía. Arrastra o usa las flechas del teclado."></div>
     <div class="tui"><button class="tb" data-dir="-1" aria-label="Anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button><button class="tb" data-dir="1" aria-label="Siguiente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button></div>
   </div>
-  <div class="trail"><a class="btn btn-g cta-planes" href="#planes">Quiero entrar a la comunidad</a></div>
+  <div class="trail"><a data-t="home_incluye.t03" class="btn btn-g cta-planes" href="#planes">Quiero entrar a la comunidad</a></div>
 </section>
 
-<section class="dentro" id="dentro"><div class="wrap-w"><div class="top"><span class="eyebrow rv">Por dentro</span><h2 class="h-sec rv" style="--i:1">Esto es lo que abres <mark>el día que entras</mark></h2></div><div class="bento"><article class="tile t-clase rv" style="--i:0"><img src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto:best,f_auto/v1771218778/Captura_clase_vzvoyr.jpg" alt="Clase en vivo de The Marketographers por Zoom" loading="lazy"><div class="tcap"><span class="live"><i></i>En vivo</span><h3>Clases dos veces por semana</h3><p>Con cámara prendida y tiempo para tus preguntas.</p></div></article><article class="tile t-wpp rv" style="--i:1"><div class="tcap"><h3>Grupo de WhatsApp</h3><p>Tus dudas se resuelven en minutos.</p></div><div class="mini-chat"><p class="b in">¿Cuánto cobran por un reel de 30 s?</p><p class="b out">Yo $60 con guion incluido</p><p class="b in">Gracias, ya lo subí</p><span class="ej">Conversación de ejemplo</span></div></article><article class="tile t-tool rv" style="--i:2"><div class="tcap"><h3>Cursos, retos y herramientas</h3><p>Se abren con tu membresía, sin pagar nada aparte.</p></div><div class="mini-calc"><small>Calculadora de precio, ejemplo</small><b id="miniCalc">$74</b><span class="ej">Con datos ficticios</span></div><a class="tlink" href="#planes">Quiero entrar →</a></article><article class="tile t-rec rv" style="--i:3"><div class="tcap"><h3>Recursos y plantillas</h3><p>Todo ordenado para que sepas qué sigue.</p></div><img src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1790061651/marketographers/pablo-villarroel-about-marketographers.jpg" alt="" loading="lazy" aria-hidden="true"></article></div></div></section><section class="mapa" id="mapa"><div class="wrap-w"><div class="top"><span class="eyebrow rv">Dentro de la membresía</span><h2 class="h-sec rv" style="--i:1">Dime qué te duele y te digo <mark>por dónde empezar</mark></h2></div><div class="mgrid"><div class="mchips" id="mchips" role="tablist" aria-label="Elige tu problema"></div><div class="mres" id="mres" aria-live="polite"></div></div><p class="mfoot rv"><span class="mnote">Cursos, retos y herramientas vienen con la membresía. Un solo pago, sin comprar nada por separado.</span><a class="btn btn-p" href="#planes">Entrar a la membresía</a></p></div></section><section class="track-sec" id="casos">
+<section class="dentro" id="dentro"><div class="wrap-w"><div class="top"><span data-t="home_dentro.t01" class="eyebrow rv">Por dentro</span><h2 data-t="home_dentro.t02" class="h-sec rv" style="--i:1">Esto es lo que abres <mark>el día que entras</mark></h2></div><div class="bento"><article class="tile t-clase rv" style="--i:0"><img data-ta="src:home_dentro.i1_src|alt:home_dentro.i1_alt" src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto:best,f_auto/v1771218778/Captura_clase_vzvoyr.jpg" alt="Clase en vivo de The Marketographers por Zoom" loading="lazy"><div class="tcap"><span data-tx="home_dentro.t03" class="live"><i></i>En vivo</span><h3 data-t="home_dentro.t04">Clases dos veces por semana</h3><p data-t="home_dentro.t05">Con cámara prendida y tiempo para tus preguntas.</p></div></article><article class="tile t-wpp rv" style="--i:1"><div class="tcap"><h3 data-t="home_dentro.t06">Grupo de WhatsApp</h3><p data-t="home_dentro.t07">Tus dudas se resuelven en minutos.</p></div><div class="mini-chat"><p data-t="home_dentro.t08" class="b in">¿Cuánto cobran por un reel de 30 s?</p><p data-t="home_dentro.t09" class="b out">Yo $60 con guion incluido</p><p data-t="home_dentro.t10" class="b in">Gracias, ya lo subí</p><span data-t="home_dentro.t11" class="ej">Conversación de ejemplo</span></div></article><article class="tile t-tool rv" style="--i:2"><div class="tcap"><h3 data-t="home_dentro.t12">Cursos, retos y herramientas</h3><p data-t="home_dentro.t13">Se abren con tu membresía, sin pagar nada aparte.</p></div><div class="mini-calc"><small data-t="home_dentro.t14">Calculadora de precio, ejemplo</small><b id="miniCalc">$74</b><span data-t="home_dentro.t15" class="ej">Con datos ficticios</span></div><a data-t="home_dentro.t16" class="tlink" href="#planes">Quiero entrar →</a></article><article class="tile t-rec rv" style="--i:3"><div class="tcap"><h3 data-t="home_dentro.t17">Recursos y plantillas</h3><p data-t="home_dentro.t18">Todo ordenado para que sepas qué sigue.</p></div><img src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1790061651/marketographers/pablo-villarroel-about-marketographers.jpg" alt="" loading="lazy" aria-hidden="true"></article></div></div></section><section class="mapa" id="mapa"><div class="wrap-w"><div class="top"><span data-t="home_mapa.t01" class="eyebrow rv">Dentro de la membresía</span><h2 data-t="home_mapa.t02" class="h-sec rv" style="--i:1">Dime qué te duele y te digo <mark>por dónde empezar</mark></h2></div><div class="mgrid"><div class="mchips" id="mchips" role="tablist" aria-label="Elige tu problema"></div><div class="mres" id="mres" aria-live="polite"></div></div><p class="mfoot rv"><span data-t="home_mapa.t03" class="mnote">Cursos, retos y herramientas vienen con la membresía. Un solo pago, sin comprar nada por separado.</span><a data-t="home_mapa.t04" class="btn btn-p" href="#planes">Entrar a la membresía</a></p></div></section><section class="track-sec" id="casos">
   <div class="wrap-w">
     <div class="th">
       <div class="txt">
-        <span class="eyebrow rv">Casos de éxito</span>
-        <h2 class="h-sec rv" style="--i:1">Marketographers que ya <mark>la están rompiendo</mark></h2>
+        <span data-t="home_casos.t01" class="eyebrow rv">Casos de éxito</span>
+        <h2 data-t="home_casos.t02" class="h-sec rv" style="--i:1">Marketographers que ya <mark>la están rompiendo</mark></h2>
       </div>
     </div>
   </div>
@@ -757,38 +772,38 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
     <div class="track" id="tes-track" tabindex="0" aria-label="Testimonios. Arrastra o usa las flechas del teclado."></div>
     <div class="tui"><button class="tb" data-dir="-1" aria-label="Anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button><button class="tb" data-dir="1" aria-label="Siguiente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button></div>
   </div>
-  <div class="trail"><a class="btn btn-g cta-planes" href="#planes">Quiero entrar a la comunidad</a></div>
+  <div class="trail"><a data-t="home_casos.t03" class="btn btn-g cta-planes" href="#planes">Quiero entrar a la comunidad</a></div>
 </section>
 
 <section class="about">
   <div class="wrap ab">
-    <div class="sq rv"><img src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1790061651/marketographers/pablo-villarroel-about-marketographers.jpg" alt="Pablo Villarroel, The Marketographer" loading="lazy"></div>
+    <div class="sq rv"><img data-ta="src:home_sobre.i1_src|alt:home_sobre.i1_alt" src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1790061651/marketographers/pablo-villarroel-about-marketographers.jpg" alt="Pablo Villarroel, The Marketographer" loading="lazy"></div>
     <div class="rv" style="--i:1;position:relative">
       <div class="ring"></div>
-      <span class="eyebrow">¿Quién te está hablando?</span>
-      <h2>Pablo Villarroel</h2>
-      <p class="h">@themarketographer</p>
-      <p>Lic. en Marketing &amp; Publicidad, TEDx speaker, especialista en StorySelling y persuasión.</p>
-      <p><em>Lo único importante sobre mí es que no voy a dormir hasta que tú consigas dormir tranquilo.</em> Por eso tengo esas ojeras.</p>
+      <span data-t="home_sobre.t01" class="eyebrow">¿Quién te está hablando?</span>
+      <h2 data-t="home_sobre.t02">Pablo Villarroel</h2>
+      <p data-t="home_sobre.t03" class="h">@themarketographer</p>
+      <p data-t="home_sobre.t04">Lic. en Marketing &amp; Publicidad, TEDx speaker, especialista en StorySelling y persuasión.</p>
+      <p data-t="home_sobre.t05"><em>Lo único importante sobre mí es que no voy a dormir hasta que tú consigas dormir tranquilo.</em> Por eso tengo esas ojeras.</p>
     </div>
   </div>
 </section>
 
-<section class="dudas" id="dudas"><div class="wrap-w"><div class="top"><span class="eyebrow rv">Dudas honestas</span><h2 class="h-sec rv" style="--i:1">Lo que ya te dijiste en la ducha, <mark>con su respuesta</mark></h2></div><div class="dgrid"><article class="dd rv" style="--i:0"><button type="button" class="dq" aria-expanded="false" aria-controls="da0"><span class="say">Dices</span><span class="qt">“Es caro”</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button><div class="da" id="da0"><div><span class="say gold">Pablo responde</span><p>Son $33 al mes, menos de $1.10 al día. Con que dejes de rebajar un solo trabajo al mes, ya la recuperaste. Haz la cuenta en la calculadora y me cuentas.</p></div></div></article><article class="dd rv" style="--i:1"><button type="button" class="dq" aria-expanded="false" aria-controls="da1"><span class="say">Dices</span><span class="qt">“No tengo tiempo”</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button><div class="da" id="da1"><div><span class="say gold">Pablo responde</span><p>Las clases son en vivo dos veces por semana y quedan grabadas. Si te alcanza el tiempo para editar a las 3 AM, te alcanza para una clase que te devuelva esas horas.</p></div></div></article><article class="dd rv" style="--i:2"><button type="button" class="dq" aria-expanded="false" aria-controls="da2"><span class="say">Dices</span><span class="qt">“Ya hice cursos y no me sirvieron”</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button><div class="da" id="da2"><div><span class="say gold">Pablo responde</span><p>Entonces ya conoces el dolor de aprender y no aplicar. Aquí cada clase termina con una tarea para ese mismo día, y si te atoras escribes al grupo y alguien te responde en minutos.</p></div></div></article><article class="dd rv" style="--i:3"><button type="button" class="dq" aria-expanded="false" aria-controls="da3"><span class="say">Dices</span><span class="qt">“Mi nicho es muy raro”</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button><div class="da" id="da3"><div><span class="say gold">Pablo responde</span><p>Hay miembros de 17 países y de especialidades que ni sabías que existían. Un cliente que paga busca lo mismo en todos los nichos: que alguien le explique por qué elegirte.</p></div></div></article><article class="dd rv" style="--i:4"><button type="button" class="dq" aria-expanded="false" aria-controls="da4"><span class="say">Dices</span><span class="qt">“No sé nada de marketing”</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button><div class="da" id="da4"><div><span class="say gold">Pablo responde</span><p>Mejor. Nadie te enseñó malas mañas todavía. Empezamos desde cero, con un paso a paso con orden, y la primera tarea la haces hoy.</p></div></div></article><a class="dd cta rv" style="--i:5" href="#planes"><span class="say gold">¿Otra duda?</span><span class="qt">Escríbela en el grupo gratis o mira el plan</span><span class="arr">→</span></a></div></div></section><section class="pricing" id="planes">
+<section class="dudas" id="dudas"><div class="wrap-w"><div class="top"><span data-t="home_dudas.t01" class="eyebrow rv">Dudas honestas</span><h2 data-t="home_dudas.t02" class="h-sec rv" style="--i:1">Lo que ya te dijiste en la ducha, <mark>con su respuesta</mark></h2></div><div class="dgrid"><article class="dd rv" style="--i:0"><button type="button" class="dq" aria-expanded="false" aria-controls="da0"><span data-t="home_dudas.t03" class="say">Dices</span><span data-t="home_dudas.t04" class="qt">“Es caro”</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button><div class="da" id="da0"><div><span data-t="home_dudas.t05" class="say gold">Pablo responde</span><p data-t="home_dudas.t06">Son $33 al mes, menos de $1.10 al día. Con que dejes de rebajar un solo trabajo al mes, ya la recuperaste. Haz la cuenta en la calculadora y me cuentas.</p></div></div></article><article class="dd rv" style="--i:1"><button type="button" class="dq" aria-expanded="false" aria-controls="da1"><span data-t="home_dudas.t07" class="say">Dices</span><span data-t="home_dudas.t08" class="qt">“No tengo tiempo”</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button><div class="da" id="da1"><div><span data-t="home_dudas.t09" class="say gold">Pablo responde</span><p data-t="home_dudas.t10">Las clases son en vivo dos veces por semana y quedan grabadas. Si te alcanza el tiempo para editar a las 3 AM, te alcanza para una clase que te devuelva esas horas.</p></div></div></article><article class="dd rv" style="--i:2"><button type="button" class="dq" aria-expanded="false" aria-controls="da2"><span data-t="home_dudas.t11" class="say">Dices</span><span data-t="home_dudas.t12" class="qt">“Ya hice cursos y no me sirvieron”</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button><div class="da" id="da2"><div><span data-t="home_dudas.t13" class="say gold">Pablo responde</span><p data-t="home_dudas.t14">Entonces ya conoces el dolor de aprender y no aplicar. Aquí cada clase termina con una tarea para ese mismo día, y si te atoras escribes al grupo y alguien te responde en minutos.</p></div></div></article><article class="dd rv" style="--i:3"><button type="button" class="dq" aria-expanded="false" aria-controls="da3"><span data-t="home_dudas.t15" class="say">Dices</span><span data-t="home_dudas.t16" class="qt">“Mi nicho es muy raro”</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button><div class="da" id="da3"><div><span data-t="home_dudas.t17" class="say gold">Pablo responde</span><p data-t="home_dudas.t18">Hay miembros de 17 países y de especialidades que ni sabías que existían. Un cliente que paga busca lo mismo en todos los nichos: que alguien le explique por qué elegirte.</p></div></div></article><article class="dd rv" style="--i:4"><button type="button" class="dq" aria-expanded="false" aria-controls="da4"><span data-t="home_dudas.t19" class="say">Dices</span><span data-t="home_dudas.t20" class="qt">“No sé nada de marketing”</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button><div class="da" id="da4"><div><span data-t="home_dudas.t21" class="say gold">Pablo responde</span><p data-t="home_dudas.t22">Mejor. Nadie te enseñó malas mañas todavía. Empezamos desde cero, con un paso a paso con orden, y la primera tarea la haces hoy.</p></div></div></article><a class="dd cta rv" style="--i:5" href="#planes"><span data-t="home_dudas.t23" class="say gold">¿Otra duda?</span><span data-t="home_dudas.t24" class="qt">Escríbela en el grupo gratis o mira el plan</span><span class="arr">→</span></a></div></div></section><section class="pricing" id="planes">
     <div class="wrap center">
     <div class="ph">
-      <span class="eyebrow rv">Precio de fundador</span>
-      <h2 class="h-sec rv" style="--i:1"><mark>Una sola decisión.</mark> La que te faltaba tomar.</h2>
-      <p class="lead rv" style="--i:2;margin-top:18px">Cuesta menos que una entrada al cine y tiene mejor función: llenar tu agenda.</p>
+      <span data-t="home_planes.t01" class="eyebrow rv">Precio de fundador</span>
+      <h2 data-t="home_planes.t02" class="h-sec rv" style="--i:1"><mark>Una sola decisión.</mark> La que te faltaba tomar.</h2>
+      <p data-t="home_planes.t03" class="lead rv" style="--i:2;margin-top:18px">Cuesta menos que una entrada al cine y tiene mejor función: llenar tu agenda.</p>
     </div>
-    <div class="pz"><div class="sq zoom rv" style="--i:3"><img src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto:best,f_auto/v1771218778/Captura_clase_vzvoyr.jpg" alt="Captura de una clase en vivo por Zoom con fotógrafos de la comunidad" width="1000" height="1000" loading="lazy"></div><div class="pst rv" style="--i:3">
+    <div class="pz"><div class="sq zoom rv" style="--i:3"><img data-ta="src:home_planes.i1_src|alt:home_planes.i1_alt" src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto:best,f_auto/v1771218778/Captura_clase_vzvoyr.jpg" alt="Captura de una clase en vivo por Zoom con fotógrafos de la comunidad" width="1000" height="1000" loading="lazy"></div><div class="pst rv" style="--i:3">
       <div class="price" id="price">
-        <span class="ribbon">Precio de fundador</span>
-        <div class="bill" id="bill" role="group" aria-label="Frecuencia de pago"><span class="bill-thumb" aria-hidden="true"></span><button type="button" data-bill="m" aria-pressed="true">Mensual</button><button type="button" data-bill="a" aria-pressed="false">Anual <i>2 meses gratis</i></button></div><div class="pt"><span class="old" id="oldW"><span id="oldnum">$49</span></span><p class="pn"><span class="pnum" id="pnum">$49</span><small>/mes</small></p></div>
+        <span data-t="home_planes.t04" class="ribbon">Precio de fundador</span>
+        <div class="bill" id="bill" role="group" aria-label="Frecuencia de pago"><span class="bill-thumb" aria-hidden="true"></span><button data-t="home_planes.t05" type="button" data-bill="m" aria-pressed="true">Mensual</button><button data-tx="home_planes.t06" type="button" data-bill="a" aria-pressed="false">Anual <i data-t="home_planes.t07">2 meses gratis</i></button></div><div class="pt"><span class="old" id="oldW"><span id="oldnum">$49</span></span><p class="pn"><span class="pnum" id="pnum">$49</span><small data-t="home_planes.t08">/mes</small></p></div>
         <p class="pd" id="pdesc">Menos de $1.10 al día.</p><p class="pbill" id="pbill">Se cobran $33 cada mes. Cancela cuando quieras.</p>
         <div class="pl" id="plist" style="text-align:left"></div>
-        <a class="btn btn-p" href="https://nas.com/marketographers/join-membership/690025802c8123e0f9b762ef" target="_blank" rel="noopener"><span id="priceCtaTxt">Quiero entrar a la comunidad</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-        <p class="note">Cancela cuando quieras.</p>
+        <a data-ta="href:home_planes.h1" class="btn btn-p" href="https://nas.com/marketographers/join-membership/690025802c8123e0f9b762ef" target="_blank" rel="noopener"><span id="priceCtaTxt">Quiero entrar a la comunidad</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <p data-t="home_planes.t09" class="note">Cancela cuando quieras.</p>
       </div>
     </div>
     </div>
@@ -798,8 +813,8 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
 <section id="faq">
   <div class="wrap">
     <div class="center" style="margin-bottom:clamp(30px,5vw,54px)">
-      <span class="eyebrow rv">Antes de que preguntes</span>
-      <h2 class="h-sec rv" style="--i:1">Preguntas frecuentes</h2>
+      <span data-t="home_faqtit.t01" class="eyebrow rv">Antes de que preguntes</span>
+      <h2 data-t="home_faqtit.t02" class="h-sec rv" style="--i:1">Preguntas frecuentes</h2>
     </div>
     <div class="fl rv" style="--i:2" id="fl"></div>
   </div>
@@ -808,25 +823,26 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
 <section class="final">
   <div class="ring a"></div><div class="ring b"></div>
   <div class="wrap">
-    <span class="eyebrow rv">Última llamada</span>
-    <h2 class="rv" style="--i:1">¿Vas a seguir editando solo hasta las 3am o vas a <mark>aprender a venderte</mark>?</h2>
-    <a class="btn btn-p cta-planes rv" style="--i:2" href="#planes">Únete a la comunidad <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-    <p class="sub rv" style="--i:3">+200 fotógrafos ya están adentro. ¿Y tú?</p>
+    <span data-t="home_cierre.t01" class="eyebrow rv">Última llamada</span>
+    <h2 data-t="home_cierre.t02" class="rv" style="--i:1">¿Vas a seguir editando solo hasta las 3am o vas a <mark>aprender a venderte</mark>?</h2>
+    <a data-tx="home_cierre.t03" class="btn btn-p cta-planes rv" style="--i:2" href="#planes">Únete a la comunidad <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <p data-t="home_cierre.t04" class="sub rv" style="--i:3">+200 fotógrafos ya están adentro. ¿Y tú?</p>
   </div>
 </section>
 
 </main>
 
 <footer>
-  <span class="mark">the marketo<i>g</i>raphers</span>
-  <p>© 2026 The Marketographers.</p>
+  <span data-tx="home_pie.t01" class="mark">the marketo<i data-t="home_pie.t02">g</i>raphers</span>
+  <p data-t="home_pie.t03">© 2026 The Marketographers.</p>
 </footer>
 
-<a class="wa" href="https://api.whatsapp.com/send?phone=+59169422335&text=%C2%A1Hola%2C%20Pablo!%20Vi%20la%20p%C3%A1gina%20de%20la%20membres%C3%ADa%20y%20tengo%20una%20pregunta" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp"><span class="wa-tip">Escríbenos por WhatsApp <svg class="wa-arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span><span class="wa-ic"><svg viewBox="0 0 24 24" width="26" height="26" fill="#25D366"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.39 1.26 4.82L2 22l5.4-1.42a9.9 9.9 0 0 0 4.64 1.18h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2zm0 18.06h-.01a8.2 8.2 0 0 1-4.18-1.15l-.3-.18-3.11.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.37c0-4.53 3.69-8.22 8.23-8.22 4.53 0 8.22 3.69 8.22 8.22 0 4.53-3.69 8.23-8.22 8.23zm4.51-6.16c-.25-.12-1.46-.72-1.69-.8-.23-.08-.39-.12-.56.12-.16.25-.64.8-.78.96-.14.16-.29.18-.54.06-.25-.12-1.04-.38-1.98-1.22-.73-.65-1.23-1.46-1.37-1.7-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.15.16-.25.24-.41.08-.16.04-.31-.02-.43-.06-.12-.56-1.35-.77-1.85-.2-.48-.41-.42-.56-.42-.14-.01-.31-.01-.47-.01a.9.9 0 0 0-.65.31c-.23.25-.86.84-.86 2.04s.88 2.37 1 2.53c.12.16 1.73 2.64 4.19 3.7.59.25 1.04.4 1.4.52.59.19 1.12.16 1.54.1.47-.07 1.46-.6 1.66-1.17.21-.58.21-1.07.15-1.17-.06-.11-.23-.17-.48-.29z"/></svg></span></a>
+<a data-ta="href:home_whatsapp.h1" class="wa" href="https://api.whatsapp.com/send?phone=+59169422335&text=%C2%A1Hola%2C%20Pablo!%20Vi%20la%20p%C3%A1gina%20de%20la%20membres%C3%ADa%20y%20tengo%20una%20pregunta" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp"><span data-tx="home_whatsapp.t01" class="wa-tip">Escríbenos por WhatsApp <svg class="wa-arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span><span class="wa-ic"><svg viewBox="0 0 24 24" width="26" height="26" fill="#25D366"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.39 1.26 4.82L2 22l5.4-1.42a9.9 9.9 0 0 0 4.64 1.18h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2zm0 18.06h-.01a8.2 8.2 0 0 1-4.18-1.15l-.3-.18-3.11.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.37c0-4.53 3.69-8.22 8.23-8.22 4.53 0 8.22 3.69 8.22 8.22 0 4.53-3.69 8.23-8.22 8.23zm4.51-6.16c-.25-.12-1.46-.72-1.69-.8-.23-.08-.39-.12-.56.12-.16.25-.64.8-.78.96-.14.16-.29.18-.54.06-.25-.12-1.04-.38-1.98-1.22-.73-.65-1.23-1.46-1.37-1.7-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.15.16-.25.24-.41.08-.16.04-.31-.02-.43-.06-.12-.56-1.35-.77-1.85-.2-.48-.41-.42-.56-.42-.14-.01-.31-.01-.47-.01a.9.9 0 0 0-.65.31c-.23.25-.86.84-.86 2.04s.88 2.37 1 2.53c.12.16 1.73 2.64 4.19 3.7.59.25 1.04.4 1.4.52.59.19 1.12.16 1.54.1.47-.07 1.46-.6 1.66-1.17.21-.58.21-1.07.15-1.17-.06-.11-.23-.17-.48-.29z"/></svg></span></a>
 
+<script src="/cursos/cursos-data.js"></script>
 <script>
 function esc(s){var d=document.createElement('div');d.textContent=s==null?'':s;return d.innerHTML;}
-var testimonios = [
+const testimonios = [
     {n:"Stephany Rodriguez",t:"Boudoir · Honduras",q:"Gracias por toda la chamba que has hecho con esto! Estoy llorando de felicidad Donde estuviste toda mi vidaa?!",img:"https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1772843204/12_zrfwsh.jpg"},
     {n:"Daniela Munanatik",t:"Boudoir · México",q:"Weeee...en la mini mentoría con Pablo me quedé así 🤯 cuando me di cuenta que mi propósito tenía parte de mis heridas y yo, CLAAAARO, tiene TODO SENTIDO",img:"https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1772843220/Imagen_i0acjn.jpg"},
     {n:"Carolina Rdz",t:"Newborn · México",q:"Estamos veniendo todas las semanas, navidad, smash, newborn, no puedo creer esto 🥹❤️‍🔥",img:"https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1772843597/Captura_de_pantalla_2026-03-06_a_la_s_20.32.36_k46ylo.png"},
@@ -845,18 +861,18 @@ function clamp(v,a,b){return Math.min(b,Math.max(a,v));}
 var ARROW = '';
 
 /* ---------- datos ---------- */
-var problemCards = [
+const problemCards = [
   {num:'01',t:'Cobras poco porque no sabes venderte',p:'Piensas que el mercado está saturado o que en tu ciudad no pagan bien.'},
   {num:'02',t:'Dependes del boca a boca',p:'Tu negocio queda en manos del algoritmo, sin una estrategia de marketing real.'},
   {num:'03',t:'Editas solito hasta las 3am',p:'Trabajas hasta en Navidad y llevas días sin ver a tu familia.'}
 ];
-var stats = [
+const stats = [
   {v:'95%',l:'de los fotógrafos fracasan antes de 3 años'},
   {v:'$200',l:'es el promedio de lo que cobran por sesión'},
   {v:'60h',l:'trabajando por semana como esclavo'},
   {v:'0',l:'planes o estrategias de marketing'}
 ];
-var includesCards = [
+const includesCards = [
   {t:'Nunca más te vas a sentir solito',p:'Nos vemos 2 veces por semana, en vivo por Zoom, y resolvemos tus dudas.'},
   {t:'Recursos hechos para fotógrafos',p:'Modelos de contratos, cotizadores, skills de Claude y planificadores. Lo que un fotógrafo podría necesitar, ya armado.'},
   {t:'Un grupo lleno de locos como tú',p:'Un grupo de WhatsApp con fotógrafos de todo el mundo, dándole vueltas al mismo problema que a ti te quita el sueño. Abierto 24/7.'},
@@ -866,15 +882,15 @@ var includesCards = [
 ];
 var PLAY = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M10 8.5l5 3.5-5 3.5z"/></svg>';
 var MAIL = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>';
-var pricingFeatures = [
-  {i:ICONS[0],t:'Clases en vivo',p:'2x por semana, con Pablo, cámara prendida.'},
-  {i:PLAY,t:'Cursos ilimitados',p:'Todas las masterclasses, sin costo extra.'},
-  {i:ICONS[2],t:'Grupo de WhatsApp',p:'Tus dudas se resuelven en minutos.'},
-  {i:ICONS[1],t:'Libros y plantillas',p:'Sistemas ya armados, listos para copiar.'},
-  {i:MAIL,t:'Newsletter semanal',p:'Una estrategia nueva cada lunes.'},
-  {i:ICONS[4],t:'Feedback honesto',p:'Sin filtros, sin caricias, sin rodeos.'}
+const pricingFeatures = [
+  {i:"cam",t:'Clases en vivo',p:'2x por semana, con Pablo, cámara prendida.'},
+  {i:"play",t:'Cursos ilimitados',p:'Todas las masterclasses, sin costo extra.'},
+  {i:"chat",t:'Grupo de WhatsApp',p:'Tus dudas se resuelven en minutos.'},
+  {i:"book",t:'Libros y plantillas',p:'Sistemas ya armados, listos para copiar.'},
+  {i:"mail",t:'Newsletter semanal',p:'Una estrategia nueva cada lunes.'},
+  {i:"chat2",t:'Feedback honesto',p:'Sin filtros, sin caricias, sin rodeos.'}
 ];
-var faqs = [
+const faqs = [
   {q:'¿Tienen garantía de devolución?',a:'JAJAJAJAJA. No.\n\nAquí no devolvemos dinero porque sabemos que, si entras, vas a querer quedarte. Si pensabas entrar para pedir una devolución probablemente es porque esperabas milagros sin mover un dedo, y para eso... mejor nadota.'},
   {q:'¿Cuánto tiempo tengo que dedicarle?',a:'Las clases en vivo son 2 veces por semana (2-3 horas). El resto del contenido lo puedes consumir a tu ritmo. El grupo está activo 24/7, pero tú decides cuánto participar.'},
   {q:'¿Cómo sé si esto es para mí?',a:'Si eres fotógrafo y quieres más clientes, más tiempo libre y dejar de vivir del "boca a boca", esto es para ti. Si te encanta rascarte las pelotas, coleccionar cursos como estampitas para nunca abrirlos, mejor ahórrate el dinero… o mándamelo directo, igual de inútil va a ser.'},
@@ -884,7 +900,7 @@ var faqs = [
 
 /* ---------- render ---------- */
 document.getElementById('pgrid').innerHTML = problemCards.map(function(c,i){
-  return '<div class="pc rv" style="--i:'+i+'"><span class="n">'+c.num+'</span><h3>'+esc(c.t)+'</h3><p>'+esc(c.p)+'</p></div>';
+  return '<div class="pc rv" style="--i:'+i+'"><span class="n">'+(c.num||('0'+(i+1)))+'</span><h3>'+esc(c.t)+'</h3><p>'+esc(c.p)+'</p></div>';
 }).join('');
 document.getElementById('stats').innerHTML = stats.map(function(s,i){
   var m = s.v.match(/^([^\d]*)(\d+)([^\d]*)$/);
@@ -892,13 +908,14 @@ document.getElementById('stats').innerHTML = stats.map(function(s,i){
   return '<div class="st rv" style="--i:'+i+'"><div class="num" data-pre="'+esc(pre)+'" data-suf="'+esc(suf)+'" data-t="'+tg+'">'+esc(s.v)+'</div><div class="lbl">'+esc(s.l)+'</div></div>';
 }).join('');
 document.getElementById('inc-track').innerHTML = includesCards.map(function(c,i){
-  return '<article class="ic"><div><div class="badge">'+ICONS[i]+'</div><h3>'+esc(c.t)+'</h3><p>'+esc(c.p)+'</p></div><span class="num">0'+(i+1)+' / 0'+includesCards.length+'</span></article>';
+  return '<article class="ic"><div><div class="badge">'+(ICONS[i]||ICONS[0])+'</div><h3>'+esc(c.t)+'</h3><p>'+esc(c.p)+'</p></div><span class="num">0'+(i+1)+' / 0'+includesCards.length+'</span></article>';
 }).join('');
 document.getElementById('tes-track').innerHTML = testimonios.map(function(t){
   return '<article class="tc"><div class="who"><img src="'+t.img+'" alt="'+esc(t.n)+'" loading="lazy" width="50" height="50"><div><strong>'+esc(t.n)+'</strong><span>'+esc(t.t)+'</span></div></div><q>'+esc(t.q)+'</q></article>';
 }).join('');
+var PICO = {cam:ICONS[0],play:PLAY,chat:ICONS[2],book:ICONS[1],mail:MAIL,chat2:ICONS[4]};
 document.getElementById('plist').innerHTML = pricingFeatures.map(function(f){
-  return '<div class="pi"><span class="pib">'+f.i+'</span><div><strong>'+esc(f.t)+'</strong><p>'+esc(f.p)+'</p></div></div>';
+  return '<div class="pi"><span class="pib">'+(PICO[f.i]||'')+'</span><div><strong>'+esc(f.t)+'</strong><p>'+esc(f.p)+'</p></div></div>';
 }).join('');
 document.getElementById('fl').innerHTML = faqs.map(function(f){
   return '<div class="fi"><button type="button" aria-expanded="false"><span>'+esc(f.q)+'</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button><div class="fa"><div><p>'+esc(f.a)+'</p></div></div></div>';
@@ -1247,12 +1264,13 @@ if(!reduce && fine){
   var pd=document.getElementById('pdesc'), pb=document.getElementById('pbill'), ctaT=document.getElementById('priceCtaTxt');
   var bill=document.getElementById('bill'), btns=Array.prototype.slice.call(bill.querySelectorAll('button')), txtEls=[pd,pb];
   /* Valores propuestos. El anual es una propuesta: confirma el precio real y crea el nivel en Nas.io antes de publicar. */
-  var PLAN={
-    m:{p:33,o:49,day:'Menos de $1.10 al día.',bill:'Se cobran $33 cada mes. Cancela cuando quieras.',cta:'Quiero entrar a la comunidad'},
-    a:{p:27.5,o:33,day:'Menos de $0.92 al día.',bill:'Se cobran $330 una vez al año. Pagas 10 meses y recibes 2 gratis.',cta:'Quiero el plan anual'}
-  };
+  const PLANES = [
+    {id:"m",p:33,o:49,day:"Menos de $1.10 al día.",bill:"Se cobran $33 cada mes. Cancela cuando quieras.",cta:"Quiero entrar a la comunidad"},
+    {id:"a",p:27.5,o:33,day:"Menos de $0.92 al día.",bill:"Se cobran $330 una vez al año. Pagas 10 meses y recibes 2 gratis.",cta:"Quiero el plan anual"}
+  ];
+  var PLAN={}; PLANES.forEach(function(x){ PLAN[x.id]=x; });
   function fmt(v){ return '$'+(v%1?v.toFixed(2):v); }
-  var cur={p:49,o:49}, tk={p:0,o:0}, mode='m', seen=false;
+  var cur={p:PLAN.m.o,o:PLAN.m.o}, tk={p:0,o:0}, mode='m', seen=false;
   function tween(key,el,to,dur,done){
     var from=cur[key];
     if(reduce||dur<=0){ tk[key]++; cur[key]=to; el.textContent=fmt(to); if(done) done(); return; }
@@ -1278,7 +1296,7 @@ if(!reduce && fine){
     if(!first) setText(k);
   }
   btns.forEach(function(b){ b.addEventListener('click',function(){ var k=b.getAttribute('data-bill'); if(k!==mode && seen) go(k,false); }); });
-  if(reduce){ seen=true; cur.p=33; cur.o=49; elP.textContent='$33'; elO.textContent='$49'; oldW.classList.add('struck'); return; }
+  if(reduce){ seen=true; cur.p=PLAN.m.p; cur.o=PLAN.m.o; elP.textContent=fmt(PLAN.m.p); elO.textContent=fmt(PLAN.m.o); oldW.classList.add('struck'); return; }
   new IntersectionObserver(function(es,o){ es.forEach(function(e){ if(e.isIntersecting){ o.disconnect(); seen=true; go('m',true); } }); },{threshold:.5}).observe(card);
 })();
 
@@ -1314,13 +1332,45 @@ if(!reduce && fine){
   function wf(){ wt=0; if(reduce) return; var vh=getVh(); wls.forEach(function(o){ var r=o.el.getBoundingClientRect(), p=Math.min(1,Math.max(0,(vh*.88-r.top)/(vh*.5))), n=Math.round(p*o.ws.length); o.ws.forEach(function(s,i){ s.classList.toggle('on', i<n); }); }); }
   addEventListener('scroll',function(){ if(!wt){ wt=1; requestAnimationFrame(wf); } },{passive:true,capture:true}); wf();
   /* mapa de cursos */
-  var C={"fotografia-de-novato-a-pro": {"t": "Fotógrafo: de novato a pro", "d": "Fotografía básica, desde cero", "img": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1790794333540_eff8ff5e-3e15-4576-b1b4-78f5110485ad_GV", "href": "/cursos/fotografia-de-novato-a-pro/"}, "marketing-para-fotografos": {"t": "Marketing para fotógrafos", "d": "Marketing y ventas para fotógrafos", "img": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1789677004230_a059673c-a420-424c-add8-9d90943bf85b_GV", "href": "/cursos/marketing-para-fotografos/"}, "meta-ads-para-creativos": {"t": "Meta Ads para creativos", "d": "Pixel, audiencias y campañas en Meta", "img": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1789678578478_6d7e2c96-583d-47ee-9fd0-92f58b176e1c_GV", "href": "/cursos/meta-ads-para-creativos/"}, "fotografia-con-iphone": {"t": "Fotografía con iPhone para principiantes", "d": "La cámara del iPhone, desde cero", "img": "/cursos/assets/portadas/fotografia-con-iphone.jpg", "href": "/cursos/fotografia-con-iphone/"}, "landing-pages-con-ia": {"t": "Landing pages con IA, gratis", "d": "Tu landing con IA, sin pagar hosting", "img": "/cursos/assets/portadas/landing-pages-con-ia.jpg", "href": "/cursos/landing-pages-con-ia/"}, "zoom-coach": {"t": "Zoom Coach", "d": "Clases y asesorías online con buena imagen y audio", "img": "/cursos/assets/portadas/zoom-coach.jpg", "href": "/cursos/zoom-coach/"}, "agenda-automatica-cal-iphone": {"t": "Agendamiento automático con Cal + iPhone", "d": "Reservas, señas y recordatorios con Cal.com", "img": "/cursos/assets/portadas/agenda-automatica-cal-iphone.jpg", "href": "/cursos/agenda-automatica-cal-iphone/"}, "shortcuts-iphone": {"t": "Shortcuts de iPhone", "d": "Automatiza tu iPhone con la app Atajos", "img": "/cursos/assets/portadas/shortcuts-iphone.jpg", "href": "/cursos/shortcuts-iphone/"}}, M=[["No sé cuánto cobrar", ["marketing-para-fotografos"], "La calculadora de precio también viene incluida."], ["Nadie me escribe", ["marketing-para-fotografos", "landing-pages-con-ia"], ""], ["Mis fotos no se ven pro", ["fotografia-de-novato-a-pro", "fotografia-con-iphone"], ""], ["Quiero anunciar y no sé cómo", ["meta-ads-para-creativos"], ""], ["Pierdo horas agendando", ["agenda-automatica-cal-iphone", "shortcuts-iphone"], ""], ["Mis clases online se ven mal", ["zoom-coach"], ""]], chips=document.getElementById('mchips'), res=document.getElementById('mres'), cur=-1;
+    const MAPA = [
+    {
+      "p": "No sé cuánto cobrar",
+      "cursos": "marketing-para-fotografos",
+      "nota": "La calculadora de precio también viene incluida."
+    },
+    {
+      "p": "Nadie me escribe",
+      "cursos": "marketing-para-fotografos, landing-pages-con-ia",
+      "nota": ""
+    },
+    {
+      "p": "Mis fotos no se ven pro",
+      "cursos": "fotografia-de-novato-a-pro, fotografia-con-iphone",
+      "nota": ""
+    },
+    {
+      "p": "Quiero anunciar y no sé cómo",
+      "cursos": "meta-ads-para-creativos",
+      "nota": ""
+    },
+    {
+      "p": "Pierdo horas agendando",
+      "cursos": "agenda-automatica-cal-iphone, shortcuts-iphone",
+      "nota": ""
+    },
+    {
+      "p": "Mis clases online se ven mal",
+      "cursos": "zoom-coach",
+      "nota": ""
+    }
+  ];
+  var C=(function(){ var o={}; try{ (typeof cursos!=='undefined'?cursos:[]).forEach(function(c){ if(String(c.publicado||'si').toLowerCase()==='no') return; o[c.slug]={t:c.nombre,d:c.corto,img:String(c.portada||'').replace('https://marketographers.com','')}; }); }catch(e){} return o; })(), M=MAPA.map(function(x){ return [x.p, String(x.cursos||'').split(',').map(function(s){return s.trim();}).filter(Boolean), x.nota||'']; }), chips=document.getElementById('mchips'), res=document.getElementById('mres'), cur=-1;
   if(chips&&res){
     chips.innerHTML=M.map(function(m,i){ return '<button type="button" role="tab" data-i="'+i+'" aria-selected="false">'+esc(m[0])+'</button>'; }).join('');
     function show(i,first){
       if(i===cur) return; cur=i;
       [].forEach.call(chips.children,function(b,k){ b.setAttribute('aria-selected', k===i?'true':'false'); });
-      function paint(){ var m=M[i]; res.innerHTML=m[1].map(function(s){ var c=C[s]; return '<a class="mc" href="#planes"><img src="'+c.img+'" alt="Portada del curso '+esc(c.t)+'" loading="lazy"><div><span class="inc">Incluido en tu membresía</span><h3>'+esc(c.t)+'</h3><p>'+esc(c.d)+'</p><span class="go">Entrar a la membresía →</span></div></a>'; }).join('')+(m[2]?'<p class="mtool">'+esc(m[2])+'</p>':''); res.classList.remove('out'); }
+      function paint(){ var m=M[i]; res.innerHTML=m[1].filter(function(s){return C[s];}).map(function(s){ var c=C[s]; return '<a class="mc" href="#planes"><img src="'+c.img+'" alt="Portada del curso '+esc(c.t)+'" loading="lazy"><div><span class="inc">Incluido en tu membresía</span><h3>'+esc(c.t)+'</h3><p>'+esc(c.d)+'</p><span class="go">Entrar a la membresía →</span></div></a>'; }).join('')+(m[2]?'<p class="mtool">'+esc(m[2])+'</p>':''); res.classList.remove('out'); }
       if(first||reduce){ paint(); } else { res.classList.add('out'); setTimeout(paint,200); }
     }
     chips.addEventListener('click',function(e){ var b=e.target.closest('button'); if(b) show(+b.dataset.i,false); });
@@ -1383,5 +1433,5 @@ if(!reduce && fine){
 })();
 
 </script>
-</body>
+<div class="dock" id="dock"><a data-t="home_barra.t01" class="btn btn-p" href="#planes">Únete por $1 al día</a></div></body>
 </html>

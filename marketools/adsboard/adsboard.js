@@ -1725,7 +1725,7 @@ T.planOut = function (A) {
 };
 T.profitTable = function (A) {
   var rows = A.campaigns.filter(function (c) { return c.m.spend > 0; }).sort(function (a, b) { return b.m.spend - a.m.spend; });
-  var html = rows.length ? '<div class="card pad" style="overflow:auto"><table class="tbl"><thead><tr><th>Campaña</th><th class="r">Gasto</th><th class="r">Resultados</th><th class="r">Ventas est.</th><th class="r">Ganancia limpia</th><th class="r">Neto</th><th class="r">ROI</th><th>Veredicto</th></tr></thead><tbody>' + rows.map(function (c) {
+  var html = rows.length ? '<div class="card pad" style="overflow:auto"><table class="tbl stack"><thead><tr><th>Campaña</th><th class="r">Gasto</th><th class="r">Resultados</th><th class="r">Ventas est.</th><th class="r">Ganancia limpia</th><th class="r">Neto</th><th class="r">ROI</th><th>Veredicto</th></tr></thead><tbody>' + rows.map(function (c) {
     var p = c.profit; if (!p) return '<tr><td>' + F.esc(c.name) + '</td><td class="r">' + F.money(c.m.spend) + '</td><td class="r">' + F.num(c.m.results) + '</td><td colspan="5" class="sub">Completa la calculadora</td></tr>';
     return '<tr><td>' + F.esc(c.name) + '</td><td class="r">' + F.money(c.m.spend) + '</td><td class="r">' + F.num(c.m.results) + '</td><td class="r">' + F.num(p.sales, 1) + '</td><td class="r">' + F.money(p.gain) + '</td><td class="r"><b>' + F.money(p.net) + '</b></td><td class="r">' + (p.roi !== null ? F.pct(p.roi, 0) : "—") + '</td><td>' + (p.net >= 0 ? F.chip("g", "Rentable") : F.chip("r", "Pierde")) + '</td></tr>';
   }).join("") + '</tbody></table></div>' : '<div class="state"><b>Sin campañas con gasto</b>Amplía el rango de fechas.</div>';
@@ -2908,7 +2908,7 @@ AB.renderPolicy = function () {
 
 /* --------------------------------- respaldo ------------------------------- */
 AB.exportBackup = function () {
-  var data = { v: 1, at: new Date().toISOString(), goal: S.goal, prefs: S.prefs, sales: S.sales || [], hookBank: S.hookBank || [], editLog: S.editLog || [] };
+  var data = { v: 1, at: new Date().toISOString(), goal: S.goal, prefs: S.prefs, sales: S.sales || [], tags: S.tags || {}, hookBank: S.hookBank || [], editLog: S.editLog || [] };
   var blob = new Blob([JSON.stringify(data, null, 1)], { type: "application/json" }), a = document.createElement("a");
   a.href = URL.createObjectURL(blob); a.download = "adsboard-respaldo-" + new Date().toISOString().slice(0, 10) + ".json";
   document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500);
@@ -2923,7 +2923,7 @@ AB.importBackup = function (file) {
       if (!d || d.v !== 1) throw new Error("x");
       if (d.goal) S.goal = Object.assign(S.goal, d.goal);
       if (d.prefs) S.prefs = Object.assign(S.prefs, d.prefs);
-      S.sales = d.sales || []; S.hookBank = d.hookBank || []; S.editLog = d.editLog || [];
+      S.sales = d.sales || []; S.tags = d.tags || S.tags || {}; S.hookBank = d.hookBank || []; S.editLog = d.editLog || [];
       AB.saveLocal(); AB.recompute(); UI.toast("Respaldo cargado: " + S.sales.length + " ventas y " + S.hookBank.length + " hooks.");
     } catch (e) { UI.toast("Ese archivo no es un respaldo del Ads Board.", "bad"); }
   };
@@ -3133,13 +3133,13 @@ var LS = "adsboard_v2_";
 
 /* ------------------------- almacenamiento por usuario ------------------------ */
 AB.saveLocal = function () {
-  AB.store.set(LS + S.userId, { goal: S.goal, prefs: S.prefs, edits: S.edits || {}, editLog: S.editLog || [], sales: S.sales || [], hookBank: S.hookBank || [], metric: S.metric, range: S.range, acct: S.acct });
+  AB.store.set(LS + S.userId, { goal: S.goal, prefs: S.prefs, edits: S.edits || {}, editLog: S.editLog || [], sales: S.sales || [], tags: S.tags || {}, hookBank: S.hookBank || [], metric: S.metric, range: S.range, acct: S.acct });
 };
 AB.loadLocal = function () {
   var d = AB.store.get(LS + S.userId, null); if (!d) return;
   if (d.goal) S.goal = Object.assign({ ticket: "", margin: "", close: "", manual: "", want: "" }, d.goal);
   if (d.prefs) S.prefs = Object.assign(S.prefs, d.prefs);
-  S.edits = d.edits || {}; S.editLog = d.editLog || []; S.sales = d.sales || []; S.hookBank = d.hookBank || [];
+  S.edits = d.edits || {}; S.editLog = d.editLog || []; S.sales = d.sales || []; S.tags = d.tags || {}; S.hookBank = d.hookBank || [];
   if (d.metric) S.metric = d.metric; if (d.range) S.range = d.range; S.savedAcct = d.acct || null;
   if (S.prefs.defaultLevel) S.level = S.prefs.defaultLevel;
 };
@@ -3263,6 +3263,7 @@ AB.renderTab = function () {
   panel.innerHTML = fn(A);
   if (changed) { panel.classList.remove("swap"); void panel.offsetWidth; panel.classList.add("swap"); setTimeout(function () { panel.classList.remove("swap"); }, 700); }
   Ch.bind(panel);
+  Array.prototype.forEach.call(panel.querySelectorAll("table.stack"), function (t) { var hs = Array.prototype.map.call(t.querySelectorAll("thead th"), function (h) { return h.textContent; }); Array.prototype.forEach.call(t.querySelectorAll("tbody tr"), function (tr) { var i = 0; Array.prototype.forEach.call(tr.children, function (td) { if (hs[i] && !(td.colSpan > 1)) td.setAttribute("data-l", hs[i]); i += td.colSpan || 1; }); }); });
   if (S.tab === "escalado" && $("simOut") && $("simRange")) { $("simOut").innerHTML = T.simOut(A, parseInt($("simRange").value, 10)); }
   if (S.tab === "laboratorio" && $("ssOut")) $("ssOut").innerHTML = T.ssOut();
   if (S.tab === "ajustes") { var d = $("defaultLevelSelect"); if (d) d.value = S.prefs.defaultLevel || "campaign"; }
@@ -3462,4 +3463,573 @@ function init() {
   else if (AB.resumeKey) AB.resumeKey();
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
+})(window);
+
+/* ==========================================================================
+   EXTRAS: brief de qué filmar, informe en imagen, ventas por CSV, avisos
+   ========================================================================== */
+(function (root) {
+"use strict";
+var AB = root.AB, S = AB.S, F = AB.F, UI = AB.UI, T = AB.T, E = root.AdsEngine, $ = AB.$;
+
+/* ---------------------------- 1. Qué filmo esta semana ---------------------------- */
+var BRIEF_ANGLES = [
+  ["Comparación", "Muestra tu servicio contra la alternativa barata."],
+  ["Testimonios", "Una persona real cuenta su resultado."],
+  ["Ugly ad", "Estética cruda, parece contenido orgánico."],
+  ["Oferta", "Una razón concreta para actuar hoy."],
+  ["Problema y solución", "Nombra el dolor y presenta la salida."]
+];
+var FIX = {
+  "Hook": "Cambia los primeros 3 segundos. Abre con la situación de tu cliente y deja el logo para el final.",
+  "Retención": "Acórtalo o mete un giro cada 5 segundos. Si el video promete algo, entrégalo antes del segundo 15.",
+  "CTR": "Deja una sola acción y dila en voz alta y en texto. Un llamado claro mueve más clics que dos.",
+  "Costo": "El creativo gusta pero cuesta. Revisa a quién le llega y qué oferta lleva antes de grabar de nuevo.",
+  "Frescura": "Ya lo vieron muchas veces. Graba una versión nueva de la misma idea, con otra escena inicial."
+};
+function scored(A) { return A.ads.filter(function (a) { return a.m.spend > 0 && a.score && a.score.score !== null; }); }
+AB.brief = function (A) {
+  var items = [], ads = scored(A), nm = function (a) { return "«" + a.name + "»"; };
+  var best = ads.slice().sort(function (a, b) { return b.score.score - a.score.score; })[0];
+  if (best && best.score.score >= 60) {
+    var det = best.isVideo && best.m.hook !== null ? "Su gancho retiene a " + F.pct(best.m.hook, 0) + " de quienes lo ven en los primeros 3 segundos." : "Su CTR es " + F.pct(best.m.ctr, 2) + ".";
+    items.push({ tag: "Mantén", title: "Repite la fórmula de " + nm(best), text: det + " Graba una variante que conserve la apertura y cambie la escena del medio y el final." });
+  } else {
+    items.push({ tag: "Mantén", title: "Todavía no hay un ganador claro", text: "Ninguna pieza pasa de 60 puntos. Graba tres aperturas distintas para la misma idea y deja que el gasto decida cuál sigue." });
+  }
+  var tired = ads.filter(function (a) { return a.fat && a.fat.level === "r" && a.score.score >= 50 && (!best || a.id !== best.id); }).sort(function (a, b) { return b.m.spend - a.m.spend; })[0] ||
+    ads.filter(function (a) { return a.fat && a.fat.level === "r"; }).sort(function (a, b) { return b.m.spend - a.m.spend; })[0];
+  if (tired) {
+    var left = tired.fat.daysLeft !== null && tired.fat.daysLeft !== undefined ? " A este ritmo quedan unos " + tired.fat.daysLeft + " días antes de que se canse del todo." : "";
+    items.push({ tag: "Renueva", title: nm(tired) + " se está cansando", text: "Su frecuencia va en " + (tired.m.freq ? tired.m.freq.toFixed(1).replace(".", ",") : tired.fat.freq.toFixed(1).replace(".", ",")) + " y su costo por resultado sube." + left + " Tenle lista una versión nueva antes de pausarlo." });
+  }
+  var weak = ads.filter(function (a) { return a.score.score < 45 && a.m.spend >= 0.03 * (A.account.m.spend || 1); }).sort(function (a, b) { return a.score.score - b.score.score; })[0];
+  if (weak) {
+    var parts = weak.score.parts.filter(function (p) { return p.v !== null && p.v !== undefined; }).sort(function (a, b) { return a.v - b.v; });
+    var low = parts[0];
+    if (low) items.push({ tag: "Corrige", title: "Lo que frena a " + nm(weak), text: "Su punto más bajo es " + low.name + " con " + Math.round(low.v) + " de 100. " + (FIX[low.name] || "") });
+  }
+  var used = {};
+  A.ads.forEach(function (a) { var g = AB.angleOf(a.name); if (g) used[g] = true; });
+  var fresh = BRIEF_ANGLES.filter(function (x) { return !used[x[0]]; })[0];
+  if (fresh) items.push({ tag: "Prueba", title: "Ángulo sin probar: " + fresh[0], text: fresh[1] + " Una pieza corta con este ángulo te dice en una semana si vale la pena."});
+  var vid = ads.filter(function (a) { return a.isVideo; }), st = ads.filter(function (a) { return !a.isVideo; });
+  if (vid.length >= 2 && st.length >= 2) {
+    var av = function (l) { return l.reduce(function (s, a) { return s + a.score.score; }, 0) / l.length; };
+    var v = av(vid), s = av(st);
+    if (Math.abs(v - s) >= 10) items.push({ tag: "Formato", title: (v > s ? "Tus videos" : "Tus estáticos") + " puntúan más", text: "Promedio de " + Math.round(Math.max(v, s)) + " contra " + Math.round(Math.min(v, s)) + " del otro formato. Esta semana dale más piezas al que va ganando." });
+  }
+  return items;
+};
+AB.briefText = function (A) {
+  var L = ["*Qué filmar esta semana*"];
+  AB.brief(A).forEach(function (i, n) { L.push((n + 1) + ". " + i.tag + ": " + i.title + ". " + i.text); });
+  return L.join("\n");
+};
+function briefCard(A) {
+  var items = AB.brief(A);
+  if (!items.length) return "";
+  return '<div class="card pad brief" style="margin-bottom:14px"><div style="display:flex;gap:10px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap"><div><div class="eyebrow">Qué filmar esta semana</div><div class="sub" style="margin:2px 0 0">Armado con el puntaje, la saturación y los ángulos de tus propias piezas.</div></div>' +
+    '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-sm btn-ghost" id="briefCopy">Copiar brief</button><button class="btn btn-sm btn-gold" id="reportOpen">Informe en imagen</button></div></div>' +
+    '<ol style="list-style:none;margin:12px 0 0;padding:0;display:grid;gap:10px">' + items.map(function (i) {
+      return '<li style="display:grid;grid-template-columns:84px 1fr;gap:12px;padding-top:10px;border-top:1px solid var(--line)"><span class="chip i" style="align-self:start;justify-content:center">' + F.esc(i.tag) + '</span><div><b>' + F.esc(i.title) + '</b><div class="sub" style="margin-top:2px">' + F.esc(i.text) + '</div></div></li>';
+    }).join("") + '</ol></div>';
+}
+var baseCoach = T.coach;
+T.coach = function (A) { return briefCard(A) + baseCoach(A); };
+
+/* ------------------------------ 2. Informe en imagen ------------------------------ */
+function wrap(ctx, text, x, y, maxW, lh, maxLines) {
+  var words = String(text).split(/\s+/), line = "", n = 0;
+  for (var i = 0; i < words.length; i++) {
+    var t = line ? line + " " + words[i] : words[i];
+    if (ctx.measureText(t).width > maxW && line) {
+      n++; if (n >= maxLines) { var cut = line; while (cut.length && ctx.measureText(cut + "…").width > maxW) cut = cut.slice(0, -1); ctx.fillText(cut + "…", x, y); return y + lh; }
+      ctx.fillText(line, x, y); y += lh; line = words[i];
+    } else line = t;
+  }
+  if (line) { ctx.fillText(line, x, y); y += lh; }
+  return y;
+}
+function rr(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+AB.drawReport = function (A, client) {
+  var W = 1080, H = 1350, cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+  var c = cv.getContext("2d"), FONT = "Poppins, system-ui, sans-serif";
+  var BG = "#0f0f0f", CARD = "#1b1b1b", LINE = "#2a2a2a", INK = "#f4f1ea", MUT = "#9a968c", GOLD = "#f5b729", GOOD = "#4ade80", BAD = "#f87171";
+  c.fillStyle = BG; c.fillRect(0, 0, W, H);
+  c.textBaseline = "alphabetic";
+  c.fillStyle = INK; c.font = "600 34px " + FONT; c.fillText("ads board", 64, 88);
+  c.fillStyle = MUT; c.font = "400 22px " + FONT; c.textAlign = "right"; c.fillText("the marketographers", W - 64, 88); c.textAlign = "left";
+  c.fillStyle = INK; c.font = "600 58px " + FONT; c.fillText("Informe de anuncios", 64, 190);
+  c.fillStyle = GOLD; c.font = "500 28px " + FONT;
+  var who = client || (S.accounts && S.accounts.filter(function (a) { return a.id === S.acct; })[0] || {}).name || "";
+  c.fillText((who ? who + "   " : "") + F.date(A.since) + " al " + F.date(A.until), 64, 238);
+  var m = A.account.m, ok = m.cpr !== null && A.target && m.cpr <= A.target;
+  var K = [["Gasto", F.money(m.spend), null], ["Resultados", F.num(m.results), null], ["Costo por resultado", F.money(m.cpr), A.target ? "Tu objetivo " + F.money(A.target) : null]];
+  var kw = (W - 128 - 40) / 3;
+  K.forEach(function (k, i) {
+    var x = 64 + i * (kw + 20); c.fillStyle = CARD; rr(c, x, 280, kw, 176, 24); c.fill();
+    c.fillStyle = MUT; c.font = "400 21px " + FONT; c.fillText(k[0], x + 26, 326);
+    c.fillStyle = i === 2 ? (ok ? GOOD : BAD) : INK; c.font = "600 46px " + FONT; c.fillText(k[1], x + 26, 390);
+    if (k[2]) { c.fillStyle = MUT; c.font = "400 19px " + FONT; c.fillText(k[2], x + 26, 430); }
+  });
+  /* curva de costo por resultado */
+  c.fillStyle = CARD; rr(c, 64, 484, W - 128, 300, 24); c.fill();
+  c.fillStyle = INK; c.font = "600 24px " + FONT; c.fillText("Costo por resultado, día a día", 92, 532);
+  var pts = (A.account.series || []).filter(function (d) { return d.cpr !== null && d.cpr !== undefined && isFinite(d.cpr); });
+  if (pts.length > 1) {
+    var cx0 = 92, cx1 = W - 92, cy0 = 570, cy1 = 750, mx = Math.max.apply(null, pts.map(function (d) { return d.cpr; }).concat([A.target || 0])) * 1.1, sx = function (i) { return cx0 + (cx1 - cx0) * i / (pts.length - 1); }, sy = function (v) { return cy1 - (cy1 - cy0) * v / mx; };
+    if (A.target) { c.strokeStyle = MUT; c.setLineDash([8, 8]); c.lineWidth = 2; c.beginPath(); c.moveTo(cx0, sy(A.target)); c.lineTo(cx1, sy(A.target)); c.stroke(); c.setLineDash([]); c.fillStyle = MUT; c.font = "400 18px " + FONT; c.fillText("objetivo " + F.money(A.target), cx0, sy(A.target) - 10); }
+    c.strokeStyle = GOLD; c.lineWidth = 4; c.lineJoin = "round"; c.beginPath(); pts.forEach(function (d, i) { if (i) c.lineTo(sx(i), sy(d.cpr)); else c.moveTo(sx(i), sy(d.cpr)); }); c.stroke();
+  } else { c.fillStyle = MUT; c.font = "400 22px " + FONT; c.fillText("Todavía faltan días con datos para dibujar la curva.", 92, 650); }
+  /* mejores piezas */
+  var top = scored(A).sort(function (a, b) { return b.score.score - a.score.score; }).slice(0, 3);
+  c.fillStyle = INK; c.font = "600 28px " + FONT; c.fillText("Piezas que mejor trabajan", 64, 840);
+  top.forEach(function (a, i) {
+    var y = 866 + i * 72; c.fillStyle = CARD; rr(c, 64, y, W - 128, 60, 16); c.fill();
+    c.fillStyle = INK; c.font = "500 22px " + FONT; var nme = a.name; while (c.measureText(nme).width > W - 128 - 220 && nme.length) nme = nme.slice(0, -1); c.fillText(nme + (nme.length < a.name.length ? "…" : ""), 88, y + 38);
+    c.fillStyle = GOLD; c.font = "600 24px " + FONT; c.textAlign = "right"; c.fillText(a.score.score + " pts", W - 88, y + 39); c.textAlign = "left";
+  });
+  if (!top.length) { c.fillStyle = MUT; c.font = "400 22px " + FONT; c.fillText("Aún no hay piezas con gasto suficiente para puntuar.", 64, 900); }
+  /* siguiente paso */
+  c.fillStyle = INK; c.font = "600 28px " + FONT; c.fillText("Siguiente paso", 64, 1140);
+  var todo = A.coach.filter(function (x) { return x.sev === "r" || x.sev === "y"; }).concat(A.coach.filter(function (x) { return x.sev === "g" || x.sev === "i"; })).slice(0, 3), y2 = 1182;
+  c.font = "400 22px " + FONT;
+  todo.forEach(function (t) { c.fillStyle = GOLD; c.fillRect(64, y2 - 16, 8, 8); c.fillStyle = INK; y2 = wrap(c, t.title, 88, y2, W - 64 - 88, 30, 1) + 6; });
+  if (!todo.length) { c.fillStyle = MUT; c.fillText("Sin pendientes urgentes.", 64, y2); }
+  c.fillStyle = MUT; c.font = "400 18px " + FONT; c.fillText("Hecho con Ads Board · marketographers.com/marketools/adsboard", 64, H - 44);
+  return cv;
+};
+AB.openReport = function () {
+  var A = S.A; if (!A) return;
+  var saved = ""; try { saved = localStorage.getItem("adsboard_client") || ""; } catch (e) {}
+  UI.modal('<h3>Informe en imagen</h3><p class="sub">Una pantalla lista para mandar por WhatsApp o mostrar a tu cliente.</p><div class="field"><label>Nombre del cliente (opcional)</label><input id="rpClient" maxlength="40" value="' + F.esc(saved) + '" placeholder="Ej. Restaurante La Casona"></div><div id="rpBox" style="margin:10px 0"></div><div class="mb"><button class="btn" data-close="1">Cerrar</button><button class="btn" id="rpPrint">Imprimir o PDF</button><button class="btn btn-gold" id="rpDl">Descargar imagen</button></div>', function () { AB.paintReport(); });
+};
+AB.paintReport = function () {
+  var box = $("rpBox"); if (!box) return;
+  var name = ($("rpClient") && $("rpClient").value || "").trim();
+  var go = function () { var cv = AB.drawReport(S.A, name); cv.style.cssText = "width:100%;height:auto;border-radius:14px;display:block"; box.innerHTML = ""; box.appendChild(cv); box._cv = cv; };
+  if (document.fonts && document.fonts.load) Promise.all([document.fonts.load("600 20px Poppins"), document.fonts.load("400 20px Poppins")]).then(go, go); else go();
+};
+function reportDownload() {
+  var cv = $("rpBox") && $("rpBox")._cv; if (!cv) return;
+  try { localStorage.setItem("adsboard_client", ($("rpClient").value || "").trim()); } catch (e) {}
+  cv.toBlob(function (b) { var a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = "informe-anuncios-" + (S.A.until || "") + ".png"; document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500); UI.toast("Imagen descargada"); }, "image/png");
+}
+function reportPrint() {
+  var cv = $("rpBox") && $("rpBox")._cv; if (!cv) return;
+  var f = document.createElement("iframe"); f.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:0"; document.body.appendChild(f);
+  var d = f.contentWindow.document; d.open(); d.write('<!doctype html><title>Informe de anuncios</title><style>@page{margin:0}body{margin:0}img{width:100%;display:block}</style><img src="' + cv.toDataURL("image/png") + '">'); d.close();
+  f.contentWindow.onload = function () { f.contentWindow.focus(); f.contentWindow.print(); setTimeout(function () { f.remove(); }, 2000); };
+}
+
+/* ------------------------------ 3. Ventas por CSV ------------------------------ */
+function parseCSV(text) {
+  text = String(text).replace(/^﻿/, "");
+  var first = text.split(/\r?\n/)[0] || "", seps = [",", ";", "\t"], sep = seps.map(function (s) { return [s, first.split(s).length]; }).sort(function (a, b) { return b[1] - a[1]; })[0][0];
+  var rows = [], row = [], cur = "", q = false;
+  for (var i = 0; i < text.length; i++) {
+    var ch = text[i];
+    if (q) { if (ch === '"') { if (text[i + 1] === '"') { cur += '"'; i++; } else q = false; } else cur += ch; }
+    else if (ch === '"') q = true;
+    else if (ch === sep) { row.push(cur); cur = ""; }
+    else if (ch === "\n" || ch === "\r") { if (ch === "\r" && text[i + 1] === "\n") i++; row.push(cur); cur = ""; if (row.some(function (x) { return x.trim() !== ""; })) rows.push(row); row = []; }
+    else cur += ch;
+  }
+  row.push(cur); if (row.some(function (x) { return x.trim() !== ""; })) rows.push(row);
+  return rows;
+}
+function parseAmount(s) {
+  s = String(s || "").replace(/[^\d.,\-]/g, ""); if (!s) return NaN;
+  var lc = s.lastIndexOf(","), ld = s.lastIndexOf(".");
+  if (lc >= 0 && ld >= 0) s = lc > ld ? s.replace(/\./g, "").replace(",", ".") : s.replace(/,/g, "");
+  else if (lc >= 0) s = /,\d{1,2}$/.test(s) ? s.replace(",", ".") : s.replace(/,/g, "");
+  else if (ld >= 0 && /\.\d{3}$/.test(s) && s.split(".").length > 2) s = s.replace(/\./g, "");
+  return parseFloat(s);
+}
+function parseDate(s) {
+  s = String(s || "").trim(); var m;
+  if ((m = /^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(s))) return m[1] + "-" + ("0" + m[2]).slice(-2) + "-" + ("0" + m[3]).slice(-2);
+  if ((m = /^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/.exec(s))) {
+    var a = +m[1], b = +m[2], y = +m[3]; if (y < 100) y += 2000;
+    var day = a, mon = b; if (b > 12 && a <= 12) { day = b; mon = a; }
+    if (mon > 12 || day > 31) return "";
+    return y + "-" + ("0" + mon).slice(-2) + "-" + ("0" + day).slice(-2);
+  }
+  var t = Date.parse(s); if (!isNaN(t)) return new Date(t).toISOString().slice(0, 10);
+  return "";
+}
+function guess(head, re) { for (var i = 0; i < head.length; i++) if (re.test(head[i])) return i; return -1; }
+var CSVX = null;
+function csvModal() {
+  var rows = CSVX.rows, head = rows[0].map(function (h) { return String(h).trim(); });
+  var opt = function (sel, none) { return (none ? '<option value="-1">' + none + '</option>' : "") + head.map(function (h, i) { return '<option value="' + i + '"' + (i === sel ? " selected" : "") + '>' + F.esc(h || "Columna " + (i + 1)) + '</option>'; }).join(""); };
+  var dI = guess(head, /fecha|date|creado|created|paid|pago/i), aI = guess(head, /monto|amount|total|importe|ingreso|neto|net|precio|price|valor|revenue|gross/i), nI = guess(head, /nota|producto|product|item|descrip|concepto|nombre|name|title|curso/i);
+  CSVX.map = { d: dI, a: aI, n: nI };
+  UI.modal('<h3>Importar ventas</h3><p class="sub">Encontré <b>' + (rows.length - 1) + '</b> filas. Confirma qué columna es cada dato.</p>' +
+    '<div class="field"><label>Fecha de la venta</label><select id="csvD">' + opt(dI) + '</select></div><div class="field"><label>Monto cobrado</label><select id="csvA">' + opt(aI) + '</select></div><div class="field"><label>Nota (producto o nombre, opcional)</label><select id="csvN">' + opt(nI, "Sin nota") + '</select></div><div id="csvPrev" class="sub"></div>' +
+    '<div class="mb"><button class="btn" data-close="1">Cancelar</button><button class="btn btn-gold" id="csvGo">Importar</button></div>', function () { csvPreview(); });
+}
+function csvCollect() {
+  var m = { d: +$("csvD").value, a: +$("csvA").value, n: +$("csvN").value }, out = [], bad = 0;
+  CSVX.rows.slice(1).forEach(function (r) {
+    var d = parseDate(r[m.d]), a = parseAmount(r[m.a]);
+    if (!d || !(a > 0)) { bad++; return; }
+    out.push({ d: d, amount: a, note: m.n >= 0 ? String(r[m.n] || "").trim().slice(0, 120) : "" });
+  });
+  return { ok: out, bad: bad };
+}
+function csvPreview() {
+  var r = csvCollect(), el = $("csvPrev"); if (!el) return;
+  el.innerHTML = r.ok.length ? "Se importarán <b>" + r.ok.length + "</b> ventas por <b>" + F.money(r.ok.reduce(function (s, x) { return s + x.amount; }, 0)) + "</b>." + (r.bad ? " Se saltan " + r.bad + " filas sin fecha o monto válido." : "") + " Ejemplo: " + F.date(r.ok[0].d) + ", " + F.money(r.ok[0].amount) + "." : "Con esas columnas no sale ninguna venta válida. Prueba otra combinación.";
+}
+function csvImport() {
+  var r = csvCollect(); if (!r.ok.length) { UI.toast("No hay ventas válidas para importar.", "bad"); return; }
+  S.sales = S.sales || [];
+  var seen = {}; S.sales.forEach(function (x) { seen[x.acct + "|" + x.d + "|" + x.amount + "|" + (x.note || "")] = 1; });
+  var add = 0, dup = 0, n = Date.now();
+  r.ok.forEach(function (x, i) {
+    var k = S.acct + "|" + x.d + "|" + x.amount + "|" + x.note;
+    if (seen[k]) { dup++; return; } seen[k] = 1;
+    S.sales.push({ id: "v" + n + "_" + i, acct: S.acct, d: x.d, amount: x.amount, adId: "", note: x.note }); add++;
+  });
+  AB.saveLocal(); UI.closeAll(); UI.toast(add + " ventas importadas" + (dup ? ", " + dup + " ya estaban" : "") + "."); AB.renderTab();
+}
+var baseVentas = T.ventas;
+T.ventas = function (A) {
+  return baseVentas(A) + '<div class="card pad glass" style="margin-top:14px"><div class="eyebrow">Importar desde un archivo CSV</div><div class="sub" style="margin:2px 0 10px">Exporta tus ventas desde Nas, Cal.com, Stripe o una hoja de cálculo y súbelas de una vez. Necesita una fila de títulos, una columna de fecha y una de monto. El archivo se lee en tu navegador y no sale de él.</div><label class="btn btn-sm" for="csvFile" style="cursor:pointer">Elegir archivo CSV</label><input type="file" id="csvFile" accept=".csv,text/csv,text/plain" style="position:absolute;left:-9999px"></div>';
+};
+
+/* ------------------------------ 4. Avisos en el dispositivo ------------------------------ */
+var NKEY = "adsboard_notif";
+function nGet() { try { return JSON.parse(localStorage.getItem(NKEY) || "{}"); } catch (e) { return {}; } }
+function nSet(o) { try { localStorage.setItem(NKEY, JSON.stringify(o)); } catch (e) {} }
+var baseReglas = T.reglas;
+T.reglas = function (A) {
+  var st = nGet(), supported = "Notification" in root, perm = supported ? Notification.permission : "denied", on = st.on && perm === "granted";
+  var card = '<div class="card pad glass" style="margin-top:14px"><div class="eyebrow">Avisos en este dispositivo</div><div class="sub" style="margin:2px 0 10px">' +
+    (supported ? "Cuando abras el Ads Board, te aviso en el teléfono o la computadora si aparece algo urgente nuevo, como un anuncio caro o saturado. Con la app cerrada no puedo avisar, porque no guardamos tus datos en ningún servidor." : "Este navegador no permite avisos.") + '</div>' +
+    (supported ? '<button class="btn btn-sm ' + (on ? "" : "btn-gold") + '" id="ntfToggle">' + (on ? "Desactivar avisos" : "Activar avisos") + '</button>' + (perm === "denied" ? '<div class="sub" style="margin-top:8px">El navegador los tiene bloqueados. Actívalos en los permisos del sitio.</div>' : "") : "") + '</div>';
+  return baseReglas(A) + card;
+};
+AB.checkNotify = function () {
+  var A = S.A, st = nGet(); if (!A || S.demo || !st.on || !("Notification" in root) || Notification.permission !== "granted") return;
+  var urgent = A.coach.filter(function (c) { return c.sev === "r"; }), ids = urgent.map(function (c) { return c.id; }), old = st.seen || [];
+  var fresh = urgent.filter(function (c) { return old.indexOf(c.id) < 0; });
+  st.seen = ids; nSet(st);
+  if (!fresh.length) return;
+  var body = fresh.length === 1 ? fresh[0].title : fresh.length + " cosas urgentes nuevas. La primera: " + fresh[0].title;
+  var opts = { body: body, icon: "icons/icon-192.png", tag: "adsboard-urgent" };
+  if (navigator.serviceWorker && navigator.serviceWorker.ready) navigator.serviceWorker.ready.then(function (r) { r.showNotification("Ads Board", opts); }, function () { new Notification("Ads Board", opts); });
+  else new Notification("Ads Board", opts);
+};
+var baseRecompute = AB.recompute;
+AB.recompute = function () { var r = baseRecompute.apply(this, arguments); try { AB.checkNotify(); } catch (e) {} return r; };
+
+/* ------------------------------ eventos ------------------------------ */
+document.addEventListener("click", function (e) {
+  var t = e.target.closest ? e.target.closest("button,[id]") : null; if (!t) return;
+  switch (t.id) {
+    case "briefCopy": if (S.A) { var txt = AB.briefText(S.A); (navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(txt) : Promise.reject()).then(function () { UI.toast("Brief copiado. Pégalo en WhatsApp."); }, function () { UI.toast("No se pudo copiar.", "bad"); }); } break;
+    case "reportOpen": AB.openReport(); break;
+    case "rpDl": reportDownload(); break;
+    case "rpPrint": reportPrint(); break;
+    case "csvGo": csvImport(); break;
+    case "ntfToggle":
+      var st = nGet();
+      if (st.on && Notification.permission === "granted") { st.on = false; nSet(st); UI.toast("Avisos desactivados."); AB.renderTab(); }
+      else Notification.requestPermission().then(function (p) { st = nGet(); st.on = p === "granted"; if (st.on && S.A) st.seen = S.A.coach.filter(function (c) { return c.sev === "r"; }).map(function (c) { return c.id; }); nSet(st); UI.toast(st.on ? "Avisos activados." : "No diste permiso.", st.on ? "" : "bad"); AB.renderTab(); });
+      break;
+  }
+});
+document.addEventListener("input", function (e) { if (e.target && e.target.id === "rpClient") AB.paintReport(); });
+document.addEventListener("change", function (e) {
+  var t = e.target; if (!t) return;
+  if (t.id === "csvD" || t.id === "csvA" || t.id === "csvN") csvPreview();
+  if (t.id === "csvFile" && t.files && t.files[0]) {
+    var f = t.files[0]; if (f.size > 5e6) { UI.toast("El archivo pesa más de 5 MB.", "bad"); return; }
+    var rd = new FileReader(); rd.onload = function () {
+      var rows = parseCSV(rd.result);
+      if (rows.length < 2) { UI.toast("No encontré filas de datos en ese archivo.", "bad"); return; }
+      CSVX = { rows: rows }; csvModal();
+    }; rd.readAsText(f); t.value = "";
+  }
+});
+})(window);
+
+/* ==========================================================================
+   EXTRAS 2: hoja de contactos, etiquetas visuales, probador de recortes,
+   maqueta de anuncio, lista de tomas y calendario de temporadas
+   ========================================================================== */
+(function (root) {
+"use strict";
+var AB = root.AB, S = AB.S, F = AB.F, UI = AB.UI, T = AB.T, $ = AB.$;
+S.tags = S.tags || {};
+
+var css = document.createElement("style");
+css.textContent =
+".pz-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-bottom:14px}" +
+".sheet{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:10px}" +
+".tile{position:relative;aspect-ratio:1/1;border-radius:14px;overflow:hidden;cursor:pointer;border:3px solid var(--tc,transparent);background:var(--cream-alt);transition:transform .16s ease-out}" +
+".tile:active{transform:scale(.98)}.tile.dim{opacity:.3}" +
+".tile img,.tile .ph{width:100%;height:100%;object-fit:cover;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:30px;color:rgba(255,255,255,.55)}" +
+".tile .sc{position:absolute;left:8px;top:8px;min-width:34px;text-align:center;padding:3px 8px;border-radius:999px;background:rgba(0,0,0,.62);color:#fff;font-weight:800;font-size:13px;border:2px solid var(--tc,#888)}" +
+".tile .ft{position:absolute;left:0;right:0;bottom:0;padding:26px 9px 8px;background:linear-gradient(transparent,rgba(0,0,0,.86));color:#fff;font-size:11.5px;display:flex;justify-content:space-between;gap:6px}" +
+".tile .ft b{font-size:13px}.tile .tg{position:absolute;right:7px;top:7px;border:0;border-radius:999px;background:rgba(0,0,0,.62);color:#fff;font:inherit;font-size:11px;font-weight:700;padding:5px 10px;cursor:pointer}" +
+".tagset{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 14px}.tagset button{border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;padding:7px 13px;font:inherit;font-size:12.5px;font-weight:600;cursor:pointer}.tagset button.on{background:#f5b729;border-color:#f5b729;color:#1a1a1a}" +
+".phx{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:center}.phx figure{margin:0;text-align:center}.phx canvas{display:block;border-radius:12px;background:#222;touch-action:none;cursor:grab;max-width:100%}.phx figcaption{font-size:12px;color:var(--muted);margin:6px 0}" +
+".mock{background:#fff;color:#111;border-radius:14px;overflow:hidden;width:300px;font-size:13px;box-shadow:0 2px 14px rgba(0,0,0,.25)}.mock .hd{display:flex;gap:8px;align-items:center;padding:10px 12px}.mock .av{width:32px;height:32px;border-radius:50%;background:#ddd}.mock .tx{padding:0 12px 10px;line-height:1.4}.mock .ct{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 12px;background:#f2f2f2}.mock .bt{background:#e4e4e4;border-radius:7px;padding:7px 11px;font-weight:700;font-size:12px;white-space:nowrap}" +
+".rl{position:relative;width:240px;border-radius:18px;overflow:hidden;background:#000;color:#fff}.rl canvas{display:block;width:100%}.rl .ov{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:12px;background:linear-gradient(transparent 55%,rgba(0,0,0,.7))}.rl .ic{position:absolute;right:10px;bottom:150px;display:grid;gap:14px}.rl .ic i{display:block;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.85)}.rl .cta{margin-top:8px;background:#fff;color:#111;border-radius:8px;text-align:center;padding:8px;font-weight:700;font-size:12px}" +
+".cal{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,20px);grid-auto-columns:20px;justify-content:start;gap:4px;overflow-x:auto;padding-bottom:6px}.cal i{display:block;width:20px;height:20px;border-radius:5px;background:rgba(245,183,41,var(--a,.05));border:1px solid var(--line)}.cal i.mk{outline:2px solid #f87171;outline-offset:1px}.cal i.nd{background:transparent;opacity:.5}" +
+".shotl{display:grid;gap:8px;margin:10px 0}.shotl label{display:flex;gap:10px;align-items:flex-start;cursor:pointer;line-height:1.4}.shotl input{margin-top:3px}.shotl label.done span{text-decoration:line-through;opacity:.55}.shotl h4{margin:12px 0 2px;font-size:13px}" +
+"@media(max-width:640px){.sheet{grid-template-columns:repeat(2,1fr)}.mock{width:100%}}";
+document.head.appendChild(css);
+
+var baseClose = UI.closeAll;
+UI.closeAll = function () { var m = $("modal"); if (m) m.style.width = ""; PH.zoneOn = PH.zoneOn; return baseClose.apply(this, arguments); };
+
+/* ------------------------------ etiquetas ------------------------------ */
+var TAGS = [
+  ["Sujeto", ["Retrato", "Producto", "Comida", "Evento o boda", "Lugar"]],
+  ["Persona", ["Con persona", "Sin persona"]],
+  ["Luz", ["Luz natural", "Luz de estudio"]],
+  ["Plano", ["Plano abierto", "Plano cerrado"]],
+  ["Fondo", ["Fondo limpio", "Fondo con contexto"]],
+  ["Color", ["Cálido", "Frío", "Blanco y negro"]]
+];
+function tagsOf(id) { return (S.tags && S.tags[id]) || []; }
+function lvl(a) { var s = a.score.score; return s === null ? "" : (s >= 65 ? "#4ade80" : (s >= 40 ? "#f5b729" : "#f87171")); }
+function adById(id) { return S.A.ads.filter(function (a) { return a.id === id; })[0]; }
+
+function tagInsights(A) {
+  var ads = A.ads.filter(function (a) { return a.m.spend > 0; }), tagged = ads.filter(function (a) { return tagsOf(a.id).length; });
+  var head = '<div class="card pad" style="margin-top:14px"><div class="eyebrow">Qué foto te vende</div>';
+  if (!ads.length) return "";
+  if (tagged.length < 3) return head + '<div class="sub" style="margin:4px 0 0">Etiquetaste ' + tagged.length + ' de ' + ads.length + ' piezas. Con 6 o más, aquí aparece qué tipo de foto te da resultados más baratos. En la hoja de contactos pulsa «Etiquetar» en cada pieza.</div></div>';
+  var acc = A.account.m.cpr, stats = {};
+  tagged.forEach(function (a) { tagsOf(a.id).forEach(function (t) { var o = stats[t] = stats[t] || { sp: 0, re: 0, n: 0 }; o.sp += a.m.spend; o.re += a.m.results; o.n++; }); });
+  var rows = Object.keys(stats).filter(function (t) { return stats[t].n >= 2 && stats[t].re > 0; }).map(function (t) { return { t: t, n: stats[t].n, cpr: stats[t].sp / stats[t].re }; }).sort(function (a, b) { return a.cpr - b.cpr; });
+  if (!rows.length) return head + '<div class="sub" style="margin:4px 0 0">Etiquetaste ' + tagged.length + ' piezas, pero ninguna etiqueta se repite en 2 piezas con resultados. Etiqueta más piezas para ver patrones.</div></div>';
+  var best = rows[0], worst = rows[rows.length - 1], txt = "";
+  if (rows.length > 1 && best.cpr < worst.cpr * 0.9) txt = "Tus fotos con <b>" + F.esc(best.t.toLowerCase()) + "</b> cuestan " + F.money(best.cpr) + " por resultado en " + best.n + " piezas. Las de <b>" + F.esc(worst.t.toLowerCase()) + "</b> cuestan " + F.money(worst.cpr) + " en " + worst.n + ".";
+  else txt = "Todavía no hay una diferencia clara entre etiquetas. Sigue etiquetando.";
+  return head + '<div class="sub" style="margin:4px 0 10px">' + txt + ' Con pocas piezas esto es una pista y no una regla.</div>' +
+    AB.Ch.bars(rows.map(function (r) { return { label: r.t + " (" + r.n + ")", value: r.cpr, text: F.money(r.cpr), level: acc && r.cpr <= acc * 0.85 ? "g" : (acc && r.cpr >= acc * 1.15 ? "r" : "y"), tip: r.n + " piezas con esta etiqueta" }; })) + '</div>';
+}
+function tagModal(id) {
+  var a = adById(id); if (!a) return;
+  var cur = tagsOf(id);
+  UI.modal('<h3>Etiquetas de la pieza</h3><p class="sub">' + F.esc(a.name) + '</p>' + TAGS.map(function (g) {
+    return '<div class="eyebrow">' + g[0] + '</div><div class="tagset">' + g[1].map(function (t) { return '<button type="button" data-tg="' + F.esc(t) + '" data-adid="' + F.esc(id) + '" class="' + (cur.indexOf(t) >= 0 ? "on" : "") + '">' + t + '</button>'; }).join("") + '</div>';
+  }).join("") + '<div class="mb"><button class="btn btn-gold" data-close="1">Listo</button></div>');
+}
+
+/* ------------------------------ Piezas: hoja de contactos ------------------------------ */
+function sheet(A) {
+  var only = S.creativeOnlyActive !== false, f = S.sheetF || "all";
+  var list = A.ads.filter(function (a) { return a.m.spend > 0 && (!only || a.effStatus === "ACTIVE"); }).sort(function (a, b) { return (b.score.score === null ? -1 : b.score.score) - (a.score.score === null ? -1 : a.score.score); });
+  var pass = function (a) { return f === "all" || (f === "win" && a.score.score >= 65) || (f === "sat" && a.fat && a.fat.level === "r") || (f === "exp" && a.verdict && a.verdict.level === "r"); };
+  var chips = [["all", "Todas"], ["win", "Ganadoras"], ["sat", "Saturadas"], ["exp", "Caras"]].map(function (x) { return '<button data-sheetf="' + x[0] + '" class="' + (f === x[0] ? "on" : "") + '">' + x[1] + '</button>'; }).join("");
+  var h = '<div class="filters"><div class="seg" id="credSeg"><button data-co="1" class="' + (only ? "on" : "") + '">Solo activos</button><button data-co="0" class="' + (!only ? "on" : "") + '">Todos con gasto</button></div><div class="seg">' + chips + '</div></div>';
+  if (!list.length) return h + '<div class="state"><b>Sin creativos con gasto en este rango</b>Amplía el rango de fechas o cambia el filtro.</div>';
+  return h + '<div class="sheet">' + list.map(function (a) {
+    var media = a.thumb ? '<img src="' + F.esc(a.thumb) + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' : '<div class="ph" style="background:' + F.grad(a.name) + '">' + F.esc(F.initials(a.name)) + '</div>';
+    var n = tagsOf(a.id).length;
+    return '<div class="tile' + (pass(a) ? "" : " dim") + '" data-open="ad:' + F.esc(a.id) + '" tabindex="0" style="--tc:' + (lvl(a) || "transparent") + '" aria-label="' + F.esc(a.name) + '">' + media +
+      '<span class="sc">' + (a.score.score === null ? "—" : a.score.score) + '</span><button class="tg" data-tagbtn="' + F.esc(a.id) + '" type="button">' + (n ? "✓ " + n : "Etiquetar") + '</button>' +
+      '<div class="ft"><span>' + F.esc(a.m.cpr ? "" : "") + (a.fat && a.fat.level === "r" ? "Saturándose" : (a.isVideo ? "Video" : "Imagen")) + '</span><b>' + F.money(a.m.cpr) + '</b></div></div>';
+  }).join("") + '</div>';
+}
+var baseCred = T.creativos;
+T.creativos = function (A) {
+  var view = S.credView === "sheet" ? "sheet" : "cards";
+  var bar = '<div class="pz-bar"><div class="seg" id="viewSeg"><button data-cv="cards" class="' + (view === "cards" ? "on" : "") + '">Tarjetas</button><button data-cv="sheet" class="' + (view === "sheet" ? "on" : "") + '">Hoja de contactos</button></div><button class="btn btn-sm btn-gold" id="phOpen">Probador de recortes</button></div>';
+  return bar + (view === "sheet" ? sheet(A) : baseCred(A)) + tagInsights(A);
+};
+
+/* ------------------------------ Probador de recortes y maqueta ------------------------------ */
+var PH = { img: null, fx: 0.5, fy: 0.5, tab: "crop", zoneOn: true, page: "Tu estudio", text: "Sesiones de fotos que cuentan tu historia. Reserva tu fecha.", title: "Reserva tu sesión", cta: "Más información", name: "" };
+var FORMATS = [["1:1", 1, 1, 1080, 1080, "Feed cuadrado"], ["4:5", 4, 5, 1080, 1350, "Feed vertical"], ["9:16", 9, 16, 1080, 1920, "Reels y Stories"]];
+function paintCover(ctx, cw, ch, img, fx, fy) {
+  var s = Math.max(cw / img.width, ch / img.height), dw = img.width * s, dh = img.height * s;
+  ctx.drawImage(img, -(dw - cw) * fx, -(dh - ch) * fy, dw, dh);
+}
+function zones(ctx, w, h) {
+  ctx.fillStyle = "rgba(248,113,113,.38)";
+  ctx.fillRect(0, 0, w, h * 0.14); ctx.fillRect(0, h * 0.65, w, h * 0.35);
+  ctx.fillRect(0, h * 0.14, w * 0.06, h * 0.51); ctx.fillRect(w * 0.94, h * 0.14, w * 0.06, h * 0.51);
+  ctx.fillStyle = "#fff"; ctx.font = "600 " + Math.max(10, Math.round(w / 22)) + "px Poppins, sans-serif"; ctx.textAlign = "center";
+  ctx.fillText("Zona tapada", w / 2, h * 0.08); ctx.fillText("Zona tapada", w / 2, h * 0.72); ctx.textAlign = "left";
+}
+function phHtml() {
+  return '<h3>Probador de recortes</h3><p class="sub">Sube una foto de tu computadora y mira cómo queda en cada formato. La foto se procesa aquí mismo y no se sube a ningún lado.</p>' +
+    '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px"><label class="btn btn-sm btn-gold" for="phFile" style="cursor:pointer">Elegir foto</label><input type="file" id="phFile" accept="image/*" style="position:absolute;left:-9999px">' +
+    '<div class="seg"><button data-phtab="crop" class="' + (PH.tab === "crop" ? "on" : "") + '">Recortes</button><button data-phtab="mock" class="' + (PH.tab === "mock" ? "on" : "") + '">Maqueta del anuncio</button></div>' +
+    '<label style="display:flex;gap:6px;align-items:center;font-size:13px"><input type="checkbox" id="phZones"' + (PH.zoneOn ? " checked" : "") + '> Mostrar zonas tapadas</label></div><div id="phBody"></div>' +
+    '<div class="mb"><button class="btn" data-close="1">Cerrar</button></div>';
+}
+function phBody() {
+  var b = $("phBody"); if (!b) return;
+  if (!PH.img) { b.innerHTML = '<div class="state"><b>Elige una foto para empezar</b>Arrastra sobre cualquier recorte para mover el encuadre.</div>'; return; }
+  if (PH.tab === "crop") {
+    b.innerHTML = '<div class="phx">' + FORMATS.map(function (f, i) { return '<figure><canvas data-fmt="' + i + '"></canvas><figcaption>' + f[0] + ' · ' + f[5] + '</figcaption><button class="btn btn-sm" data-phdl="' + i + '">Descargar ' + f[0] + '</button></figure>'; }).join("") + '</div>' +
+      '<div class="sub" style="margin-top:12px">Tu foto mide ' + PH.img.width + ' × ' + PH.img.height + ' px. ' + (PH.img.width < 1080 ? "Para publicar conviene al menos 1080 px de ancho." : "Alcanza para los tres formatos.") + ' Las zonas rojas del 9:16 son valores de referencia de Meta (14% arriba, 35% abajo y 6% a los lados). Meta los ajusta de vez en cuando.</div>';
+    drawCrops();
+  } else {
+    b.innerHTML = '<div class="grid g2" style="gap:10px;margin-bottom:14px"><div class="field"><label>Nombre de la página</label><input id="mkPage" value="' + F.esc(PH.page) + '" maxlength="40"></div><div class="field"><label>Titular</label><input id="mkTitle" value="' + F.esc(PH.title) + '" maxlength="40"></div></div>' +
+      '<div class="field"><label>Texto principal</label><input id="mkText" value="' + F.esc(PH.text) + '" maxlength="125"></div><div class="field"><label>Botón</label><select id="mkCta">' + ["Más información", "Enviar mensaje", "Reservar", "Comprar", "Registrarte"].map(function (c) { return '<option' + (PH.cta === c ? " selected" : "") + '>' + c + '</option>'; }).join("") + '</select></div>' +
+      '<div class="phx" id="mkOut"></div><div class="sub" style="margin-top:10px">Maqueta orientativa con diseño genérico. Sirve para ver encuadre, texto y botón juntos antes de publicar.</div>';
+    drawMock();
+  }
+}
+function drawCrops() {
+  var cs = document.querySelectorAll("#phBody canvas[data-fmt]");
+  Array.prototype.forEach.call(cs, function (cv) {
+    var f = FORMATS[+cv.getAttribute("data-fmt")], h = 300, w = Math.round(h * f[1] / f[2]); cv.width = w * 2; cv.height = h * 2; cv.style.width = w + "px"; cv.style.height = h + "px";
+    var c = cv.getContext("2d"); paintCover(c, cv.width, cv.height, PH.img, PH.fx, PH.fy); if (PH.zoneOn && f[0] === "9:16") zones(c, cv.width, cv.height);
+  });
+}
+function drawMock() {
+  var out = $("mkOut"); if (!out) return;
+  var esc = F.esc;
+  out.innerHTML = '<div class="mock"><div class="hd"><div class="av"></div><div><b>' + esc(PH.page) + '</b><div style="font-size:11px;color:#666">Publicidad</div></div></div><div class="tx">' + esc(PH.text) + '</div><canvas id="mkFeed" style="display:block;width:100%"></canvas><div class="ct"><b style="font-size:13px">' + esc(PH.title) + '</b><span class="bt">' + esc(PH.cta) + '</span></div></div>' +
+    '<div class="rl"><canvas id="mkReel"></canvas><div class="ic"><i></i><i></i><i></i></div><div class="ov"><b style="font-size:13px">' + esc(PH.page) + '</b><div style="font-size:12px;margin-top:4px;line-height:1.35;max-height:50px;overflow:hidden">' + esc(PH.text) + '</div><div class="cta">' + esc(PH.cta) + '</div></div></div>';
+  var a = $("mkFeed"), r = $("mkReel");
+  a.width = 600; a.height = 750; paintCover(a.getContext("2d"), 600, 750, PH.img, PH.fx, PH.fy);
+  r.width = 480; r.height = 853; paintCover(r.getContext("2d"), 480, 853, PH.img, PH.fx, PH.fy);
+}
+function phLoad(file) {
+  if (!file || !/^image\//.test(file.type)) { UI.toast("Elige un archivo de imagen.", "bad"); return; }
+  var url = URL.createObjectURL(file), im = new Image();
+  im.onload = function () { if (PH.url) URL.revokeObjectURL(PH.url); PH.url = url; PH.img = im; PH.fx = PH.fy = 0.5; PH.name = file.name.replace(/\.[^.]+$/, ""); phBody(); };
+  im.onerror = function () { UI.toast("No se pudo leer esa imagen.", "bad"); };
+  im.src = url;
+}
+function phDownload(i) {
+  var f = FORMATS[i], cv = document.createElement("canvas"); cv.width = f[3]; cv.height = f[4];
+  paintCover(cv.getContext("2d"), f[3], f[4], PH.img, PH.fx, PH.fy);
+  cv.toBlob(function (b) { var a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = (PH.name || "foto") + "-" + f[0].replace(":", "x") + ".jpg"; document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500); }, "image/jpeg", 0.92);
+}
+var drag = null;
+document.addEventListener("pointerdown", function (e) {
+  var cv = e.target.closest && e.target.closest("#phBody canvas[data-fmt]"); if (!cv || !PH.img) return;
+  var f = FORMATS[+cv.getAttribute("data-fmt")], cw = cv.clientWidth, ch = cv.clientHeight, s = Math.max(cw / PH.img.width, ch / PH.img.height);
+  drag = { x: e.clientX, y: e.clientY, fx: PH.fx, fy: PH.fy, ox: PH.img.width * s - cw, oy: PH.img.height * s - ch };
+  cv.setPointerCapture && cv.setPointerCapture(e.pointerId); cv.style.cursor = "grabbing";
+});
+document.addEventListener("pointermove", function (e) {
+  if (!drag) return;
+  if (drag.ox > 1) PH.fx = Math.max(0, Math.min(1, drag.fx - (e.clientX - drag.x) / drag.ox));
+  if (drag.oy > 1) PH.fy = Math.max(0, Math.min(1, drag.fy - (e.clientY - drag.y) / drag.oy));
+  drawCrops();
+});
+document.addEventListener("pointerup", function () { drag = null; });
+AB.openProbador = function () { UI.modal(phHtml(), function () { $("modal").style.width = "min(1000px,calc(100% - 28px))"; phBody(); }); };
+
+/* ------------------------------ Lista de tomas ------------------------------ */
+var SHOTS = {
+  "Mantén": ["Graba 2 aperturas distintas para la misma idea y compáralas en los primeros 3 segundos.", "Conserva el plano final del original, que es el que ya funciona.", "Encuadra en vertical 9:16 y deja el texto lejos de las zonas tapadas."],
+  "Renueva": ["Repite la idea con otra escena de apertura.", "Cambia el sujeto o el lugar para que no se vea como lo mismo.", "Deja el reemplazo listo antes de pausar la pieza que se cansa."],
+  "Corrige": ["Graba la versión corregida siguiendo la nota del brief.", "Súbela con otro nombre y compárala 7 días contra la anterior."],
+  "Prueba": ["Graba una pieza de 15 a 20 segundos con el ángulo nuevo.", "Ponle el nombre del ángulo al anuncio para que el panel lo reconozca."],
+  "Formato": ["Produce 3 piezas en el formato que va ganando."]
+};
+var SHOT_BASE = ["Revisa luz, fondo y batería antes de empezar.", "Pasa cada foto por el probador de recortes antes de subirla."];
+function shotKey() { return "adsboard_shots_" + (S.acct || "x") + "_" + (S.A ? S.A.until : ""); }
+function shotGet() { try { return JSON.parse(localStorage.getItem(shotKey()) || "{}"); } catch (e) { return {}; } }
+function shotList() {
+  var groups = AB.brief(S.A).map(function (i) { return { h: i.tag + ": " + i.title, t: (SHOTS[i.tag] || []).map(function (x, n) { return n === 0 && i.tag === "Corrige" ? i.text : x; }) }; });
+  groups.push({ h: "Antes de empezar", t: SHOT_BASE });
+  return groups;
+}
+function shotModal() {
+  if (!S.A) return;
+  var st = shotGet(), g = shotList(), k = 0;
+  UI.modal('<h3>Lista de tomas</h3><p class="sub">Para la próxima sesión. Marca lo que ya grabaste.</p><div class="shotl">' + g.map(function (x) {
+    return '<h4>' + F.esc(x.h) + '</h4>' + x.t.map(function (t) { var key = "t" + (k++); return '<label class="' + (st[key] ? "done" : "") + '"><input type="checkbox" data-shot="' + key + '"' + (st[key] ? " checked" : "") + '><span>' + F.esc(t) + '</span></label>'; }).join("");
+  }).join("") + '</div><div class="mb"><button class="btn" data-close="1">Cerrar</button><button class="btn btn-gold" id="shotCopy">Copiar lista</button></div>');
+}
+function shotText() {
+  var st = shotGet(), k = 0, L = ["*Lista de tomas*"];
+  shotList().forEach(function (x) { L.push(""); L.push(x.h); x.t.forEach(function (t) { L.push((st["t" + (k++)] ? "[x] " : "[ ] ") + t); }); });
+  return L.join("\n");
+}
+var baseBriefCard = AB.brief;
+(function () {
+  var oldCoach = T.coach;
+  T.coach = function (A) { return oldCoach(A).replace('id="briefCopy">Copiar brief</button>', 'id="briefCopy">Copiar brief</button><button class="btn btn-sm btn-ghost" id="shotOpen">Lista de tomas</button>'); };
+})();
+
+/* ------------------------------ Calendario de temporadas ------------------------------ */
+function nthWeekday(y, m, wd, n) { var d = new Date(Date.UTC(y, m, 1)), c = 0; while (true) { if (d.getUTCDay() === wd) { c++; if (c === n) return d; } d.setUTCDate(d.getUTCDate() + 1); } }
+function seasons(year) {
+  var L = [["San Valentín", new Date(Date.UTC(year, 1, 14))], ["Día de la Madre (México)", new Date(Date.UTC(year, 4, 10))], ["Día de la Madre (Bolivia)", new Date(Date.UTC(year, 4, 27))], ["Halloween", new Date(Date.UTC(year, 9, 31))], ["Black Friday", nthWeekday(year, 10, 5, 4)], ["Navidad", new Date(Date.UTC(year, 11, 25))], ["Fin de año", new Date(Date.UTC(year, 11, 31))]];
+  var my = []; try { my = JSON.parse(localStorage.getItem("adsboard_seasons") || "[]"); } catch (e) {}
+  my.forEach(function (s, i) { var p = (s.d || "").split("-"); if (p.length === 3) L.push([s.n, new Date(Date.UTC(year, +p[1] - 1, +p[2])), i]); });
+  return L;
+}
+function iso(d) { return d.toISOString().slice(0, 10); }
+function calendar(A) {
+  var ser = (A.account.series || []).filter(function (d) { return d.date; });
+  if (ser.length < 7) return "";
+  var mx = Math.max.apply(null, ser.map(function (d) { return d.results || 0; }).concat([1]));
+  var first = new Date(ser[0].date + "T12:00:00Z"), pad = (first.getUTCDay() + 6) % 7, cells = "", i;
+  for (i = 0; i < pad; i++) cells += '<i class="nd"></i>';
+  var yrs = {}; ser.forEach(function (d) { yrs[d.date.slice(0, 4)] = 1; });
+  var mk = {}; Object.keys(yrs).forEach(function (y) { seasons(+y).forEach(function (s) { mk[iso(s[1])] = s[0]; }); });
+  ser.forEach(function (d) {
+    var a = d.results ? 0.15 + 0.85 * d.results / mx : 0.05, tip = F.date(d.date) + ": " + F.num(d.results) + " resultados" + (d.cpr ? ", " + F.money(d.cpr) + " c/u" : "") + (mk[d.date] ? ". " + mk[d.date] : "");
+    cells += '<i class="' + (mk[d.date] ? "mk" : "") + '" style="--a:' + a.toFixed(2) + '" data-tip="' + F.esc(tip) + '"></i>';
+  });
+  var today = new Date(); today = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
+  var up = [];
+  [today.getUTCFullYear(), today.getUTCFullYear() + 1].forEach(function (y) { seasons(y).forEach(function (s) { var dd = Math.round((s[1] - today) / 864e5); if (dd >= 0 && dd <= 120) up.push({ n: s[0], d: dd, i: s[2] }); }); });
+  up.sort(function (a, b) { return a.d - b.d; });
+  var nextH = up.length ? up.map(function (u) {
+    var tag = u.d <= 21 ? '<span class="chip r">Ya toca promocionar</span>' : (u.d <= 45 ? '<span class="chip y">Prepara creativos</span>' : '<span class="chip n">Con tiempo</span>');
+    return '<div style="display:flex;gap:10px;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid var(--line)"><div><b>' + F.esc(u.n) + '</b> <span class="sub">en ' + u.d + (u.d === 1 ? " día" : " días") + '</span></div><div style="display:flex;gap:8px;align-items:center">' + tag + (u.i !== undefined ? '<button class="btn btn-sm btn-ghost" data-seasondel="' + u.i + '">Quitar</button>' : "") + '</div></div>';
+  }).join("") : '<div class="sub">No hay fechas fuertes en los próximos 120 días.</div>';
+  return '<div class="card pad" style="margin-top:14px"><div class="eyebrow">Calendario de resultados</div><div class="sub" style="margin:2px 0 10px">Cada cuadro es un día. Más dorado, más resultados. El borde rojo marca una fecha fuerte para tu negocio.</div><div class="cal">' + cells + '</div></div>' +
+    '<div class="card pad" style="margin-top:14px"><div class="eyebrow">Próximas fechas fuertes</div><div class="sub" style="margin:2px 0 6px">Los creativos para una temporada conviene tenerlos listos unas 3 semanas antes.</div>' + nextH +
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><div class="field" style="margin:0"><input id="ssName" maxlength="30" placeholder="Tu fecha (ej. Temporada de bodas)"></div><div class="field" style="margin:0"><input id="ssDate" type="date"></div><button class="btn btn-sm" id="seasonAdd">Agregar fecha</button></div></div>';
+}
+var baseSeg = T.segmentos;
+T.segmentos = function (A) { return baseSeg(A) + calendar(A); };
+
+/* ------------------------------ eventos ------------------------------ */
+document.addEventListener("click", function (e) {
+  var t = e.target, el;
+  if (t.closest && (el = t.closest("[data-tagbtn]"))) { e.stopPropagation(); e.preventDefault(); tagModal(el.getAttribute("data-tagbtn")); return; }
+}, true);
+document.addEventListener("click", function (e) {
+  var t = e.target, el; if (!t.closest) return;
+  if ((el = t.closest("[data-cv]"))) { S.credView = el.getAttribute("data-cv"); AB.renderTab(); return; }
+  if ((el = t.closest("[data-sheetf]"))) { S.sheetF = el.getAttribute("data-sheetf"); AB.renderTab(); return; }
+  if ((el = t.closest("[data-tg]"))) {
+    var id = el.getAttribute("data-adid"), tg = el.getAttribute("data-tg"); S.tags = S.tags || {}; var arr = (S.tags[id] || []).slice(), i = arr.indexOf(tg);
+    if (i >= 0) arr.splice(i, 1); else arr.push(tg); S.tags[id] = arr; el.classList.toggle("on"); AB.saveLocal(); AB.renderTab(); return;
+  }
+  if ((el = t.closest("[data-phtab]"))) { PH.tab = el.getAttribute("data-phtab"); var b = document.querySelectorAll("[data-phtab]"); Array.prototype.forEach.call(b, function (x) { x.classList.toggle("on", x === el); }); phBody(); return; }
+  if ((el = t.closest("[data-phdl]"))) { phDownload(+el.getAttribute("data-phdl")); return; }
+  if ((el = t.closest("[data-seasondel]"))) { var my = []; try { my = JSON.parse(localStorage.getItem("adsboard_seasons") || "[]"); } catch (er) {} my.splice(+el.getAttribute("data-seasondel"), 1); try { localStorage.setItem("adsboard_seasons", JSON.stringify(my)); } catch (er) {} AB.renderTab(); return; }
+  switch (t.id) {
+    case "phOpen": AB.openProbador(); break;
+    case "shotOpen": shotModal(); break;
+    case "shotCopy": (navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(shotText()) : Promise.reject()).then(function () { UI.toast("Lista copiada."); }, function () { UI.toast("No se pudo copiar.", "bad"); }); break;
+    case "seasonAdd":
+      var n = ($("ssName").value || "").trim(), d = $("ssDate").value; if (!n || !d) { UI.toast("Escribe un nombre y elige la fecha.", "bad"); break; }
+      var my2 = []; try { my2 = JSON.parse(localStorage.getItem("adsboard_seasons") || "[]"); } catch (er) {} my2.push({ n: n, d: d }); try { localStorage.setItem("adsboard_seasons", JSON.stringify(my2)); } catch (er) {} AB.renderTab(); break;
+  }
+});
+document.addEventListener("change", function (e) {
+  var t = e.target; if (!t) return;
+  if (t.id === "phFile" && t.files && t.files[0]) { phLoad(t.files[0]); t.value = ""; }
+  if (t.id === "phZones") { PH.zoneOn = t.checked; drawCrops(); }
+  if (t.id === "mkCta") { PH.cta = t.value; drawMock(); }
+  if (t.getAttribute && t.getAttribute("data-shot")) { var st = shotGet(); st[t.getAttribute("data-shot")] = t.checked; try { localStorage.setItem(shotKey(), JSON.stringify(st)); } catch (er) {} t.parentNode.classList.toggle("done", t.checked); }
+});
+document.addEventListener("input", function (e) {
+  var t = e.target, m = { mkPage: "page", mkTitle: "title", mkText: "text" };
+  if (t && m[t.id]) { PH[m[t.id]] = t.value; drawMock(); }
+});
 })(window);

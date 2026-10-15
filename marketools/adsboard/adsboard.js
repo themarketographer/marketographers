@@ -1174,7 +1174,7 @@ Ch.gauge = function (value, level, label) {
   var r = 52, cx = 65, cy = 62, a0 = Math.PI, v = Math.max(0, Math.min(100, value === null ? 0 : value));
   var ang = a0 + Math.PI * v / 100;
   function pt(a) { return [cx + r * Math.cos(a), cy + r * Math.sin(a)]; }
-  var s = pt(a0), e = pt(ang), e0 = pt(2 * Math.PI), large = v > 50 ? 1 : 0;
+  var s = pt(a0), e = pt(ang), e0 = pt(2 * Math.PI), large = 0; /* el arco nunca pasa de media vuelta */
   return '<svg viewBox="0 0 130 78" width="130" height="78" role="img" aria-label="' + F.esc(label || "") + '"><path d="M' + s[0] + ',' + s[1] + ' A' + r + ',' + r + ' 0 0 1 ' + e0[0] + ',' + e0[1] + '" fill="none" stroke="#ebe8e1" stroke-width="11" stroke-linecap="round"/>' +
     (v > 0 ? '<path d="M' + s[0] + ',' + s[1] + ' A' + r + ',' + r + ' 0 ' + large + ' 1 ' + e[0].toFixed(1) + ',' + e[1].toFixed(1) + '" fill="none" stroke="' + col + '" stroke-width="11" stroke-linecap="round"/>' : '') +
     '<text x="65" y="60" text-anchor="middle" style="font-size:22px;font-weight:800;fill:var(--ink);font-family:inherit">' + (value === null ? "—" : Math.round(value)) + '</text></svg>';

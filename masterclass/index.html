@@ -28,7 +28,7 @@ h3,p{margin:0}
 .cap{font-size:13px;line-height:18px;font-weight:500;color:var(--muted)}
 
 /* barra superior: el header de vidrio del sitio, con la cuenta regresiva adentro */
-header .nav{background:rgba(18,18,18,.86)}
+header .nav{background:rgba(18,18,18,.95)}
 .timer{display:flex;align-items:center;gap:var(--space-2);margin:0 var(--space-3);white-space:nowrap}
 .t-l{font-size:13px;line-height:18px;font-weight:500;color:var(--muted)}
 .t-v{display:flex;align-items:baseline;gap:var(--space-1);font-variant-numeric:tabular-nums}
@@ -39,7 +39,10 @@ header .nav{background:rgba(18,18,18,.86)}
 .t-live::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ok)}
 .timer.live .t-v,.timer.live .t-l{display:none}.timer.live .t-live{display:flex}
 .mini{display:none}
-#bar.cta .mini{display:inline-flex}
+@media (min-width:900px){#bar.cta .mini{display:inline-flex}}
+.logo{flex:none}.logo img{height:24px;width:auto}
+footer{padding-left:var(--space-3);padding-right:var(--space-3)}
+.btn{white-space:nowrap}
 
 /* botones: los del sitio (.btn .btn-gold), con tamaño propio */
 .btn{min-height:52px;font-size:16px;line-height:24px;justify-content:center}
@@ -139,7 +142,7 @@ header .nav{background:rgba(18,18,18,.86)}
 @keyframes pop{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:none}}
 @keyframes toast{0%{opacity:0;transform:translateY(-12px)}12%{opacity:1;transform:none}82%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-6px)}}
 
-@media (max-width:480px){.t-l{display:none}.timer{margin:0 var(--space-2)}.t-v i{margin-right:6px}}
+@media (max-width:480px){.btn{font-size:15px;padding:0 20px}.final{padding:var(--space-4) 20px}.final .btn{width:100%}.t-l{display:none}.timer{margin:0 var(--space-2)}.t-v i{margin-right:6px}}
 @media (max-width:899px){.stage{justify-self:center}footer{padding-bottom:112px}}
 @media (min-width:900px){
   .dock{display:none}

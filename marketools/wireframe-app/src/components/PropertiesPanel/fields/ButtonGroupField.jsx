@@ -3,7 +3,7 @@ export default function ButtonGroupField({ field, value, onChange, options }) {
 
   return (
     <div className="text-xs">
-      <span className="mb-1 block font-medium text-neutral-600">{field.label}</span>
+      <span className="mb-1 block font-medium text-[var(--app-muted)]">{field.label}</span>
       <div className="flex flex-wrap gap-1.5">
         {opts.map((opt) => {
           const optValue = typeof opt === 'string' ? opt : opt.value
@@ -18,7 +18,7 @@ export default function ButtonGroupField({ field, value, onChange, options }) {
               style={
                 active
                   ? { background: 'var(--app-accent)', borderColor: 'var(--app-accent)', color: 'var(--app-accent-ink)' }
-                  : { background: '#fff', borderColor: 'var(--app-border)', color: 'var(--app-ink)' }
+                  : { background: 'var(--app-surface)', borderColor: 'var(--app-border)', color: 'var(--app-ink)' }
               }
             >
               {optLabel}

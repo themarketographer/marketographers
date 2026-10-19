@@ -1,8 +1,12 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/marketools/wireframe/favicon.svg" />
+    <script>
+      try { if (localStorage.getItem('mk-theme') === 'light') document.documentElement.setAttribute('data-theme', 'light') } catch (e) {}
+    </script>
+    <link rel="icon" type="image/png" href="/marketools/wireframe/favicon.png" />
+    <link rel="apple-touch-icon" href="/marketools/wireframe/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Generador de Wireframes para Landing Pages (Gratis) | MarkeTools</title>
     <meta name="description" content="Arma la estructura de tu landing page antes de diseñarla: elige tu embudo, ordena los bloques y exporta el prompt maestro para generar el HTML final. Gratis, sin registro." />
@@ -48,10 +52,11 @@
     }
     </script>
 
+    <link rel="preload" href="/assets/fonts/Working-400.otf" as="font" type="font/otf" crossorigin />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Playfair+Display:wght@600;700&family=Poppins:wght@400;600;700;800&family=Space+Grotesk:wght@400;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;600;700&display=swap"
       rel="stylesheet"
     />
     <!-- GA4 — misma propiedad y Measurement ID que la landing principal
@@ -64,8 +69,8 @@
       gtag('js', new Date());
       gtag('config', 'G-GQY8VYBD5T');
     </script>
-    <script type="module" crossorigin src="/marketools/wireframe/assets/index-NSay1XFR.js"></script>
-    <link rel="stylesheet" crossorigin href="/marketools/wireframe/assets/index-DUWLxfVA.css">
+    <script type="module" crossorigin src="/marketools/wireframe/assets/index-621kV7Hh.js"></script>
+    <link rel="stylesheet" crossorigin href="/marketools/wireframe/assets/index-Kx5FazRy.css">
   </head>
   <body>
     <div id="root"></div>

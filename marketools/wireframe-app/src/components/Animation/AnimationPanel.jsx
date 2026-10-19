@@ -15,7 +15,7 @@ export default function AnimationPanel({ blockId }) {
 
   if (!block) {
     return (
-      <aside className="w-72 min-h-0 flex-1 border-l border-black/10 bg-neutral-50 p-4 text-sm text-neutral-400">
+      <aside className="w-72 min-h-0 flex-1 border-l border-[var(--app-border)] bg-[var(--app-bg)] p-4 text-sm text-[var(--app-muted)]">
         Seleccioná un bloque del canvas para elegir su animación.
       </aside>
     )
@@ -36,8 +36,8 @@ export default function AnimationPanel({ blockId }) {
   }
 
   return (
-    <aside className="w-72 min-h-0 flex-1 space-y-4 overflow-y-auto border-l border-black/10 bg-neutral-50 p-4">
-      <h3 className="text-xs font-semibold uppercase tracking-wide text-neutral-500">{schema.label} — Animación</h3>
+    <aside className="w-72 min-h-0 flex-1 space-y-4 overflow-y-auto border-l border-[var(--app-border)] bg-[var(--app-bg)] p-4">
+      <h3 className="text-xs font-semibold uppercase tracking-wide text-[var(--app-muted)]">{schema.label} — Animación</h3>
 
       <ButtonGroupField
         field={{ label: 'Animación de entrada' }}

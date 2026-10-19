@@ -132,7 +132,7 @@ export default function Canvas({ selectedBlockId, onSelectBlock }) {
       <div
         ref={scrollAreaRef}
         className="h-full overflow-auto p-6"
-        style={{ background: '#e5e2db' }}
+        style={{ background: 'var(--app-hover)' }}
       >
         <div
           // El zoom usa la propiedad CSS `zoom` (no `transform: scale`) a
@@ -152,17 +152,19 @@ export default function Canvas({ selectedBlockId, onSelectBlock }) {
             style={{
               width: previewWidth,
               background: 'var(--color-bg)',
+              // La landing del alumno usa su propio color de texto, no el del tema de la herramienta.
+              color: 'var(--color-text)',
               fontFamily: 'var(--font-body)',
               '--font-scale': state.theme.fontScale,
             }}
           >
             {blocks.length === 0 && (
-              <div className="flex h-64 flex-col items-center justify-center gap-3 text-sm text-neutral-400">
+              <div className="flex h-64 flex-col items-center justify-center gap-3 text-sm opacity-70">
                 <p>Arrastrá un bloque de la paleta para empezar</p>
                 <button
                   onClick={() => dispatch({ type: 'CANVAS_LOAD_FUNNEL_DRAFT' })}
                   className="rounded-full border px-4 py-2 text-xs font-medium"
-                  style={{ borderColor: 'var(--app-border)', color: 'var(--app-ink)' }}
+                  style={{ borderColor: 'currentColor', color: 'inherit' }}
                 >
                   {[2, 3, 4, 5].includes(state.wizard.funnelId)
                     ? 'O cargar el borrador sugerido para tu embudo'
@@ -196,7 +198,7 @@ export default function Canvas({ selectedBlockId, onSelectBlock }) {
       </div>
 
       <div
-        className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full border bg-white px-2 py-1 shadow-md"
+        className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full border bg-[var(--app-surface)] px-2 py-1 shadow-md"
         style={{ borderColor: 'var(--app-border)' }}
       >
         <button
@@ -233,7 +235,7 @@ export default function Canvas({ selectedBlockId, onSelectBlock }) {
 
       {undoState && (
         <div
-          className="absolute bottom-4 right-4 flex items-center gap-3 rounded-full border bg-white px-4 py-2 shadow-md"
+          className="absolute bottom-4 right-4 flex items-center gap-3 rounded-full border bg-[var(--app-surface)] px-4 py-2 shadow-md"
           style={{ borderColor: 'var(--app-border)' }}
         >
           <span className="text-xs" style={{ color: 'var(--app-ink)' }}>
@@ -242,7 +244,7 @@ export default function Canvas({ selectedBlockId, onSelectBlock }) {
           <button
             onClick={handleUndo}
             className="text-xs font-semibold"
-            style={{ color: 'var(--app-accent-ink)', textDecoration: 'underline' }}
+            style={{ color: 'var(--app-ink)', textDecoration: 'underline' }}
           >
             Deshacer
           </button>

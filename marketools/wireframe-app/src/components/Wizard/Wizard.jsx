@@ -1,8 +1,10 @@
 import { useBuilder } from '../../state/BuilderContext'
 import { WIZARD_QUESTIONS } from '../../data/wizardQuestions'
 import WizardQuestion from './WizardQuestion'
+import BrandMark from '../Brand/BrandMark'
+import ThemeToggle from '../Brand/ThemeToggle'
 
-export default function Wizard() {
+export default function Wizard({ theme, onToggleTheme }) {
   const { state, dispatch } = useBuilder()
   const { step } = state.wizard
   const question = WIZARD_QUESTIONS[step]
@@ -15,17 +17,36 @@ export default function Wizard() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-6" style={{ background: 'var(--app-bg)' }}>
-      <div className="w-full">
-        <p className="mb-1 text-center text-xs font-semibold" style={{ color: 'var(--app-accent-ink)' }}>
-          <span className="rounded-full px-2.5 py-0.5" style={{ background: 'var(--app-accent)' }}>
-            Pregunta {step + 1} de {WIZARD_QUESTIONS.length}
-          </span>
-        </p>
-        <div className="mt-6">
-          <WizardQuestion question={question} onAnswer={handleAnswer} />
+    <div className="flex min-h-screen flex-col" style={{ background: 'var(--app-bg)' }}>
+      <header className="flex items-center justify-between px-5 py-4">
+        <BrandMark theme={theme} size={32} />
+        <ThemeToggle theme={theme} onToggle={onToggleTheme} />
+      </header>
+      <main className="flex flex-1 items-center justify-center px-6 pb-16">
+        <div className="w-full">
+          <div className="mx-auto flex max-w-lg flex-col items-center gap-3">
+            <p className="text-[13px] font-medium" style={{ color: 'var(--app-muted)' }}>
+              Pregunta {step + 1} de {WIZARD_QUESTIONS.length}
+            </p>
+            <div className="flex gap-1.5" aria-hidden="true">
+              {WIZARD_QUESTIONS.map((q, i) => (
+                <span
+                  key={q.key}
+                  style={{
+                    width: 28,
+                    height: 3,
+                    borderRadius: 2,
+                    background: i <= step ? 'var(--app-accent)' : 'var(--app-border)',
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+          <div className="mt-8">
+            <WizardQuestion question={question} onAnswer={handleAnswer} />
+          </div>
         </div>
-      </div>
+      </main>
     </div>
   )
 }

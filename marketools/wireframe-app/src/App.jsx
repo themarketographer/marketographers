@@ -11,6 +11,9 @@ import ResponsiveToggle from './components/Preview/ResponsiveToggle'
 import ExportConfigForm from './components/Export/ExportConfigForm'
 import ExportModal from './components/Export/ExportModal'
 import ConfirmDialog from './components/Shared/ConfirmDialog'
+import BrandMark from './components/Brand/BrandMark'
+import ThemeToggle from './components/Brand/ThemeToggle'
+import { useAppTheme } from './utils/appTheme'
 
 function CollapseHandle({ collapsed, onClick, side }) {
   return (
@@ -20,7 +23,7 @@ function CollapseHandle({ collapsed, onClick, side }) {
       // items-start + pt-2 en vez de items-center: la flecha queda pegada
       // arriba del todo, al lado del header, en vez de perdida en el medio
       // vertical del panel donde es fácil no verla.
-      className="flex w-4 shrink-0 items-start justify-center border-black/10 pt-2 text-xs hover:bg-neutral-100"
+      className="flex w-4 shrink-0 items-start justify-center border-[var(--app-border)] pt-2 text-xs hover:bg-[var(--app-hover)]"
       style={{ background: 'var(--app-bg)', [side === 'left' ? 'borderRight' : 'borderLeft']: '1px solid var(--app-border)' }}
     >
       {side === 'left' ? (collapsed ? '›' : '‹') : collapsed ? '‹' : '›'}
@@ -35,21 +38,21 @@ function CollapseHandle({ collapsed, onClick, side }) {
 function SaveIndicator({ lastSavedAt }) {
   if (!lastSavedAt) return null
   return (
-    <span className="flex items-center gap-1.5 text-[11px]" style={{ color: 'var(--app-muted)' }}>
-      <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#2fae60', display: 'inline-block' }} />
+    <span className="hidden items-center gap-1.5 text-[11px] md:flex" style={{ color: 'var(--app-muted)' }}>
+      <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--app-ok)', display: 'inline-block' }} />
       Guardado en esta compu
     </span>
   )
 }
 
-function BuilderLayout() {
+function BuilderLayout({ theme, onToggleTheme }) {
   const { state, dispatch, lastSavedAt, clearSavedProgress } = useBuilder()
   const [selectedBlockId, setSelectedBlockId] = useState(null)
   const [rightTab, setRightTab] = useState('properties') // 'properties' | 'theme' | 'animation'
   const [exportStep, setExportStep] = useState(null) // null | 'config' | 'result'
   const [trackingConfig, setTrackingConfig] = useState(null)
-  const [paletteCollapsed, setPaletteCollapsed] = useState(false)
-  const [panelCollapsed, setPanelCollapsed] = useState(false)
+  const [paletteCollapsed, setPaletteCollapsed] = useState(() => window.innerWidth < 900)
+  const [panelCollapsed, setPanelCollapsed] = useState(() => window.innerWidth < 900)
   const [confirmingRestart, setConfirmingRestart] = useState(false)
 
   function handleRestartClick() {
@@ -65,30 +68,37 @@ function BuilderLayout() {
     <div className="flex h-full flex-col" style={{ background: 'var(--app-bg)' }}>
       <header
         className="flex items-center justify-between border-b px-4 py-2.5"
-        style={{ background: '#ffffff', borderColor: 'var(--app-border)' }}
+        style={{ background: 'var(--app-surface)', borderColor: 'var(--app-border)' }}
       >
-        <h1 className="font-heading-app text-sm font-extrabold tracking-tight" style={{ color: 'var(--app-ink)' }}>
-          MarkeTool: Crea tu wireframe
-        </h1>
+        <div className="flex items-center gap-3">
+          <BrandMark theme={theme} size={28} compact />
+          <h1 className="hidden border-l pl-3 text-xs font-medium sm:block" style={{ color: 'var(--app-muted)', borderColor: 'var(--app-border)' }}>
+            MarkeTool: Crea tu wireframe
+          </h1>
+        </div>
         <div className="flex items-center gap-3">
           <SaveIndicator lastSavedAt={lastSavedAt} />
           <ResponsiveToggle />
+          <ThemeToggle theme={theme} onToggle={onToggleTheme} />
           <button
             onClick={handleRestartClick}
-            className="rounded-full border px-3 py-1.5 text-xs font-medium hover:bg-neutral-50"
+            className="mk-press rounded-full border px-3 py-1.5 text-xs font-medium hover:bg-[var(--app-hover)]"
             style={{ borderColor: 'var(--app-border)', color: 'var(--app-muted)' }}
           >
             Reiniciar
           </button>
           <button
             onClick={() => setExportStep('config')}
-            className="rounded-full px-4 py-1.5 text-xs font-semibold"
+            className="mk-press rounded-full px-4 py-1.5 text-xs font-semibold"
             style={{ background: 'var(--app-accent)', color: 'var(--app-accent-ink)' }}
           >
             Exportar
           </button>
         </div>
       </header>
+      <p className="px-4 py-1.5 text-center text-[11px] md:hidden" style={{ background: 'var(--app-hover)', color: 'var(--app-muted)' }}>
+        Esta herramienta rinde más en una pantalla grande. Abre las barras laterales con las flechas.
+      </p>
       <div className="flex min-h-0 flex-1 overflow-hidden">
         {!paletteCollapsed && <BlockPalette />}
         <CollapseHandle side="left" collapsed={paletteCollapsed} onClick={() => setPaletteCollapsed((c) => !c)} />
@@ -101,25 +111,25 @@ function BuilderLayout() {
           // el overflow-y-auto de los paneles de abajo nunca se activaba —
           // el contenido de más quedaba fuera de pantalla, inalcanzable.
           <div className="flex min-h-0 shrink-0 flex-col">
-            <div className="flex shrink-0 border-b text-xs font-medium" style={{ borderColor: 'var(--app-border)', background: '#fafafa' }}>
+            <div className="flex shrink-0 border-b text-xs font-medium" style={{ borderColor: 'var(--app-border)', background: 'var(--app-bg)' }}>
               <button
                 onClick={() => setRightTab('properties')}
                 className="flex-1 px-3 py-2"
-                style={rightTab === 'properties' ? { background: '#fff', color: 'var(--app-ink)' } : { color: 'var(--app-muted)' }}
+                style={rightTab === 'properties' ? { background: 'var(--app-surface)', color: 'var(--app-ink)' } : { color: 'var(--app-muted)' }}
               >
                 Propiedades
               </button>
               <button
                 onClick={() => setRightTab('theme')}
                 className="flex-1 px-3 py-2"
-                style={rightTab === 'theme' ? { background: '#fff', color: 'var(--app-ink)' } : { color: 'var(--app-muted)' }}
+                style={rightTab === 'theme' ? { background: 'var(--app-surface)', color: 'var(--app-ink)' } : { color: 'var(--app-muted)' }}
               >
                 Estilo
               </button>
               <button
                 onClick={() => setRightTab('animation')}
                 className="flex-1 px-3 py-2"
-                style={rightTab === 'animation' ? { background: '#fff', color: 'var(--app-ink)' } : { color: 'var(--app-muted)' }}
+                style={rightTab === 'animation' ? { background: 'var(--app-surface)', color: 'var(--app-ink)' } : { color: 'var(--app-muted)' }}
               >
                 Animación
               </button>
@@ -181,7 +191,7 @@ function ThemeVarsRoot({ children }) {
   )
 }
 
-function AppShell() {
+function AppShell({ theme, onToggleTheme }) {
   const { state } = useBuilder()
   const { wizard } = state
 
@@ -191,15 +201,16 @@ function AppShell() {
   // mostraban un mensaje de "no la necesitás" en vez del builder, lo cual no
   // tiene sentido en una herramienta cuyo único propósito es armar landings:
   // ahora esos casos abren el canvas igual, con un borrador simple.
-  if (!wizard.completed) return <Wizard />
-  return <BuilderLayout />
+  if (!wizard.completed) return <Wizard theme={theme} onToggleTheme={onToggleTheme} />
+  return <BuilderLayout theme={theme} onToggleTheme={onToggleTheme} />
 }
 
 export default function App() {
+  const [theme, toggleTheme] = useAppTheme()
   return (
     <BuilderProvider>
       <ThemeVarsRoot>
-        <AppShell />
+        <AppShell theme={theme} onToggleTheme={toggleTheme} />
       </ThemeVarsRoot>
     </BuilderProvider>
   )

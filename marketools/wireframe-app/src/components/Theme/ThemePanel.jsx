@@ -15,11 +15,11 @@ export default function ThemePanel() {
   }
 
   return (
-    <aside className="w-72 min-h-0 flex-1 space-y-4 overflow-y-auto border-l border-black/10 bg-neutral-50 p-4">
-      <h3 className="text-xs font-semibold uppercase tracking-wide text-neutral-500">Estilo</h3>
+    <aside className="w-72 min-h-0 flex-1 space-y-4 overflow-y-auto border-l border-[var(--app-border)] bg-[var(--app-bg)] p-4">
+      <h3 className="text-xs font-semibold uppercase tracking-wide text-[var(--app-muted)]">Estilo</h3>
       <ThemePresetPicker />
 
-      <div className="space-y-2 border-t border-black/10 pt-3">
+      <div className="space-y-2 border-t border-[var(--app-border)] pt-3">
         <SelectField
           field={{ label: 'Tipografía título' }}
           value={theme.headingFont}
@@ -37,7 +37,7 @@ export default function ThemePanel() {
         <ColorField label="Color de texto" value={theme.textColor} onChange={(v) => setField('textColor', v)} />
         <div className="space-y-2 rounded-lg p-2" style={{ background: `${theme.accentColor}1a` }}>
           <ColorField label="Color de acento" value={theme.accentColor} onChange={(v) => setField('accentColor', v)} />
-          <p className="text-[10px] text-neutral-500">
+          <p className="text-[10px] text-[var(--app-muted)]">
             Se usa en botones, links y detalles clave — evitá reservarlo solo para el CTA final.
           </p>
           <ButtonGroupField
@@ -46,7 +46,7 @@ export default function ThemePanel() {
             options={ACCENT_TEXT_OPTIONS}
             onChange={(v) => setField('accentTextColor', v)}
           />
-          <p className="text-[10px] text-neutral-500">
+          <p className="text-[10px] text-[var(--app-muted)]">
             Elegí oscuro si tu color de acento es claro (amarillo, verde lima) para que el texto de los botones se siga leyendo.
           </p>
         </div>
@@ -70,11 +70,11 @@ export default function ThemePanel() {
             En cualquier campo de texto, envolvé una palabra o frase así:
           </p>
           <p className="mt-1 text-[11px]">
-            <code className="rounded bg-black/5 px-1 py-0.5 kw-elegant">~~elegante~~</code>
+            <code className="rounded bg-[var(--app-hover)] px-1 py-0.5 kw-elegant">~~elegante~~</code>
             {' '}→ tipografía de título en itálica.
           </p>
           <p className="mt-1 text-[11px]">
-            <code className="rounded bg-black/5 px-1 py-0.5 kw-glow">^^glow^^</code>
+            <code className="rounded bg-[var(--app-hover)] px-1 py-0.5 kw-glow">^^glow^^</code>
             {' '}→ resplandor en el color de acento.
           </p>
           <p className="mt-1 text-[11px]" style={{ color: 'var(--app-muted)' }}>

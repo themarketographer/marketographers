@@ -1,7 +1,7 @@
 export default function SliderField({ field, value, onChange }) {
   return (
     <label className="block text-xs">
-      <span className="mb-1 flex items-center justify-between font-medium text-neutral-600">
+      <span className="mb-1 flex items-center justify-between font-medium text-[var(--app-muted)]">
         {field.label}
         <span className="rounded-full px-2 py-0.5 text-[11px] font-semibold" style={{ background: 'var(--app-bg)', color: 'var(--app-ink)' }}>
           {value}

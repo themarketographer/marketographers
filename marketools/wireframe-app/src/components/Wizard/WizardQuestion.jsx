@@ -1,7 +1,7 @@
 export default function WizardQuestion({ question, onAnswer }) {
   return (
     <div className="mx-auto max-w-lg text-center">
-      <h2 className="font-heading-app text-2xl font-extrabold tracking-tight" style={{ color: 'var(--app-ink)' }}>
+      <h2 className="font-display-app text-3xl sm:text-4xl" style={{ color: 'var(--app-ink)' }}>
         {question.question}
       </h2>
       <div className="mt-6 flex flex-col gap-3">
@@ -9,10 +9,8 @@ export default function WizardQuestion({ question, onAnswer }) {
           <button
             key={opt.value}
             onClick={() => onAnswer(opt.value)}
-            className="rounded-2xl border-2 px-4 py-3 text-left text-sm font-medium transition-colors"
-            style={{ borderColor: 'var(--app-border)', color: 'var(--app-ink)' }}
-            onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'var(--app-accent)')}
-            onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'var(--app-border)')}
+            className="mk-press rounded-2xl border px-5 py-3.5 text-left text-sm font-medium"
+            style={{ borderColor: 'var(--app-border)', background: 'var(--app-surface)', color: 'var(--app-ink)' }}
           >
             {opt.label}
           </button>

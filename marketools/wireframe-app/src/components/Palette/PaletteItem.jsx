@@ -12,7 +12,7 @@ export default function PaletteItem({ type, label }) {
         dispatch({ type: 'DND_START_PALETTE', blockType: type })
       }}
       onDragEnd={() => dispatch({ type: 'DND_END' })}
-      className="cursor-grab select-none rounded-xl border bg-white px-3 py-2 text-sm font-medium shadow-sm transition-colors active:cursor-grabbing"
+      className="cursor-grab select-none rounded-xl border bg-[var(--app-surface)] px-3 py-2 text-sm font-medium shadow-sm transition-colors active:cursor-grabbing text-[var(--app-ink)]"
       style={{ borderColor: 'var(--app-border)', color: 'var(--app-ink)' }}
       onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'var(--app-accent)')}
       onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'var(--app-border)')}

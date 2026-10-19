@@ -7,7 +7,7 @@ export default function ConfirmDialog({ title, body, confirmLabel = 'Confirmar',
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-6" onClick={onCancel}>
       <div
-        className="w-full max-w-sm rounded-2xl bg-white p-5 shadow-xl"
+        className="w-full max-w-sm rounded-2xl bg-[var(--app-surface)] p-5 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="font-heading-app text-base font-bold" style={{ color: 'var(--app-ink)' }}>

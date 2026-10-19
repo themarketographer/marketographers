@@ -37,7 +37,7 @@ export default function ResponsiveToggle() {
           style={
             state.preview.mode === mode
               ? { background: 'var(--app-accent)', color: 'var(--app-accent-ink)' }
-              : { background: '#fff', color: 'var(--app-muted)' }
+              : { background: 'var(--app-surface)', color: 'var(--app-muted)' }
           }
         >
           <Icon />

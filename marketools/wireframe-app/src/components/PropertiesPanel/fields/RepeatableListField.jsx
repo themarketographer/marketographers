@@ -9,7 +9,7 @@ export default function RepeatableListField({ field, value, onChange }) {
 
   return (
     <div className="text-xs">
-      <span className="mb-1 block font-medium text-neutral-600">{field.label}</span>
+      <span className="mb-1 block font-medium text-[var(--app-muted)]">{field.label}</span>
       <div className="space-y-1.5">
         {value.map((item, i) => (
           <div key={i} className="flex items-center gap-1">
@@ -22,7 +22,7 @@ export default function RepeatableListField({ field, value, onChange }) {
                 onChange(next)
               }}
               placeholder={field.placeholder ?? `Item ${i + 1}`}
-              className="w-full rounded border border-black/15 px-2 py-1.5 text-sm"
+              className="w-full rounded border border-[var(--app-border)] px-2 py-1.5 text-sm"
             />
             <button
               type="button"

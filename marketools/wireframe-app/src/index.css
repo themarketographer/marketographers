@@ -1,12 +1,39 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: 'Working';
+  src: url('/assets/fonts/Working-400.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Sistema de diseño "The Marketographers": tokens del shell de la herramienta.
+   Noche es el tema por defecto (igual que el sitio) y Día se activa con
+   data-theme="light". La clave de localStorage mk-theme es la misma del sitio. */
 :root {
-  --app-bg: #faf9f6;
-  --app-ink: #141414;
-  --app-accent: #f5b729;
-  --app-accent-ink: #141414;
-  --app-muted: #68655f;
-  --app-border: rgba(20, 20, 20, 0.12);
+  --app-bg: #151515;
+  --app-surface: #1f1f1f;
+  --app-hover: #2a2a2a;
+  --app-ink: #f8f8f8;
+  --app-muted: #b3b3b3;
+  --app-border: #333333;
+  --app-accent: #fddc5b;
+  --app-accent-ink: #181818;
+  --app-ok: #2fbf71;
+  --app-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --app-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  color-scheme: dark;
+}
+:root[data-theme='light'] {
+  --app-bg: #f8f8f8;
+  --app-surface: #ffffff;
+  --app-hover: #efefef;
+  --app-ink: #181818;
+  --app-muted: #5c5c5c;
+  --app-border: #e2e2e2;
+  --app-shadow: 0 8px 24px rgba(24, 24, 24, 0.08);
+  color-scheme: light;
 }
 
 html,
@@ -17,12 +44,70 @@ body,
 
 body {
   margin: 0;
-  background: #ffffff;
-  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--app-bg);
+  color: var(--app-ink);
+  font-family: 'Poppins', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Foco de teclado: anillo sólido de 2px en ink (el accent no da contraste). */
+:focus-visible {
+  outline: 2px solid var(--app-ink);
+  outline-offset: 2px;
+}
+
+/* Campos del shell (paneles, modales, buscador). Quedan fuera los que viven
+   dentro del canvas, que pertenecen a la landing del alumno. */
+input:not([type='range']):not([type='checkbox']):not([type='color']):not([type='radio']):not([data-font-scale] *),
+select:not([data-font-scale] *),
+textarea:not([data-font-scale] *) {
+  background: var(--app-surface);
+  color: var(--app-ink);
+  border-color: var(--app-border);
+}
+input::placeholder:not([data-font-scale] *),
+textarea::placeholder:not([data-font-scale] *) {
+  color: var(--app-muted);
+}
+
+.mk-wordmark {
+  font-family: 'Working', 'Poppins', system-ui, sans-serif;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  color: var(--app-ink);
+}
+.mk-wordmark i {
+  font-style: normal;
+  color: var(--app-accent);
+}
+:root[data-theme='light'] .mk-wordmark i {
+  color: #8a6a00;
+}
+
+/* Elevación al pasar el mouse y pulsación, solo con puntero fino. */
+.mk-press {
+  transition: transform 120ms var(--app-ease), box-shadow 220ms var(--app-ease), background-color 220ms var(--app-ease);
+}
+.mk-press:active {
+  transform: scale(0.97);
+}
+@media (hover: hover) and (pointer: fine) {
+  .mk-press:hover {
+    box-shadow: var(--app-shadow);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mk-press {
+    transition: none;
+  }
 }
 
 .font-heading-app {
   font-family: 'Poppins', system-ui, sans-serif;
+}
+.font-display-app {
+  font-family: 'Working', 'Poppins', system-ui, sans-serif;
+  letter-spacing: -0.02em;
 }
 
 /* Estilo de palabra clave: dos marcadores independientes, usables juntos en

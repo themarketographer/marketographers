@@ -40,7 +40,7 @@ export default function PropertiesPanel({ blockId }) {
 
   if (!block) {
     return (
-      <aside className="w-72 min-h-0 flex-1 border-l border-black/10 bg-neutral-50 p-4 text-sm text-neutral-400">
+      <aside className="w-72 min-h-0 flex-1 border-l border-[var(--app-border)] bg-[var(--app-bg)] p-4 text-sm text-[var(--app-muted)]">
         Seleccioná un bloque del canvas para editar sus propiedades.
       </aside>
     )
@@ -53,8 +53,8 @@ export default function PropertiesPanel({ blockId }) {
   }
 
   return (
-    <aside className="w-72 min-h-0 flex-1 space-y-4 overflow-y-auto border-l border-black/10 bg-neutral-50 p-4">
-      <h3 className="text-xs font-semibold uppercase tracking-wide text-neutral-500">{schema.label}</h3>
+    <aside className="w-72 min-h-0 flex-1 space-y-4 overflow-y-auto border-l border-[var(--app-border)] bg-[var(--app-bg)] p-4">
+      <h3 className="text-xs font-semibold uppercase tracking-wide text-[var(--app-muted)]">{schema.label}</h3>
 
       {schema.variants && (
         <ButtonGroupField
@@ -77,9 +77,9 @@ export default function PropertiesPanel({ blockId }) {
         )
       })}
 
-      <div className="space-y-3 border-t border-black/10 pt-3">
+      <div className="space-y-3 border-t border-[var(--app-border)] pt-3">
         <label className="flex items-center justify-between text-xs">
-          <span className="font-medium text-neutral-600">Acento propio del bloque</span>
+          <span className="font-medium text-[var(--app-muted)]">Acento propio del bloque</span>
           <input
             type="checkbox"
             checked={block.accentOverride != null}
@@ -102,7 +102,7 @@ export default function PropertiesPanel({ blockId }) {
         )}
 
         <label className="flex items-center justify-between text-xs">
-          <span className="font-medium text-neutral-600">Bordes propios del bloque</span>
+          <span className="font-medium text-[var(--app-muted)]">Bordes propios del bloque</span>
           <input
             type="checkbox"
             checked={block.radiusOverride != null}

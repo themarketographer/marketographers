@@ -18,10 +18,10 @@ export default function ImageListField({ field, value, onChange }) {
 
   return (
     <div className="text-xs">
-      <span className="mb-1 block font-medium text-neutral-600">{field.label}</span>
+      <span className="mb-1 block font-medium text-[var(--app-muted)]">{field.label}</span>
       <div className="space-y-2">
         {value.map((url, i) => (
-          <div key={i} className="rounded border border-black/10 p-2">
+          <div key={i} className="rounded border border-[var(--app-border)] p-2">
             <div className="flex items-center gap-1">
               <span className="w-4 shrink-0 text-center font-semibold" style={{ color: 'var(--app-muted)' }}>
                 {i + 1}
@@ -31,7 +31,7 @@ export default function ImageListField({ field, value, onChange }) {
                 value={url}
                 onChange={(e) => setAt(i, e.target.value)}
                 placeholder="Link de Cloudinary"
-                className="w-full rounded border border-black/15 px-2 py-1 text-xs"
+                className="w-full rounded border border-[var(--app-border)] px-2 py-1 text-xs"
               />
               <button
                 type="button"
@@ -64,7 +64,7 @@ export default function ImageListField({ field, value, onChange }) {
                 }}
               />
             ) : (
-              <div className="mt-1.5 flex h-16 w-full items-center justify-center rounded border border-dashed border-black/15 text-[10px] text-neutral-400">
+              <div className="mt-1.5 flex h-16 w-full items-center justify-center rounded border border-dashed border-[var(--app-border)] text-[10px] text-[var(--app-muted)]">
                 Sin imagen todavía
               </div>
             )}

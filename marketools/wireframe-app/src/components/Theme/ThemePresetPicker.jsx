@@ -11,7 +11,7 @@ export default function ThemePresetPicker() {
           key={preset.id}
           onClick={() => dispatch({ type: 'THEME_APPLY_PRESET', presetId: preset.id })}
           className={`rounded-lg border p-2 text-left text-xs font-medium ${
-            state.theme.presetId === preset.id ? 'border-blue-500' : 'border-black/15'
+            state.theme.presetId === preset.id ? 'border-[var(--app-ink)]' : 'border-[var(--app-border)]'
           }`}
           style={{ background: preset.backgroundColor, color: preset.textColor }}
         >

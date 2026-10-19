@@ -17,7 +17,7 @@ export default function ExportModal({ onClose, trackingConfig }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-6" onClick={onClose}>
       <div
-        className="flex h-[92vh] w-full max-w-5xl flex-col rounded-2xl bg-white shadow-xl"
+        className="flex h-[92vh] w-full max-w-5xl flex-col rounded-2xl bg-[var(--app-surface)] shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b p-4" style={{ borderColor: 'var(--app-border)' }}>

@@ -60,6 +60,8 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--ink);outline-offset
 .btn:active{transform:scale(.97)}
 .btn.sm{min-height:40px;padding:0 var(--space-3);font-size:14px}.btn.sm svg{width:15px;height:15px}
 .micro{margin-top:var(--space-2)}
+.copy{display:block;background:none;border:0;padding:var(--space-2) 0;font-family:var(--sans);text-decoration:underline;text-underline-offset:3px;cursor:pointer;text-align:left}
+.copy:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 
 /* hero */
 .hero{display:grid;gap:var(--space-5);align-items:center}
@@ -206,10 +208,10 @@ fbq('trackCustom','VioLandingMasterclass');
       <div class="vr" aria-hidden="true"></div>
       <div class="when">Viernes 23 de octubre<span>100 cupos</span></div>
     </div>
-    <p class="cap local rise" style="--d:.36s" id="local">Viernes 23 de octubre</p>
     <div class="cta-block rise" style="--d:.42s">
       <a class="btn" id="heroCta" href="https://chat.whatsapp.com/Hskq4Mv0CpK3RxYR4gTIH1?mode=gi_t" target="_blank" rel="noopener" data-join="hero">Unirme al grupo de WhatsApp<svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h11m-4.5-4.5L15 10l-4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
       <p class="cap micro">Dentro del grupo te llega el link de Zoom.</p>
+      <button class="cap copy" id="copyLink" type="button">¿Se abrió en el navegador? Copia el link</button>
     </div>
   </div>
   <div class="stage rise" style="--d:.36s" id="stage" aria-hidden="true">
@@ -230,14 +232,14 @@ fbq('trackCustom','VioLandingMasterclass');
 </div>
 
 <section aria-labelledby="para-ti">
-  <div class="sec-h"><h2 id="para-ti" data-split>¿Te pasa esto?</h2><p class="cap">Escenas de ejemplo</p></div>
+  <div class="sec-h"><h2 id="para-ti" data-split>¿Te pasa esto?</h2></div>
   <div class="pain">
     <article class="scene rv" style="--d:0s"><p class="meta">Lunes 9:00 am · Tu calendario</p><div class="art" aria-hidden="true"><div class="g1"><div class="d on"><span></span><em>L</em></div><div class="d"><span></span><em>M</em></div><div class="d on"><span></span><em>X</em></div><div class="d"><span></span><em>J</em></div><div class="d"><span></span><em>V</em></div><div class="d on"><span></span><em>S</em></div><div class="d"><span></span><em>D</em></div></div></div><p class="fig">4 días</p><p class="lab">de la semana sin una sola sesión.</p></article>
     <article class="scene rv" style="--d:0.06s"><p class="meta">Domingo 8:15 pm · Instagram</p><div class="art" aria-hidden="true"><div class="g2"><div><em>Vistas</em><i style="width:100%"></i><b>2300</b></div><div><em>Mensajes</em><i class="z"></i><b class="neg">0</b></div></div></div><p class="fig">0 mensajes</p><p class="lab">con 2300 vistas en tu último reel.</p></article>
     <article class="scene rv" style="--d:0.12s"><p class="meta">Miércoles 11:40 am · Google</p><div class="art" aria-hidden="true"><div class="g3"><div class="r"><em>1</em><s style="width:78%"></s></div><div class="r"><em>2</em><s style="width:62%"></s></div><div class="r"><em>3</em><s style="width:70%"></s></div><p>· · ·</p><div class="r you"><em>9</em><s>Tú</s></div></div></div><p class="fig">Puesto 9</p><p class="lab">cuando alguien busca fotógrafo en tu ciudad.</p></article>
   </div>
   <div class="bridge rv">
-    <p>La clase te muestra cómo armar un sistema para que lleguen clientes cada semana.</p>
+    <p>En la clase te muestro cómo armar el sistema para que te lleguen clientes cada semana.</p>
     <a class="btn" href="https://chat.whatsapp.com/Hskq4Mv0CpK3RxYR4gTIH1?mode=gi_t" target="_blank" rel="noopener" data-join="para-ti">Unirme al grupo de WhatsApp<svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h11m-4.5-4.5L15 10l-4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
   </div>
 </section>
@@ -245,16 +247,16 @@ fbq('trackCustom','VioLandingMasterclass');
 <section aria-labelledby="como">
   <h2 id="como" data-split>Cómo entras</h2>
   <ol class="path">
-    <li class="rv" style="--d:0s"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-8l-4 3v-3H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/></svg></span><div><h3>Entra al grupo</h3><p>Ahí va el link de Zoom</p></div></li>
-    <li class="rv" style="--d:.06s"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><div><h3>Mira tu hora</h3><p id="stepTime">Se calcula según tu país</p></div></li>
-    <li class="rv" style="--d:.12s"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="12" height="12" rx="2.5"/><path d="M15 10.5l6-3.5v10l-6-3.5z"/></svg></span><div><h3>Conéctate el viernes 23</h3><p>En vivo por Zoom</p></div></li>
+    <li class="rv" style="--d:0s"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-8l-4 3v-3H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/></svg></span><div><h3>Entra al grupo</h3><p>Ahí cae el link de Zoom</p></div></li>
+    <li class="rv" style="--d:.06s"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><div><h3>Agéndalo</h3><p id="stepTime">Viernes 23 de octubre</p></div></li>
+    <li class="rv" style="--d:.12s"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="12" height="12" rx="2.5"/><path d="M15 10.5l6-3.5v10l-6-3.5z"/></svg></span><div><h3>Conéctate</h3><p>Zoom, en vivo y gratis</p></div></li>
   </ol>
 </section>
 
 <section class="final rv" aria-labelledby="cierre">
   <div>
     <h2 id="cierre">100 cupos, gratis.</h2>
-    <p class="sign">Da la clase Pablo Villarroel, fotógrafo comercial y profesor de marketing para fotógrafos.</p>
+    <p class="sign">La doy yo, Pablo Villarroel, fotógrafo comercial y profesor de marketing para fotógrafos.</p>
   </div>
   <a class="btn" id="finalCta" href="https://chat.whatsapp.com/Hskq4Mv0CpK3RxYR4gTIH1?mode=gi_t" target="_blank" rel="noopener" data-join="final">Unirme al grupo de WhatsApp<svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h11m-4.5-4.5L15 10l-4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
 </section>
@@ -293,8 +295,7 @@ fbq('trackCustom','VioLandingMasterclass');
     var P = {};
     new Intl.DateTimeFormat('es', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit', hour12: false }).formatToParts(new Date(START)).forEach(function(p){ P[p.type] = p.value; });
     var hm = P.hour + ':' + P.minute;
-    $('local').textContent = 'Empieza el ' + P.weekday + ' ' + P.day + ' de ' + P.month + ' a las ' + hm + ' en tu hora';
-    $('stepTime').textContent = 'A las ' + hm + ' en tu hora';
+    $('stepTime').textContent = 'Viernes 23, ' + hm + ' según la hora de tu celular';
   } catch (e) {}
 
   /* Titulares: cada palabra entra 60 ms después de la anterior */
@@ -352,6 +353,28 @@ fbq('trackCustom','VioLandingMasterclass');
     if (m) { code = m[0]; sessionStorage.setItem('ad_code', code); }
     else { code = sessionStorage.getItem('ad_code'); }
   } catch (e) {}
+  /* Abrir en la app: dentro del navegador de Instagram o Facebook se prueba el esquema whatsapp:// (abre WhatsApp o WhatsApp Business, el que tengas como predeterminado) y, si la app no responde, se usa el link normal */
+  var HTTPS = 'https://chat.whatsapp.com/Hskq4Mv0CpK3RxYR4gTIH1?mode=gi_t', APP = 'whatsapp://chat?code=Hskq4Mv0CpK3RxYR4gTIH1';
+  var INTENT = 'intent://chat?code=Hskq4Mv0CpK3RxYR4gTIH1#Intent;scheme=whatsapp;S.browser_fallback_url=' + encodeURIComponent(HTTPS) + ';end';
+  var inApp = /FBAN|FBAV|FB_IAB|FBIOS|Instagram|Messenger/i.test(navigator.userAgent);
+  document.querySelectorAll('[data-join]').forEach(function(a){
+    a.addEventListener('click', function(e){
+      if (!inApp) return;
+      e.preventDefault();
+      var t = Date.now(), android = /Android/i.test(navigator.userAgent);
+      /* Android: link intent sin fijar paquete, el sistema elige WhatsApp o WhatsApp Business. iPhone: esquema whatsapp:// */
+      location.href = android ? INTENT : APP;
+      setTimeout(function(){ if (!document.hidden && Date.now() - t < 3000) location.href = HTTPS; }, 1400);
+    });
+  });
+  var cb = document.getElementById('copyLink');
+  if (cb) cb.addEventListener('click', function(){
+    var done = function(){ cb.textContent = 'Link copiado. Pégalo en WhatsApp o en tu navegador'; };
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(HTTPS).then(done, function(){ location.href = HTTPS; }); }
+      else { var x = document.createElement('textarea'); x.value = HTTPS; document.body.appendChild(x); x.select(); document.execCommand('copy'); x.remove(); done(); }
+    } catch (err) { location.href = HTTPS; }
+  });
   var sent = false;
   document.querySelectorAll('[data-join]').forEach(function(a){
     a.addEventListener('click', function(){

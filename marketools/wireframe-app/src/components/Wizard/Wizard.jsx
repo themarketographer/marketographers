@@ -3,6 +3,7 @@ import { WIZARD_QUESTIONS } from '../../data/wizardQuestions'
 import WizardQuestion from './WizardQuestion'
 import BrandMark from '../Brand/BrandMark'
 import ThemeToggle from '../Brand/ThemeToggle'
+import CommunityNotice from '../Brand/CommunityNotice'
 
 export default function Wizard({ theme, onToggleTheme }) {
   const { state, dispatch } = useBuilder()
@@ -22,6 +23,7 @@ export default function Wizard({ theme, onToggleTheme }) {
         <BrandMark theme={theme} size={32} />
         <ThemeToggle theme={theme} onToggle={onToggleTheme} />
       </header>
+      <CommunityNotice />
       <main className="flex flex-1 items-center justify-center px-6 pb-16">
         <div className="w-full">
           <div className="mx-auto flex max-w-lg flex-col items-center gap-3">

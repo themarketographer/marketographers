@@ -13,6 +13,7 @@ import ExportModal from './components/Export/ExportModal'
 import ConfirmDialog from './components/Shared/ConfirmDialog'
 import BrandMark from './components/Brand/BrandMark'
 import ThemeToggle from './components/Brand/ThemeToggle'
+import CommunityNotice from './components/Brand/CommunityNotice'
 import { useAppTheme } from './utils/appTheme'
 
 function CollapseHandle({ collapsed, onClick, side }) {
@@ -96,6 +97,7 @@ function BuilderLayout({ theme, onToggleTheme }) {
           </button>
         </div>
       </header>
+      <CommunityNotice />
       <p className="px-4 py-1.5 text-center text-[11px] md:hidden" style={{ background: 'var(--app-hover)', color: 'var(--app-muted)' }}>
         Esta herramienta rinde más en una pantalla grande. Abre las barras laterales con las flechas.
       </p>

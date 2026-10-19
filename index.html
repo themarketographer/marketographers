@@ -388,7 +388,8 @@ footer .mark i{font-style:normal;color:var(--accent)}
 .bill button[aria-pressed=true]{color:var(--accent-ink)}
 .bill button i{font-style:normal;font-size:.7rem;margin-left:6px;padding:2px 8px;border-radius:999px;background:rgba(0,0,0,.12)}
 .bill button:not([aria-pressed=true]) i{background:rgba(253,220,91,.16);color:var(--accent)}
-.pbill{color:var(--mut);font-size:.88rem;margin:-14px 0 24px;transition:opacity .14s}
+[data-oculto="si"]{display:none!important}
+.pbill:empty,.mnote:empty{display:none}.pbill:empty{display:none}.pbill{color:var(--mut);font-size:.84rem;margin:14px 0 0;text-align:center;transition:opacity .14s}
 .pd{transition:opacity .14s}
 .pd.swap,.pbill.swap{opacity:0}
 .pnum,.old{font-variant-numeric:tabular-nums}
@@ -479,7 +480,19 @@ h1,h2,h3,.wl{text-wrap:balance}
 .live i{width:9px;height:9px;border-radius:50%;background:var(--neg);animation:pulse 1.8s ease-in-out infinite}
 @keyframes pulse{50%{box-shadow:0 0 0 8px rgba(255,92,92,0);transform:scale(.85)}}
 @media (hover:hover) and (pointer:fine){.tile:hover img{transform:scale(1.04)}}
-.mini-chat{display:grid;gap:5px;padding:12px 14px 14px;border-radius:12px;background:#0b141a;position:relative}.mini-chat .gh{display:grid;padding-bottom:8px;margin-bottom:3px;border-bottom:1px solid rgba(255,255,255,.08)}.mini-chat .gh b{font-size:.84rem;color:#e9edef;font-weight:600}.mini-chat .gh small{font-size:.7rem;color:#8696a0}.mini-chat .who{font-size:.72rem;font-weight:600;justify-self:start;margin:4px 0 -2px 4px}.mini-chat .w1{color:#ff9f6e}.mini-chat .w2{color:#7fd1ff}.ej{font-size:.7rem;color:var(--mut);justify-self:end;margin-top:4px}
+.mini-chat{display:grid;border-radius:12px;background:#0b141a;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.06)}
+.mini-chat .wh{display:flex;align-items:center;gap:10px;padding:9px 12px;background:#202c33;color:#aebac1}
+.mini-chat .av{width:32px;height:32px;border-radius:50%;background:#6b7c85 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cfd8dc'%3E%3Ccircle cx='9' cy='9' r='3'/%3E%3Ccircle cx='16' cy='10' r='2.4'/%3E%3Cpath d='M3.5 18c0-3 2.5-4.6 5.5-4.6s5.5 1.6 5.5 4.6zM14.5 14.2c3.3-.4 6 1 6 3.8h-4.6c0-1.5-.6-2.8-1.4-3.8z'/%3E%3C/svg%3E") center/70% no-repeat;flex:none}
+.mini-chat .wt{display:grid;line-height:1.2}.mini-chat .wt b{font-size:.86rem;font-weight:500;color:#e9edef}.mini-chat .wt small{font-size:.7rem;color:#8696a0}
+.mini-chat .wb{display:grid;gap:3px;padding:10px 12px 14px;background:#0b141a radial-gradient(rgba(255,255,255,.035) 1px,transparent 1.2px) 0 0/14px 14px}
+.mini-chat .wd{justify-self:center;font-size:.64rem;letter-spacing:.04em;color:#8696a0;background:#182229;padding:4px 10px;border-radius:7px;margin-bottom:6px}
+.mini-chat .b{max-width:86%;padding:6px 9px 7px 10px;border-radius:0 8px 8px 8px;font-size:.86rem;line-height:1.3;background:#202c33;color:#e9edef;justify-self:start}
+.mini-chat .b::after{content:attr(data-h);float:right;margin:7px 0 -3px 12px;font-size:.62rem;color:#8696a0}
+.mini-chat .who{font-size:.74rem;font-weight:500;justify-self:start;margin:6px 0 -1px 11px}.mini-chat .w1{color:#06cf9c}.mini-chat .w2{color:#53bdeb}
+.mini-chat .wi{display:flex;align-items:center;gap:8px;padding:8px 10px 10px;background:#0b141a}
+.mini-chat .wi span{flex:1;padding:9px 14px;border-radius:999px;background:#202c33;color:#8696a0;font-size:.82rem}
+.mini-chat .wi i{width:36px;height:36px;border-radius:50%;background:#00a884 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23111b21'%3E%3Cpath d='M12 14.5a3 3 0 0 0 3-3v-5a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5.5a6.5 6.5 0 0 0 5.75 6.45V21h1.5v-3.05A6.5 6.5 0 0 0 18.5 11.5z'/%3E%3C/svg%3E") center/52% no-repeat}
+.ej{font-size:.7rem;color:var(--mut);justify-self:end;margin-top:4px}
 .mini-calc{display:grid;gap:4px;padding:18px;border-radius:18px;background:var(--s3)}.mini-calc small{color:var(--mut)}.mini-calc b{font-family:var(--fd);font-weight:400;font-size:3rem;line-height:1;color:var(--accent)}
 .tlink{color:var(--accent);font-weight:600;text-decoration:none}
 @media(max-width:860px){.t-rec img{object-position:68% 50%}.bento{grid-template-columns:1fr}.t-clase,.t-wpp,.t-tool,.t-rec{grid-column:auto}.t-clase{min-height:320px}.t-rec{min-height:260px}}
@@ -583,6 +596,13 @@ h1,h2,h3,.wl{text-wrap:balance}
   .bill button i{margin:0;font-size:.66rem;padding:2px 8px}
 }
 
+/* móvil: velo con desenfoque arriba y abajo para que el texto no choque con la barra y los botones fijos */
+@media(max-width:860px){
+  body::before,body::after{content:"";position:fixed;left:0;right:0;z-index:50;pointer-events:none;-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);background:linear-gradient(var(--vd),color-mix(in srgb,var(--bg) 72%,transparent),transparent)}
+  body::before{top:0;height:92px;--vd:180deg;-webkit-mask-image:linear-gradient(180deg,#000 40%,transparent);mask-image:linear-gradient(180deg,#000 40%,transparent)}
+  body::after{bottom:0;height:116px;background:linear-gradient(0deg,color-mix(in srgb,var(--bg) 72%,transparent),transparent);-webkit-mask-image:linear-gradient(0deg,#000 40%,transparent);mask-image:linear-gradient(0deg,#000 40%,transparent)}
+}
+@media(max-width:860px) and (prefers-reduced-transparency:reduce){body::before,body::after{-webkit-backdrop-filter:none;backdrop-filter:none}}
 </style>
 </head>
 <body>
@@ -726,16 +746,16 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
   <p class="cta"><a data-tx="home_hero.t09" class="btn btn-g cta-planes" href="#planes">Ya estoy listo para entrar <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></p>
 </section>
 
-<div class="ticker" aria-hidden="true"><div class="tk"><span>Marketing</span><i></i><span>Ventas</span><i></i><span>Branding</span><i></i><span>StorySelling</span><i></i><span>Persuasión</span><i></i><span>Negocio</span><i></i><span>Marketing</span><i></i><span>Ventas</span><i></i><span>Branding</span><i></i><span>StorySelling</span><i></i><span>Persuasión</span><i></i><span>Negocio</span><i></i></div></div>
+<div class="ticker" aria-hidden="true" data-oculto="no" data-ta="data-oculto:home_vis.ticker"><div class="tk"><span>Marketing</span><i></i><span>Ventas</span><i></i><span>Branding</span><i></i><span>StorySelling</span><i></i><span>Persuasión</span><i></i><span>Negocio</span><i></i><span>Marketing</span><i></i><span>Ventas</span><i></i><span>Branding</span><i></i><span>StorySelling</span><i></i><span>Persuasión</span><i></i><span>Negocio</span><i></i></div></div>
 
-<section class="statement" aria-label="Puente">
+<section class="statement" aria-label="Puente" data-oculto="no" data-ta="data-oculto:home_vis.statement">
   <div class="ring"></div>
   <div class="wrap">
     <p data-t="home_frase.t01" id="stmt" data-k="cambiar,Sigamos.">Si llegaste hasta aquí, ya sabes que algo tiene que cambiar. Sigamos.</p>
   </div>
 </section>
 
-<section class="scenes" id="escenas"><div class="wrap-w"><div class="top center"><span data-t="home_escenas.t01" class="eyebrow neg rv">Tres escenas de ejemplo</span><p data-t="home_escenas.t02" class="wl" data-wl="Si una de estas escenas te suena, tu problema se llama ventas.">Si una de estas escenas te suena, tu problema se llama ventas.</p></div><div class="sgrid"><article class="sc rv" style="--i:0"><span data-t="home_escenas.t03" class="when">Viernes, 10:47 pm</span><div class="chat"><p data-t="home_escenas.t04" class="b in">Hola, ¿cuánto cobras por una sesión?</p><p class="b out">¿$50?</p><p data-t="home_escenas.t05" class="b in">Uy, otro me cobra $30</p><p data-t="home_escenas.t06" class="b out">Te la dejo en $35</p><p data-t="home_escenas.t07" class="seen">Visto 10:52 pm</p></div><h3 data-t="home_escenas.t08">Negociaste contra ti</h3><p data-t="home_escenas.t09">Pusiste el precio mirando al vecino y lo bajaste antes de que te lo pidieran.</p></article><article class="sc rv" style="--i:1"><span data-t="home_escenas.t10" class="when">Domingo, 8:15 pm</span><div class="viral"><div class="vn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.8a4.3 4.3 0 0 1 7.5 2.5c0 5.6-7.5 10.2-7.5 10.2z"/></svg><b data-count="2300">2.300</b><small data-t="home_escenas.t11">me gusta</small></div><div class="vn zero"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg><b>0</b><small data-t="home_escenas.t12">consultas</small></div></div><h3 data-t="home_escenas.t13">El reel que se hizo viral</h3><p data-t="home_escenas.t14">Los likes se sienten como aplausos, y los aplausos no pagan el alquiler.</p></article><article class="sc rv" style="--i:2"><span data-t="home_escenas.t15" class="when">Lunes, 9:02 am</span><div class="agenda"><p data-tx="home_escenas.t16"><i></i>Semana 1<b data-t="home_escenas.t17">Boda de la prima</b></p><p data-tx="home_escenas.t18" class="empty"><i></i>Semana 2<b data-t="home_escenas.t19">Libre</b></p><p data-tx="home_escenas.t20" class="empty"><i></i>Semana 3<b data-t="home_escenas.t21">Libre</b></p><p data-tx="home_escenas.t22" class="empty"><i></i>Semana 4<b data-t="home_escenas.t23">¿Alguna recomendación?</b></p></div><h3 data-t="home_escenas.t24">Cada mes es una ruleta</h3><p data-t="home_escenas.t25">Vives del boca a boca, y el boca a boca no responde mensajes.</p></article></div><p data-t="home_escenas.t26" class="escap rv">Las tres tienen arreglo, y el arreglo se enseña en clase, con tarea para ese mismo día.</p></div></section><section class="problem" id="problema">
+<section class="scenes" id="escenas" data-oculto="no" data-ta="data-oculto:home_vis.escenas"><div class="wrap-w"><div class="top center"><span data-t="home_escenas.t01" class="eyebrow neg rv">Tres escenas de ejemplo</span><p data-t="home_escenas.t02" class="wl" data-wl="Si una de estas escenas te suena, tu problema se llama ventas.">Si una de estas escenas te suena, tu problema se llama ventas.</p></div><div class="sgrid"><article class="sc rv" style="--i:0"><span data-t="home_escenas.t03" class="when">Viernes, 10:47 pm</span><div class="chat"><p data-t="home_escenas.t04" class="b in">Hola, ¿cuánto cobras por una sesión?</p><p class="b out">¿$50?</p><p data-t="home_escenas.t05" class="b in">Uy, otro me cobra $30</p><p data-t="home_escenas.t06" class="b out">Te la dejo en $35</p><p data-t="home_escenas.t07" class="seen">Visto 10:52 pm</p></div><h3 data-t="home_escenas.t08">Negociaste contra ti</h3><p data-t="home_escenas.t09">Pusiste el precio mirando al vecino y lo bajaste antes de que te lo pidieran.</p></article><article class="sc rv" style="--i:1"><span data-t="home_escenas.t10" class="when">Domingo, 8:15 pm</span><div class="viral"><div class="vn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.8a4.3 4.3 0 0 1 7.5 2.5c0 5.6-7.5 10.2-7.5 10.2z"/></svg><b data-count="2300">2.300</b><small data-t="home_escenas.t11">me gusta</small></div><div class="vn zero"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg><b>0</b><small data-t="home_escenas.t12">consultas</small></div></div><h3 data-t="home_escenas.t13">El reel que se hizo viral</h3><p data-t="home_escenas.t14">Los likes se sienten como aplausos, y los aplausos no pagan el alquiler.</p></article><article class="sc rv" style="--i:2"><span data-t="home_escenas.t15" class="when">Lunes, 9:02 am</span><div class="agenda"><p data-tx="home_escenas.t16"><i></i>Semana 1<b data-t="home_escenas.t17">Boda de la prima</b></p><p data-tx="home_escenas.t18" class="empty"><i></i>Semana 2<b data-t="home_escenas.t19">Libre</b></p><p data-tx="home_escenas.t20" class="empty"><i></i>Semana 3<b data-t="home_escenas.t21">Libre</b></p><p data-tx="home_escenas.t22" class="empty"><i></i>Semana 4<b data-t="home_escenas.t23">¿Alguna recomendación?</b></p></div><h3 data-t="home_escenas.t24">Cada mes es una ruleta</h3><p data-t="home_escenas.t25">Vives del boca a boca, y el boca a boca no responde mensajes.</p></article></div><p data-t="home_escenas.t26" class="escap rv">Las tres tienen arreglo, y el arreglo se enseña en clase, con tarea para ese mismo día.</p></div></section><section class="problem" id="problema" data-oculto="no" data-ta="data-oculto:home_vis.problema">
   <div class="wrap-w">
     <div class="top">
       <span data-t="home_problema.t01" class="eyebrow neg rv">¿Te has sentido así?</span>
@@ -747,7 +767,7 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
   </div>
 </section>
 
-<section class="track-sec" id="incluye">
+<section class="track-sec" id="incluye" data-oculto="no" data-ta="data-oculto:home_vis.incluye">
   <div class="wrap-w">
     <div class="th">
       <div class="txt">
@@ -763,7 +783,7 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
   <div class="trail"><a data-t="home_incluye.t03" class="btn btn-g cta-planes" href="#planes">Quiero entrar a la comunidad</a></div>
 </section>
 
-<section class="dentro" id="dentro"><div class="wrap-w"><div class="top"><span data-t="home_dentro.t01" class="eyebrow rv">Por dentro</span><h2 data-t="home_dentro.t02" class="h-sec rv" style="--i:1">Esto es lo que abres <mark>el día que entras</mark></h2></div><div class="bento"><article class="tile t-clase rv" style="--i:0"><img data-ta="src:home_dentro.i1_src|alt:home_dentro.i1_alt" src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto:best,f_auto/v1771218778/Captura_clase_vzvoyr.jpg" alt="Clase en vivo de The Marketographers por Zoom" loading="lazy"><div class="tcap"><span data-tx="home_dentro.t03" class="live"><i></i>En vivo</span><h3 data-t="home_dentro.t04">Clases dos veces por semana</h3><p data-t="home_dentro.t05">Con cámara prendida y tiempo para tus preguntas.</p></div></article><article class="tile t-wpp rv" style="--i:1"><div class="tcap"><h3 data-t="home_dentro.t06">Grupo de WhatsApp</h3><p data-t="home_dentro.t07">Aquí preguntas lo que te da pena preguntar en Instagram.</p></div><div class="mini-chat"><div class="gh"><b>The Marketographers</b><small>Carla, Diego y más</small></div><span class="who w1">Carla</span><p data-t="home_dentro.t08" class="b in">¿Cuánto cobro por un reel de 30 s? Dime que $15 no es</p><span class="who w2">Diego</span><p data-t="home_dentro.t09" class="b in">$15 es lo que cuesta el almuerzo de quien te lo pide. Yo cobro $60 con guion</p><span class="who w1">Carla</span><p data-t="home_dentro.t10" class="b in">Lo dije y me respondieron: ok. Me enojé con ellos y conmigo</p><span data-t="home_dentro.t11" class="ej">Conversación de ejemplo</span></div></article><article class="tile t-tool rv" style="--i:2"><div class="tcap"><h3 data-t="home_dentro.t12">Cursos, retos y herramientas</h3><p data-t="home_dentro.t13">Se abren con tu membresía, sin pagar nada aparte.</p></div><div class="mini-calc"><small data-t="home_dentro.t14">Calculadora de precio, ejemplo</small><b id="miniCalc">$74</b><span data-t="home_dentro.t15" class="ej">Con datos ficticios</span></div><a data-t="home_dentro.t16" class="tlink" href="#planes">Quiero entrar →</a></article><article class="tile t-rec rv" style="--i:3"><div class="tcap"><h3 data-t="home_dentro.t17">Recursos y plantillas</h3><p data-t="home_dentro.t18">Todo ordenado para que sepas qué sigue.</p></div><img src="/assets/marketools-recursos.webp" alt="Tres herramientas de MarkeTools: el wireframe, la calculadora de precio y el generador de links de WhatsApp" width="1600" height="870" loading="lazy"></article></div></div></section><section class="mapa" id="mapa"><div class="wrap-w"><div class="top"><span data-t="home_mapa.t01" class="eyebrow rv">Dentro de la membresía</span><h2 data-t="home_mapa.t02" class="h-sec rv" style="--i:1">Dime qué te duele y te digo <mark>por dónde empezar</mark></h2></div><div class="mgrid"><div class="mchips" id="mchips" role="tablist" aria-label="Elige tu problema"></div><div class="mres" id="mres" aria-live="polite"></div></div><p class="mfoot rv"><span data-t="home_mapa.t03" class="mnote">Cursos, retos y herramientas vienen con la membresía. Un solo pago, sin comprar nada por separado.</span><a data-t="home_mapa.t04" class="btn btn-p" href="#planes">Entrar a la membresía</a></p></div></section><section class="track-sec" id="casos">
+<section class="dentro" id="dentro" data-oculto="no" data-ta="data-oculto:home_vis.dentro"><div class="wrap-w"><div class="top"><span data-t="home_dentro.t01" class="eyebrow rv">Por dentro</span><h2 data-t="home_dentro.t02" class="h-sec rv" style="--i:1">Esto es lo que abres <mark>el día que entras</mark></h2></div><div class="bento"><article class="tile t-clase rv" style="--i:0"><img data-ta="src:home_dentro.i1_src|alt:home_dentro.i1_alt" src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto:best,f_auto/v1771218778/Captura_clase_vzvoyr.jpg" alt="Clase en vivo de The Marketographers por Zoom" loading="lazy"><div class="tcap"><span data-tx="home_dentro.t03" class="live"><i></i>En vivo</span><h3 data-t="home_dentro.t04">Clases dos veces por semana</h3><p data-t="home_dentro.t05">Con cámara prendida y tiempo para tus preguntas.</p></div></article><article class="tile t-wpp rv" style="--i:1"><div class="tcap"><h3 data-t="home_dentro.t06">Grupo de WhatsApp</h3><p data-t="home_dentro.t07">Aquí preguntas lo que te da pena preguntar en Instagram.</p></div><div class="mini-chat" aria-label="Captura de ejemplo del grupo de WhatsApp"><div class="wh"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="av" aria-hidden="true"></span><span class="wt"><b data-t="home_dentro.t19">The Marketographers</b><small data-t="home_dentro.t20">Carla, Diego, tú</small></span></div><div class="wb"><span class="wd">HOY</span><span data-t="home_dentro.t21" class="who w1">Carla</span><p data-t="home_dentro.t08" class="b in" data-h="10:42">¿Cuánto cobro por un reel de 30 s? Dime que $15 no es</p><span data-t="home_dentro.t22" class="who w2">Diego</span><p data-t="home_dentro.t09" class="b in" data-h="10:43">$15 es lo que cuesta el almuerzo de quien te lo pide. Yo cobro $60 con guion</p><span data-t="home_dentro.t23" class="who w1">Carla</span><p data-t="home_dentro.t10" class="b in" data-h="10:44">Lo dije y me respondieron: ok. Me enojé con ellos y conmigo</p></div><div class="wi" aria-hidden="true"><span>Mensaje</span><i></i></div></div></div></article><article class="tile t-tool rv" style="--i:2"><div class="tcap"><h3 data-t="home_dentro.t12">Cursos, retos y herramientas</h3><p data-t="home_dentro.t13">Se abren con tu membresía, sin pagar nada aparte.</p></div><div class="mini-calc"><small data-t="home_dentro.t14">Calculadora de precio, ejemplo</small><b id="miniCalc">$192</b><span data-t="home_dentro.t15" class="ej">Con datos ficticios</span></div><a data-t="home_dentro.t16" class="tlink" href="#planes">Quiero entrar →</a></article><article class="tile t-rec rv" style="--i:3"><div class="tcap"><h3 data-t="home_dentro.t17">Recursos y plantillas</h3><p data-t="home_dentro.t18">Todo ordenado para que sepas qué sigue.</p></div><img data-ta="src:home_dentro.i2_src|alt:home_dentro.i2_alt" src="/assets/marketools-recursos.webp" alt="Tres herramientas de MarkeTools: el wireframe, la calculadora de precio y el generador de links de WhatsApp" width="1600" height="870" loading="lazy"></article></div></div></section><section class="mapa" id="mapa" data-oculto="no" data-ta="data-oculto:home_vis.mapa"><div class="wrap-w"><div class="top"><span data-t="home_mapa.t01" class="eyebrow rv">Dentro de la membresía</span><h2 data-t="home_mapa.t02" class="h-sec rv" style="--i:1">Dime qué te duele y te digo <mark>por dónde empezar</mark></h2></div><div class="mgrid"><div class="mchips" id="mchips" role="tablist" aria-label="Elige tu problema"></div><div class="mres" id="mres" aria-live="polite"></div></div><p class="mfoot rv"><span data-t="home_mapa.t03" class="mnote"></span><a data-t="home_mapa.t04" class="btn btn-p" href="#planes">Entrar a la membresía</a></p></div></section><section class="track-sec" id="casos" data-oculto="no" data-ta="data-oculto:home_vis.casos">
   <div class="wrap-w">
     <div class="th">
       <div class="txt">
@@ -779,7 +799,7 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
   <div class="trail"><a data-t="home_casos.t03" class="btn btn-g cta-planes" href="#planes">Quiero entrar a la comunidad</a></div>
 </section>
 
-<section class="about">
+<section class="about" data-oculto="no" data-ta="data-oculto:home_vis.sobre">
   <div class="wrap ab">
     <div class="sq rv"><img data-ta="src:home_sobre.i1_src|alt:home_sobre.i1_alt" src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1790061651/marketographers/pablo-villarroel-about-marketographers.jpg" alt="Pablo Villarroel, The Marketographer" loading="lazy"></div>
     <div class="rv" style="--i:1;position:relative">
@@ -793,10 +813,10 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
   </div>
 </section>
 
-<section class="dudas" id="dudas"><div class="wrap-w"><div class="top"><span data-t="home_dudas.t01" class="eyebrow rv">Dudas honestas</span><h2 data-t="home_dudas.t02" class="h-sec rv" style="--i:1">Lo que ya te dijiste en la ducha, <mark>con su respuesta</mark></h2></div><div class="dgrid"><article class="dd rv" style="--i:0"><button type="button" class="dq" aria-expanded="false" aria-controls="da0"><span data-t="home_dudas.t03" class="say">Dices</span><span data-t="home_dudas.t04" class="qt">“Es caro”</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button><div class="da" id="da0"><div><span data-t="home_dudas.t05" class="say gold">Pablo responde</span><p data-t="home_dudas.t06">Son $33 al mes, menos de $1.10 al día. Con que dejes de rebajar un solo trabajo al mes, ya la recuperaste. Haz la cuenta en la calculadora y me cuentas.</p></div></div></article><article class="dd rv" style="--i:1"><button type="button" class="dq" aria-expanded="false" aria-controls="da1"><span data-t="home_dudas.t07" class="say">Dices</span><span data-t="home_dudas.t08" class="qt">“No tengo tiempo”</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button><div class="da" id="da1"><div><span data-t="home_dudas.t09" class="say gold">Pablo responde</span><p data-t="home_dudas.t10">Las clases son en vivo dos veces por semana y quedan grabadas. Si te alcanza el tiempo para editar a las 3 AM, te alcanza para una clase que te devuelva esas horas.</p></div></div></article><article class="dd rv" style="--i:2"><button type="button" class="dq" aria-expanded="false" aria-controls="da2"><span data-t="home_dudas.t11" class="say">Dices</span><span data-t="home_dudas.t12" class="qt">“Ya hice cursos y no me sirvieron”</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button><div class="da" id="da2"><div><span data-t="home_dudas.t13" class="say gold">Pablo responde</span><p data-t="home_dudas.t14">Entonces ya conoces el dolor de aprender y no aplicar. Aquí cada clase termina con una tarea para ese mismo día, y si te atoras escribes al grupo y alguien te responde en minutos.</p></div></div></article><article class="dd rv" style="--i:3"><button type="button" class="dq" aria-expanded="false" aria-controls="da3"><span data-t="home_dudas.t15" class="say">Dices</span><span data-t="home_dudas.t16" class="qt">“Mi nicho es muy raro”</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button><div class="da" id="da3"><div><span data-t="home_dudas.t17" class="say gold">Pablo responde</span><p data-t="home_dudas.t18">Hay miembros de 17 países y de especialidades que ni sabías que existían. Un cliente que paga busca lo mismo en todos los nichos: que alguien le explique por qué elegirte.</p></div></div></article><article class="dd rv" style="--i:4"><button type="button" class="dq" aria-expanded="false" aria-controls="da4"><span data-t="home_dudas.t19" class="say">Dices</span><span data-t="home_dudas.t20" class="qt">“No sé nada de marketing”</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button><div class="da" id="da4"><div><span data-t="home_dudas.t21" class="say gold">Pablo responde</span><p data-t="home_dudas.t22">Mejor. Nadie te enseñó malas mañas todavía. Empezamos desde cero, con un paso a paso con orden, y la primera tarea la haces hoy.</p></div></div></article><a class="dd cta rv" style="--i:5" href="#planes"><span data-t="home_dudas.t23" class="say gold">¿Otra duda?</span><span data-t="home_dudas.t24" class="qt">Escríbela en el grupo gratis o mira el plan</span><span class="arr">→</span></a></div></div></section><section class="pricing" id="planes">
+<section class="dudas" id="dudas" data-oculto="no" data-ta="data-oculto:home_vis.dudas"><div class="wrap-w"><div class="top"><span data-t="home_dudas.t01" class="eyebrow rv">Dudas honestas</span><h2 data-t="home_dudas.t02" class="h-sec rv" style="--i:1">Lo que ya te dijiste en la ducha, <mark>con su respuesta</mark></h2></div><div class="dgrid"><article class="dd rv" style="--i:0"><button type="button" class="dq" aria-expanded="false" aria-controls="da0"><span data-t="home_dudas.t03" class="say">Dices</span><span data-t="home_dudas.t04" class="qt">“Es caro”</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button><div class="da" id="da0"><div><p data-t="home_dudas.t06">Son $33 al mes, menos de $1.10 al día. Con que dejes de rebajar un solo trabajo al mes, ya la recuperaste. Haz la cuenta en la calculadora y me cuentas.</p></div></div></article><article class="dd rv" style="--i:1"><button type="button" class="dq" aria-expanded="false" aria-controls="da1"><span data-t="home_dudas.t07" class="say">Dices</span><span data-t="home_dudas.t08" class="qt">“No tengo tiempo”</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button><div class="da" id="da1"><div><p data-t="home_dudas.t10">Las clases son en vivo dos veces por semana y quedan grabadas. Si te alcanza el tiempo para editar a las 3 AM, te alcanza para una clase que te devuelva esas horas.</p></div></div></article><article class="dd rv" style="--i:2"><button type="button" class="dq" aria-expanded="false" aria-controls="da2"><span data-t="home_dudas.t11" class="say">Dices</span><span data-t="home_dudas.t12" class="qt">“Ya hice cursos y no me sirvieron”</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button><div class="da" id="da2"><div><p data-t="home_dudas.t14">Entonces ya conoces el dolor de aprender y no aplicar. Aquí cada clase termina con una tarea para ese mismo día, y si te atoras escribes al grupo y alguien te responde en minutos.</p></div></div></article><article class="dd rv" style="--i:3"><button type="button" class="dq" aria-expanded="false" aria-controls="da3"><span data-t="home_dudas.t15" class="say">Dices</span><span data-t="home_dudas.t16" class="qt">“Mi nicho es muy raro”</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button><div class="da" id="da3"><div><p data-t="home_dudas.t18">Hay miembros de 17 países y de especialidades que ni sabías que existían. Un cliente que paga busca lo mismo en todos los nichos: que alguien le explique por qué elegirte.</p></div></div></article><article class="dd rv" style="--i:4"><button type="button" class="dq" aria-expanded="false" aria-controls="da4"><span data-t="home_dudas.t19" class="say">Dices</span><span data-t="home_dudas.t20" class="qt">“No sé nada de marketing”</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button><div class="da" id="da4"><div><p data-t="home_dudas.t22">Mejor. Nadie te enseñó malas mañas todavía. Empezamos desde cero, con un paso a paso con orden, y la primera tarea la haces hoy.</p></div></div></article><a class="dd cta rv" style="--i:5" href="#planes"><span data-t="home_dudas.t23" class="say gold">¿Otra duda?</span><span data-t="home_dudas.t24" class="qt">Escríbela en el grupo gratis o mira el plan</span><span class="arr">→</span></a></div></div></section><section class="pricing" id="planes">
     <div class="wrap center">
     <div class="ph">
-      <span data-t="home_planes.t01" class="eyebrow rv">Precio de fundador</span>
+      <span data-t="home_planes.t01" class="eyebrow rv">Planes</span>
       <h2 data-t="home_planes.t02" class="h-sec rv" style="--i:1"><mark>Una sola decisión.</mark> La que te faltaba tomar.</h2>
       <p data-t="home_planes.t03" class="lead rv" style="--i:2;margin-top:18px">Cuesta menos que una entrada al cine y tiene mejor función: llenar tu agenda.</p>
     </div>
@@ -804,17 +824,18 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
       <div class="price" id="price">
         <span data-t="home_planes.t04" class="ribbon">Precio de fundador</span>
         <div class="bill" id="bill" role="group" aria-label="Frecuencia de pago"><span class="bill-thumb" aria-hidden="true"></span><button data-t="home_planes.t05" type="button" data-bill="m" aria-pressed="true">Mensual</button><button data-tx="home_planes.t06" type="button" data-bill="a" aria-pressed="false">Anual <i data-t="home_planes.t07">2 meses gratis</i></button></div><div class="pt"><span class="old" id="oldW"><span id="oldnum">$49</span></span><p class="pn"><span class="pnum" id="pnum">$49</span><small data-t="home_planes.t08">/mes</small></p></div>
-        <p class="pd" id="pdesc">Menos de $1.10 al día.</p><p class="pbill" id="pbill">Se cobran $33 cada mes. Cancela cuando quieras.</p>
+        <p class="pd" id="pdesc">Menos de $1.10 al día.</p>
         <div class="pl" id="plist" style="text-align:left"></div>
         <a data-ta="href:home_planes.h1" class="btn btn-p" href="https://nas.com/marketographers/join-membership/690025802c8123e0f9b762ef" target="_blank" rel="noopener"><span id="priceCtaTxt">Quiero entrar a la comunidad</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         <p data-t="home_planes.t09" class="note">Cancela cuando quieras.</p>
       </div>
+      <p class="pbill" id="pbill"></p>
     </div>
     </div>
   </div>
 </section>
 
-<section id="faq">
+<section id="faq" data-oculto="no" data-ta="data-oculto:home_vis.faq">
   <div class="wrap">
     <div class="center" style="margin-bottom:clamp(30px,5vw,54px)">
       <span data-t="home_faqtit.t01" class="eyebrow rv">Antes de que preguntes</span>
@@ -824,11 +845,11 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
   </div>
 </section>
 
-<section class="final">
+<section class="final" data-oculto="no" data-ta="data-oculto:home_vis.cierre">
   <div class="ring a"></div><div class="ring b"></div>
   <div class="wrap">
     <span data-t="home_cierre.t01" class="eyebrow rv">Última llamada</span>
-    <h2 data-t="home_cierre.t02" class="rv" style="--i:1">¿Vas a seguir editando solo hasta las 3am o vas a <mark>aprender a venderte</mark>?</h2>
+    <h2 data-t="home_cierre.t02" class="rv" style="--i:1">¿Vas a seguir editando solito hasta las 3am o vas a <mark>aprender a venderte</mark>?</h2>
     <a data-tx="home_cierre.t03" class="btn btn-p cta-planes rv" style="--i:2" href="#planes">Únete a la comunidad <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
     <p data-t="home_cierre.t04" class="sub rv" style="--i:3">+200 fotógrafos ya están adentro. ¿Y tú?</p>
   </div>
@@ -845,6 +866,33 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
 
 <script src="/cursos/cursos-data.js"></script>
 <script>
+const CINTA = [
+  {
+    "w": "Marketing"
+  },
+  {
+    "w": "Ventas"
+  },
+  {
+    "w": "Branding"
+  },
+  {
+    "w": "StorySelling"
+  },
+  {
+    "w": "Persuasión"
+  },
+  {
+    "w": "Negocio"
+  }
+];
+(function(){
+  var tk=document.querySelector('.ticker .tk'); if(!tk||!Array.isArray(CINTA)||!CINTA.length) return;
+  var list=CINTA.slice(); while(list.length<6) list=list.concat(CINTA);
+  var one=list.map(function(x){ return '<span>'+esc(x.w)+'</span><i></i>'; }).join('');
+  tk.innerHTML=one+one;
+})();
+
 function esc(s){var d=document.createElement('div');d.textContent=s==null?'':s;return d.innerHTML;}
 const testimonios = [
     {n:"Stephany Rodriguez",t:"Boudoir · Honduras",q:"Gracias por toda la chamba que has hecho con esto! Estoy llorando de felicidad Donde estuviste toda mi vidaa?!",img:"https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1772843204/12_zrfwsh.jpg"},
@@ -1269,7 +1317,7 @@ if(!reduce && fine){
   var bill=document.getElementById('bill'), btns=Array.prototype.slice.call(bill.querySelectorAll('button')), txtEls=[pd,pb];
   /* Valores propuestos. El anual es una propuesta: confirma el precio real y crea el nivel en Nas.io antes de publicar. */
   const PLANES = [
-    {id:"m",p:33,o:49,day:"Menos de $1.10 al día.",bill:"Se cobran $33 cada mes. Cancela cuando quieras.",cta:"Quiero entrar a la comunidad"},
+    {id:"m",p:33,o:49,day:"Menos de $1.10 al día.",bill:"",cta:"Quiero entrar a la comunidad"},
     {id:"a",p:27.5,o:33,day:"Menos de $0.92 al día.",bill:"Se cobran $330 una vez al año. Pagas 10 meses y recibes 2 gratis.",cta:"Quiero el plan anual"}
   ];
   var PLAN={}; PLANES.forEach(function(x){ PLAN[x.id]=x; });
@@ -1340,7 +1388,7 @@ if(!reduce && fine){
     {
       "p": "No sé cuánto cobrar",
       "cursos": "marketing-para-fotografos",
-      "nota": "La calculadora de precio también viene incluida."
+      "nota": ""
     },
     {
       "p": "Nadie me escribe",
@@ -1386,7 +1434,7 @@ if(!reduce && fine){
     new IntersectionObserver(function(es,o){ es.forEach(function(e){ if(!e.isIntersecting) return; o.disconnect(); var t0=null; (function st(ts){ if(!t0) t0=ts; var p=Math.min((ts-t0)/1200,1); el.textContent=fmt(Math.round(to*(1-Math.pow(1-p,3)))); if(p<1) requestAnimationFrame(st); })(performance.now()); }); },{threshold:.6}).observe(el);
   });
   var mc=document.getElementById('miniCalc');
-  if(mc && !reduce){ new IntersectionObserver(function(es,o){ es.forEach(function(e){ if(!e.isIntersecting) return; o.disconnect(); var t0=null; (function st(ts){ if(!t0) t0=ts; var p=Math.min((ts-t0)/1100,1); mc.textContent='$'+Math.round(120-(120-74)*(1-Math.pow(1-p,3))); if(p<1) requestAnimationFrame(st); })(performance.now()); }); },{threshold:.6}).observe(mc); }
+  if(mc && !reduce){ new IntersectionObserver(function(es,o){ es.forEach(function(e){ if(!e.isIntersecting) return; o.disconnect(); var t0=null; (function st(ts){ if(!t0) t0=ts; var p=Math.min((ts-t0)/1100,1); mc.textContent='$'+Math.round(240-(240-192)*(1-Math.pow(1-p,3))); if(p<1) requestAnimationFrame(st); })(performance.now()); }); },{threshold:.6}).observe(mc); }
   /* inclinación en las baldosas */
   /* móvil: se encienden con el scroll */
   if(!fine && !reduce){ var io3=new IntersectionObserver(function(es){ es.forEach(function(e){ e.target.classList.toggle('lit', e.isIntersecting); }); },{rootMargin:'-36% 0px -36% 0px'}); document.querySelectorAll('.sc,.tile,.dd').forEach(function(el){ io3.observe(el); }); }

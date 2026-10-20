@@ -159,7 +159,17 @@ footer{padding-left:var(--space-3);padding-right:var(--space-3)}
 !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
 fbq('set','autoConfig',false,'467504537642622');
 fbq('init','467504537642622');
-fbq('trackCustom','VioLandingMasterclass');
+function mktEv(name,params){
+  var id=name.toLowerCase()+'_'+Date.now()+'_'+Math.random().toString(36).slice(2,10);
+  try{fbq('trackCustom',name,params||{},{eventID:id});}catch(e){}
+  try{
+    var m=function(n){var r=document.cookie.match(new RegExp('(^| )'+n+'=([^;]+)'));return r?r[2]:null;};
+    fetch('/.netlify/functions/capi',{method:'POST',headers:{'Content-Type':'application/json'},keepalive:true,
+      body:JSON.stringify({event_name:name,event_id:id,event_source_url:location.href,custom_data:params||undefined,fbp:m('_fbp'),fbc:m('_fbc')})}).catch(function(){});
+  }catch(e){}
+}
+window.mktEv=mktEv;
+mktEv('VioLandingMasterclass');
 </script>
 <noscript><img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=467504537642622&ev=VioLandingMasterclass&noscript=1"></noscript>
 <!--/PIXEL-->
@@ -363,8 +373,8 @@ fbq('trackCustom','VioLandingMasterclass');
       if (sent) return;
       sent = true;
       try {
-        if (window.fbq) {
-          fbq('trackCustom', 'UnirseGrupoWhatsApp', {
+        if (window.mktEv) {
+          mktEv('UnirseGrupoWhatsApp', {
             content_name: 'Clase Más sesiones todas las semanas',
             cta_position: a.getAttribute('data-join'),
             ad_code: code || 'directo'

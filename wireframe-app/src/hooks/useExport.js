@@ -1,0 +1,294 @@
+import { BLOCK_SCHEMA, CTA_ACTION_PREFIXES } from '../data/blockSchema'
+import { getAnimationSuggestion } from '../data/animationSuggestions'
+import { getAnimationOverrideDescription } from '../data/animationOptions'
+import { getHeadingLevel, getAltNote } from '../data/seoNotes'
+import { getResponsiveNote } from '../data/responsiveNotes'
+import { buildTrackingSection, TRACKING_REMINDER_NO_PIXEL, TRACKING_REMINDER_WITH_PIXEL } from '../data/trackingCopy'
+import { STANDARD_EVENTS } from '../data/standardEvents'
+import { buildPixelSnippet, buildGa4Snippet } from '../data/trackingSnippets'
+import { parseRow } from '../utils/parseRow'
+import { buildWorkflowSection } from '../data/workflowCopy'
+import { STYLE_REFS, GRAPHICA_REPO, getStyleRef } from '../data/styleReferences'
+import { SURFACE_PROMPT } from '../data/surfaces'
+
+// Sección de referencia: siempre le pasa a la IA el repo de Estudio Graphica
+// como ejemplo de cómo se construye una landing con este nivel de detalle
+// (sistema de tokens, superficies, revelados, un solo bucle de scroll). Si
+// el alumno eligió uno de los estilos de referencia, además le dice que ese
+// sitio es el modelo visual a seguir.
+function buildReferenceSection(styleId, blocks = []) {
+  const ref = getStyleRef(styleId)
+  const graphica = STYLE_REFS.graphica.reference
+  const lines = ['## Referencia de código y diseño (léela antes de escribir una línea)']
+  if (ref) {
+    lines.push(
+      `Esta landing está basada en el estilo de ${ref.reference.live}. Copia su forma de construir, su ritmo de secciones y sus animaciones.`,
+      `Revelado general de ese sitio: ${ref.reveal}`,
+      ''
+    )
+  }
+  lines.push(
+    `Repositorio de referencia en GitHub: ${GRAPHICA_REPO}`,
+    'Es la landing real de Estudio Graphica, hecha en HTML, CSS y JavaScript sin librerías. Úsala como modelo de calidad y de',
+    'arquitectura: contenido visible por defecto y animaciones que el JavaScript "arma" al cargar, tokens de color en :root,',
+    'secciones que alternan superficies, revelados con IntersectionObserver y todo lo que depende del scroll dentro de un solo',
+    'requestAnimationFrame. Si puedes abrir enlaces, lee estos archivos en este orden:'
+  )
+  graphica.files.forEach(([url, what], i) => lines.push(`${i + 1}. ${url} : ${what}`))
+  if (ref && ref.id !== 'graphica') {
+    lines.push('', 'Modelo visual de este estilo:')
+    ref.reference.files.forEach(([url, what]) => lines.push(`- ${url} : ${what}`))
+  }
+  const repos = [...new Set(blocks.map((b) => b.sourceRepo).filter(Boolean))]
+  if (repos.length) {
+    lines.push('', 'Secciones traídas de páginas de otros alumnos (pestaña Inspiración). Mira su index.html y su CSS para ver cómo armaron esas secciones:')
+    repos.forEach((r) => lines.push(`- ${r}`))
+  }
+  lines.push(
+    '',
+    'Qué NO copiar de los sitios de referencia (son de otra marca): textos, fotos, logos, nombres de clientes, precios,',
+    'IDs de Meta Pixel o Google Analytics, links de Cal.com o WhatsApp, funciones de Netlify, tracking.js ni archivos de',
+    'fuentes. La tipografía Izmir de Graphica es de licencia paga: usa Poppins en su lugar. Todo el contenido sale del',
+    'WIREFRAME de arriba y de este documento.',
+    'Si no puedes abrir enlaces, no inventes lo que dicen: guíate por las descripciones de animación de cada bloque, que ya',
+    'vienen tomadas de esos archivos.',
+    ''
+  )
+  return lines.join('\n')
+}
+
+const VIDEO_RULE =
+  'Aplica a todo bloque con un clip (VSL, Video destacado): el video arranca solo cuando entra en el viewport (IntersectionObserver, threshold 0.2) y se pausa al salir. Si el navegador bloquea el autoplay, arranca con el primer toque/clic del usuario. Documentado una sola vez acá — no repetir esta lógica bloque por bloque.'
+
+function visibleFields(schema, props) {
+  return schema.fields.filter((f) => !f.showIf || f.showIf(props))
+}
+
+function formatPropValue(field, value) {
+  if (field.type === 'toggle') return value ? 'sí' : 'no'
+  if (field.type === 'repeatable') return value.map((v, i) => `\n     ${i + 1}. ${v}`).join('')
+  if (field.type === 'image') return value || '(sin link de imagen todavía)'
+  if (field.type === 'imageList') {
+    return value.map((v, i) => `\n     ${i + 1}. ${v || '(sin link de imagen todavía)'}`).join('')
+  }
+  if (field.type === 'select') {
+    const opt = field.options?.find((o) => o.value === value)
+    return opt ? opt.label : value
+  }
+  return value || '(vacío)'
+}
+
+// Junta todos los links de imagen (Cloudinary u otra URL) de todos los
+// bloques, en el orden en que aparecen en el canvas, con un nombre claro
+// para cada uno — así el prompt ya trae las imágenes puestas y ordenadas
+// en vez de que el modelo tenga que inventar de dónde sacarlas.
+function buildImageAssetsSection(blocks) {
+  const rows = []
+  blocks.forEach((block, blockIndex) => {
+    const schema = BLOCK_SCHEMA[block.type]
+    visibleFields(schema, block.props).forEach((field) => {
+      if (field.type === 'image') {
+        const url = block.props[field.key]
+        if (url) rows.push(`${rows.length + 1}. ${schema.label} #${blockIndex + 1} — ${field.label}: ${url}`)
+      } else if (field.type === 'imageList') {
+        const urls = block.props[field.key] || []
+        urls.forEach((url, i) => {
+          if (url) rows.push(`${rows.length + 1}. ${schema.label} #${blockIndex + 1} — ${field.label} (${i + 1}): ${url}`)
+        })
+      }
+    })
+  })
+  if (rows.length === 0) return null
+  return [
+    '## Imágenes (usar estos links tal cual, en este orden, para cada elemento)',
+    'Cada imagen de abajo ya tiene su link real (Cloudinary u otro hosting). Usalas exactamente en el `src`',
+    'del elemento que indica su nombre — no inventes ni reemplaces estos links por placeholders.',
+    '',
+    ...rows,
+    '',
+  ].join('\n')
+}
+
+function animationLine(block) {
+  if (block.animationOverride) {
+    return getAnimationOverrideDescription(block.animationOverride) ?? getAnimationSuggestion(block.type)
+  }
+  return block.refAnimation ?? getAnimationSuggestion(block.type)
+}
+
+function surfaceLine(block) {
+  return block.surface && SURFACE_PROMPT[block.surface] ? SURFACE_PROMPT[block.surface] : 'el fondo general de la página'
+}
+
+function buildWireframeSection(blocks) {
+  const lines = ['# WIREFRAME', '']
+  blocks.forEach((block, i) => {
+    const schema = BLOCK_SCHEMA[block.type]
+    lines.push(`${i + 1}. ${schema.label}${block.variant ? ` (variante: ${schema.variantLabels?.[block.variant] ?? block.variant})` : ''}`)
+    visibleFields(schema, block.props).forEach((field) => {
+      lines.push(`   - ${field.label}: ${formatPropValue(field, block.props[field.key])}`)
+    })
+    lines.push(`   - fondo de la sección: ${surfaceLine(block)}`)
+    lines.push(`   - acento: ${block.accentOverride ? `propio (${block.accentOverride})` : 'usa el tema global'}`)
+    lines.push(`   - bordes: ${block.radiusOverride ? `propios (${block.radiusOverride})` : 'usa el tema global'}`)
+    lines.push('')
+  })
+  return lines.join('\n')
+}
+
+// Línea de evento para un botón concreto: usa lo que el alumno eligió en el
+// formulario de export si hay algo cargado; si lo dejó en "omitir", cae en
+// la nota genérica del embudo (misma lógica de siempre).
+function eventLineForRow(rowKey, trackingConfig) {
+  const entry = trackingConfig?.events?.[rowKey]
+  if (!entry || entry.type === 'omit' || !entry.value) return null
+  if (entry.type === 'standard') {
+    const ev = STANDARD_EVENTS.find((e) => e.value === entry.value)
+    return `Evento de este botón: \`${entry.value}\`${ev ? ` — ${ev.label}` : ''}.`
+  }
+  return `Evento de este botón: \`${entry.value}\` (evento personalizado, snake_case).`
+}
+
+// Precios: cada plan (tarjetas o tabla comparativa) ya tiene su propio
+// nombre/precio/moneda cargado en props.tiers — el export lee eso solo en
+// vez de pedirle al alumno que tipee value/currency a mano por cada botón
+// en el formulario de tracking.
+function pricingTierLines(block) {
+  if (block.type !== 'pricing') return []
+  if (!['tarjetas-precio-exacto', 'tabla-comparativa'].includes(block.variant)) return []
+  return block.props.tiers.map((raw, i) => {
+    const [name, price, currency] = parseRow(raw, 3)
+    return `Evento del plan "${name || `Plan ${i + 1}`}": \`InitiateCheckout\` con value=${price || '(sin precio cargado)'}, currency=${currency || '(sin moneda cargada)'} — tomado directo del plan, no lo tipees a mano.`
+  })
+}
+
+// Addons: cada extra trae su propio evento en la 4ta columna de la fila
+// ("Título | Texto | Texto del botón | evento"), porque cada botón de add-on
+// necesita su propio evento de tracking (se agregan al pedido, no compiten
+// entre sí como los planes de Precios).
+function addonsEventLines(block) {
+  if (block.type !== 'addons') return []
+  return block.props.extras
+    .map((raw, i) => {
+      const [title, , , event] = parseRow(raw, 4)
+      if (!event) return null
+      return `Evento del extra "${title || `Extra ${i + 1}`}": \`${event}\`.`
+    })
+    .filter(Boolean)
+}
+
+function buildMasterPromptSection(state, trackingConfig) {
+  const { blocks } = state.canvas
+  const { theme } = state
+  const hasVideo = blocks.some((b) => b.type === 'videoBanda' || b.type === 'vsl')
+
+  const lines = [
+    '# PROMPT PARA GENERAR EL HTML DE LA LANDING',
+    '',
+    'Eres un desarrollador front-end. Con la información de abajo vas a construir esta landing page en HTML, CSS y',
+    'JavaScript, responsive y lista para publicar. Todo lo que necesitas (diseño, contenido y tracking) está en este',
+    'documento. Primero lees el plan de trabajo y lo sigues en orden.',
+    '',
+    buildWorkflowSection({ funnelId: state.wizard.funnelId, hasPixel: Boolean(trackingConfig?.pixelId) }),
+    '## Sistema de diseño (aplicar a TODA la página, no solo a un bloque)',
+    `- Tipografía de títulos: ${theme.headingFont}. ${
+      theme.headingFont.includes('Working')
+        ? 'Working es la display de Marketographers y no está en Google Fonts: si no tienes el archivo de la fuente, usa Poppins 500 con interletrado -0.02em.'
+        : 'Importar la fuente real (Google Fonts) si no es del sistema.'
+    }`,
+    `- Tipografía de cuerpo: ${theme.bodyFont}. Importar la fuente real (Google Fonts) si no es del sistema.`,
+    `- Color primario (fondos de énfasis, footer, CTA final, secciones de contraste): ${theme.primaryColor}`,
+    `- Color del texto sobre el primario: ${theme.primaryTextColor ?? theme.backgroundColor}`,
+    `- Color de fondo general: ${theme.backgroundColor}`,
+    `- Color de texto: ${theme.textColor}`,
+    `- Color de acento (botones, links, detalles clave): ${theme.accentColor}. Úsalo en TODOS los CTAs de la página, no solo en uno.`,
+    `- Color del texto sobre el acento (texto de los botones): ${theme.accentTextColor}.`,
+    `- Radio de bordes por defecto: ${theme.radius} (recto ≈4px / redondeado ≈14px / muy redondeado ≈999px — aplícalo en botones, tarjetas e inputs).`,
+    `- Escala de tamaño de texto: ${Math.round(theme.fontScale * 100)}% del tamaño base de cada elemento (100% = tamaños estándar dados en cada bloque abajo).`,
+    '- Texto entre **así** va en negrita, *así* en itálica, __así__ subrayado.',
+    theme.styleId === 'graphica'
+      ? '- Texto entre ~~así~~ es una "palabra clave": mismo peso que el título, con un subrayado grueso del color de acento detrás de la parte baja de las letras (como un resaltador). Sobre fondos oscuros pasa a color de acento sin subrayado.'
+      : theme.styleId === 'marketographers'
+        ? '- Texto entre ~~así~~ es una "palabra clave": misma tipografía del título, en color de acento, sin itálica.'
+        : '- Texto entre ~~así~~ es una "palabra clave": tipografía de título en itálica, color de acento (igual que en marketographers.com).',
+    '- Texto entre ^^así^^ es una "palabra clave" con efecto glow: color de acento + resplandor (text-shadow) alrededor del texto.',
+    '- Respeta prefers-reduced-motion: con movimiento reducido quedan solo los fundidos de opacidad, sin desplazamientos, parallax ni conteos.',
+    '',
+    buildReferenceSection(theme.styleId, blocks),
+  ]
+
+  if (hasVideo) {
+    lines.push('## Regla de video', VIDEO_RULE, '')
+  }
+
+  const imageAssets = buildImageAssetsSection(blocks)
+  if (imageAssets) lines.push(imageAssets, '')
+
+  blocks.forEach((block, i) => {
+    const schema = BLOCK_SCHEMA[block.type]
+    const heading = getHeadingLevel(block.type)
+    const alt = getAltNote(block.type)
+    lines.push(`## ${i + 1}. ${schema.label}`)
+    lines.push(`1. Layout/variante: ${block.variant ? (schema.variantLabels?.[block.variant] ?? block.variant) : 'única (sin variantes)'}`)
+    lines.push(`2. Animación: ${animationLine(block)}`)
+    if (block.sourceRepo) lines.push(`   Inspirada en una sección de ${block.sourceRepo}: toma su estructura, no sus textos ni fotos. Los corchetes "[Inspirado en: ...]" son una guía de qué decir, se reescriben con la voz de esta marca.`)
+    lines.push(`3. SEO: ${heading ? `título de esta sección en \`${heading}\`.` : 'sin encabezado de sección.'}${alt ? ` ${alt}` : ''}`)
+    lines.push(`4. Responsive (celular vs escritorio): ${getResponsiveNote(block.type)}`)
+    lines.push(`5. Contenido real a usar (usa este texto tal cual; lo que esté entre corchetes [así] es una guía: pregúntale al usuario su versión o escribe una propuesta en su voz y márcala para que la revise; si está vacío, genera un ejemplo creíble):`)
+    visibleFields(schema, block.props).forEach((field) => {
+      lines.push(`   - ${field.label}: ${formatPropValue(field, block.props[field.key])}`)
+    })
+    lines.push(`   - Fondo de esta sección: ${surfaceLine(block)}`)
+    lines.push(`   - Acento de este bloque: ${block.accentOverride ? `${block.accentOverride} (distinto al del resto de la página)` : 'el acento general de arriba'}`)
+    lines.push(`   - Bordes de este bloque: ${block.radiusOverride ? `${block.radiusOverride} (distinto al del resto de la página)` : 'el radio general de arriba'}`)
+
+    const prefixes = CTA_ACTION_PREFIXES[block.type]
+    if (prefixes) {
+      prefixes.forEach((prefix) => {
+        const rowKey = `${block.id}:${prefix || 'main'}`
+        const line = eventLineForRow(rowKey, trackingConfig)
+        if (line) lines.push(`   - ${line}`)
+      })
+    }
+    pricingTierLines(block).forEach((line) => lines.push(`   - ${line}`))
+    addonsEventLines(block).forEach((line) => lines.push(`   - ${line}`))
+
+    lines.push('')
+  })
+
+  lines.push('## Tracking')
+  const tracking = buildTrackingSection(state.wizard.funnelId)
+  if (tracking) {
+    lines.push(`**${tracking.title}**`)
+    tracking.lines.forEach((l) => lines.push(`- ${l}`))
+    lines.push('')
+  }
+
+  const pixelSnippet = buildPixelSnippet(trackingConfig?.pixelId)
+  const ga4Snippet = buildGa4Snippet(trackingConfig?.ga4Id)
+  if (pixelSnippet || ga4Snippet) {
+    lines.push(TRACKING_REMINDER_WITH_PIXEL)
+    lines.push('')
+    lines.push('Código real a pegar en el `<head>`, antes de `</head>`:')
+    lines.push('```html')
+    if (pixelSnippet) lines.push(pixelSnippet)
+    if (pixelSnippet && ga4Snippet) lines.push('')
+    if (ga4Snippet) lines.push(ga4Snippet)
+    lines.push('```')
+  } else {
+    lines.push(TRACKING_REMINDER_NO_PIXEL)
+  }
+
+  return lines.join('\n')
+}
+
+export function buildExport(state, trackingConfig) {
+  const { blocks } = state.canvas
+  if (blocks.length === 0) return 'El canvas está vacío: agrega al menos un bloque antes de exportar.'
+
+  return [buildWireframeSection(blocks), '', '---', '', buildMasterPromptSection(state, trackingConfig)].join('\n')
+}
+
+export function useExport() {
+  return { buildExport }
+}

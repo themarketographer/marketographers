@@ -1,0 +1,557 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: 'Working';
+  src: url('/assets/fonts/Working-400.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Sistema de diseño "The Marketographers": tokens del shell de la herramienta.
+   Noche es el tema por defecto (igual que el sitio) y Día se activa con
+   data-theme="light". La clave de localStorage mk-theme es la misma del sitio. */
+:root {
+  /* Mismos valores que marketographers.com y las otras MarkeTools:
+     fondo #0c0c0c, superficies #151515 / #1d1d1d y bordes translúcidos. */
+  --app-bg: #0c0c0c;
+  --app-surface: #151515;
+  --app-raised: #1d1d1d;
+  --app-hover: #222222;
+  --app-ink: #f8f8f8;
+  --app-muted: #b3b3b3;
+  --app-border: rgba(255, 255, 255, 0.1);
+  --app-border-strong: rgba(255, 255, 255, 0.18);
+  --app-stage: #111111;
+  --app-dot: rgba(255, 255, 255, 0.06);
+  --app-glass: rgba(21, 21, 21, 0.78);
+  --app-accent: #fddc5b;
+  --app-accent-ink: #181818;
+  --app-ok: #2fbf71;
+  --app-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --app-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  color-scheme: dark;
+}
+:root[data-theme='light'] {
+  --app-bg: #f8f8f8;
+  --app-surface: #ffffff;
+  --app-raised: #ffffff;
+  --app-hover: #efefef;
+  --app-ink: #181818;
+  --app-muted: #5c5c5c;
+  --app-border: rgba(24, 24, 24, 0.1);
+  --app-border-strong: rgba(24, 24, 24, 0.2);
+  --app-stage: #ececea;
+  --app-dot: rgba(24, 24, 24, 0.07);
+  --app-glass: rgba(255, 255, 255, 0.8);
+  --app-shadow: 0 8px 24px rgba(24, 24, 24, 0.08);
+  color-scheme: light;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--app-bg);
+  color: var(--app-ink);
+  font-family: 'Poppins', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Foco de teclado: anillo sólido de 2px en ink (el accent no da contraste). */
+:focus-visible {
+  outline: 2px solid var(--app-ink);
+  outline-offset: 2px;
+}
+
+/* Campos del shell (paneles, modales, buscador). Quedan fuera los que viven
+   dentro del canvas, que pertenecen a la landing del alumno. */
+input:not([type='range']):not([type='checkbox']):not([type='color']):not([type='radio']):not([data-font-scale] *),
+select:not([data-font-scale] *),
+textarea:not([data-font-scale] *) {
+  background: var(--app-surface);
+  color: var(--app-ink);
+  border-color: var(--app-border);
+}
+input::placeholder:not([data-font-scale] *),
+textarea::placeholder:not([data-font-scale] *) {
+  color: var(--app-muted);
+}
+
+.mk-wordmark {
+  font-family: 'Working', 'Poppins', system-ui, sans-serif;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  color: var(--app-ink);
+}
+.mk-wordmark i {
+  font-style: normal;
+  color: var(--app-accent);
+}
+:root[data-theme='light'] .mk-wordmark i {
+  color: #8a6a00;
+}
+
+/* Elevación al pasar el mouse y pulsación, solo con puntero fino. */
+.mk-press {
+  transition: transform 120ms var(--app-ease), box-shadow 220ms var(--app-ease), background-color 220ms var(--app-ease);
+}
+.mk-press:active {
+  transform: scale(0.97);
+}
+@media (hover: hover) and (pointer: fine) {
+  .mk-press:hover {
+    box-shadow: var(--app-shadow);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mk-press {
+    transition: none;
+  }
+}
+
+.font-heading-app {
+  font-family: 'Poppins', system-ui, sans-serif;
+}
+.font-display-app {
+  font-family: 'Working', 'Poppins', system-ui, sans-serif;
+  letter-spacing: -0.02em;
+}
+
+/* Estilo de palabra clave: dos marcadores independientes, usables juntos en
+   el mismo texto — ~~así~~ para tipografía elegante, ^^así^^ para glow. */
+.kw-elegant {
+  font-family: var(--font-heading);
+  font-style: italic;
+  color: var(--color-accent);
+}
+.kw-glow {
+  color: var(--color-accent);
+  text-shadow: 0 0 10px color-mix(in srgb, var(--color-accent) 70%, transparent), 0 0 2px var(--color-accent);
+}
+
+/* Animaciones de entrada, usadas por la pestaña Animación tanto para el
+   preview en vivo sobre el bloque seleccionado como conceptualmente en el
+   export (los nombres coinciden con data/animationOptions.js). */
+@keyframes preview-fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes preview-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes preview-zoom-in {
+  from { opacity: 0; transform: scale(0.94); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes preview-slide-left {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes preview-slide-right {
+  from { opacity: 0; transform: translateX(-40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.preview-anim-fade-up { animation: preview-fade-up 700ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.preview-anim-fade-in { animation: preview-fade-in 700ms ease both; }
+.preview-anim-zoom-in { animation: preview-zoom-in 700ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.preview-anim-slide-left { animation: preview-slide-left 700ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.preview-anim-slide-right { animation: preview-slide-right 700ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* Escala de texto (theme.fontScale), aplicada solo dentro del canvas — ver
+   Canvas.jsx, que pone data-font-scale + --font-scale en el contenedor de la
+   landing. Reescala las utilidades de Tailwind que usan los bloques, sin
+   tener que tocar cada componente para agregar tamaños personalizables. */
+[data-font-scale] .text-xs {
+  font-size: calc(0.75rem * var(--font-scale, 1));
+}
+[data-font-scale] .text-sm {
+  font-size: calc(0.875rem * var(--font-scale, 1));
+}
+[data-font-scale] .text-base {
+  font-size: calc(1rem * var(--font-scale, 1));
+}
+[data-font-scale] .text-lg {
+  font-size: calc(1.125rem * var(--font-scale, 1));
+}
+[data-font-scale] .text-xl {
+  font-size: calc(1.25rem * var(--font-scale, 1));
+}
+[data-font-scale] .text-2xl {
+  font-size: calc(1.5rem * var(--font-scale, 1));
+}
+[data-font-scale] .text-3xl {
+  font-size: calc(1.875rem * var(--font-scale, 1));
+}
+[data-font-scale] .text-4xl {
+  font-size: calc(2.25rem * var(--font-scale, 1));
+}
+
+
+/* ==========================================================================
+   Capa de interfaz v2: movimiento y componentes del shell.
+   Una sola curva (la del sistema Marketographers), tres duraciones:
+   120ms al tocar, 220ms en hover y cambios de estado, entradas más largas.
+   Todo se mueve con transform, opacity, filter o clip; nunca con layout.
+   ========================================================================== */
+:root {
+  --t-press: 120ms;
+  --t-state: 220ms;
+}
+::selection { background: var(--app-accent); color: var(--app-accent-ink); }
+* { scrollbar-width: thin; scrollbar-color: var(--app-border-strong) transparent; }
+input, textarea { caret-color: var(--app-accent); }
+:root[data-theme='light'] input, :root[data-theme='light'] textarea { caret-color: var(--app-ink); }
+
+/* Campos del shell: foco con anillo dorado suave, como en Link de WhatsApp */
+input:not([type='range']):not([type='checkbox']):not([type='color']):not([type='radio']):not([data-font-scale] *):focus-visible,
+textarea:not([data-font-scale] *):focus-visible,
+select:not([data-font-scale] *):focus-visible {
+  outline: none;
+  border-color: var(--app-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--app-accent) 24%, transparent);
+}
+
+/* ---------- Entradas ---------- */
+@keyframes wf-rise {
+  from { opacity: 0; transform: translateY(14px); filter: blur(6px); }
+}
+.wf-rise { animation: wf-rise 560ms var(--app-ease) backwards; animation-delay: calc(var(--i, 0) * 60ms); }
+
+@keyframes wf-swap { from { opacity: 0; transform: translateY(6px); } }
+.wf-panel-swap { animation: wf-swap var(--t-state) var(--app-ease); }
+
+/* ---------- Wizard ---------- */
+.wf-option {
+  border-color: var(--app-border);
+  background: var(--app-surface);
+  color: var(--app-ink);
+  transition: transform var(--t-press) var(--app-ease), background-color var(--t-state) var(--app-ease), border-color var(--t-state) var(--app-ease), box-shadow var(--t-state) var(--app-ease);
+}
+.wf-option-arrow { color: var(--app-muted); transition: transform var(--t-state) var(--app-ease), color var(--t-state); }
+.wf-option:active { transform: scale(0.97); }
+@media (hover: hover) and (pointer: fine) {
+  .wf-option:hover { background: var(--app-raised); border-color: var(--app-border-strong); box-shadow: var(--app-shadow); }
+  .wf-option:hover .wf-option-arrow { transform: translateX(3px); color: var(--app-accent); }
+}
+.wf-ghost-btn {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 12px;
+  border-radius: 999px; font-size: 12px; font-weight: 500; color: var(--app-muted);
+  transition: color var(--t-state), background-color var(--t-state), transform var(--t-press) var(--app-ease);
+}
+.wf-ghost-btn:hover { color: var(--app-ink); background: var(--app-hover); }
+.wf-ghost-btn:active { transform: scale(0.97); }
+.wf-step-track { width: 30px; height: 3px; border-radius: 2px; background: var(--app-border); overflow: hidden; }
+.wf-step-fill { display: block; height: 100%; background: var(--app-accent); transform-origin: left; transition: transform 520ms var(--app-ease); }
+
+/* Tarjetas de estilo (wizard y lienzo vacío) */
+.wf-style-card {
+  display: block; padding: 10px 10px 14px; border-radius: 22px; text-align: left;
+  border: 1px solid var(--app-border); background: var(--app-surface);
+  transition: transform var(--t-state) var(--app-ease), box-shadow var(--t-state) var(--app-ease), border-color var(--t-state);
+}
+.wf-style-card:active { transform: scale(0.98); }
+.wf-style-card--canvas {
+  color: var(--color-text);
+  border-color: color-mix(in srgb, var(--color-text) 14%, transparent);
+  background: color-mix(in srgb, var(--color-text) 4%, transparent);
+}
+@media (hover: hover) and (pointer: fine) {
+  .wf-style-card:hover { transform: translateY(-3px); box-shadow: 0 24px 48px -24px rgba(0, 0, 0, 0.6); border-color: var(--app-border-strong); }
+  .wf-style-card:hover .wf-thumb-scroll { transform: translateY(-46%); }
+}
+.wf-thumb {
+  position: relative; aspect-ratio: 4 / 3; border-radius: 14px; overflow: hidden;
+  box-shadow: inset 0 0 0 1px rgba(127, 127, 127, 0.18);
+}
+/* Al pasar el mouse la miniatura "scrollea" la landing: muestra que debajo
+   del hero hay secciones que alternan fondos, igual que el sitio real. */
+.wf-thumb-scroll { transition: transform 1600ms cubic-bezier(0.65, 0, 0.35, 1); }
+.wf-thumb-hero { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 9px; padding: 10px 12px 14px; }
+.wf-thumb-nav { align-self: stretch; display: flex; align-items: center; justify-content: space-between; padding: 4px 6px 4px 8px; border-radius: 999px; }
+.wf-thumb-nav i { width: 26px; height: 4px; border-radius: 2px; opacity: 0.7; }
+.wf-thumb-nav b { width: 18px; height: 7px; border-radius: 999px; }
+.wf-thumb-title { font-size: 17px; line-height: 1.02; max-width: 9ch; }
+.wf-thumb-mark { font-style: normal; background: linear-gradient(var(--hl), var(--hl)) 0 88% / 100% 0.36em no-repeat; }
+.wf-thumb-btn { font: 600 8px/1 'Poppins', sans-serif; padding: 5px 9px; border-radius: 999px; }
+.wf-thumb-sec { height: 30px; padding: 9px 12px; display: flex; flex-direction: column; gap: 4px; }
+.wf-thumb-sec i { display: block; width: 58%; height: 3px; border-radius: 2px; opacity: 0.55; }
+.wf-thumb-blank { display: flex; flex-direction: column; gap: 8px; padding: 14px; border: 1.5px dashed var(--app-border-strong); box-shadow: none; }
+.wf-style-card--canvas .wf-thumb-blank { border-color: color-mix(in srgb, var(--color-text) 25%, transparent); }
+.wf-thumb-blank span { height: 22%; border-radius: 6px; background: currentColor; opacity: 0.07; }
+
+/* ---------- Paneles laterales ---------- */
+.wf-side { background: var(--app-bg); border-color: var(--app-border); }
+.wf-side-left { border-color: var(--app-border); }
+.wf-panel {
+  width: 18rem; min-height: 0; flex: 1; overflow-y: auto; padding: 18px 18px 32px;
+  background: var(--app-bg); border-left: 1px solid var(--app-border);
+}
+.wf-panel button:not(:disabled) { transition: transform var(--t-press) var(--app-ease), background-color var(--t-state), border-color var(--t-state), color var(--t-state); }
+.wf-panel button:not(:disabled):active { transform: scale(0.97); }
+.wf-note { border-radius: 14px; padding: 12px 14px; font-size: 12px; line-height: 1.55; background: var(--app-surface); color: var(--app-muted); border: 1px solid var(--app-border); }
+.wf-btn-primary {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 42px; padding: 0 18px;
+  border-radius: 999px; background: var(--app-accent); color: var(--app-accent-ink); font-size: 13px; font-weight: 600;
+  transition: transform var(--t-press) var(--app-ease), box-shadow var(--t-state) var(--app-ease);
+}
+.wf-btn-primary:active { transform: scale(0.97); }
+@media (hover: hover) and (pointer: fine) { .wf-btn-primary:hover { box-shadow: var(--app-shadow); } }
+
+.wf-search {
+  display: flex; align-items: center; gap: 8px; height: 38px; padding: 0 12px; border-radius: 12px;
+  background: var(--app-surface); border: 1px solid var(--app-border); color: var(--app-muted);
+  transition: border-color var(--t-state), box-shadow var(--t-state);
+}
+.wf-search:focus-within { border-color: var(--app-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--app-accent) 22%, transparent); }
+.wf-search input { flex: 1; min-width: 0; height: 100%; border: 0 !important; background: transparent !important; font-size: 13px; color: var(--app-ink); outline: none; box-shadow: none !important; }
+
+.wf-group-btn {
+  display: flex; width: 100%; align-items: center; gap: 8px; padding: 9px 8px 7px; border-radius: 8px;
+  font-size: 12px; font-weight: 600; color: var(--app-ink);
+}
+.wf-group-btn:hover { background: var(--app-hover); }
+.wf-chev { color: var(--app-muted); transition: transform var(--t-state) var(--app-ease); }
+.wf-chev.is-open { transform: rotate(90deg); }
+/* Acordeón de la paleta: anima la altura con grid-template-rows (0fr → 1fr),
+   sin medir alturas en JS. */
+.wf-collapse { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 260ms var(--app-ease); }
+.wf-collapse.is-open { grid-template-rows: 1fr; }
+.wf-collapse-inner { min-height: 0; overflow: hidden; }
+.wf-collapse:not(.is-open) .wf-pal-item { visibility: hidden; }
+
+.wf-pal-item {
+  display: flex; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 10px;
+  font-size: 13px; font-weight: 500; color: var(--app-ink); cursor: grab; user-select: none;
+  transition: background-color var(--t-state), transform var(--t-press) var(--app-ease);
+}
+.wf-pal-item:active { cursor: grabbing; transform: scale(0.98); }
+.wf-pal-item .wf-glyph { color: var(--app-ink); border-radius: 6px; background: var(--app-surface); box-shadow: inset 0 0 0 1px var(--app-border); transition: transform var(--t-state) var(--app-ease); }
+.wf-pal-add {
+  display: grid; place-items: center; width: 24px; height: 24px; border-radius: 999px;
+  background: var(--app-accent); color: var(--app-accent-ink);
+  opacity: 0; transform: scale(0.8); transition: opacity var(--t-state), transform var(--t-state) var(--app-ease);
+}
+.wf-pal-item:focus-visible .wf-pal-add { opacity: 1; transform: none; }
+@media (hover: hover) and (pointer: fine) {
+  .wf-pal-item:hover { background: var(--app-hover); }
+  .wf-pal-item:hover .wf-glyph { transform: translateY(-1px); }
+  .wf-pal-item:hover .wf-pal-add { opacity: 1; transform: none; }
+}
+@media (hover: none) { .wf-pal-add { opacity: 1; transform: none; background: var(--app-hover); color: var(--app-ink); } }
+
+.wf-handle {
+  display: flex; width: 18px; flex-shrink: 0; align-items: flex-start; justify-content: center; padding-top: 14px;
+  background: var(--app-bg); color: var(--app-muted); border-inline: 1px solid var(--app-border);
+  transition: background-color var(--t-state), color var(--t-state);
+}
+.wf-handle:hover { background: var(--app-hover); color: var(--app-ink); }
+.wf-handle svg { transition: transform var(--t-state) var(--app-ease); }
+
+/* Pestañas: una píldora que se desliza */
+.wf-tabs {
+  position: relative; display: grid; grid-template-columns: repeat(var(--n), 1fr); padding: 3px;
+  border-radius: 999px; background: var(--app-surface); border: 1px solid var(--app-border);
+}
+.wf-tabs-pill {
+  position: absolute; top: 3px; bottom: 3px; left: 3px; width: calc((100% - 6px) / var(--n));
+  border-radius: 999px; background: var(--app-raised); box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset, 0 6px 16px -8px rgba(0, 0, 0, 0.5);
+  transform: translateX(calc(var(--x) * 100%)); transition: transform 280ms var(--app-ease);
+}
+:root[data-theme='light'] .wf-tabs { background: #ececec; }
+:root[data-theme='light'] .wf-tabs-pill { box-shadow: 0 4px 12px -6px rgba(24, 24, 24, 0.25); }
+.wf-tabs button { position: relative; z-index: 1; padding: 7px 4px; font-size: 12px; font-weight: 500; color: var(--app-muted); transition: color var(--t-state); }
+.wf-tabs button[aria-selected='true'] { color: var(--app-ink); }
+
+/* Ajustes de forma en presets */
+.wf-preset {
+  position: relative; display: block; padding: 9px 10px; border-radius: 12px; text-align: left;
+  box-shadow: inset 0 0 0 1px rgba(127, 127, 127, 0.22);
+  transition: transform var(--t-press) var(--app-ease), box-shadow var(--t-state);
+}
+.wf-preset i { display: block; width: 10px; height: 10px; border-radius: 999px; }
+.wf-preset--ref { min-height: 84px; padding: 12px; border-radius: 16px; }
+.wf-preset--ref i { width: 14px; height: 14px; box-shadow: 0 0 0 1px rgba(127, 127, 127, 0.3); }
+.wf-preset.is-active { box-shadow: 0 0 0 2px var(--app-accent); }
+.wf-preset-check { position: absolute; top: 10px; right: 10px; }
+@media (hover: hover) and (pointer: fine) { .wf-preset:hover { transform: translateY(-1px); } }
+
+/* Estado vacío de paneles: el cursor entra y toca la sección una vez */
+.wf-empty-art { color: var(--app-ink); }
+.wf-empty-pick { stroke-dasharray: 260; stroke-dashoffset: 260; animation: wf-draw 900ms var(--app-ease) 500ms forwards; }
+.wf-empty-cursor { animation: wf-cursor 900ms var(--app-ease) backwards; transform-box: fill-box; }
+@keyframes wf-draw { to { stroke-dashoffset: 0; } }
+@keyframes wf-cursor { from { opacity: 0; transform: translate(18px, 14px); } }
+.wf-keys { display: grid; gap: 6px; font-size: 11px; color: var(--app-muted); }
+.wf-keys div { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.wf-keys dd { margin: 0; }
+.wf-keys kbd {
+  display: inline-block; min-width: 22px; padding: 2px 6px; border-radius: 6px; text-align: center;
+  font: 500 10px/1.4 'Poppins', sans-serif; color: var(--app-ink);
+  background: var(--app-surface); box-shadow: inset 0 -1px 0 var(--app-border-strong), inset 0 0 0 1px var(--app-border);
+}
+
+/* ---------- Pestaña Inspiración ---------- */
+.wf-insp-h { margin: 18px 8px 6px; font-size: 12px; font-weight: 600; color: var(--app-ink); }
+.wf-insp-note { margin: 0 8px; font-size: 11px; line-height: 1.5; color: var(--app-muted); }
+.wf-insp-error { margin-top: 8px; padding: 9px 11px; border-radius: 10px; font-size: 11px; line-height: 1.5; color: var(--app-ink); background: color-mix(in srgb, #e5484d 16%, transparent); border: 1px solid color-mix(in srgb, #e5484d 40%, transparent); }
+.wf-source {
+  display: flex; width: 100%; align-items: center; gap: 10px; padding: 8px; border-radius: 12px;
+  font-size: 13px; font-weight: 500; color: var(--app-ink);
+  transition: background-color var(--t-state), transform var(--t-press) var(--app-ease);
+}
+button.wf-source:active:not(:disabled) { transform: scale(0.98); }
+.wf-source:disabled { opacity: 0.6; }
+.wf-source-dots { display: flex; flex-shrink: 0; }
+.wf-source-dots i { width: 16px; height: 16px; border-radius: 999px; box-shadow: 0 0 0 1.5px var(--app-bg), inset 0 0 0 1px rgba(127, 127, 127, 0.3); }
+.wf-source-dots i + i { margin-left: -6px; }
+.wf-source-avatar { display: grid; place-items: center; width: 30px; height: 30px; flex-shrink: 0; border-radius: 999px; font-size: 12px; font-weight: 600; background: var(--app-surface); box-shadow: inset 0 0 0 1px var(--app-border); }
+.wf-source-arrow { color: var(--app-muted); flex-shrink: 0; transition: transform var(--t-state) var(--app-ease), color var(--t-state); }
+.wf-source-x { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 999px; color: var(--app-muted); opacity: 0; transition: opacity var(--t-state), background-color var(--t-state); }
+.wf-source-x:focus-visible { opacity: 1; }
+@media (hover: hover) and (pointer: fine) {
+  .wf-source:hover:not(:disabled) { background: var(--app-hover); }
+  .wf-source:hover .wf-source-arrow { transform: translateX(2px); color: var(--app-ink); }
+  .wf-source:hover .wf-source-x { opacity: 1; }
+  .wf-source-x:hover { background: var(--app-surface); color: var(--app-ink); }
+}
+@media (hover: none) { .wf-source-x { opacity: 1; } }
+.wf-chip-btn {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 0 12px 0 8px; border-radius: 999px;
+  font-size: 12px; font-weight: 600; color: var(--app-ink); border: 1px solid var(--app-border-strong);
+  transition: background-color var(--t-state), transform var(--t-press) var(--app-ease);
+}
+.wf-chip-btn i { width: 12px; height: 12px; border-radius: 999px; box-shadow: inset 0 0 0 1px rgba(127, 127, 127, 0.35); }
+.wf-chip-btn i + i { margin-left: -7px; }
+.wf-chip-btn:hover { background: var(--app-hover); }
+.wf-chip-btn:active { transform: scale(0.97); }
+.wf-spin { width: 14px; height: 14px; flex-shrink: 0; border-radius: 999px; border: 2px solid currentColor; border-top-color: transparent; animation: wf-spin 600ms linear infinite; }
+@keyframes wf-spin { to { transform: rotate(360deg); } }
+
+/* ---------- Lienzo ---------- */
+.wf-stage {
+  background-color: var(--app-stage);
+  background-image: radial-gradient(var(--app-dot) 1px, transparent 1.2px);
+  background-size: 18px 18px;
+}
+.wf-page { border-radius: 14px; overflow: clip; box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04), 0 40px 90px -40px rgba(0, 0, 0, 0.75); }
+:root[data-theme='light'] .wf-page { box-shadow: 0 30px 70px -40px rgba(24, 24, 24, 0.35); }
+
+.wf-block { position: relative; cursor: pointer; outline: 2px solid transparent; outline-offset: -2px; transition: outline-color var(--t-state) var(--app-ease), opacity var(--t-state); }
+.wf-block.is-selected { outline-color: var(--app-accent); }
+.wf-block.is-dragging { opacity: 0.3; }
+@media (hover: hover) and (pointer: fine) {
+  .wf-block:not(.is-selected):hover { outline-color: color-mix(in srgb, var(--app-accent) 45%, transparent); }
+}
+.wf-block-bar {
+  position: absolute; z-index: 40; top: 10px; left: 10px; right: 10px;
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;
+  pointer-events: none; opacity: 0; transform: translateY(-4px);
+  transition: opacity 160ms var(--app-ease), transform 160ms var(--app-ease);
+}
+.wf-block:hover > .wf-block-bar, .wf-block.is-selected > .wf-block-bar { opacity: 1; transform: none; }
+.wf-block-bar > * { pointer-events: auto; }
+.wf-block-name, .wf-block-tools {
+  display: inline-flex; align-items: center; border-radius: 999px; color: #f8f8f8;
+  background: rgba(14, 14, 14, 0.86); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 10px 24px -12px rgba(0, 0, 0, 0.6);
+  font: 500 11px/1 'Poppins', sans-serif;
+}
+.wf-block-name { gap: 6px; padding: 7px 11px 7px 8px; cursor: grab; }
+.wf-block-name svg { opacity: 0.55; }
+.wf-block-tools { padding: 3px; gap: 1px; }
+.wf-block-tools button {
+  display: grid; place-items: center; width: 28px; height: 28px; border-radius: 999px; color: #f8f8f8;
+  transition: background-color var(--t-state), color var(--t-state), transform var(--t-press) var(--app-ease);
+}
+.wf-block-tools button:hover:not(:disabled) { background: rgba(255, 255, 255, 0.14); }
+.wf-block-tools button:active:not(:disabled) { transform: scale(0.9); }
+.wf-block-tools button:disabled { opacity: 0.3; cursor: default; }
+.wf-block-tools button.is-danger:hover { background: #e5484d; }
+
+/* Bloque recién agregado: entra desde un desenfoque y el contorno destella */
+@keyframes wf-born {
+  from { opacity: 0; transform: translateY(16px); filter: blur(6px); }
+}
+@keyframes wf-born-ring {
+  0% { outline-color: var(--app-accent); }
+  100% { outline-color: var(--app-accent); }
+}
+.wf-block.is-born { animation: wf-born 480ms var(--app-ease) both, wf-born-ring 700ms linear; }
+
+/* Dock inferior (animaciones + zoom) y aviso de deshacer: vidrio del sitio */
+.wf-dock, .wf-toast {
+  border-radius: 999px; background: var(--app-glass); border: 1px solid var(--app-border);
+  -webkit-backdrop-filter: blur(18px) saturate(160%); backdrop-filter: blur(18px) saturate(160%);
+  box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.wf-dock button { min-width: 30px; height: 30px; border-radius: 999px; transition: background-color var(--t-state), transform var(--t-press) var(--app-ease); }
+.wf-dock button:hover:not(:disabled) { background: var(--app-hover); }
+.wf-dock button:active:not(:disabled) { transform: scale(0.94); }
+.wf-dock-btn { display: inline-flex; align-items: center; gap: 6px; padding: 0 12px; font-size: 12px; font-weight: 600; color: var(--app-ink); }
+.wf-dock-sep { width: 1px; height: 18px; margin: 0 4px; background: var(--app-border-strong); }
+.wf-toast { transition: opacity var(--t-state) var(--app-ease), transform var(--t-state) var(--app-ease); }
+@starting-style { .wf-toast { opacity: 0; transform: translateY(8px); } }
+@media (prefers-reduced-transparency: reduce) {
+  .wf-dock, .wf-toast, .wf-block-name, .wf-block-tools { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--app-surface); }
+}
+
+/* ---------- Estilos de referencia dentro del lienzo ---------- */
+/* "Ver animaciones": cada sección entra con el revelado real de su sitio. */
+@keyframes wf-reveal-base { from { opacity: 0; transform: translateY(24px); } }
+@keyframes wf-reveal-graphica { from { opacity: 0; transform: translateY(26px); filter: blur(8px); } }
+@keyframes wf-reveal-marketographers { from { opacity: 0; transform: translateY(28px); } }
+.wf-page.is-replaying [data-block-id] { animation: wf-reveal-base 900ms var(--app-ease) backwards; animation-delay: calc(var(--i, 0) * 90ms); }
+.wf-page:is([data-style='graphica'], [data-style='inspiracion']).is-replaying [data-block-id] { animation: wf-reveal-graphica 900ms cubic-bezier(0.16, 1, 0.3, 1) backwards; animation-delay: calc(var(--i, 0) * 90ms); }
+.wf-page[data-style='marketographers'].is-replaying [data-block-id] { animation-name: wf-reveal-marketographers; }
+.preview-anim-style-graphica, .preview-anim-style-inspiracion { animation: wf-reveal-graphica 900ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+.preview-anim-style-marketographers { animation: wf-reveal-marketographers 900ms var(--app-ease) both; }
+
+/* Estudio Graphica: titulares de Izmir/Poppins en 700, interletrado cerrado,
+   palabra clave con subrayado amarillo grueso, grano en secciones oscuras. */
+.wf-page:is([data-style='graphica'], [data-style='inspiracion']) [data-block-id] :is(h1, h2) { font-weight: 700; letter-spacing: -0.035em; line-height: 1.06; text-wrap: balance; }
+.wf-page:is([data-style='graphica'], [data-style='inspiracion']) [data-block-id] h1 { font-size: calc(3rem * var(--font-scale, 1)); }
+.wf-page:is([data-style='graphica'], [data-style='inspiracion']) [data-block-id] h2 { font-size: calc(2.2rem * var(--font-scale, 1)); }
+.wf-page:is([data-style='graphica'], [data-style='inspiracion']) .kw-elegant {
+  font-family: inherit; font-style: normal; color: inherit;
+  background: linear-gradient(var(--root-accent), var(--root-accent)) 0 90% / 100% 0.4em no-repeat;
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
+.wf-page:is([data-style='graphica'], [data-style='inspiracion']) [data-surface='contrast'] .kw-elegant { background: none; color: var(--root-accent); }
+.wf-page:is([data-style='graphica'], [data-style='inspiracion']) [data-surface='accent'] .kw-elegant { background-color: transparent; background-image: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)); }
+.wf-page:is([data-style='graphica'], [data-style='inspiracion']) [data-surface='contrast']::after,
+.wf-page:is([data-style='graphica'], [data-style='inspiracion']) [data-surface='accent']::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0.07; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+.wf-page:is([data-style='graphica'], [data-style='inspiracion']) [data-surface='accent'] {
+  background: radial-gradient(900px 520px at 12% -10%, #fff3b8 0, transparent 62%), radial-gradient(800px 560px at 100% 110%, #e3b52a 0, transparent 60%), linear-gradient(160deg, #ffe36e, #ffd43b) !important;
+}
+
+/* Vista de celular: titulares más chicos, como en los sitios reales. */
+.wf-page[data-style][data-preview='mobile'] [data-block-id] h1 { font-size: calc(2.15rem * var(--font-scale, 1)); }
+.wf-page[data-style][data-preview='mobile'] [data-block-id] h2 { font-size: calc(1.65rem * var(--font-scale, 1)); }
+
+/* Fotos y tarjetas: los bloques usan --radius para todo (botones y cajas).
+   En los estilos de referencia los botones siguen en píldora, pero las cajas
+   toman el radio de foto de cada sitio (36px Graphica, 28px Marketographers). */
+.wf-page:is([data-style='graphica'], [data-style='inspiracion']) [data-block-id] [style*='var(--radius)']:not(button) { border-radius: 36px !important; }
+.wf-page[data-style='marketographers'] [data-block-id] [style*='var(--radius)']:not(button) { border-radius: 28px !important; }
+
+/* Marketographers: display Working en 400, palabra clave en amarillo puro. */
+.wf-page[data-style='marketographers'] [data-block-id] :is(h1, h2) { font-weight: 400; letter-spacing: -0.02em; line-height: 1.04; text-wrap: balance; }
+.wf-page[data-style='marketographers'] [data-block-id] h1 { font-size: calc(3.4rem * var(--font-scale, 1)); }
+.wf-page[data-style='marketographers'] [data-block-id] h2 { font-size: calc(2.4rem * var(--font-scale, 1)); }
+.wf-page[data-style='marketographers'] .kw-elegant { font-family: inherit; font-style: normal; color: var(--root-accent); }
+
+@media (prefers-reduced-motion: reduce) {
+  .wf-rise, .wf-panel-swap, .wf-block.is-born, .wf-page.is-replaying [data-block-id], .wf-empty-cursor { animation: wf-fade 200ms ease both !important; }
+  .wf-empty-pick { animation: none; stroke-dashoffset: 0; }
+  .wf-thumb-scroll, .wf-tabs-pill, .wf-collapse, .wf-step-fill { transition: none; }
+  @keyframes wf-fade { from { opacity: 0; } }
+}

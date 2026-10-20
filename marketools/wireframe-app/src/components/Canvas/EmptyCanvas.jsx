@@ -18,8 +18,8 @@ export default function EmptyCanvas({ funnelId }) {
       <p className="wf-rise mt-2 max-w-md text-sm opacity-70" style={{ '--i': 1 }}>
         Carga una landing armada y la cambias a tu gusto, o arrastra bloques desde la izquierda.
       </p>
-      <div className="mt-8 grid w-full max-w-3xl gap-4 text-left sm:grid-cols-3">
-        {Object.values(STYLE_REFS).map((ref, i) => (
+      <div className="mt-8 grid w-full max-w-4xl gap-4 text-left sm:grid-cols-4">
+        {['inspiracion', 'graphica', 'marketographers'].map((id) => STYLE_REFS[id]).map((ref, i) => (
           <button
             key={ref.id}
             type="button"
@@ -31,7 +31,7 @@ export default function EmptyCanvas({ funnelId }) {
             style={{ '--i': i + 2 }}
           >
             <StyleThumb styleId={ref.id} />
-            <span className="mt-3 block px-1 text-sm font-semibold">Estilo {ref.label}</span>
+            <span className="mt-3 block px-1 text-sm font-semibold">{ref.id === 'inspiracion' ? 'Inspiración' : `Estilo ${ref.label}`}</span>
             <span className="mt-0.5 block px-1 text-xs opacity-60">{ref.draft.length} secciones con sus animaciones</span>
           </button>
         ))}
@@ -42,7 +42,7 @@ export default function EmptyCanvas({ funnelId }) {
             dispatch({ type: 'CANVAS_LOAD_FUNNEL_DRAFT' })
           }}
           className="wf-style-card wf-style-card--canvas wf-rise"
-          style={{ '--i': 4 }}
+          style={{ '--i': 5 }}
         >
           <StyleThumb styleId={null} />
           <span className="mt-3 block px-1 text-sm font-semibold">
@@ -51,7 +51,7 @@ export default function EmptyCanvas({ funnelId }) {
           <span className="mt-0.5 block px-1 text-xs opacity-60">Solo la estructura, con el estilo que ya tienes</span>
         </button>
       </div>
-      <p className="wf-rise mt-8 flex items-center gap-2 text-xs opacity-50" style={{ '--i': 5 }}>
+      <p className="wf-rise mt-8 flex items-center gap-2 text-xs opacity-50" style={{ '--i': 6 }}>
         <Icon name="pointer" size={12} />
         Tip: Supr borra el bloque elegido y Ctrl + D lo duplica
       </p>

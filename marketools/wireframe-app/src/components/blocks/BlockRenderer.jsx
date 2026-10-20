@@ -24,6 +24,10 @@ import FormasPagoBlock from './FormasPagoBlock'
 import LeadMagnetBlock from './LeadMagnetBlock'
 import PullQuoteBlock from './PullQuoteBlock'
 import EmbedBlock from './EmbedBlock'
+import {
+  HeroCarouselBlock, HeroVideoBlock, StatementBlock, ScenesBlock, FormatListBlock, CardTrackBlock, BentoBlock,
+  PainMapBlock, WaysBlock, PricingToggleBlock, StepsLineBlock, ObjectionsBlock, AboutArchBlock,
+} from './InspirationBlocks'
 
 const REGISTRY = {
   header: HeaderBlock,
@@ -52,6 +56,19 @@ const REGISTRY = {
   leadMagnet: LeadMagnetBlock,
   pullQuote: PullQuoteBlock,
   embed: EmbedBlock,
+  heroCarousel: HeroCarouselBlock,
+  heroVideo: HeroVideoBlock,
+  statement: StatementBlock,
+  scenes: ScenesBlock,
+  formatList: FormatListBlock,
+  cardTrack: CardTrackBlock,
+  bento: BentoBlock,
+  painMap: PainMapBlock,
+  ways: WaysBlock,
+  pricingToggle: PricingToggleBlock,
+  stepsLine: StepsLineBlock,
+  objections: ObjectionsBlock,
+  aboutArch: AboutArchBlock,
 }
 
 export default function BlockRenderer({ block, previewMode }) {

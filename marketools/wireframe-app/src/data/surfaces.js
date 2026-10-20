@@ -23,6 +23,7 @@ export function surfaceVars(surface, type) {
   if (surface === 'contrast') {
     return {
       background: 'var(--root-primary)',
+      color: 'var(--root-on-primary)',
       '--color-text': 'var(--root-on-primary)',
       '--color-primary': 'color-mix(in srgb, var(--color-on-primary) 9%, var(--root-primary))',
       ...(type === 'header' ? {} : { '--color-bg': 'var(--root-primary)' }),
@@ -31,6 +32,7 @@ export function surfaceVars(surface, type) {
   if (surface === 'accent') {
     return {
       background: 'var(--root-accent)',
+      color: 'var(--root-accent-ink)',
       '--color-text': 'var(--root-accent-ink)',
       '--color-on-primary': 'var(--root-accent-ink)',
       '--color-primary': 'color-mix(in srgb, var(--root-accent-ink) 10%, var(--root-accent))',

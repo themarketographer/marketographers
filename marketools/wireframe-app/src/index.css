@@ -396,6 +396,43 @@ select:not([data-font-scale] *):focus-visible {
   background: var(--app-surface); box-shadow: inset 0 -1px 0 var(--app-border-strong), inset 0 0 0 1px var(--app-border);
 }
 
+/* ---------- Pestaña Inspiración ---------- */
+.wf-insp-h { margin: 18px 8px 6px; font-size: 12px; font-weight: 600; color: var(--app-ink); }
+.wf-insp-note { margin: 0 8px; font-size: 11px; line-height: 1.5; color: var(--app-muted); }
+.wf-insp-error { margin-top: 8px; padding: 9px 11px; border-radius: 10px; font-size: 11px; line-height: 1.5; color: var(--app-ink); background: color-mix(in srgb, #e5484d 16%, transparent); border: 1px solid color-mix(in srgb, #e5484d 40%, transparent); }
+.wf-source {
+  display: flex; width: 100%; align-items: center; gap: 10px; padding: 8px; border-radius: 12px;
+  font-size: 13px; font-weight: 500; color: var(--app-ink);
+  transition: background-color var(--t-state), transform var(--t-press) var(--app-ease);
+}
+button.wf-source:active:not(:disabled) { transform: scale(0.98); }
+.wf-source:disabled { opacity: 0.6; }
+.wf-source-dots { display: flex; flex-shrink: 0; }
+.wf-source-dots i { width: 16px; height: 16px; border-radius: 999px; box-shadow: 0 0 0 1.5px var(--app-bg), inset 0 0 0 1px rgba(127, 127, 127, 0.3); }
+.wf-source-dots i + i { margin-left: -6px; }
+.wf-source-avatar { display: grid; place-items: center; width: 30px; height: 30px; flex-shrink: 0; border-radius: 999px; font-size: 12px; font-weight: 600; background: var(--app-surface); box-shadow: inset 0 0 0 1px var(--app-border); }
+.wf-source-arrow { color: var(--app-muted); flex-shrink: 0; transition: transform var(--t-state) var(--app-ease), color var(--t-state); }
+.wf-source-x { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 999px; color: var(--app-muted); opacity: 0; transition: opacity var(--t-state), background-color var(--t-state); }
+.wf-source-x:focus-visible { opacity: 1; }
+@media (hover: hover) and (pointer: fine) {
+  .wf-source:hover:not(:disabled) { background: var(--app-hover); }
+  .wf-source:hover .wf-source-arrow { transform: translateX(2px); color: var(--app-ink); }
+  .wf-source:hover .wf-source-x { opacity: 1; }
+  .wf-source-x:hover { background: var(--app-surface); color: var(--app-ink); }
+}
+@media (hover: none) { .wf-source-x { opacity: 1; } }
+.wf-chip-btn {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 0 12px 0 8px; border-radius: 999px;
+  font-size: 12px; font-weight: 600; color: var(--app-ink); border: 1px solid var(--app-border-strong);
+  transition: background-color var(--t-state), transform var(--t-press) var(--app-ease);
+}
+.wf-chip-btn i { width: 12px; height: 12px; border-radius: 999px; box-shadow: inset 0 0 0 1px rgba(127, 127, 127, 0.35); }
+.wf-chip-btn i + i { margin-left: -7px; }
+.wf-chip-btn:hover { background: var(--app-hover); }
+.wf-chip-btn:active { transform: scale(0.97); }
+.wf-spin { width: 14px; height: 14px; flex-shrink: 0; border-radius: 999px; border: 2px solid currentColor; border-top-color: transparent; animation: wf-spin 600ms linear infinite; }
+@keyframes wf-spin { to { transform: rotate(360deg); } }
+
 /* ---------- Lienzo ---------- */
 .wf-stage {
   background-color: var(--app-stage);
@@ -470,29 +507,29 @@ select:not([data-font-scale] *):focus-visible {
 @keyframes wf-reveal-graphica { from { opacity: 0; transform: translateY(26px); filter: blur(8px); } }
 @keyframes wf-reveal-marketographers { from { opacity: 0; transform: translateY(28px); } }
 .wf-page.is-replaying [data-block-id] { animation: wf-reveal-base 900ms var(--app-ease) backwards; animation-delay: calc(var(--i, 0) * 90ms); }
-.wf-page[data-style='graphica'].is-replaying [data-block-id] { animation: wf-reveal-graphica 900ms cubic-bezier(0.16, 1, 0.3, 1) backwards; animation-delay: calc(var(--i, 0) * 90ms); }
+.wf-page:is([data-style='graphica'], [data-style='inspiracion']).is-replaying [data-block-id] { animation: wf-reveal-graphica 900ms cubic-bezier(0.16, 1, 0.3, 1) backwards; animation-delay: calc(var(--i, 0) * 90ms); }
 .wf-page[data-style='marketographers'].is-replaying [data-block-id] { animation-name: wf-reveal-marketographers; }
-.preview-anim-style-graphica { animation: wf-reveal-graphica 900ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+.preview-anim-style-graphica, .preview-anim-style-inspiracion { animation: wf-reveal-graphica 900ms cubic-bezier(0.16, 1, 0.3, 1) both; }
 .preview-anim-style-marketographers { animation: wf-reveal-marketographers 900ms var(--app-ease) both; }
 
 /* Estudio Graphica: titulares de Izmir/Poppins en 700, interletrado cerrado,
    palabra clave con subrayado amarillo grueso, grano en secciones oscuras. */
-.wf-page[data-style='graphica'] [data-block-id] :is(h1, h2) { font-weight: 700; letter-spacing: -0.035em; line-height: 1.06; text-wrap: balance; }
-.wf-page[data-style='graphica'] [data-block-id] h1 { font-size: calc(3rem * var(--font-scale, 1)); }
-.wf-page[data-style='graphica'] [data-block-id] h2 { font-size: calc(2.2rem * var(--font-scale, 1)); }
-.wf-page[data-style='graphica'] .kw-elegant {
+.wf-page:is([data-style='graphica'], [data-style='inspiracion']) [data-block-id] :is(h1, h2) { font-weight: 700; letter-spacing: -0.035em; line-height: 1.06; text-wrap: balance; }
+.wf-page:is([data-style='graphica'], [data-style='inspiracion']) [data-block-id] h1 { font-size: calc(3rem * var(--font-scale, 1)); }
+.wf-page:is([data-style='graphica'], [data-style='inspiracion']) [data-block-id] h2 { font-size: calc(2.2rem * var(--font-scale, 1)); }
+.wf-page:is([data-style='graphica'], [data-style='inspiracion']) .kw-elegant {
   font-family: inherit; font-style: normal; color: inherit;
   background: linear-gradient(var(--root-accent), var(--root-accent)) 0 90% / 100% 0.4em no-repeat;
   -webkit-box-decoration-break: clone; box-decoration-break: clone;
 }
-.wf-page[data-style='graphica'] [data-surface='contrast'] .kw-elegant { background: none; color: var(--root-accent); }
-.wf-page[data-style='graphica'] [data-surface='accent'] .kw-elegant { background-color: transparent; background-image: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)); }
-.wf-page[data-style='graphica'] [data-surface='contrast']::after,
-.wf-page[data-style='graphica'] [data-surface='accent']::after {
+.wf-page:is([data-style='graphica'], [data-style='inspiracion']) [data-surface='contrast'] .kw-elegant { background: none; color: var(--root-accent); }
+.wf-page:is([data-style='graphica'], [data-style='inspiracion']) [data-surface='accent'] .kw-elegant { background-color: transparent; background-image: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)); }
+.wf-page:is([data-style='graphica'], [data-style='inspiracion']) [data-surface='contrast']::after,
+.wf-page:is([data-style='graphica'], [data-style='inspiracion']) [data-surface='accent']::after {
   content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0.07; mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
 }
-.wf-page[data-style='graphica'] [data-surface='accent'] {
+.wf-page:is([data-style='graphica'], [data-style='inspiracion']) [data-surface='accent'] {
   background: radial-gradient(900px 520px at 12% -10%, #fff3b8 0, transparent 62%), radial-gradient(800px 560px at 100% 110%, #e3b52a 0, transparent 60%), linear-gradient(160deg, #ffe36e, #ffd43b) !important;
 }
 
@@ -503,7 +540,7 @@ select:not([data-font-scale] *):focus-visible {
 /* Fotos y tarjetas: los bloques usan --radius para todo (botones y cajas).
    En los estilos de referencia los botones siguen en píldora, pero las cajas
    toman el radio de foto de cada sitio (36px Graphica, 28px Marketographers). */
-.wf-page[data-style='graphica'] [data-block-id] [style*='var(--radius)']:not(button) { border-radius: 36px !important; }
+.wf-page:is([data-style='graphica'], [data-style='inspiracion']) [data-block-id] [style*='var(--radius)']:not(button) { border-radius: 36px !important; }
 .wf-page[data-style='marketographers'] [data-block-id] [style*='var(--radius)']:not(button) { border-radius: 28px !important; }
 
 /* Marketographers: display Working en 400, palabra clave en amarillo puro. */

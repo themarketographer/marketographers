@@ -1,0 +1,5 @@
+{
+  "_como_agregar": "Suma un objeto por pagina en la lista 'paginas'. Solo 'repo' es obligatorio (repo publico de GitHub con un index.html). 'nombre', 'autor' y 'nicho' se muestran en la pestaña Inspiracion. Se edita en GitHub y aparece al recargar la herramienta, sin volver a compilar.",
+  "_ejemplo": { "nombre": "Estudio de bodas Ana", "autor": "Ana Pérez", "nicho": "Bodas", "repo": "https://github.com/usuario/repositorio" },
+  "paginas": []
+}

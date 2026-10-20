@@ -127,7 +127,8 @@ export default function Canvas({ selectedBlockId, onSelectBlock }) {
     const types = e.dataTransfer.types
     const isBlockType = types.includes('application/x-block-type')
     const isBlockId = types.includes('application/x-block-id')
-    if (!isBlockType && !isBlockId) return
+    const isEntry = types.includes('application/x-block-entry')
+    if (!isBlockType && !isBlockId && !isEntry) return
 
     e.preventDefault()
     e.dataTransfer.dropEffect = isBlockId ? 'move' : 'copy'
@@ -144,7 +145,18 @@ export default function Canvas({ selectedBlockId, onSelectBlock }) {
     e.preventDefault()
     const paletteType = e.dataTransfer.getData('application/x-block-type')
     const blockId = e.dataTransfer.getData('application/x-block-id')
+    const entryJson = e.dataTransfer.getData('application/x-block-entry')
     const index = hoverIndex ?? blocks.length
+    if (entryJson) {
+      try {
+        dispatch({ type: 'CANVAS_ADD_ENTRY', entry: JSON.parse(entryJson), atIndex: index })
+      } catch {
+        /* arrastre de otra página: se ignora */
+      }
+      setHoverIndex(null)
+      dispatch({ type: 'DND_END' })
+      return
+    }
 
     if (blockId) {
       dispatch({ type: 'BLOCK_MOVE', blockId, toIndex: index })

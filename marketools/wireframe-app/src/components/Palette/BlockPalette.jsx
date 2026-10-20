@@ -2,10 +2,17 @@ import { useState } from 'react'
 import { BLOCK_SCHEMA, BLOCK_GROUPS } from '../../data/blockSchema'
 import PaletteItem from './PaletteItem'
 import Icon from '../Shared/Icon'
+import InspirationPanel from './InspirationPanel'
+
+const TABS = [
+  { id: 'blocks', label: 'Bloques' },
+  { id: 'inspiration', label: 'Inspiración' },
+]
 
 export default function BlockPalette() {
   const [query, setQuery] = useState('')
   const [collapsedGroups, setCollapsedGroups] = useState({})
+  const [tab, setTab] = useState('blocks')
 
   function toggleGroup(id) {
     setCollapsedGroups((prev) => ({ ...prev, [id]: !prev[id] }))
@@ -18,12 +25,25 @@ export default function BlockPalette() {
   })).filter((group) => group.types.length > 0)
 
   return (
-    <aside className="wf-side wf-side-left flex w-60 shrink-0 flex-col border-r">
-      <div className="px-4 pb-3 pt-4">
-        <h3 className="text-[13px] font-semibold" style={{ color: 'var(--app-ink)' }}>
-          Bloques
-        </h3>
-        <p className="mt-0.5 text-[11px]" style={{ color: 'var(--app-muted)' }}>
+    <aside className="wf-side wf-side-left flex w-64 shrink-0 flex-col border-r">
+      <div className="px-3 pt-3">
+        <div className="wf-tabs" role="tablist" style={{ '--n': TABS.length, '--x': TABS.findIndex((t) => t.id === tab) }}>
+          <span className="wf-tabs-pill" aria-hidden="true" />
+          {TABS.map((t) => (
+            <button key={t.id} role="tab" aria-selected={tab === t.id} onClick={() => setTab(t.id)}>
+              {t.label}
+            </button>
+          ))}
+        </div>
+      </div>
+      {tab === 'inspiration' ? (
+        <div className="flex min-h-0 flex-1 flex-col pt-3">
+          <InspirationPanel />
+        </div>
+      ) : (
+      <>
+      <div className="px-4 pb-3 pt-3">
+        <p className="text-[11px]" style={{ color: 'var(--app-muted)' }}>
           Arrástralos al lienzo o haz clic para sumarlos al final.
         </p>
         <label className="wf-search mt-3">
@@ -67,6 +87,8 @@ export default function BlockPalette() {
           </p>
         )}
       </div>
+      </>
+      )}
     </aside>
   )
 }

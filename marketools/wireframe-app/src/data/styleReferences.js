@@ -283,6 +283,46 @@ export const STYLE_REFS = {
   },
 }
 
+// Borrador combinado: las secciones más fuertes de las dos páginas, en el
+// orden de una landing que vende (gancho, dolor, prueba, oferta, cierre). Usa
+// la paleta clara de Graphica porque alterna papel, tinta y amarillo, que es
+// lo que mejor muestra el ritmo de secciones.
+STYLE_REFS.inspiracion = {
+  id: 'inspiracion',
+  label: 'Inspiración',
+  tagline: 'Las mejores secciones de Estudio Graphica y Marketographers juntas. Quita, mueve y cambia lo que quieras.',
+  swatches: ['#f8f8f8', '#181818', '#ffdd5a'],
+  sectionStrip: ['page', 'contrast', 'page', 'contrast', 'page', 'contrast', 'page', 'accent'],
+  theme: { ...STYLE_REFS.graphica.theme },
+  reveal: STYLE_REFS.graphica.reveal,
+  draft: [
+    { type: 'header', overrideProps: { links: 'Problema, Servicios, Casos, Precio', ctaText: 'Agenda tu llamada', behavior: 'sticky' }, refAnimation: STYLE_REFS.graphica.draft[0].refAnimation },
+    { type: 'heroCarousel' },
+    { type: 'trustBar', overrideProps: { caption: '[Marcas o clientes que ya pasaron por tu cámara]', logoCount: 6 }, refAnimation: STYLE_REFS.graphica.draft[2].refAnimation },
+    { type: 'statement', surface: 'contrast' },
+    { type: 'scenes', surface: 'contrast' },
+    { type: 'beforeAfter', overrideProps: { title: '[Muéstrale la diferencia: frase que invite a comparar]', beforeLabel: 'Antes', afterLabel: 'Contigo', caption: 'Desliza la foto y fíjate cuál elegirías tú' }, refAnimation: STYLE_REFS.graphica.draft[3].refAnimation },
+    { type: 'formatList' },
+    { type: 'cardTrack', surface: 'contrast' },
+    { type: 'bento' },
+    { type: 'portfolio', variant: 'carrusel', overrideProps: { title: '[Pregunta que pique el orgullo de tu cliente]', pieceCount: 8 }, refAnimation: STYLE_REFS.graphica.draft[6].refAnimation },
+    { type: 'painMap', surface: 'contrast' },
+    { type: 'testimonials', variant: 'carrusel-flechas', overrideProps: { title: '[Clientes que ya la están rompiendo]', count: 6 }, refAnimation: STYLE_REFS.marketographers.draft[7].refAnimation },
+    { type: 'ways', surface: 'contrast' },
+    { type: 'pricingToggle' },
+    { type: 'stepsLine' },
+    { type: 'objections' },
+    { type: 'aboutArch', surface: 'contrast' },
+    { type: 'finalCta', surface: 'accent', overrideProps: { title: '[Agenda tu llamada: qué revisan juntos y cuánto dura]', buttonText: 'Agendar llamada', align: 'center' }, refAnimation: STYLE_REFS.graphica.draft[11].refAnimation },
+    { type: 'footer', surface: 'contrast', refAnimation: STYLE_REFS.graphica.draft[12].refAnimation },
+  ],
+  reference: {
+    live: 'https://estudiographica.com y https://marketographers.com (secciones de las dos)',
+    repo: GRAPHICA_REPO,
+    files: [...STYLE_REFS.marketographers.reference.files],
+  },
+}
+
 export const STYLE_IDS = Object.keys(STYLE_REFS)
 
 export function getStyleRef(id) {

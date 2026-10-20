@@ -4,8 +4,11 @@
 
 const HEADING_LEVEL = { hero: 'h1', footer: null, header: null, trustBar: null, stats: null, videoBanda: null }
 
+import { INSPIRATION_HEADINGS, INSPIRATION_ALT } from './inspirationBlocks'
+Object.assign(HEADING_LEVEL, INSPIRATION_HEADINGS)
+
 export function getHeadingLevel(type) {
-  return HEADING_LEVEL[type] ?? 'h2'
+  return type in HEADING_LEVEL ? HEADING_LEVEL[type] : 'h2'
 }
 
 const ALT_TEXT = {
@@ -18,6 +21,8 @@ const ALT_TEXT = {
   videoBanda: 'El video lleva un `<track>` de subtítulos si es posible, o al menos un texto alternativo describiendo qué se ve, para accesibilidad y para que Google entienda el contenido.',
   embed: 'Si el embed es un iframe, agregar `title` descriptivo (ej. "Reseñas de Google", "Calendario de reservas") para lectores de pantalla — un iframe sin title es invisible para accesibilidad.',
 }
+
+Object.assign(ALT_TEXT, INSPIRATION_ALT)
 
 export function getAltNote(type) {
   return ALT_TEXT[type] ?? null

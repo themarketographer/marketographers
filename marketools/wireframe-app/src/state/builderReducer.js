@@ -19,10 +19,10 @@ function fitRepeatables(type, props, overrideProps) {
 }
 
 function draftEntriesToBlocks(draft) {
-  return draft.map(({ type, variant, overrideProps, surface, refAnimation }) => {
+  return draft.map(({ type, variant, overrideProps, surface, refAnimation, sourceRepo }) => {
     const block = makeBlock(type, variant ? { variant } : {})
     if (overrideProps) block.props = fitRepeatables(type, block.props, overrideProps)
-    return { id: makeId(), ...block, surface: surface ?? null, refAnimation: refAnimation ?? null }
+    return { id: makeId(), ...block, surface: surface ?? null, refAnimation: refAnimation ?? null, sourceRepo: sourceRepo ?? null }
   })
 }
 
@@ -56,6 +56,25 @@ export function builderReducer(state, action) {
 
     case 'CANVAS_LOAD_STYLE':
       return applyStyle(state, action.styleId)
+
+    // Pestaña Inspiración: suma una sola sección de una página de referencia
+    // (de Pablo o de un repo de GitHub) en la posición indicada o al final.
+    case 'CANVAS_ADD_ENTRY': {
+      const [block] = draftEntriesToBlocks([action.entry])
+      const blocks = [...state.canvas.blocks]
+      blocks.splice(action.atIndex ?? blocks.length, 0, block)
+      return { ...state, canvas: { blocks }, flashBlockId: block.id }
+    }
+
+    // Reemplaza el lienzo por todas las secciones de una página de referencia.
+    case 'CANVAS_LOAD_ENTRIES':
+      return { ...state, canvas: { blocks: draftEntriesToBlocks(action.entries) }, replayNonce: Date.now() }
+
+    // Colores y tipografías detectados en un repo. Solo pisa lo que se encontró.
+    case 'THEME_FROM_REPO': {
+      const found = Object.fromEntries(Object.entries(action.theme).filter(([k, v]) => v && k !== 'fonts'))
+      return { ...state, theme: { ...state.theme, ...found, presetId: null, styleId: null } }
+    }
 
     case 'CANVAS_REPLAY':
       return { ...state, replayNonce: Date.now() }

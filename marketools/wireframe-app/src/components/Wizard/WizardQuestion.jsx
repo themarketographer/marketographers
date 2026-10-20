@@ -30,7 +30,7 @@ export default function WizardQuestion({ question, onAnswer }) {
 
 function StyleQuestion({ question, onAnswer }) {
   return (
-    <div className="mx-auto max-w-4xl text-center">
+    <div className="mx-auto max-w-6xl text-center">
       <h2 className="wf-rise font-display-app text-3xl sm:text-4xl" style={{ color: 'var(--app-ink)' }}>
         {question.question}
       </h2>
@@ -39,7 +39,7 @@ function StyleQuestion({ question, onAnswer }) {
           {question.hint}
         </p>
       )}
-      <div className="mt-8 grid gap-4 text-left sm:grid-cols-3">
+      <div className="mt-8 grid gap-4 text-left sm:grid-cols-2 lg:grid-cols-4">
         {question.options.map((opt, i) => {
           const ref = getStyleRef(opt.value)
           return (

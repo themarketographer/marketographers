@@ -33,6 +33,9 @@ export const ANIMATION_SUGGESTIONS = {
   embed: 'Fade-in simple del contenedor al entrar en viewport; si el widget tiene su propia animación de carga, no agregar una encima.',
 }
 
+import { INSPIRATION_ANIMATIONS } from './inspirationBlocks'
+Object.assign(ANIMATION_SUGGESTIONS, INSPIRATION_ANIMATIONS)
+
 export function getAnimationSuggestion(type) {
   return ANIMATION_SUGGESTIONS[type] ?? 'Fade-up simple al entrar en viewport.'
 }

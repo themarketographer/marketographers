@@ -15,7 +15,7 @@ import { SURFACE_PROMPT } from '../data/surfaces'
 // (sistema de tokens, superficies, revelados, un solo bucle de scroll). Si
 // el alumno eligió uno de los estilos de referencia, además le dice que ese
 // sitio es el modelo visual a seguir.
-function buildReferenceSection(styleId) {
+function buildReferenceSection(styleId, blocks = []) {
   const ref = getStyleRef(styleId)
   const graphica = STYLE_REFS.graphica.reference
   const lines = ['## Referencia de código y diseño (léela antes de escribir una línea)']
@@ -37,6 +37,11 @@ function buildReferenceSection(styleId) {
   if (ref && ref.id !== 'graphica') {
     lines.push('', 'Modelo visual de este estilo:')
     ref.reference.files.forEach(([url, what]) => lines.push(`- ${url} : ${what}`))
+  }
+  const repos = [...new Set(blocks.map((b) => b.sourceRepo).filter(Boolean))]
+  if (repos.length) {
+    lines.push('', 'Secciones traídas de páginas de otros alumnos (pestaña Inspiración). Mira su index.html y su CSS para ver cómo armaron esas secciones:')
+    repos.forEach((r) => lines.push(`- ${r}`))
   }
   lines.push(
     '',
@@ -207,7 +212,7 @@ function buildMasterPromptSection(state, trackingConfig) {
     '- Texto entre ^^así^^ es una "palabra clave" con efecto glow: color de acento + resplandor (text-shadow) alrededor del texto.',
     '- Respeta prefers-reduced-motion: con movimiento reducido quedan solo los fundidos de opacidad, sin desplazamientos, parallax ni conteos.',
     '',
-    buildReferenceSection(theme.styleId),
+    buildReferenceSection(theme.styleId, blocks),
   ]
 
   if (hasVideo) {
@@ -224,6 +229,7 @@ function buildMasterPromptSection(state, trackingConfig) {
     lines.push(`## ${i + 1}. ${schema.label}`)
     lines.push(`1. Layout/variante: ${block.variant ? (schema.variantLabels?.[block.variant] ?? block.variant) : 'única (sin variantes)'}`)
     lines.push(`2. Animación: ${animationLine(block)}`)
+    if (block.sourceRepo) lines.push(`   Inspirada en una sección de ${block.sourceRepo}: toma su estructura, no sus textos ni fotos. Los corchetes "[Inspirado en: ...]" son una guía de qué decir, se reescriben con la voz de esta marca.`)
     lines.push(`3. SEO: ${heading ? `título de esta sección en \`${heading}\`.` : 'sin encabezado de sección.'}${alt ? ` ${alt}` : ''}`)
     lines.push(`4. Responsive (celular vs escritorio): ${getResponsiveNote(block.type)}`)
     lines.push(`5. Contenido real a usar (reemplazá cualquier corchete [así] por este texto tal cual; si está vacío, generá un placeholder de ejemplo creíble):`)

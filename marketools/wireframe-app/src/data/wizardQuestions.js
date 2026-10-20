@@ -37,6 +37,7 @@ export const WIZARD_QUESTIONS = [
     hint: 'Puedes cambiar colores, bloques y textos después. Esto solo decide el punto de partida.',
     layout: 'styles',
     options: [
+      { value: 'inspiracion', label: 'Inspiración: lo mejor de las dos' },
       { value: 'graphica', label: 'Como Estudio Graphica' },
       { value: 'marketographers', label: 'Como Marketographers' },
       { value: 'blank', label: 'En blanco, lo armo yo' },

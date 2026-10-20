@@ -25,6 +25,9 @@ export const RESPONSIVE_NOTES = {
   embed: 'Mobile: el contenedor del widget ocupa el ancho completo. Desktop: ancho máximo centrado, igual que el resto de las secciones de texto.',
 }
 
+import { INSPIRATION_RESPONSIVE } from './inspirationBlocks'
+Object.assign(RESPONSIVE_NOTES, INSPIRATION_RESPONSIVE)
+
 export function getResponsiveNote(type) {
   return RESPONSIVE_NOTES[type] ?? 'Sin diferencias específicas más allá del comportamiento responsive estándar del layout.'
 }

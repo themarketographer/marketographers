@@ -1,3 +1,5 @@
+import { inspirationSchemas, INSPIRATION_TYPES } from './inspirationBlocks'
+
 // Catálogo declarativo de los tipos de bloque. El panel de propiedades y
 // los valores por defecto se derivan de este objeto en vez de tener un
 // formulario hardcodeado por tipo de bloque.
@@ -495,6 +497,8 @@ export const BLOCK_SCHEMA = {
       { key: 'links', label: 'Links', type: 'text', default: '[Privacidad, contacto]' },
     ],
   },
+  // Secciones de las páginas de Pablo (data/inspirationBlocks.js)
+  ...inspirationSchemas({ ctaActionFields }),
 }
 
 export const BLOCK_TYPES = Object.keys(BLOCK_SCHEMA)
@@ -502,6 +506,7 @@ export const BLOCK_TYPES = Object.keys(BLOCK_SCHEMA)
 // Agrupa los bloques por función para la paleta (secciones colapsables) —
 // mismo orden en que un fotógrafo pensaría su landing de arriba a abajo.
 export const BLOCK_GROUPS = [
+  { id: 'inspiracion', label: 'De las páginas de Pablo', types: INSPIRATION_TYPES },
   { id: 'estructura', label: 'Estructura', types: ['header', 'footer'] },
   { id: 'apertura', label: 'Apertura', types: ['hero', 'vsl', 'videoBanda'] },
   { id: 'argumento', label: 'Argumento de venta', types: ['problem', 'process', 'promise', 'exclusividad'] },
@@ -524,6 +529,10 @@ export const CTA_ACTION_PREFIXES = {
   faq: [''],
   exclusividad: [''],
   proximosPasos: [''],
+  heroCarousel: [''],
+  heroVideo: [''],
+  pricingToggle: [''],
+  objections: [''],
 }
 
 export function buildDefaultProps(type) {

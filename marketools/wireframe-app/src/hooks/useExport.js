@@ -7,6 +7,49 @@ import { buildTrackingSection, TRACKING_REMINDER_NO_PIXEL, TRACKING_REMINDER_WIT
 import { STANDARD_EVENTS } from '../data/standardEvents'
 import { buildPixelSnippet, buildGa4Snippet } from '../data/trackingSnippets'
 import { parseRow } from '../utils/parseRow'
+import { STYLE_REFS, GRAPHICA_REPO, getStyleRef } from '../data/styleReferences'
+import { SURFACE_PROMPT } from '../data/surfaces'
+
+// Sección de referencia: siempre le pasa a la IA el repo de Estudio Graphica
+// como ejemplo de cómo se construye una landing con este nivel de detalle
+// (sistema de tokens, superficies, revelados, un solo bucle de scroll). Si
+// el alumno eligió uno de los estilos de referencia, además le dice que ese
+// sitio es el modelo visual a seguir.
+function buildReferenceSection(styleId) {
+  const ref = getStyleRef(styleId)
+  const graphica = STYLE_REFS.graphica.reference
+  const lines = ['## Referencia de código y diseño (léela antes de escribir una línea)']
+  if (ref) {
+    lines.push(
+      `Esta landing está basada en el estilo de ${ref.reference.live}. Copia su forma de construir, su ritmo de secciones y sus animaciones.`,
+      `Revelado general de ese sitio: ${ref.reveal}`,
+      ''
+    )
+  }
+  lines.push(
+    `Repositorio de referencia en GitHub: ${GRAPHICA_REPO}`,
+    'Es la landing real de Estudio Graphica, hecha en HTML, CSS y JavaScript sin librerías. Úsala como modelo de calidad y de',
+    'arquitectura: contenido visible por defecto y animaciones que el JavaScript "arma" al cargar, tokens de color en :root,',
+    'secciones que alternan superficies, revelados con IntersectionObserver y todo lo que depende del scroll dentro de un solo',
+    'requestAnimationFrame. Si puedes abrir enlaces, lee estos archivos en este orden:'
+  )
+  graphica.files.forEach(([url, what], i) => lines.push(`${i + 1}. ${url} : ${what}`))
+  if (ref && ref.id !== 'graphica') {
+    lines.push('', 'Modelo visual de este estilo:')
+    ref.reference.files.forEach(([url, what]) => lines.push(`- ${url} : ${what}`))
+  }
+  lines.push(
+    '',
+    'Qué NO copiar de los sitios de referencia (son de otra marca): textos, fotos, logos, nombres de clientes, precios,',
+    'IDs de Meta Pixel o Google Analytics, links de Cal.com o WhatsApp, funciones de Netlify, tracking.js ni archivos de',
+    'fuentes. La tipografía Izmir de Graphica es de licencia paga: usa Poppins en su lugar. Todo el contenido sale del',
+    'WIREFRAME de arriba y de este documento.',
+    'Si no puedes abrir enlaces, no inventes lo que dicen: guíate por las descripciones de animación de cada bloque, que ya',
+    'vienen tomadas de esos archivos.',
+    ''
+  )
+  return lines.join('\n')
+}
 
 const VIDEO_RULE =
   'Aplica a todo bloque con un clip (VSL, Video destacado): el video arranca solo cuando entra en el viewport (IntersectionObserver, threshold 0.2) y se pausa al salir. Si el navegador bloquea el autoplay, arranca con el primer toque/clic del usuario. Documentado una sola vez acá — no repetir esta lógica bloque por bloque.'
@@ -64,7 +107,11 @@ function animationLine(block) {
   if (block.animationOverride) {
     return getAnimationOverrideDescription(block.animationOverride) ?? getAnimationSuggestion(block.type)
   }
-  return getAnimationSuggestion(block.type)
+  return block.refAnimation ?? getAnimationSuggestion(block.type)
+}
+
+function surfaceLine(block) {
+  return block.surface && SURFACE_PROMPT[block.surface] ? SURFACE_PROMPT[block.surface] : 'el fondo general de la página'
 }
 
 function buildWireframeSection(blocks) {
@@ -75,6 +122,7 @@ function buildWireframeSection(blocks) {
     visibleFields(schema, block.props).forEach((field) => {
       lines.push(`   - ${field.label}: ${formatPropValue(field, block.props[field.key])}`)
     })
+    lines.push(`   - fondo de la sección: ${surfaceLine(block)}`)
     lines.push(`   - acento: ${block.accentOverride ? `propio (${block.accentOverride})` : 'usa el tema global'}`)
     lines.push(`   - bordes: ${block.radiusOverride ? `propios (${block.radiusOverride})` : 'usa el tema global'}`)
     lines.push('')
@@ -136,9 +184,14 @@ function buildMasterPromptSection(state, trackingConfig) {
     'nada más que lo que está en este documento: todos los datos de diseño, contenido y tracking están acá.',
     '',
     '## Sistema de diseño (aplicar a TODA la página, no solo a un bloque)',
-    `- Tipografía de títulos: ${theme.headingFont}. Importar la fuente real (Google Fonts) si no es del sistema.`,
+    `- Tipografía de títulos: ${theme.headingFont}. ${
+      theme.headingFont.includes('Working')
+        ? 'Working es la display de Marketographers y no está en Google Fonts: si no tienes el archivo de la fuente, usa Poppins 500 con interletrado -0.02em.'
+        : 'Importar la fuente real (Google Fonts) si no es del sistema.'
+    }`,
     `- Tipografía de cuerpo: ${theme.bodyFont}. Importar la fuente real (Google Fonts) si no es del sistema.`,
-    `- Color primario (fondos de énfasis, footer, CTA final): ${theme.primaryColor}`,
+    `- Color primario (fondos de énfasis, footer, CTA final, secciones de contraste): ${theme.primaryColor}`,
+    `- Color del texto sobre el primario: ${theme.primaryTextColor ?? theme.backgroundColor}`,
     `- Color de fondo general: ${theme.backgroundColor}`,
     `- Color de texto: ${theme.textColor}`,
     `- Color de acento (botones, links, detalles clave): ${theme.accentColor}. Usalo en TODOS los CTAs de la página, no solo en uno.`,
@@ -146,9 +199,15 @@ function buildMasterPromptSection(state, trackingConfig) {
     `- Radio de bordes por defecto: ${theme.radius} (recto ≈4px / redondeado ≈14px / muy redondeado ≈999px — interpretalo en botones, tarjetas e inputs).`,
     `- Escala de tamaño de texto: ${Math.round(theme.fontScale * 100)}% del tamaño base de cada elemento (100% = tamaños estándar dados en cada bloque abajo).`,
     '- Texto entre **así** va en negrita, *así* en itálica, __así__ subrayado.',
-    '- Texto entre ~~así~~ es una "palabra clave": tipografía de título en itálica, color de acento (igual que en marketographers.com).',
+    theme.styleId === 'graphica'
+      ? '- Texto entre ~~así~~ es una "palabra clave": mismo peso que el título, con un subrayado grueso del color de acento detrás de la parte baja de las letras (como un resaltador). Sobre fondos oscuros pasa a color de acento sin subrayado.'
+      : theme.styleId === 'marketographers'
+        ? '- Texto entre ~~así~~ es una "palabra clave": misma tipografía del título, en color de acento, sin itálica.'
+        : '- Texto entre ~~así~~ es una "palabra clave": tipografía de título en itálica, color de acento (igual que en marketographers.com).',
     '- Texto entre ^^así^^ es una "palabra clave" con efecto glow: color de acento + resplandor (text-shadow) alrededor del texto.',
+    '- Respeta prefers-reduced-motion: con movimiento reducido quedan solo los fundidos de opacidad, sin desplazamientos, parallax ni conteos.',
     '',
+    buildReferenceSection(theme.styleId),
   ]
 
   if (hasVideo) {
@@ -171,6 +230,7 @@ function buildMasterPromptSection(state, trackingConfig) {
     visibleFields(schema, block.props).forEach((field) => {
       lines.push(`   - ${field.label}: ${formatPropValue(field, block.props[field.key])}`)
     })
+    lines.push(`   - Fondo de esta sección: ${surfaceLine(block)}`)
     lines.push(`   - Acento de este bloque: ${block.accentOverride ? `${block.accentOverride} (distinto al del resto de la página)` : 'el acento general de arriba'}`)
     lines.push(`   - Bordes de este bloque: ${block.radiusOverride ? `${block.radiusOverride} (distinto al del resto de la página)` : 'el radio general de arriba'}`)
 

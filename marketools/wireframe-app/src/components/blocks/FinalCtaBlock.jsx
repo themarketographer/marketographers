@@ -8,7 +8,7 @@ export default function FinalCtaBlock({ props }) {
 
   return (
     <div className={`p-10 ${textAlign}`} style={{ background: 'var(--color-primary)' }}>
-      <h2 className="text-2xl font-bold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--color-bg)' }}>
+      <h2 className="text-2xl font-bold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--color-on-primary)' }}>
         {renderEmphasis(props.title)}
       </h2>
       <div className={`mt-4 flex ${justify}`}>
@@ -19,7 +19,7 @@ export default function FinalCtaBlock({ props }) {
           >
             {props.buttonText}
           </button>
-          {actionLabel && <p className="mt-1 text-[11px] opacity-60" style={{ color: 'var(--color-bg)' }}>{actionLabel}</p>}
+          {actionLabel && <p className="mt-1 text-[11px] opacity-60" style={{ color: 'var(--color-on-primary)' }}>{actionLabel}</p>}
         </div>
       </div>
     </div>

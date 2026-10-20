@@ -1,4 +1,5 @@
-// Las 3 preguntas cerradas del wizard, en el orden y texto exactos de
+// Las 3 preguntas cerradas del embudo + 1 de estilo de borrador.
+// Las 3 primeras salen del wizard, en el orden y texto exactos de
 // `funnels.md` (skill photographer-landing), sección "Cómo elegir, en tres preguntas".
 export const WIZARD_QUESTIONS = [
   {
@@ -26,6 +27,19 @@ export const WIZARD_QUESTIONS = [
     options: [
       { value: 'a', label: 'Se cotiza' },
       { value: 'b', label: 'Precio fijo' },
+    ],
+  },
+  // 4ta pregunta: no decide el embudo, decide con qué borrador arranca el
+  // canvas. Los estilos salen de data/styleReferences.js.
+  {
+    key: 'q4',
+    question: '¿Con qué estilo arrancamos tu borrador?',
+    hint: 'Puedes cambiar colores, bloques y textos después. Esto solo decide el punto de partida.',
+    layout: 'styles',
+    options: [
+      { value: 'graphica', label: 'Como Estudio Graphica' },
+      { value: 'marketographers', label: 'Como Marketographers' },
+      { value: 'blank', label: 'En blanco, lo armo yo' },
     ],
   },
 ]

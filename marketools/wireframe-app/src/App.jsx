@@ -15,19 +15,41 @@ import BrandMark from './components/Brand/BrandMark'
 import ThemeToggle from './components/Brand/ThemeToggle'
 import CommunityNotice from './components/Brand/CommunityNotice'
 import { useAppTheme } from './utils/appTheme'
+import Icon from './components/Shared/Icon'
+
+const TABS = [
+  { id: 'properties', label: 'Contenido' },
+  { id: 'theme', label: 'Estilo' },
+  { id: 'animation', label: 'Animación' },
+]
+
+// Control segmentado: una sola píldora que se desliza hasta la pestaña
+// activa (transform, 220ms), en vez de tres fondos que se prenden y apagan.
+function PanelTabs({ value, onChange }) {
+  const index = TABS.findIndex((t) => t.id === value)
+  return (
+    <div className="wf-tabs" role="tablist" style={{ '--n': TABS.length, '--x': index }}>
+      <span className="wf-tabs-pill" aria-hidden="true" />
+      {TABS.map((t) => (
+        <button key={t.id} role="tab" aria-selected={value === t.id} onClick={() => onChange(t.id)}>
+          {t.label}
+        </button>
+      ))}
+    </div>
+  )
+}
 
 function CollapseHandle({ collapsed, onClick, side }) {
+  // La flecha apunta hacia donde se va a mover el panel al tocarla.
+  const pointsLeft = side === 'left' ? !collapsed : collapsed
   return (
     <button
       onClick={onClick}
       aria-label={collapsed ? 'Mostrar panel' : 'Ocultar panel'}
-      // items-start + pt-2 en vez de items-center: la flecha queda pegada
-      // arriba del todo, al lado del header, en vez de perdida en el medio
-      // vertical del panel donde es fácil no verla.
-      className="flex w-4 shrink-0 items-start justify-center border-[var(--app-border)] pt-2 text-xs hover:bg-[var(--app-hover)]"
-      style={{ background: 'var(--app-bg)', [side === 'left' ? 'borderRight' : 'borderLeft']: '1px solid var(--app-border)' }}
+      title={collapsed ? 'Mostrar panel' : 'Ocultar panel'}
+      className="wf-handle"
     >
-      {side === 'left' ? (collapsed ? '›' : '‹') : collapsed ? '‹' : '›'}
+      <Icon name="chevron" size={13} strokeWidth={2.2} className={pointsLeft ? 'rotate-180' : ''} />
     </button>
   )
 }
@@ -55,6 +77,15 @@ function BuilderLayout({ theme, onToggleTheme }) {
   const [paletteCollapsed, setPaletteCollapsed] = useState(() => window.innerWidth < 900)
   const [panelCollapsed, setPanelCollapsed] = useState(() => window.innerWidth < 900)
   const [confirmingRestart, setConfirmingRestart] = useState(false)
+
+  // Elegir un bloque lleva a sus controles: si estaba abierta la pestaña de
+  // estilo global salta a Contenido, y en pantalla grande abre el panel.
+  function selectBlock(id) {
+    setSelectedBlockId(id)
+    if (!id) return
+    setRightTab((t) => (t === 'theme' ? 'properties' : t))
+    if (window.innerWidth >= 900) setPanelCollapsed(false)
+  }
 
   function handleRestartClick() {
     if (state.canvas.blocks.length === 0) {
@@ -104,7 +135,7 @@ function BuilderLayout({ theme, onToggleTheme }) {
       <div className="flex min-h-0 flex-1 overflow-hidden">
         {!paletteCollapsed && <BlockPalette />}
         <CollapseHandle side="left" collapsed={paletteCollapsed} onClick={() => setPaletteCollapsed((c) => !c)} />
-        <Canvas selectedBlockId={selectedBlockId} onSelectBlock={setSelectedBlockId} />
+        <Canvas selectedBlockId={selectedBlockId} onSelectBlock={selectBlock} />
         <CollapseHandle side="right" collapsed={panelCollapsed} onClick={() => setPanelCollapsed((c) => !c)} />
         {!panelCollapsed && (
           // min-h-0 acá es lo que faltaba: sin esto, este contenedor crecía
@@ -112,29 +143,9 @@ function BuilderLayout({ theme, onToggleTheme }) {
           // quedarse acotado a la altura disponible de la fila, y entonces
           // el overflow-y-auto de los paneles de abajo nunca se activaba —
           // el contenido de más quedaba fuera de pantalla, inalcanzable.
-          <div className="flex min-h-0 shrink-0 flex-col">
-            <div className="flex shrink-0 border-b text-xs font-medium" style={{ borderColor: 'var(--app-border)', background: 'var(--app-bg)' }}>
-              <button
-                onClick={() => setRightTab('properties')}
-                className="flex-1 px-3 py-2"
-                style={rightTab === 'properties' ? { background: 'var(--app-surface)', color: 'var(--app-ink)' } : { color: 'var(--app-muted)' }}
-              >
-                Propiedades
-              </button>
-              <button
-                onClick={() => setRightTab('theme')}
-                className="flex-1 px-3 py-2"
-                style={rightTab === 'theme' ? { background: 'var(--app-surface)', color: 'var(--app-ink)' } : { color: 'var(--app-muted)' }}
-              >
-                Estilo
-              </button>
-              <button
-                onClick={() => setRightTab('animation')}
-                className="flex-1 px-3 py-2"
-                style={rightTab === 'animation' ? { background: 'var(--app-surface)', color: 'var(--app-ink)' } : { color: 'var(--app-muted)' }}
-              >
-                Animación
-              </button>
+          <div className="wf-side-right flex min-h-0 shrink-0 flex-col">
+            <div className="wf-side shrink-0 border-l px-3 pb-1 pt-3">
+              <PanelTabs value={rightTab} onChange={setRightTab} />
             </div>
             {rightTab === 'properties' && <PropertiesPanel blockId={selectedBlockId} />}
             {rightTab === 'theme' && <ThemePanel />}
@@ -185,6 +196,13 @@ function ThemeVarsRoot({ children }) {
         '--color-text': theme.textColor,
         '--color-accent': theme.accentColor,
         '--color-accent-ink': theme.accentTextColor,
+        '--color-on-primary': theme.primaryTextColor ?? theme.backgroundColor,
+        // Copias fijas del tema: las superficies por sección (data/surfaces.js)
+        // pisan las --color-* dentro del bloque y necesitan leer el original.
+        '--root-primary': theme.primaryColor,
+        '--root-on-primary': theme.primaryTextColor ?? theme.backgroundColor,
+        '--root-accent': theme.accentColor,
+        '--root-accent-ink': theme.accentTextColor,
         '--radius': RADIUS_VALUES[theme.radius] ?? RADIUS_VALUES.soft,
       }}
     >

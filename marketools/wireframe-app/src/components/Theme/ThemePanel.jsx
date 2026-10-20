@@ -15,8 +15,11 @@ export default function ThemePanel() {
   }
 
   return (
-    <aside className="w-72 min-h-0 flex-1 space-y-4 overflow-y-auto border-l border-[var(--app-border)] bg-[var(--app-bg)] p-4">
-      <h3 className="text-xs font-semibold uppercase tracking-wide text-[var(--app-muted)]">Estilo</h3>
+    <aside className="wf-panel space-y-5">
+      <div>
+        <h3 className="font-display-app text-2xl leading-tight" style={{ color: 'var(--app-ink)' }}>Estilo</h3>
+        <p className="mt-1 text-[11px]" style={{ color: 'var(--app-muted)' }}>Colores y tipografías de toda la página.</p>
+      </div>
       <ThemePresetPicker />
 
       <div className="space-y-2 border-t border-[var(--app-border)] pt-3">
@@ -33,12 +36,17 @@ export default function ThemePanel() {
           onChange={(v) => setField('bodyFont', v)}
         />
         <ColorField label="Color primario" value={theme.primaryColor} onChange={(v) => setField('primaryColor', v)} />
+        <ColorField
+          label="Texto sobre el primario"
+          value={theme.primaryTextColor ?? theme.backgroundColor}
+          onChange={(v) => setField('primaryTextColor', v)}
+        />
         <ColorField label="Color de fondo" value={theme.backgroundColor} onChange={(v) => setField('backgroundColor', v)} />
         <ColorField label="Color de texto" value={theme.textColor} onChange={(v) => setField('textColor', v)} />
         <div className="space-y-2 rounded-lg p-2" style={{ background: `${theme.accentColor}1a` }}>
           <ColorField label="Color de acento" value={theme.accentColor} onChange={(v) => setField('accentColor', v)} />
           <p className="text-[10px] text-[var(--app-muted)]">
-            Se usa en botones, links y detalles clave — evitá reservarlo solo para el CTA final.
+            Se usa en botones, links y detalles clave — no lo guardes solo para el CTA final.
           </p>
           <ButtonGroupField
             field={{ label: 'Color de texto sobre el acento' }}
@@ -47,7 +55,7 @@ export default function ThemePanel() {
             onChange={(v) => setField('accentTextColor', v)}
           />
           <p className="text-[10px] text-[var(--app-muted)]">
-            Elegí oscuro si tu color de acento es claro (amarillo, verde lima) para que el texto de los botones se siga leyendo.
+            Elige oscuro si tu color de acento es claro (amarillo, verde lima) para que el texto de los botones se siga leyendo.
           </p>
         </div>
         <ButtonGroupField
@@ -67,7 +75,7 @@ export default function ThemePanel() {
             Palabras clave con estilo propio
           </p>
           <p className="mt-1 text-[11px]" style={{ color: 'var(--app-muted)' }}>
-            En cualquier campo de texto, envolvé una palabra o frase así:
+            En cualquier campo de texto, envuelve una palabra o frase así:
           </p>
           <p className="mt-1 text-[11px]">
             <code className="rounded bg-[var(--app-hover)] px-1 py-0.5 kw-elegant">~~elegante~~</code>

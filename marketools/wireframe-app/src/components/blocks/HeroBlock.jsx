@@ -45,7 +45,7 @@ export default function HeroBlock({ props, variant, previewMode }) {
   ) : (
     <div
       className={`flex h-48 items-center justify-center text-sm opacity-60 ${isMobile ? 'w-full' : 'flex-1'}`}
-      style={{ background: 'var(--color-primary)', color: 'var(--color-bg)', borderRadius: 'var(--radius)' }}
+      style={{ background: 'var(--color-primary)', color: 'var(--color-on-primary)', borderRadius: 'var(--radius)' }}
     >
       [fondo {props.bgType}]
     </div>

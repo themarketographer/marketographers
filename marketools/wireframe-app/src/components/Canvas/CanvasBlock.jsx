@@ -1,18 +1,35 @@
+import { useEffect, useRef } from 'react'
 import { useBuilder } from '../../state/BuilderContext'
+import { BLOCK_SCHEMA } from '../../data/blockSchema'
+import { surfaceVars } from '../../data/surfaces'
 import BlockRenderer from '../blocks/BlockRenderer'
+import Icon from '../Shared/Icon'
 
-export default function CanvasBlock({ block, previewMode, isSelected, isDragging, onSelect, onDelete }) {
+const RADIUS = { sharp: '4px', soft: '14px', pill: '999px' }
+
+export default function CanvasBlock({ block, index, total, previewMode, isSelected, isDragging, onSelect, onDelete }) {
   const { state, dispatch } = useBuilder()
+  const ref = useRef(null)
 
   const preview = state.animationPreview
   const isPreviewing = preview && preview.blockId === block.id
   const previewClass = isPreviewing ? `preview-anim-${preview.type}` : ''
+  const isFlash = state.flashBlockId === block.id
 
-  const overrideStyle = {}
+  // Bloque recién agregado (desde la paleta, duplicado o soltado): se lleva a
+  // la vista, queda seleccionado para editarlo directo y anima su entrada.
+  useEffect(() => {
+    if (!isFlash) return
+    ref.current?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' })
+    onSelect(block.id)
+    const t = setTimeout(() => dispatch({ type: 'FLASH_CLEAR' }), 700)
+    return () => clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isFlash])
+
+  const overrideStyle = { '--i': index, ...surfaceVars(block.surface, block.type) }
   if (block.accentOverride) overrideStyle['--color-accent'] = block.accentOverride
-  if (block.radiusOverride) {
-    overrideStyle['--radius'] = { sharp: '4px', soft: '14px', pill: '999px' }[block.radiusOverride]
-  }
+  if (block.radiusOverride) overrideStyle['--radius'] = RADIUS[block.radiusOverride]
   // El sticky del header se aplica acá, en el wrapper que sí llega directo
   // (gracias a los `contents` de Canvas.jsx) hasta el contenedor alto del
   // canvas — no adentro de HeaderBlock, donde su propio padre inmediato
@@ -25,9 +42,17 @@ export default function CanvasBlock({ block, previewMode, isSelected, isDragging
     overrideStyle.zIndex = 30
   }
 
+  function act(e, fn) {
+    e.preventDefault()
+    e.stopPropagation()
+    fn()
+  }
+
   return (
     <div
+      ref={ref}
       data-block-id={block.id}
+      data-surface={block.surface ?? 'page'}
       draggable
       onDragStart={(e) => {
         e.dataTransfer.setData('application/x-block-id', block.id)
@@ -36,33 +61,30 @@ export default function CanvasBlock({ block, previewMode, isSelected, isDragging
       }}
       onDragEnd={() => dispatch({ type: 'DND_END' })}
       onClick={() => onSelect(block.id)}
-      onAnimationEnd={() => isPreviewing && dispatch({ type: 'ANIMATION_PREVIEW_CLEAR' })}
-      className={`group relative cursor-pointer border-2 transition-opacity ${
-        isSelected ? '' : 'border-transparent hover:border-black/10'
-      } ${isDragging ? 'opacity-30' : 'opacity-100'} ${previewClass}`}
-      style={{ ...overrideStyle, borderColor: isSelected ? 'var(--app-accent)' : undefined }}
+      onAnimationEnd={(e) => e.target === e.currentTarget && isPreviewing && dispatch({ type: 'ANIMATION_PREVIEW_CLEAR' })}
+      className={`wf-block group ${isSelected ? 'is-selected' : ''} ${isDragging ? 'is-dragging' : ''} ${isFlash ? 'is-born' : ''} ${previewClass}`}
+      style={overrideStyle}
     >
-      <span className="pointer-events-none absolute left-2 top-2 z-40 rounded bg-black/70 px-2 py-0.5 text-[10px] font-medium text-white opacity-0 group-hover:opacity-100">
-        {block.type}
-      </span>
-      <button
-        type="button"
-        draggable={false}
-        onPointerDown={(e) => e.stopPropagation()}
-        onMouseDown={(e) => e.stopPropagation()}
-        onDragStart={(e) => e.preventDefault()}
-        onClick={(e) => {
-          e.preventDefault()
-          e.stopPropagation()
-          onDelete(block)
-        }}
-        className={`absolute right-2 top-2 z-40 flex h-7 w-7 items-center justify-center rounded-full bg-red-500 text-sm text-white transition-opacity hover:bg-red-600 ${
-          isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-        }`}
-        aria-label="Eliminar bloque"
-      >
-        ×
-      </button>
+      <div className="wf-block-bar" onPointerDown={(e) => e.stopPropagation()}>
+        <span className="wf-block-name">
+          <Icon name="grip" size={12} />
+          {BLOCK_SCHEMA[block.type]?.label ?? block.type}
+        </span>
+        <span className="wf-block-tools" onMouseDown={(e) => e.stopPropagation()}>
+          <button type="button" draggable={false} disabled={index === 0} onClick={(e) => act(e, () => dispatch({ type: 'BLOCK_SHIFT', blockId: block.id, delta: -1 }))} aria-label="Subir bloque" title="Subir">
+            <Icon name="up" size={14} />
+          </button>
+          <button type="button" draggable={false} disabled={index === total - 1} onClick={(e) => act(e, () => dispatch({ type: 'BLOCK_SHIFT', blockId: block.id, delta: 1 }))} aria-label="Bajar bloque" title="Bajar">
+            <Icon name="down" size={14} />
+          </button>
+          <button type="button" draggable={false} onClick={(e) => act(e, () => dispatch({ type: 'BLOCK_DUPLICATE', blockId: block.id }))} aria-label="Duplicar bloque" title="Duplicar">
+            <Icon name="copy" size={14} />
+          </button>
+          <button type="button" draggable={false} className="is-danger" onClick={(e) => act(e, () => onDelete(block))} aria-label="Eliminar bloque" title="Eliminar">
+            <Icon name="trash" size={14} />
+          </button>
+        </span>
+      </div>
       <BlockRenderer block={block} previewMode={previewMode} />
     </div>
   )

@@ -11,6 +11,8 @@ import RepeatableListField from './fields/RepeatableListField'
 import ImageField from './fields/ImageField'
 import ImageListField from './fields/ImageListField'
 import ColorField from './fields/ColorField'
+import PanelEmpty from '../Shared/PanelEmpty'
+import { SURFACE_OPTIONS } from '../../data/surfaces'
 
 // Los selects con pocas opciones se ven mejor (y son más rápidos de tocar)
 // como grupo de botones que como <select>; con más opciones un dropdown
@@ -39,22 +41,31 @@ export default function PropertiesPanel({ blockId }) {
   const block = state.canvas.blocks.find((b) => b.id === blockId)
 
   if (!block) {
-    return (
-      <aside className="w-72 min-h-0 flex-1 border-l border-[var(--app-border)] bg-[var(--app-bg)] p-4 text-sm text-[var(--app-muted)]">
-        Seleccioná un bloque del canvas para editar sus propiedades.
-      </aside>
-    )
+    return <PanelEmpty title="Elige un bloque del lienzo" body="Haz clic en cualquier sección para cambiar sus textos, fotos, botones y fondo." />
   }
 
   const schema = BLOCK_SCHEMA[block.type]
+  const position = state.canvas.blocks.findIndex((b) => b.id === block.id) + 1
 
   function updateProp(key, value) {
     dispatch({ type: 'BLOCK_UPDATE_PROPS', blockId: block.id, props: { [key]: value } })
   }
 
   return (
-    <aside className="w-72 min-h-0 flex-1 space-y-4 overflow-y-auto border-l border-[var(--app-border)] bg-[var(--app-bg)] p-4">
-      <h3 className="text-xs font-semibold uppercase tracking-wide text-[var(--app-muted)]">{schema.label}</h3>
+    <aside key={block.id} className="wf-panel wf-panel-swap space-y-5">
+      <div>
+        <h3 className="font-display-app text-2xl leading-tight" style={{ color: 'var(--app-ink)' }}>{schema.label}</h3>
+        <p className="mt-1 text-[11px] tabular-nums" style={{ color: 'var(--app-muted)' }}>
+          Sección {position} de {state.canvas.blocks.length}
+        </p>
+      </div>
+
+      <ButtonGroupField
+        field={{ label: 'Fondo de la sección' }}
+        value={block.surface ?? 'page'}
+        options={SURFACE_OPTIONS}
+        onChange={(surface) => dispatch({ type: 'BLOCK_SET_SURFACE', blockId: block.id, surface })}
+      />
 
       {schema.variants && (
         <ButtonGroupField
@@ -77,7 +88,7 @@ export default function PropertiesPanel({ blockId }) {
         )
       })}
 
-      <div className="space-y-3 border-t border-[var(--app-border)] pt-3">
+      <div className="space-y-3 border-t border-[var(--app-border)] pt-4">
         <label className="flex items-center justify-between text-xs">
           <span className="font-medium text-[var(--app-muted)]">Acento propio del bloque</span>
           <input

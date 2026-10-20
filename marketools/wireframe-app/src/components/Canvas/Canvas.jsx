@@ -3,6 +3,9 @@ import { useBuilder } from '../../state/BuilderContext'
 import { calcInsertIndex, readBlockRects } from '../../utils/dragPosition'
 import CanvasBlock from './CanvasBlock'
 import DropIndicator from './DropIndicator'
+import EmptyCanvas from './EmptyCanvas'
+import Icon from '../Shared/Icon'
+import { getStyleRef } from '../../data/styleReferences'
 
 const MIN_ZOOM = 0.4
 const MAX_ZOOM = 2
@@ -25,7 +28,56 @@ export default function Canvas({ selectedBlockId, onSelectBlock }) {
   // el drop.
   const [hoverIndex, setHoverIndex] = useState(null)
   const [zoom, setZoom] = useState(1)
+  const [fitZoom, setFitZoom] = useState(1)
+  // Mientras el alumno no toque el zoom, la página se ajusta sola al ancho
+  // disponible (al abrir, al cambiar celular/escritorio y al plegar paneles).
+  const userZoomed = useRef(false)
+
+  function manualZoom(update) {
+    userZoomed.current = true
+    setZoom((z) => clampZoom(typeof update === 'function' ? update(z) : update))
+  }
   const [undoState, setUndoState] = useState(null) // { block, atIndex } | null
+  const [replaying, setReplaying] = useState(false)
+  const styleId = state.theme.styleId
+
+  // "Ver animaciones": vuelve a correr la entrada de todas las secciones,
+  // escalonadas, con la curva y el movimiento del estilo elegido. También
+  // corre sola cuando se carga un borrador de estilo.
+  useEffect(() => {
+    if (!state.replayNonce) return
+    setReplaying(false)
+    const raf = requestAnimationFrame(() => setReplaying(true))
+    const t = setTimeout(() => setReplaying(false), 1400 + blocks.length * 90)
+    return () => {
+      cancelAnimationFrame(raf)
+      clearTimeout(t)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.replayNonce])
+
+  // Atajos: Supr/Borrar elimina el bloque seleccionado, Esc lo deselecciona,
+  // Ctrl/Cmd + D lo duplica. Nunca se disparan mientras se escribe en un campo.
+  useEffect(() => {
+    function onKey(e) {
+      const tag = e.target.tagName
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || e.target.isContentEditable) return
+      if (!selectedBlockId) return
+      const block = blocks.find((b) => b.id === selectedBlockId)
+      if (!block) return
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        e.preventDefault()
+        handleDeleteBlock(block)
+      } else if (e.key === 'Escape') {
+        onSelectBlock(null)
+      } else if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'd') {
+        e.preventDefault()
+        dispatch({ type: 'BLOCK_DUPLICATE', blockId: block.id })
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  })
 
   useEffect(() => {
     if (!undoState) return
@@ -54,7 +106,7 @@ export default function Canvas({ selectedBlockId, onSelectBlock }) {
     function onWheel(e) {
       if (!e.ctrlKey && !e.metaKey) return
       e.preventDefault()
-      setZoom((z) => clampZoom(z - e.deltaY * 0.01 * ZOOM_STEP * 5))
+      manualZoom((z) => z - e.deltaY * 0.01 * ZOOM_STEP * 5)
     }
     scrollArea.addEventListener('wheel', onWheel, { passive: false })
     return () => scrollArea.removeEventListener('wheel', onWheel)
@@ -127,12 +179,33 @@ export default function Canvas({ selectedBlockId, onSelectBlock }) {
   const previewMode = state.preview.mode
   const previewWidth = previewMode === 'mobile' ? 375 : 1440
 
+  // En un celular la vista de escritorio queda microscópica: arranca en la
+  // vista de celular (el alumno puede cambiarla igual con el selector).
+  useEffect(() => {
+    if (window.innerWidth < 700 && state.preview.mode === 'desktop') dispatch({ type: 'PREVIEW_SET_MODE', mode: 'mobile' })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
+    const area = scrollAreaRef.current
+    if (!area) return
+    function fit() {
+      const available = area.clientWidth - 48
+      const next = Math.round(clampZoom(Math.min(1, available / previewWidth)) * 100) / 100
+      setFitZoom(next)
+      if (!userZoomed.current) setZoom(next)
+    }
+    fit()
+    const ro = new ResizeObserver(fit)
+    ro.observe(area)
+    return () => ro.disconnect()
+  }, [previewWidth])
+
   return (
     <div className="relative min-w-0 flex-1">
       <div
         ref={scrollAreaRef}
-        className="h-full overflow-auto p-6"
-        style={{ background: 'var(--app-hover)' }}
+        className="wf-stage h-full overflow-auto px-6 pb-24 pt-6"
       >
         <div
           // El zoom usa la propiedad CSS `zoom` (no `transform: scale`) a
@@ -148,7 +221,9 @@ export default function Canvas({ selectedBlockId, onSelectBlock }) {
             onDrop={handleDrop}
             onClick={() => onSelectBlock(null)}
             data-font-scale=""
-            className="min-h-[400px] shadow-lg"
+            data-style={styleId ?? undefined}
+            data-preview={previewMode}
+            className={`wf-page min-h-[400px] ${replaying ? 'is-replaying' : ''}`}
             style={{
               width: previewWidth,
               background: 'var(--color-bg)',
@@ -158,20 +233,7 @@ export default function Canvas({ selectedBlockId, onSelectBlock }) {
               '--font-scale': state.theme.fontScale,
             }}
           >
-            {blocks.length === 0 && (
-              <div className="flex h-64 flex-col items-center justify-center gap-3 text-sm opacity-70">
-                <p>Arrastrá un bloque de la paleta para empezar</p>
-                <button
-                  onClick={() => dispatch({ type: 'CANVAS_LOAD_FUNNEL_DRAFT' })}
-                  className="rounded-full border px-4 py-2 text-xs font-medium"
-                  style={{ borderColor: 'currentColor', color: 'inherit' }}
-                >
-                  {[2, 3, 4, 5].includes(state.wizard.funnelId)
-                    ? 'O cargar el borrador sugerido para tu embudo'
-                    : 'O cargar un borrador simple para empezar'}
-                </button>
-              </div>
-            )}
+            {blocks.length === 0 && <EmptyCanvas funnelId={state.wizard.funnelId} />}
             {blocks.map((block, i) => (
               // `contents`: estos wrappers no deben generar caja propia. Si la
               // tuvieran, un header con position:sticky quedaría "atrapado"
@@ -183,6 +245,8 @@ export default function Canvas({ selectedBlockId, onSelectBlock }) {
                 <div onClick={(e) => e.stopPropagation()} className="contents">
                   <CanvasBlock
                     block={block}
+                    index={i}
+                    total={blocks.length}
                     previewMode={previewMode}
                     isSelected={block.id === selectedBlockId}
                     isDragging={block.id === draggingBlockId}
@@ -197,47 +261,58 @@ export default function Canvas({ selectedBlockId, onSelectBlock }) {
         </div>
       </div>
 
-      <div
-        className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full border bg-[var(--app-surface)] px-2 py-1 shadow-md"
-        style={{ borderColor: 'var(--app-border)' }}
-      >
+      <div className="wf-dock absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-1 px-1.5 py-1">
+        {blocks.length > 0 && (
+          <>
+            <button
+              onClick={() => dispatch({ type: 'CANVAS_REPLAY' })}
+              className="wf-dock-btn"
+              aria-label="Ver animaciones"
+              title={styleId ? `Reproduce las entradas al estilo ${getStyleRef(styleId)?.label}` : 'Reproduce las entradas de todas las secciones'}
+            >
+              <Icon name="replay" size={14} />
+              <span className="hidden whitespace-nowrap sm:inline">Ver animaciones</span>
+            </button>
+            <span className="wf-dock-sep" aria-hidden="true" />
+          </>
+        )}
         <button
-          onClick={() => setZoom((z) => clampZoom(z - ZOOM_STEP))}
+          onClick={() => manualZoom((z) => z - ZOOM_STEP)}
           disabled={zoom <= MIN_ZOOM}
-          className="flex h-6 w-6 items-center justify-center rounded-full text-sm font-bold disabled:opacity-30"
+          className="grid place-items-center disabled:opacity-30"
           style={{ color: 'var(--app-ink)' }}
           aria-label="Alejar"
         >
-          −
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true"><path d="M5 12h14" /></svg>
         </button>
-        <span className="w-10 text-center text-xs font-medium" style={{ color: 'var(--app-muted)' }}>
+        <span className="w-11 text-center text-xs font-medium tabular-nums" style={{ color: 'var(--app-muted)' }}>
           {Math.round(zoom * 100)}%
         </span>
         <button
-          onClick={() => setZoom((z) => clampZoom(z + ZOOM_STEP))}
+          onClick={() => manualZoom((z) => z + ZOOM_STEP)}
           disabled={zoom >= MAX_ZOOM}
-          className="flex h-6 w-6 items-center justify-center rounded-full text-sm font-bold disabled:opacity-30"
+          className="grid place-items-center disabled:opacity-30"
           style={{ color: 'var(--app-ink)' }}
           aria-label="Acercar"
         >
-          +
+          <Icon name="plus" size={14} strokeWidth={2.2} />
         </button>
-        {zoom !== 1 && (
+        {Math.abs(zoom - fitZoom) > 0.01 && (
           <button
-            onClick={() => setZoom(1)}
-            className="ml-1 rounded-full px-2 py-0.5 text-[10px] font-medium"
-            style={{ background: 'var(--app-bg)', color: 'var(--app-muted)' }}
+            onClick={() => {
+              userZoomed.current = false
+              setZoom(fitZoom)
+            }}
+            className="wf-dock-btn"
+            title="Ajusta la página al ancho disponible"
           >
-            100%
+            Ajustar
           </button>
         )}
       </div>
 
       {undoState && (
-        <div
-          className="absolute bottom-4 right-4 flex items-center gap-3 rounded-full border bg-[var(--app-surface)] px-4 py-2 shadow-md"
-          style={{ borderColor: 'var(--app-border)' }}
-        >
+        <div className="wf-toast absolute bottom-4 right-4 flex items-center gap-3 px-4 py-2" role="status">
           <span className="text-xs" style={{ color: 'var(--app-ink)' }}>
             Bloque eliminado
           </span>

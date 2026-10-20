@@ -5,7 +5,7 @@
 export const initialState = {
   wizard: {
     step: 0,
-    answers: { q1: null, q2: null, q3: null },
+    answers: { q1: null, q2: null, q3: null, q4: null },
     funnelId: null,
     completed: false,
   },
@@ -17,6 +17,8 @@ export const initialState = {
     headingFont: "'Inter', system-ui, sans-serif",
     bodyFont: "'Inter', system-ui, sans-serif",
     primaryColor: '#111111',
+    primaryTextColor: '#ffffff',
+    styleId: null,
     backgroundColor: '#ffffff',
     textColor: '#1a1a1a',
     accentColor: '#2f6fed',
@@ -32,5 +34,7 @@ export const initialState = {
     draggingPaletteType: null,
     hoverIndex: null,
   },
+  flashBlockId: null, // último bloque agregado: se anima su entrada y se lleva a la vista
+  replayNonce: 0, // cambia cada vez que se pide "Ver animaciones" del canvas
   animationPreview: null, // { blockId, type } | null — ver AnimationPanel/CanvasBlock
 }

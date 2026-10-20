@@ -14,9 +14,11 @@ function hydrateInitialState() {
   if (!saved) return initialState
   return {
     ...initialState,
-    wizard: saved.wizard ?? initialState.wizard,
+    wizard: saved.wizard ? { ...saved.wizard, answers: { ...initialState.wizard.answers, ...saved.wizard.answers } } : initialState.wizard,
     canvas: saved.canvas ?? initialState.canvas,
-    theme: saved.theme ?? initialState.theme,
+    // Merge con el tema inicial: un progreso guardado con una versión vieja
+    // no trae los campos nuevos (texto sobre el primario, estilo de referencia).
+    theme: { ...initialState.theme, ...(saved.theme ?? {}) },
   }
 }
 

@@ -18,10 +18,10 @@ export default function AboutBlock({ props, previewMode }) {
         />
         <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.35)' }} />
         <div className="relative max-w-lg">
-          <h2 className="text-2xl font-bold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--color-bg)' }}>
+          <h2 className="text-2xl font-bold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--color-on-primary)' }}>
             {renderEmphasis(props.title)}
           </h2>
-          <p className="mt-2 opacity-90" style={{ color: 'var(--color-bg)' }}>
+          <p className="mt-2 opacity-90" style={{ color: 'var(--color-on-primary)' }}>
             {renderEmphasis(props.bio)}
           </p>
         </div>

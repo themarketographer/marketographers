@@ -3,6 +3,7 @@
 // completo con fallback, listo para usar directo como font-family.
 
 export const FONT_OPTIONS = [
+  { value: "'Working', 'Poppins', system-ui, sans-serif", label: 'Working (display de Marketographers)' },
   { value: "'Inter', system-ui, sans-serif", label: 'Inter (sans neutra)' },
   { value: "'Poppins', system-ui, sans-serif", label: 'Poppins (sans geométrica)' },
   { value: "'Archivo Black', 'Helvetica Neue', sans-serif", label: 'Archivo Black (sans peso fuerte)' },

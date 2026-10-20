@@ -7,7 +7,7 @@ export default function VslBlock({ props }) {
     <div className="p-10 text-center">
       <div
         className="mx-auto flex aspect-video max-w-xl items-center justify-center text-sm opacity-70"
-        style={{ background: 'var(--color-primary)', color: 'var(--color-bg)', borderRadius: 'var(--radius)' }}
+        style={{ background: 'var(--color-primary)', color: 'var(--color-on-primary)', borderRadius: 'var(--radius)' }}
       >
         [VSL]
       </div>

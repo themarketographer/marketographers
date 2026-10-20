@@ -71,7 +71,23 @@
     </script>
     <script type="module" crossorigin src="/marketools/wireframe/assets/index-B8eVzR9k.js"></script>
     <link rel="stylesheet" crossorigin href="/marketools/wireframe/assets/index-BnCsIaXf.css">
-  </head>
+  <!-- Meta Pixel + API de conversiones (PageView, mismo patron del sitio) -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('set','autoConfig',false,'467504537642622');
+fbq('init','467504537642622');
+(function(){
+  var id='pageview_'+Date.now()+'_'+Math.random().toString(36).slice(2,10);
+  fbq('track','PageView',{},{eventID:id});
+  try{
+    var m=function(n){var r=document.cookie.match(new RegExp('(^| )'+n+'=([^;]+)'));return r?r[2]:null;};
+    fetch('/.netlify/functions/capi',{method:'POST',headers:{'Content-Type':'application/json'},keepalive:true,
+      body:JSON.stringify({event_name:'PageView',event_id:id,event_source_url:location.href,fbp:m('_fbp'),fbc:m('_fbc')})}).catch(function(){});
+  }catch(e){}
+})();
+</script>
+<noscript><img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=467504537642622&ev=PageView&noscript=1"></noscript>
+</head>
   <body>
     <div id="root"></div>
   </body>

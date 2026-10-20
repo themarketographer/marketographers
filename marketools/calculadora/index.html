@@ -149,7 +149,23 @@
     .tools-hero .eyebrow,.tools-hero h1,.tools-hero p.lead{animation:none;}
   }
 </style>
-<script>try{if(localStorage.getItem("mk-theme")==="light")document.documentElement.setAttribute("data-theme","light")}catch(e){}</script><link rel="stylesheet" href="/assets/fx.css"><link rel="stylesheet" href="/assets/p-calc.css"></head><body>
+<script>try{if(localStorage.getItem("mk-theme")==="light")document.documentElement.setAttribute("data-theme","light")}catch(e){}</script><link rel="stylesheet" href="/assets/fx.css"><link rel="stylesheet" href="/assets/p-calc.css"><!-- Meta Pixel + API de conversiones (PageView, mismo patron del sitio) -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('set','autoConfig',false,'467504537642622');
+fbq('init','467504537642622');
+(function(){
+  var id='pageview_'+Date.now()+'_'+Math.random().toString(36).slice(2,10);
+  fbq('track','PageView',{},{eventID:id});
+  try{
+    var m=function(n){var r=document.cookie.match(new RegExp('(^| )'+n+'=([^;]+)'));return r?r[2]:null;};
+    fetch('/.netlify/functions/capi',{method:'POST',headers:{'Content-Type':'application/json'},keepalive:true,
+      body:JSON.stringify({event_name:'PageView',event_id:id,event_source_url:location.href,fbp:m('_fbp'),fbc:m('_fbc')})}).catch(function(){});
+  }catch(e){}
+})();
+</script>
+<noscript><img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=467504537642622&ev=PageView&noscript=1"></noscript>
+</head><body>
 
 <div class="bar" id="bar"></div><header><div class="nav wrap"><a class="logo" href="/" aria-label="The Marketographers" data-t="pg_calculadora.t01" data-ta="href:pg_calculadora.h1">the marketo<i>g</i>raphers</a><div class="nav-links"><a href="/" data-t="pg_calculadora.t02" data-ta="href:pg_calculadora.h2">Inicio</a><a href="/cursos/" data-t="pg_calculadora.t03" data-ta="href:pg_calculadora.h3">Cursos</a><a href="/marketools/" aria-current="page" data-t="pg_calculadora.t04" data-ta="href:pg_calculadora.h4">MarkeTools</a><a href="/blog/" data-t="pg_calculadora.t05" data-ta="href:pg_calculadora.h5">Blog</a></div><div class="nav-actions"><a class="btn btn-whatsapp" href="https://api.whatsapp.com/send?phone=+59169422335" target="_blank" rel="noopener" data-t="pg_calculadora.t06" data-ta="href:pg_calculadora.h6">WhatsApp</a><a class="btn btn-gold" href="/#planes" data-t="pg_calculadora.t07" data-ta="href:pg_calculadora.h7">Únete</a></div></div></header>
 <section class="calc-hero"><div class="ring" style="width:520px;height:520px;right:-170px;top:-130px"></div><div class="ring" style="width:320px;height:320px;left:-120px;bottom:-150px"></div><div class="wrap"><p class="eyebrow" data-t="pg_calculadora.t08">· MarkeTools · Gratis, sin registro ·</p><h1 data-t="pg_calculadora.t09">Calcula cuánto cobrar <mark>por sesión</mark>, con tus números</h1><p class="lead" data-t="pg_calculadora.t10">Copiar el precio de otro fotógrafo es heredar sus errores de cálculo sin cobrar ni la herencia. Escribe tus datos y mira cuánto vale tu sesión de verdad.</p></div></section>

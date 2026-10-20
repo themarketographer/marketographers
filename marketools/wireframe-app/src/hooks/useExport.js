@@ -7,6 +7,7 @@ import { buildTrackingSection, TRACKING_REMINDER_NO_PIXEL, TRACKING_REMINDER_WIT
 import { STANDARD_EVENTS } from '../data/standardEvents'
 import { buildPixelSnippet, buildGa4Snippet } from '../data/trackingSnippets'
 import { parseRow } from '../utils/parseRow'
+import { buildWorkflowSection, buildSkillsSection } from '../data/workflowCopy'
 import { STYLE_REFS, GRAPHICA_REPO, getStyleRef } from '../data/styleReferences'
 import { SURFACE_PROMPT } from '../data/surfaces'
 
@@ -184,9 +185,8 @@ function buildMasterPromptSection(state, trackingConfig) {
   const lines = [
     '# PROMPT PARA GENERAR EL HTML DE LA LANDING',
     '',
-    'Sos un desarrollador front-end. Con la información de abajo, generá el HTML, CSS y JavaScript completo de',
-    'esta landing page — un solo archivo autocontenido, responsive, listo para publicar. No hace falta que sepas',
-    'nada más que lo que está en este documento: todos los datos de diseño, contenido y tracking están acá.',
+    'Con el plan de trabajo del inicio de este documento, el WIREFRAME y la información de abajo (diseño, contenido y',
+    'tracking) construyes esta landing en HTML, CSS y JavaScript, responsive y lista para publicar.',
     '',
     '## Sistema de diseño (aplicar a TODA la página, no solo a un bloque)',
     `- Tipografía de títulos: ${theme.headingFont}. ${
@@ -199,9 +199,9 @@ function buildMasterPromptSection(state, trackingConfig) {
     `- Color del texto sobre el primario: ${theme.primaryTextColor ?? theme.backgroundColor}`,
     `- Color de fondo general: ${theme.backgroundColor}`,
     `- Color de texto: ${theme.textColor}`,
-    `- Color de acento (botones, links, detalles clave): ${theme.accentColor}. Usalo en TODOS los CTAs de la página, no solo en uno.`,
+    `- Color de acento (botones, links, detalles clave): ${theme.accentColor}. Úsalo en TODOS los CTAs de la página, no solo en uno.`,
     `- Color del texto sobre el acento (texto de los botones): ${theme.accentTextColor}.`,
-    `- Radio de bordes por defecto: ${theme.radius} (recto ≈4px / redondeado ≈14px / muy redondeado ≈999px — interpretalo en botones, tarjetas e inputs).`,
+    `- Radio de bordes por defecto: ${theme.radius} (recto ≈4px / redondeado ≈14px / muy redondeado ≈999px — aplícalo en botones, tarjetas e inputs).`,
     `- Escala de tamaño de texto: ${Math.round(theme.fontScale * 100)}% del tamaño base de cada elemento (100% = tamaños estándar dados en cada bloque abajo).`,
     '- Texto entre **así** va en negrita, *así* en itálica, __así__ subrayado.',
     theme.styleId === 'graphica'
@@ -232,7 +232,7 @@ function buildMasterPromptSection(state, trackingConfig) {
     if (block.sourceRepo) lines.push(`   Inspirada en una sección de ${block.sourceRepo}: toma su estructura, no sus textos ni fotos. Los corchetes "[Inspirado en: ...]" son una guía de qué decir, se reescriben con la voz de esta marca.`)
     lines.push(`3. SEO: ${heading ? `título de esta sección en \`${heading}\`.` : 'sin encabezado de sección.'}${alt ? ` ${alt}` : ''}`)
     lines.push(`4. Responsive (celular vs escritorio): ${getResponsiveNote(block.type)}`)
-    lines.push(`5. Contenido real a usar (reemplazá cualquier corchete [así] por este texto tal cual; si está vacío, generá un placeholder de ejemplo creíble):`)
+    lines.push(`5. Contenido real a usar (usa este texto tal cual; lo que esté entre corchetes [así] es una guía: pregúntale al usuario su versión o escribe una propuesta en su voz y márcala para que la revise; si está vacío, genera un ejemplo creíble):`)
     visibleFields(schema, block.props).forEach((field) => {
       lines.push(`   - ${field.label}: ${formatPropValue(field, block.props[field.key])}`)
     })
@@ -280,11 +280,36 @@ function buildMasterPromptSection(state, trackingConfig) {
   return lines.join('\n')
 }
 
+// Orden del texto exportado: primero cómo trabajar (rol, skills y plan por
+// pasos), después el wireframe y al final el prompt con el diseño, el contenido
+// y el tracking. El plan va primero para que la IA lo lea antes que todo.
+function buildLeadSection(state, trackingConfig) {
+  return [
+    '# LEE ESTO PRIMERO: PLAN DE TRABAJO',
+    '',
+    'Eres un desarrollador front-end. Este documento tiene tres partes: este plan de trabajo, el WIREFRAME (los bloques de la',
+    'página, en orden) y el PROMPT con el diseño, el contenido y el tracking. No escribas código todavía: primero lee todo',
+    'el documento, luego empieza por el Paso 0.',
+    '',
+    buildSkillsSection(),
+    buildWorkflowSection({ funnelId: state.wizard.funnelId, hasPixel: Boolean(trackingConfig?.pixelId) }),
+  ].join('\n')
+}
+
 export function buildExport(state, trackingConfig) {
   const { blocks } = state.canvas
-  if (blocks.length === 0) return 'El canvas está vacío: agregá al menos un bloque antes de exportar.'
+  if (blocks.length === 0) return 'El canvas está vacío: agrega al menos un bloque antes de exportar.'
 
-  return [buildWireframeSection(blocks), '', '---', '', buildMasterPromptSection(state, trackingConfig)].join('\n')
+  return [
+    buildLeadSection(state, trackingConfig),
+    '---',
+    '',
+    buildWireframeSection(blocks),
+    '',
+    '---',
+    '',
+    buildMasterPromptSection(state, trackingConfig),
+  ].join('\n')
 }
 
 export function useExport() {

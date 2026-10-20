@@ -5,10 +5,10 @@
 // código de verdad dispara.
 
 export const TRACKING_REMINDER_NO_PIXEL =
-  'Todavía no hay un ID de Meta Pixel ni de Google Analytics 4 cargados. Dejá el bloque de tracking del <head> con comentarios placeholder: `<!-- META PIXEL: pegar aquí -->` y `<!-- GOOGLE TAG (GA4): pegar aquí -->`, para completarlos apenas existan esas cuentas.'
+  'Todavía no hay un ID de Meta Pixel ni de Google Analytics 4 cargados. Deja el bloque de tracking del <head> con comentarios placeholder: `<!-- META PIXEL: pegar aquí -->` y `<!-- GOOGLE TAG (GA4): pegar aquí -->`, para completarlos apenas existan esas cuentas.'
 
 export const TRACKING_REMINDER_WITH_PIXEL =
-  'El código de Meta Pixel y/o Google Analytics 4 de abajo va tal cual en el <head>, antes de </head>, en TODAS las páginas del sitio (landing, gracias, blog si existe). No inventes otro pixel ni otro ID: usá exactamente el que está acá.'
+  'El código de Meta Pixel y/o Google Analytics 4 de abajo va tal cual en el <head>, antes de </head>, en TODAS las páginas del sitio (landing, gracias, blog si existe). No inventes otro pixel ni otro ID: usa exactamente el que está acá.'
 
 export function buildTrackingSection(funnelId) {
   switch (funnelId) {

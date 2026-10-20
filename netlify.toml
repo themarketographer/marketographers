@@ -12,3 +12,22 @@
   to = "/404.html"
   status = 404
   force = true
+
+# Navegadores, WhatsApp e iOS piden estos íconos directo en la raíz del
+# dominio, aunque la página declare otro en <link rel="icon">. No existen
+# como archivo en el repo, así que devolvían 404 (visto en los logs de
+# Netlify). Se redirigen al logo que ya usa la home desde Cloudinary.
+[[redirects]]
+  from = "/favicon.ico"
+  to = "https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_png,w_48,h_48/v1755314905/Marketographers_Negro_S_F_tgh9z2.png"
+  status = 302
+
+[[redirects]]
+  from = "/apple-touch-icon.png"
+  to = "https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_png,w_180,h_180/v1755314905/Marketographers_Negro_S_F_tgh9z2.png"
+  status = 302
+
+[[redirects]]
+  from = "/apple-touch-icon-precomposed.png"
+  to = "https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_png,w_180,h_180/v1755314905/Marketographers_Negro_S_F_tgh9z2.png"
+  status = 302

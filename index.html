@@ -661,7 +661,7 @@ function cameFromBlog(){
 function sendCapiEvent(eventName, eventId, customData){
   try{
     fetch('/.netlify/functions/capi', {
-      method:'POST',
+      method:'POST',keepalive:true,
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
         event_name: eventName,
@@ -677,7 +677,7 @@ function sendCapiEvent(eventName, eventId, customData){
 function trackBoth(eventName, params){
   const id = makeEventId(eventName.toLowerCase());
   const fullParams = Object.assign({ origen: getOrigen() }, cameFromBlog() ? { referrer_path: getReferrerPath() } : {}, params || {});
-  fbq('track', eventName, fullParams, {eventID:id});
+  fbq(/^(PageView|ViewContent|Search|AddToCart|AddToWishlist|InitiateCheckout|AddPaymentInfo|Purchase|Lead|CompleteRegistration|Contact|CustomizeProduct|Donate|FindLocation|Schedule|StartTrial|SubmitApplication|Subscribe)$/.test(eventName) ? 'track' : 'trackCustom', eventName, fullParams, {eventID:id});
   sendCapiEvent(eventName, id, fullParams);
   try{ if(window.ttq) ttq.track(eventName, fullParams); }catch(e){}
 }

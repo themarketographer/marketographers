@@ -108,7 +108,7 @@ function getCookie(name){
 function sendCapiEvent(eventName, eventId, customData){
   try{
     fetch('/.netlify/functions/capi', {
-      method:'POST',
+      method:'POST',keepalive:true,
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
         event_name: eventName,
@@ -123,7 +123,7 @@ function sendCapiEvent(eventName, eventId, customData){
 }
 function trackBoth(eventName, params){
   const id = makeEventId(eventName.toLowerCase());
-  fbq('track', eventName, params || {}, {eventID:id});
+  fbq(/^(PageView|ViewContent|Search|AddToCart|AddToWishlist|InitiateCheckout|AddPaymentInfo|Purchase|Lead|CompleteRegistration|Contact|CustomizeProduct|Donate|FindLocation|Schedule|StartTrial|SubmitApplication|Subscribe)$/.test(eventName) ? 'track' : 'trackCustom', eventName, params || {}, {eventID:id});
   sendCapiEvent(eventName, id, params);
 }
 
@@ -154,10 +154,7 @@ trackBoth('ViewContent', {content_name:'El error que comete el 95% de los fotóg
       </div>
     </div>
     <div class="wrap">
-      <div class="article-cover img-placeholder" style="aspect-ratio:16/9;">
-        <span class="ph-tag">Imagen por reemplazar</span>
-        Portada del artículo — 1600×900px, formato WebP comprimido
-      </div>
+      <div class="article-cover"><img src="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1785200397/Banner_z6b496.png" alt="El error que comete el 95% de los fotógrafos con su portafolio" width="1600" height="900" decoding="async"></div>
     </div>
   </div>
 

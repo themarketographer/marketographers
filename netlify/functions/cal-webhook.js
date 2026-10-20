@@ -36,6 +36,17 @@ const EVENT_TYPE_CONFIG = {
     eventName: 'Lead',
     eventIdPrefix: 'admisiones',
   },
+  // Llamada de diagnóstico gratuita de marketographers.com/diagnostico. El
+  // navegador ya manda "Schedule" al confirmarse la reserva en el embed; aquí
+  // se manda "Lead" (otro nombre a propósito) para que Meta no los cuente como
+  // el mismo evento dos veces, y para tener una audiencia propia de gente que
+  // pidió diagnóstico, separada de admisiones.
+  diagnostico: {
+    audienceName: 'Agendaron diagnóstico - Marketographers',
+    audienceDescription: 'Gente que agendó la llamada de diagnóstico gratuita vía Cal.com (creada automáticamente)',
+    eventName: 'Lead',
+    eventIdPrefix: 'diagnostico',
+  },
   'ventas-para-fotografos': {
     audienceName: 'Registraron masterclass - Marketographers',
     audienceDescription: 'Gente que se registró a la masterclass gratuita vía Cal.com (creada automáticamente)',

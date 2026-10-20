@@ -145,7 +145,7 @@ function getCookie(name){
 function sendCapiEvent(eventName, eventId, customData){
   try{
     fetch('/.netlify/functions/capi', {
-      method:'POST',
+      method:'POST',keepalive:true,
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
         event_name: eventName,
@@ -160,7 +160,7 @@ function sendCapiEvent(eventName, eventId, customData){
 }
 function trackBoth(eventName, params){
   const id = makeEventId(eventName.toLowerCase());
-  fbq('track', eventName, params || {}, {eventID:id});
+  fbq(/^(PageView|ViewContent|Search|AddToCart|AddToWishlist|InitiateCheckout|AddPaymentInfo|Purchase|Lead|CompleteRegistration|Contact|CustomizeProduct|Donate|FindLocation|Schedule|StartTrial|SubmitApplication|Subscribe)$/.test(eventName) ? 'track' : 'trackCustom', eventName, params || {}, {eventID:id});
   sendCapiEvent(eventName, id, params);
 }
 

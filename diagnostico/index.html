@@ -451,7 +451,7 @@ function cameFromBlog(){
 function sendCapiEvent(eventName, eventId, customData){
   try{
     fetch('/.netlify/functions/capi', {
-      method:'POST',
+      method:'POST',keepalive:true,
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
         event_name: eventName,
@@ -467,7 +467,7 @@ function sendCapiEvent(eventName, eventId, customData){
 function trackBoth(eventName, params){
   const id = makeEventId(eventName.toLowerCase());
   const fullParams = Object.assign({ origen: getOrigen() }, cameFromBlog() ? { referrer_path: getReferrerPath() } : {}, params || {});
-  fbq('track', eventName, fullParams, {eventID:id});
+  fbq(/^(PageView|ViewContent|Search|AddToCart|AddToWishlist|InitiateCheckout|AddPaymentInfo|Purchase|Lead|CompleteRegistration|Contact|CustomizeProduct|Donate|FindLocation|Schedule|StartTrial|SubmitApplication|Subscribe)$/.test(eventName) ? 'track' : 'trackCustom', eventName, fullParams, {eventID:id});
   sendCapiEvent(eventName, id, fullParams);
   try{ if(window.ttq) ttq.track(eventName, fullParams); }catch(e){}
 }
@@ -956,14 +956,24 @@ document.querySelectorAll('.reveal, .reveal-stagger').forEach(function(el){ io.o
 // Cal.com emite un postMessage propio cuando la reserva se confirma dentro
 // del iframe; con Cal("on", ...) nos suscribimos a ese evento sin depender
 // de un click en un <a>, porque aquí la conversión ocurre DENTRO del embed.
-if(window.Cal){
-  Cal("on", {
-    action: "bookingSuccessful",
-    callback: function(){
-      trackBoth(mktEventName('Llamada de diagnóstico agendada (Cal.com)', 'Schedule'));
-    }
-  });
-}
+// El embed se inicia con el namespace "diagnostico" (Cal.ns.diagnostico), así
+// que el listener tiene que colgarse de ESE namespace: Cal("on") a secas escucha
+// la instancia global, que en esta página nunca agenda nada, y el evento jamás
+// se disparaba. Se escuchan las dos versiones del evento (Cal emite
+// bookingSuccessfulV2 en el embed actual y mantiene bookingSuccessful por
+// compatibilidad) con una bandera para contar una sola vez por reserva.
+(function(){
+  var agendado = false;
+  function onAgendado(){
+    if(agendado) return;
+    agendado = true;
+    trackBoth(mktEventName('Llamada de diagnóstico agendada (Cal.com)', 'Schedule'));
+  }
+  if(window.Cal && Cal.ns && Cal.ns.diagnostico){
+    Cal.ns.diagnostico("on", { action: "bookingSuccessfulV2", callback: onAgendado });
+    Cal.ns.diagnostico("on", { action: "bookingSuccessful", callback: onAgendado });
+  }
+})();
 
 // ---- Meta Pixel: Contact (WhatsApp) ----
 document.addEventListener('click', function(e){

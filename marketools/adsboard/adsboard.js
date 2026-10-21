@@ -169,7 +169,7 @@ E.aggregate = function (rows) {
     if (r.kind && (r.spend > 0 || r.results > 0)) { var bk = m.byKind[r.kind] = m.byKind[r.kind] || { spend: 0, results: 0 }; bk.spend += r.spend; bk.results += r.results; }
     m.spend += r.spend; m.impr += r.impr; m.clicks += r.clicks; m.results += r.results; m.lpv += r.lpv;
     m.v3 += r.v3; m.plays += r.plays; m.thru += r.thru; m.p25 += r.p25; m.p50 += r.p50; m.p75 += r.p75; m.p100 += r.p100;
-    m.revenue += r.revenue; m.avgWatchW += r.avgWatch * r.v3;
+    m.revenue += r.revenue; m.avgWatchW += r.avgWatch * r.plays;
     if (r.date && r.spend > 0) dates[r.date] = 1;
   });
   m.days = Object.keys(dates).length;
@@ -184,7 +184,7 @@ E.derive = function (m) {
   m.isVideo = m.v3 > 0;
   m.hook = m.impr && m.v3 ? m.v3 / m.impr : null;
   m.hold = m.v3 ? m.thru / m.v3 : null;
-  m.avgWatch = m.v3 && m.avgWatchW ? m.avgWatchW / m.v3 : null;
+  m.avgWatch = m.plays && m.avgWatchW ? m.avgWatchW / m.plays : null;
   m.retention = m.v3 ? [1, m.p25 / m.v3, m.p50 / m.v3, m.p75 / m.v3, m.p100 / m.v3] : null;
   m.roas = m.spend && m.revenue ? m.revenue / m.spend : null;
   return m;
@@ -354,7 +354,7 @@ E.scaleVerdict = function (d) {
 };
 
 /* ------------------------------ 5. Ritmo -------------------------------- */
-E.pacing = function (series, dailyBudget, info, todayISO) {
+E.pacing = function (series, dailyBudget, info, todayISO, offset) {
   var last7 = series.slice(-7), avg7 = last7.length ? sum(last7, function (d) { return d.spend; }) / last7.length : 0;
   var out = { avg7: avg7, dailyBudget: dailyBudget || 0, fill: null, projMonth: null, daysLeft: null };
   if (dailyBudget > 0) out.fill = avg7 / dailyBudget;
@@ -364,7 +364,7 @@ E.pacing = function (series, dailyBudget, info, todayISO) {
   out.projMonth = avg7 * left;
   out.daysLeft = left;
   if (info) {
-    var cap = num(info.spend_cap), spent = num(info.amount_spent);
+    var off = offset || 100, cap = num(info.spend_cap) / off, spent = num(info.amount_spent) / off;
     if (cap > 0) out.capLeft = cap - spent;
   }
   return out;
@@ -1285,7 +1285,7 @@ function safe(p, tag, R) { return p.catch(function (e) { R.errors.push({ tag: ta
 
 AB.loadData = function () {
   var acct = S.acct, rp = AB.rangeParams(), R = { errors: [], since: rp._since, until: rp._until };
-  var base = { time_range: rp.time_range };
+  var base = { time_range: rp.time_range, use_unified_attribution_setting: true };
   var jobs = [
     safe(G.all(acct + "/insights", Object.assign({ level: "ad", time_increment: 1, fields: INS, limit: 500 }, base), 40).then(function (d) { R.daily = d; }), "insights diarios", R),
     safe(G.all(acct + "/insights", Object.assign({ level: "ad", fields: INS + ",quality_ranking,engagement_rate_ranking,conversion_rate_ranking", limit: 500 }, base), 12).then(function (d) { R.totals = d; }), "insights totales", R),
@@ -1325,7 +1325,8 @@ AB.analyze = function (R) {
   var targetSource = manual > 0 ? "manual" : (goal.ok ? "calculadora" : "promedio");
   var fmt = { money: F.money };
 
-  function seriesOf(list) { return E.fillDays(E.dailySeries(list), since, until); }
+  var todayStr = AB.todayIn(S.tz), serUntil = until >= todayStr ? E.addDays(todayStr, -1) : until;
+  function seriesOf(list) { return E.fillDays(E.dailySeries(list.filter(function (r) { return !r.date || r.date <= serUntil; })), since, serUntil); }
   var accSeries = seriesOf(rows);
   var byAd = E.groupBy(rows, "adId"), byAdset = E.groupBy(rows, "adsetId"), byCamp = E.groupBy(rows, "campaignId");
 
@@ -1384,20 +1385,19 @@ AB.analyze = function (R) {
   var adsetsByCamp = E.groupBy(adsets, "campaignId");
   var campaigns = R.camps.map(function (c) {
     var rr = byCamp[c.id] || [], m = E.aggregate(rr), ser = seriesOf(rr);
-    var actSets = (adsetsByCamp[c.id] || []).filter(function (x) { return x.status === "ACTIVE"; });
+    var actSets = (adsetsByCamp[c.id] || []).filter(function (x) { return x.effStatus === "ACTIVE"; });
     var budget = c.daily_budget ? E.num(c.daily_budget) / offset : sum(actSets, function (x) { return x.budget; });
     return { id: c.id, name: c.name, status: c.status, effStatus: c.effective_status, objective: c.objective, m: m, series: ser, budget: budget, cbo: !!c.daily_budget, verdict: E.verdictCost(m, target), profit: E.entityProfit(m, S.goal), dim: E.diminishing(ser) };
   });
 
   /* ---- cuenta ---- */
-  var activeSets = adsets.filter(function (s) { return s.status === "ACTIVE"; });
-  var dailyBudget = sum(activeSets, function (s) { return s.budget; }) || sum(campaigns.filter(function (c) { return c.status === "ACTIVE" && c.cbo; }), function (c) { return c.budget; });
+  var dailyBudget = sum(campaigns.filter(function (c) { return c.effStatus === "ACTIVE"; }), function (c) { return c.budget; });
   var third = Math.max(2, Math.ceil(accSeries.filter(function (d) { return d.impr > 0; }).length / 3));
   var act = accSeries.filter(function (d) { return d.impr > 0; });
   var early = E.aggregate(act.slice(0, third)), late = E.aggregate(act.slice(-third));
   var account = { m: accM, series: accSeries, spend: accM.spend, cpmRise: (act.length >= 6 && early.cpm) ? (late.cpm - early.cpm) / early.cpm : null, verdict: E.verdictCost(accM, target) };
   var dim = E.diminishing(accSeries);
-  var pacing = E.pacing(accSeries, dailyBudget, R.info || null);
+  var pacing = E.pacing(accSeries, dailyBudget, R.info || null, todayStr, offset);
   var activeAds = ads.filter(function (a) { return a.effStatus === "ACTIVE"; });
 
   var A = {
@@ -1414,7 +1414,7 @@ AB.analyze = function (R) {
 
 /* ----------------------- desgloses (carga bajo demanda) ------------------ */
 AB.loadSegments = function () {
-  var acct = S.acct, rp = AB.rangeParams(), base = { level: "account", time_range: rp.time_range, fields: "spend,impressions,inline_link_clicks,actions", limit: 200 };
+  var acct = S.acct, rp = AB.rangeParams(), base = { level: "account", time_range: rp.time_range, use_unified_attribution_setting: true, fields: "spend,impressions,inline_link_clicks,actions", limit: 200 };
   function one(bd) { return G.all(acct + "/insights", Object.assign({ breakdowns: bd }, base), 3).catch(function (e) { return { error: e.userMsg || e.message }; }); }
   return Promise.all([one("publisher_platform,platform_position"), one("age,gender"), one("hourly_stats_aggregated_by_advertiser_time_zone")]).then(function (r) { return { place: r[0], age: r[1], hour: r[2] }; });
 };
@@ -2314,7 +2314,7 @@ var AB = root.AB, S = AB.S, G = AB.G, F = AB.F, UI = AB.UI, T = AB.T, Ch = AB.Ch
 
 /* desglose por texto y titular (anuncios flexibles o de contenido dinámico) */
 AB.loadCopy = function () {
-  var acct = S.acct, rp = AB.rangeParams(), base = { level: "account", time_range: rp.time_range, fields: "spend,impressions,inline_link_clicks,actions", limit: 200 };
+  var acct = S.acct, rp = AB.rangeParams(), base = { level: "account", time_range: rp.time_range, use_unified_attribution_setting: true, fields: "spend,impressions,inline_link_clicks,actions", limit: 200 };
   function one(bd) { return G.all(acct + "/insights", Object.assign({ breakdowns: bd }, base), 3).catch(function (e) { return { error: e.userMsg || e.message }; }); }
   return Promise.all([one("body_asset"), one("title_asset"), one("image_asset")]).then(function (r) { return { body: r[0], title: r[1], image: r[2] }; });
 };
@@ -3310,9 +3310,11 @@ function headerAlerts() {
 /* -------------------------------- datos ---------------------------------- */
 AB.refresh = function (silent) {
   if (!silent) UI.loading(true, "Leyendo tu cuenta…");
+  var rid = S._rid = (S._rid || 0) + 1;
   return AB.loadData().then(function (R) {
+    if (rid !== S._rid) return null;
     S.data = R; S.seg = null; S.copy = null; S.rules = null; S.attr = null; S.vrules = null; return AB.recompute();
-  }).then(function () { UI.loading(false); }).catch(function (e) {
+  }).then(function () { if (rid === S._rid) UI.loading(false); }).catch(function (e) {
     UI.loading(false);
     if (e.fb && e.fb.code === 190) { S.token = null; S.mode = "gate"; showGate(); UI.toast(e.userMsg, "bad"); return; }
     UI.toast(e.userMsg || e.message || "No se pudieron cargar los datos", "bad");

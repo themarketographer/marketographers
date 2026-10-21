@@ -92,21 +92,42 @@ E.act = function (list, types) {
   }
   return 0;
 };
-/* metric = clave elegida por el usuario; objective = objetivo de la campaña */
-E.pickResult = function (actions, metric, objective) {
+/* Tipos de acción que Meta cuenta como "Resultado" según el objeto promocionado del conjunto.
+   Conversión personalizada: offsite_conversion.custom.<id>. Evento propio del píxel: fb_pixel_custom. */
+E.PIXEL_EVENT_KEY = { LEAD: "leads", PURCHASE: "purchases", INITIATED_CHECKOUT: "checkout", COMPLETE_REGISTRATION: ["complete_registration", "omni_complete_registration", "offsite_conversion.fb_pixel_complete_registration"] };
+E.promotedTypes = function (po) {
+  if (!po) return null;
+  if (po.custom_conversion_id) return ["offsite_conversion.custom." + po.custom_conversion_id];
+  if (po.custom_event_type) {
+    var k = E.PIXEL_EVENT_KEY[po.custom_event_type];
+    if (k) return typeof k === "string" ? E.RESULT_TYPES[k] : k;
+    if (po.custom_event_type === "OTHER") return ["offsite_conversion.fb_pixel_custom"];
+  }
+  return null;
+};
+/* Conversiones personalizadas presentes en la lista, por si el conjunto no declara objeto promocionado */
+E.anyCustom = function (list) {
+  if (!list) return 0;
+  for (var i = 0; i < list.length; i++) if (/^offsite_conversion\.custom\./.test(list[i].action_type)) return num(list[i].value);
+  return 0;
+};
+/* metric = clave elegida por el usuario; objective = objetivo de la campaña; promoted = objeto promocionado del conjunto */
+E.pickResult = function (actions, metric, objective, promoted) {
   if (metric && metric !== "auto") return E.act(actions, E.RESULT_TYPES[metric] || []);
+  var pt = E.promotedTypes(promoted);
+  if (pt) { var pv = E.act(actions, pt); if (pv > 0) return pv; }
   var order = E.AUTO_BY_OBJECTIVE[objective] || ["purchases", "checkout", "leads", "messages", "lpv", "clicks"];
   for (var i = 0; i < order.length; i++) {
     var v = E.act(actions, E.RESULT_TYPES[order[i]]);
     if (v > 0) return v;
   }
-  return 0;
+  return E.anyCustom(actions);
 };
 E.actionValue = function (list, types) { return E.act(list, types); };
 
 /* --------------------------- normalizar filas ---------------------------- */
 E.videoCount = function (list) { return list && list.length ? num(list[0].value) : 0; };
-E.normRow = function (r, metric, objectiveOf) {
+E.normRow = function (r, metric, objectiveOf, promotedOf) {
   var obj = objectiveOf ? objectiveOf(r) : "";
   var v3 = E.act(r.actions, ["video_view"]);
   var plays = E.videoCount(r.video_play_actions);
@@ -116,7 +137,7 @@ E.normRow = function (r, metric, objectiveOf) {
     campaignId: r.campaign_id, campaignName: r.campaign_name,
     spend: num(r.spend), impr: num(r.impressions), reach: num(r.reach), freq: num(r.frequency),
     clicks: r.inline_link_clicks !== undefined ? num(r.inline_link_clicks) : E.act(r.actions, ["link_click"]),
-    results: E.pickResult(r.actions, metric, obj),
+    results: E.pickResult(r.actions, metric, obj, promotedOf ? promotedOf(r) : null),
     lpv: E.act(r.actions, E.RESULT_TYPES.lpv),
     v3: v3, plays: plays || v3,
     thru: E.videoCount(r.video_thruplay_watched_actions),
@@ -1248,7 +1269,7 @@ AB.loadData = function () {
     safe(G.all(acct + "/insights", Object.assign({ level: "ad", time_increment: 1, fields: INS, limit: 500 }, base), 10).then(function (d) { R.daily = d; }), "insights diarios", R),
     safe(G.all(acct + "/insights", Object.assign({ level: "ad", fields: INS + ",quality_ranking,engagement_rate_ranking,conversion_rate_ranking", limit: 500 }, base), 4).then(function (d) { R.totals = d; }), "insights totales", R),
     safe(G.all(acct + "/campaigns", { fields: "id,name,status,effective_status,objective,daily_budget,lifetime_budget,buying_type", limit: 200 }, 3).then(function (d) { R.camps = d; }), "campañas", R),
-    safe(G.all(acct + "/adsets", { fields: "id,name,status,effective_status,campaign_id,daily_budget,lifetime_budget,optimization_goal,learning_stage_info,targeting,bid_strategy", limit: 200 }, 3).then(function (d) { R.adsets = d; }), "conjuntos", R),
+    safe(G.all(acct + "/adsets", { fields: "id,name,status,effective_status,campaign_id,daily_budget,lifetime_budget,optimization_goal,promoted_object,learning_stage_info,targeting,bid_strategy", limit: 200 }, 3).then(function (d) { R.adsets = d; }), "conjuntos", R),
     safe(G.all(acct + "/ads", { fields: "id,name,status,effective_status,adset_id,campaign_id,created_time,creative.thumbnail_width(480).thumbnail_height(480){id,thumbnail_url,image_url,video_id}", limit: 200 }, 3).then(function (d) { R.ads = d; }), "anuncios", R),
     safe(G.get(acct + "/adspixels", { fields: "id,name,last_fired_time,is_created_by_business" }).then(function (j) { R.pixels = j.data || []; }), "píxeles", R),
     safe(G.get(acct + "/customaudiences", { fields: "id,name,subtype,approximate_count_lower_bound,approximate_count_upper_bound,delivery_status", limit: 60 }).then(function (j) { R.auds = j.data || []; }), "audiencias", R),
@@ -1265,8 +1286,10 @@ AB.analyze = function (R) {
   var offset = S.offset, since = R.since, until = R.until;
   var objMap = {}; R.camps.forEach(function (c) { objMap[c.id] = c.objective; });
   var objOf = function (r) { return objMap[r.campaign_id] || ""; };
-  var rows = R.daily.map(function (r) { return E.normRow(r, S.metric, objOf); });
-  var totals = R.totals.map(function (r) { return E.normRow(r, S.metric, objOf); });
+  var poMap = {}; R.adsets.forEach(function (a) { poMap[a.id] = a.promoted_object; });
+  var poOf = function (r) { return poMap[r.adset_id]; };
+  var rows = R.daily.map(function (r) { return E.normRow(r, S.metric, objOf, poOf); });
+  var totals = R.totals.map(function (r) { return E.normRow(r, S.metric, objOf, poOf); });
   var totRaw = {}; R.totals.forEach(function (r) { totRaw[r.ad_id] = r; });
 
   var goal = E.profitGoal(S.goal);

@@ -85,6 +85,14 @@ E.AUTO_BY_OBJECTIVE = {
   OUTCOME_AWARENESS: [],
   OUTCOME_APP_PROMOTION: []
 };
+E.kindTypes = function (kind) {
+  if (E.RESULT_TYPES[kind]) return E.RESULT_TYPES[kind];
+  var cm = /^custom\.(\d+)$/.exec(kind || "");
+  if (cm) return ["offsite_conversion.custom." + cm[1]];
+  if (kind === "pixel_custom") return ["offsite_conversion.fb_pixel_custom"];
+  if (kind === "complete_registration") return E.PIXEL_EVENT_KEY.COMPLETE_REGISTRATION;
+  return [];
+};
 E.act = function (list, types) {
   if (!list || !list.length) return 0;
   for (var t = 0; t < types.length; t++) {
@@ -92,21 +100,52 @@ E.act = function (list, types) {
   }
   return 0;
 };
-/* metric = clave elegida por el usuario; objective = objetivo de la campaña */
-E.pickResult = function (actions, metric, objective) {
-  if (metric && metric !== "auto") return E.act(actions, E.RESULT_TYPES[metric] || []);
+/* Tipos de acción que Meta cuenta como "Resultado" según el objeto promocionado del conjunto.
+   Conversión personalizada: offsite_conversion.custom.<id>. Evento propio del píxel: fb_pixel_custom. */
+E.PIXEL_EVENT_KEY = { LEAD: "leads", PURCHASE: "purchases", INITIATED_CHECKOUT: "checkout", COMPLETE_REGISTRATION: ["complete_registration", "omni_complete_registration", "offsite_conversion.fb_pixel_complete_registration"] };
+E.promotedTypes = function (po) {
+  if (!po) return null;
+  if (po.custom_conversion_id) return ["offsite_conversion.custom." + po.custom_conversion_id];
+  if (po.custom_event_type) {
+    var k = E.PIXEL_EVENT_KEY[po.custom_event_type];
+    if (k) return typeof k === "string" ? E.RESULT_TYPES[k] : k;
+    if (po.custom_event_type === "OTHER") return ["offsite_conversion.fb_pixel_custom"];
+  }
+  return null;
+};
+/* Conversiones personalizadas presentes en la lista, por si el conjunto no declara objeto promocionado */
+E.anyCustom = function (list) {
+  if (!list) return 0;
+  for (var i = 0; i < list.length; i++) if (/^offsite_conversion\.custom\./.test(list[i].action_type)) return num(list[i].value);
+  return 0;
+};
+/* metric = clave elegida por el usuario; objective = objetivo de la campaña; promoted = objeto promocionado del conjunto */
+E.pickResult = function (actions, metric, objective, promoted) {
+  if (metric && metric !== "auto") return E.act(actions, E.kindTypes(metric));
+  var pt = E.promotedTypes(promoted);
+  if (pt) { var pv = E.act(actions, pt); if (pv > 0) return pv; }
   var order = E.AUTO_BY_OBJECTIVE[objective] || ["purchases", "checkout", "leads", "messages", "lpv", "clicks"];
   for (var i = 0; i < order.length; i++) {
     var v = E.act(actions, E.RESULT_TYPES[order[i]]);
     if (v > 0) return v;
   }
-  return 0;
+  return E.anyCustom(actions);
+};
+/* Tipo de resultado que le corresponde a una fila: sirve para no mezclar peras con manzanas al sumar */
+E.resultKind = function (promoted, objective) {
+  if (promoted) {
+    if (promoted.custom_conversion_id) return "custom." + promoted.custom_conversion_id;
+    var t = promoted.custom_event_type;
+    if (t === "OTHER") return "pixel_custom";
+    if (t && E.PIXEL_EVENT_KEY[t]) return typeof E.PIXEL_EVENT_KEY[t] === "string" ? E.PIXEL_EVENT_KEY[t] : "complete_registration";
+  }
+  return (E.AUTO_BY_OBJECTIVE[objective] || [])[0] || "auto";
 };
 E.actionValue = function (list, types) { return E.act(list, types); };
 
 /* --------------------------- normalizar filas ---------------------------- */
 E.videoCount = function (list) { return list && list.length ? num(list[0].value) : 0; };
-E.normRow = function (r, metric, objectiveOf) {
+E.normRow = function (r, metric, objectiveOf, promotedOf) {
   var obj = objectiveOf ? objectiveOf(r) : "";
   var v3 = E.act(r.actions, ["video_view"]);
   var plays = E.videoCount(r.video_play_actions);
@@ -116,7 +155,8 @@ E.normRow = function (r, metric, objectiveOf) {
     campaignId: r.campaign_id, campaignName: r.campaign_name,
     spend: num(r.spend), impr: num(r.impressions), reach: num(r.reach), freq: num(r.frequency),
     clicks: r.inline_link_clicks !== undefined ? num(r.inline_link_clicks) : E.act(r.actions, ["link_click"]),
-    results: E.pickResult(r.actions, metric, obj),
+    results: E.pickResult(r.actions, metric, obj, promotedOf ? promotedOf(r) : null),
+    kind: (metric && metric !== "auto") ? metric : E.resultKind(promotedOf ? promotedOf(r) : null, obj),
     lpv: E.act(r.actions, E.RESULT_TYPES.lpv),
     v3: v3, plays: plays || v3,
     thru: E.videoCount(r.video_thruplay_watched_actions),
@@ -132,10 +172,12 @@ E.normRow = function (r, metric, objectiveOf) {
 E.aggregate = function (rows) {
   var m = { spend: 0, impr: 0, reach: 0, clicks: 0, results: 0, lpv: 0, v3: 0, plays: 0, thru: 0, p25: 0, p50: 0, p75: 0, p100: 0, revenue: 0, avgWatchW: 0, days: 0 };
   var dates = {};
+  m.byKind = {};
   rows.forEach(function (r) {
+    if (r.kind && (r.spend > 0 || r.results > 0)) { var bk = m.byKind[r.kind] = m.byKind[r.kind] || { spend: 0, results: 0 }; bk.spend += r.spend; bk.results += r.results; }
     m.spend += r.spend; m.impr += r.impr; m.clicks += r.clicks; m.results += r.results; m.lpv += r.lpv;
     m.v3 += r.v3; m.plays += r.plays; m.thru += r.thru; m.p25 += r.p25; m.p50 += r.p50; m.p75 += r.p75; m.p100 += r.p100;
-    m.revenue += r.revenue; m.avgWatchW += r.avgWatch * r.v3;
+    m.revenue += r.revenue; m.avgWatchW += r.avgWatch * r.plays;
     if (r.date && r.spend > 0) dates[r.date] = 1;
   });
   m.days = Object.keys(dates).length;
@@ -150,7 +192,7 @@ E.derive = function (m) {
   m.isVideo = m.v3 > 0;
   m.hook = m.impr && m.v3 ? m.v3 / m.impr : null;
   m.hold = m.v3 ? m.thru / m.v3 : null;
-  m.avgWatch = m.v3 && m.avgWatchW ? m.avgWatchW / m.v3 : null;
+  m.avgWatch = m.plays && m.avgWatchW ? m.avgWatchW / m.plays : null;
   m.retention = m.v3 ? [1, m.p25 / m.v3, m.p50 / m.v3, m.p75 / m.v3, m.p100 / m.v3] : null;
   m.roas = m.spend && m.revenue ? m.revenue / m.spend : null;
   return m;
@@ -320,7 +362,7 @@ E.scaleVerdict = function (d) {
 };
 
 /* ------------------------------ 5. Ritmo -------------------------------- */
-E.pacing = function (series, dailyBudget, info, todayISO) {
+E.pacing = function (series, dailyBudget, info, todayISO, offset) {
   var last7 = series.slice(-7), avg7 = last7.length ? sum(last7, function (d) { return d.spend; }) / last7.length : 0;
   var out = { avg7: avg7, dailyBudget: dailyBudget || 0, fill: null, projMonth: null, daysLeft: null };
   if (dailyBudget > 0) out.fill = avg7 / dailyBudget;
@@ -330,7 +372,7 @@ E.pacing = function (series, dailyBudget, info, todayISO) {
   out.projMonth = avg7 * left;
   out.daysLeft = left;
   if (info) {
-    var cap = num(info.spend_cap), spent = num(info.amount_spent);
+    var off = offset || 100, cap = num(info.spend_cap) / off, spent = num(info.amount_spent) / off;
     if (cap > 0) out.capLeft = cap - spent;
   }
   return out;
@@ -676,6 +718,7 @@ M.graph = function (method, path, p, body) {
         if (kind === "campaigns") return { data: U.campaigns.map(function (c) { return { id: c.id, name: c.name, status: c.status, effective_status: c.status, objective: c.objective, buying_type: "AUCTION" }; }) };
         if (kind === "adsets") return { data: U.adsets.map(function (a) { return { id: a.id, name: a.name, status: a.status, effective_status: a.effective_status, campaign_id: a.campaign_id, daily_budget: String(a.daily_budget), optimization_goal: a.optimization_goal, learning_stage_info: a.learning_stage_info, targeting: a.targeting, billing_event: "IMPRESSIONS", bid_strategy: "LOWEST_COST_WITHOUT_CAP" }; }) };
         if (kind === "ads") return { data: U.ads.map(function (a) { return { id: a.id, name: a.name, status: a.status, effective_status: a.effective_status, adset_id: a.adset_id, campaign_id: a.campaign_id, created_time: a.created_time, creative: a.creative }; }) };
+        if (kind === "customconversions") return { data: [] };
         if (kind === "adspixels") return { data: [{ id: "px1", name: "Pixel Estudio Graphica", last_fired_time: new Date(Date.now() - 3600e3).toISOString(), is_created_by_business: true }, { id: "px2", name: "Desactivada 1", last_fired_time: null }] };
         if (kind === "customaudiences") return { data: [
           { id: "au1", name: "Compradores 90 días", subtype: "CUSTOM", approximate_count_lower_bound: 820, approximate_count_upper_bound: 950, delivery_status: { code: 200, description: "Lista" } },
@@ -769,7 +812,7 @@ C.run = function (A) {
   var activeAds = A.ads.filter(function (a) { return a.status === "ACTIVE" || a.effStatus === "ACTIVE"; });
 
   A.ads.forEach(function (ad) {
-    var m = ad.m, active = ad.effStatus === "ACTIVE" || ad.status === "ACTIVE";
+    var m = ad.m, active = (ad.effStatus || ad.status) === "ACTIVE";
     if (ad.effStatus === "DISAPPROVED" || ad.effStatus === "WITH_ISSUES") {
       add({ id: "rej-" + ad.id, sev: "r", title: "Anuncio con problemas de aprobación: " + ad.name, why: "Meta lo frenó por política o por un error de configuración. Cada día así es entrega perdida.",
         fix: "Ábrelo en Ads Manager, lee el motivo y corrige. Evita promesas de resultado garantizado y frases que asumen atributos personales de quien mira.", entity: { type: "ad", id: ad.id }, impact: 1 });
@@ -814,7 +857,7 @@ C.run = function (A) {
   });
 
   A.adsets.forEach(function (s) {
-    if (s.status !== "ACTIVE") return;
+    if ((s.effStatus || s.status) !== "ACTIVE") return;
     var m = s.m;
     if (s.freq && s.freq >= 3.5 && m.spend > 0) {
       add({ id: "freq-" + s.id, sev: s.freq >= 4.5 ? "r" : "y", title: "Frecuencia alta en \"" + s.name + "\": " + s.freq.toFixed(1), why: "La misma gente ve tus anuncios 3,5 veces o más. En audiencias frías eso suele acompañar caídas de CTR y subidas de costo.",
@@ -845,7 +888,7 @@ C.run = function (A) {
   /* Rentabilidad por campaña */
   if (A.goal && A.goal.ok) {
     A.campaigns.forEach(function (c) {
-      if (c.status !== "ACTIVE" || !c.profit || c.m.spend < target * 2) return;
+      if ((c.effStatus || c.status) !== "ACTIVE" || !c.profit || c.m.spend < target * 2) return;
       if (c.profit.net < 0 && c.m.results >= 5) {
         add({ id: "loss-" + c.id, sev: "r", title: "\"" + c.name + "\" pierde dinero según tu calculadora", why: "Gastó " + money(c.m.spend) + " y con tu tasa de cierre esperada devuelve " + money(c.profit.gain) + " de ganancia limpia.",
           fix: "Sube el cierre (respuesta más rápida, oferta más clara) o baja el costo por resultado antes de escalar.", entity: { type: "campaign", id: c.id }, impact: -c.profit.net });
@@ -1014,9 +1057,11 @@ G.all = function (path, params, maxPages) {
   function step(p) {
     return p.then(function (j) {
       out = out.concat(j.data || []); pages++;
-      if (j.paging && j.paging.next && pages < (maxPages || 8) && !S.demo) {
+      var more = !!(j.paging && j.paging.next);
+      if (more && pages < (maxPages || 8) && !S.demo) {
         return step(fetch(j.paging.next).then(function (r) { return r.json().then(function (jj) { if (jj.error) throw fbError(jj, r.status); return jj; }); }));
       }
+      out.truncated = more && !S.demo;
       return out;
     });
   }
@@ -1058,10 +1103,15 @@ UI.confirm = function (o) {
 UI.loading = function (on, text) { var l = $("loader"); l.classList.toggle("on", !!on); if (text) l.querySelector(".t").textContent = text; };
 
 /* -------------------------- rangos de fechas --------------------------- */
+/* Fecha de hoy (YYYY-MM-DD) en la zona horaria de la cuenta publicitaria; Meta corta los días con esa zona */
+AB.todayIn = function (tz) {
+  try { if (tz) return new Intl.DateTimeFormat("en-CA", { timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date()); } catch (e) {}
+  var d = new Date(); return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+};
 AB.rangeParams = function () {
   if (S.range === "custom" && S.customFrom && S.customTo) return { time_range: JSON.stringify({ since: S.customFrom, until: S.customTo }), _since: S.customFrom, _until: S.customTo };
   var n = parseInt(S.range, 10) || 30;
-  var until = new Date(Date.now() - 864e5).toISOString().slice(0, 10);
+  var until = AB.todayIn(S.tz);
   var since = E.addDays(until, -(n - 1));
   return { time_range: JSON.stringify({ since: since, until: until }), _since: since, _until: until };
 };
@@ -1243,19 +1293,27 @@ function safe(p, tag, R) { return p.catch(function (e) { R.errors.push({ tag: ta
 
 AB.loadData = function () {
   var acct = S.acct, rp = AB.rangeParams(), R = { errors: [], since: rp._since, until: rp._until };
-  var base = { time_range: rp.time_range };
+  var base = { time_range: rp.time_range, use_unified_attribution_setting: true };
   var jobs = [
-    safe(G.all(acct + "/insights", Object.assign({ level: "ad", time_increment: 1, fields: INS, limit: 500 }, base), 10).then(function (d) { R.daily = d; }), "insights diarios", R),
-    safe(G.all(acct + "/insights", Object.assign({ level: "ad", fields: INS + ",quality_ranking,engagement_rate_ranking,conversion_rate_ranking", limit: 500 }, base), 4).then(function (d) { R.totals = d; }), "insights totales", R),
-    safe(G.all(acct + "/campaigns", { fields: "id,name,status,effective_status,objective,daily_budget,lifetime_budget,buying_type", limit: 200 }, 3).then(function (d) { R.camps = d; }), "campañas", R),
-    safe(G.all(acct + "/adsets", { fields: "id,name,status,effective_status,campaign_id,daily_budget,lifetime_budget,optimization_goal,learning_stage_info,targeting,bid_strategy", limit: 200 }, 3).then(function (d) { R.adsets = d; }), "conjuntos", R),
-    safe(G.all(acct + "/ads", { fields: "id,name,status,effective_status,adset_id,campaign_id,created_time,creative.thumbnail_width(480).thumbnail_height(480){id,thumbnail_url,image_url,video_id}", limit: 200 }, 3).then(function (d) { R.ads = d; }), "anuncios", R),
+    safe(G.all(acct + "/insights", Object.assign({ level: "ad", time_increment: 1, fields: INS, limit: 500 }, base), 40).then(function (d) { R.daily = d; }), "insights diarios", R),
+    safe(G.all(acct + "/insights", Object.assign({ level: "ad", fields: INS + ",quality_ranking,engagement_rate_ranking,conversion_rate_ranking", limit: 500 }, base), 12).then(function (d) { R.totals = d; }), "insights totales", R),
+    safe(G.all(acct + "/campaigns", { fields: "id,name,status,effective_status,objective,daily_budget,lifetime_budget,buying_type", limit: 200 }, 10).then(function (d) { R.camps = d; }), "campañas", R),
+    safe(G.all(acct + "/adsets", { fields: "id,name,status,effective_status,campaign_id,daily_budget,lifetime_budget,optimization_goal,promoted_object,learning_stage_info,targeting,bid_strategy", limit: 200 }, 10).then(function (d) { R.adsets = d; }), "conjuntos", R),
+    safe(G.all(acct + "/ads", { fields: "id,name,status,effective_status,adset_id,campaign_id,created_time,creative.thumbnail_width(480).thumbnail_height(480){id,thumbnail_url,image_url,video_id}", limit: 200 }, 10).then(function (d) { R.ads = d; }), "anuncios", R),
     safe(G.get(acct + "/adspixels", { fields: "id,name,last_fired_time,is_created_by_business" }).then(function (j) { R.pixels = j.data || []; }), "píxeles", R),
     safe(G.get(acct + "/customaudiences", { fields: "id,name,subtype,approximate_count_lower_bound,approximate_count_upper_bound,delivery_status", limit: 60 }).then(function (j) { R.auds = j.data || []; }), "audiencias", R),
+    safe(G.all(acct + "/customconversions", { fields: "id,name", limit: 100 }, 2).then(function (d) { R.convs = d; }), "conversiones", R),
     safe(G.get(acct, { fields: "name,currency,amount_spent,balance,spend_cap,account_status,timezone_name" }).then(function (j) { R.info = j; }), "cuenta", R)
   ];
   return Promise.all(jobs).then(function () {
     if (!R.daily) { var e = new Error(R.errors.length ? R.errors[0].msg : "No se pudieron leer los datos"); e.userMsg = e.message; throw e; }
+    [["daily", "insights diarios"], ["totals", "insights totales"], ["camps", "campañas"], ["adsets", "conjuntos"], ["ads", "anuncios"]].forEach(function (k) {
+      if (R[k[0]] && R[k[0]].truncated) R.errors.push({ tag: k[1], msg: "hay más registros de los que se pudieron leer (" + R[k[0]].length + "). Acorta el rango de fechas para ver todo." });
+    });
+    R.convs = R.convs || [];
+    Object.keys(E.METRIC_LABELS).forEach(function (k) { if (k.indexOf("custom.") === 0) delete E.METRIC_LABELS[k]; });
+    R.convs.forEach(function (c) { E.METRIC_LABELS["custom." + c.id] = c.name; });
+    if (S.metric.indexOf("custom.") === 0 && !E.METRIC_LABELS[S.metric]) S.metric = "auto";
     R.totals = R.totals || []; R.camps = R.camps || []; R.adsets = R.adsets || []; R.ads = R.ads || []; R.pixels = R.pixels || []; R.auds = R.auds || [];
     return R;
   });
@@ -1265,8 +1323,10 @@ AB.analyze = function (R) {
   var offset = S.offset, since = R.since, until = R.until;
   var objMap = {}; R.camps.forEach(function (c) { objMap[c.id] = c.objective; });
   var objOf = function (r) { return objMap[r.campaign_id] || ""; };
-  var rows = R.daily.map(function (r) { return E.normRow(r, S.metric, objOf); });
-  var totals = R.totals.map(function (r) { return E.normRow(r, S.metric, objOf); });
+  var poMap = {}; R.adsets.forEach(function (a) { poMap[a.id] = a.promoted_object; });
+  var poOf = function (r) { return poMap[r.adset_id]; };
+  var rows = R.daily.map(function (r) { return E.normRow(r, S.metric, objOf, poOf); });
+  var totals = R.totals.map(function (r) { return E.normRow(r, S.metric, objOf, poOf); });
   var totRaw = {}; R.totals.forEach(function (r) { totRaw[r.ad_id] = r; });
 
   var goal = E.profitGoal(S.goal);
@@ -1276,7 +1336,8 @@ AB.analyze = function (R) {
   var targetSource = manual > 0 ? "manual" : (goal.ok ? "calculadora" : "promedio");
   var fmt = { money: F.money };
 
-  function seriesOf(list) { return E.fillDays(E.dailySeries(list), since, until); }
+  var todayStr = AB.todayIn(S.tz), serUntil = until >= todayStr ? E.addDays(todayStr, -1) : until;
+  function seriesOf(list) { return E.fillDays(E.dailySeries(list.filter(function (r) { return !r.date || r.date <= serUntil; })), since, serUntil); }
   var accSeries = seriesOf(rows);
   var byAd = E.groupBy(rows, "adId"), byAdset = E.groupBy(rows, "adsetId"), byCamp = E.groupBy(rows, "campaignId");
 
@@ -1335,37 +1396,36 @@ AB.analyze = function (R) {
   var adsetsByCamp = E.groupBy(adsets, "campaignId");
   var campaigns = R.camps.map(function (c) {
     var rr = byCamp[c.id] || [], m = E.aggregate(rr), ser = seriesOf(rr);
-    var actSets = (adsetsByCamp[c.id] || []).filter(function (x) { return x.status === "ACTIVE"; });
+    var actSets = (adsetsByCamp[c.id] || []).filter(function (x) { return x.effStatus === "ACTIVE"; });
     var budget = c.daily_budget ? E.num(c.daily_budget) / offset : sum(actSets, function (x) { return x.budget; });
     return { id: c.id, name: c.name, status: c.status, effStatus: c.effective_status, objective: c.objective, m: m, series: ser, budget: budget, cbo: !!c.daily_budget, verdict: E.verdictCost(m, target), profit: E.entityProfit(m, S.goal), dim: E.diminishing(ser) };
   });
 
   /* ---- cuenta ---- */
-  var activeSets = adsets.filter(function (s) { return s.status === "ACTIVE"; });
-  var dailyBudget = sum(activeSets, function (s) { return s.budget; }) || sum(campaigns.filter(function (c) { return c.status === "ACTIVE" && c.cbo; }), function (c) { return c.budget; });
+  var dailyBudget = sum(campaigns.filter(function (c) { return c.effStatus === "ACTIVE"; }), function (c) { return c.budget; });
   var third = Math.max(2, Math.ceil(accSeries.filter(function (d) { return d.impr > 0; }).length / 3));
   var act = accSeries.filter(function (d) { return d.impr > 0; });
   var early = E.aggregate(act.slice(0, third)), late = E.aggregate(act.slice(-third));
   var account = { m: accM, series: accSeries, spend: accM.spend, cpmRise: (act.length >= 6 && early.cpm) ? (late.cpm - early.cpm) / early.cpm : null, verdict: E.verdictCost(accM, target) };
   var dim = E.diminishing(accSeries);
-  var pacing = E.pacing(accSeries, dailyBudget, R.info || null);
+  var pacing = E.pacing(accSeries, dailyBudget, R.info || null, todayStr, offset);
   var activeAds = ads.filter(function (a) { return a.effStatus === "ACTIVE"; });
 
   var A = {
     fmt: fmt, since: since, until: until, rows: rows, target: target, targetSource: targetSource, goal: goal, medians: medians, refs: refs,
     account: account, campaigns: campaigns, adsets: adsets, ads: ads, dow: E.byDow(accSeries), dim: dim, scale: E.scaleVerdict(dim), pacing: pacing,
-    diversity: E.diversity(activeAds), pixels: R.pixels, auds: R.auds, info: R.info, errors: R.errors, dailyBudget: dailyBudget
+    diversity: E.diversity(activeAds), convs: R.convs, pixels: R.pixels, auds: R.auds, info: R.info, errors: R.errors, dailyBudget: dailyBudget
   };
-  var kinds = ["purchases", "checkout", "leads", "messages"], best = null, bv = 0;
-  kinds.forEach(function (k) { var t = E.sum(R.totals, function (r) { return E.act(r.actions, E.RESULT_TYPES[k]); }); if (t > bv) { bv = t; best = k; } });
-  A.primaryMetric = S.metric !== "auto" ? S.metric : (best || "lpv");
+  var bk = accM.byKind || {}, best = null, bv = 0;
+  Object.keys(bk).forEach(function (k) { if (bk[k].results > bv) { bv = bk[k].results; best = k; } });
+  A.primaryMetric = S.metric !== "auto" ? S.metric : (best && best !== "auto" ? best : "lpv");
   A.coach = Coach.run(A);
   return A;
 };
 
 /* ----------------------- desgloses (carga bajo demanda) ------------------ */
 AB.loadSegments = function () {
-  var acct = S.acct, rp = AB.rangeParams(), base = { level: "account", time_range: rp.time_range, fields: "spend,impressions,inline_link_clicks,actions", limit: 200 };
+  var acct = S.acct, rp = AB.rangeParams(), base = { level: "account", time_range: rp.time_range, use_unified_attribution_setting: true, fields: "spend,impressions,inline_link_clicks,actions", limit: 200 };
   function one(bd) { return G.all(acct + "/insights", Object.assign({ breakdowns: bd }, base), 3).catch(function (e) { return { error: e.userMsg || e.message }; }); }
   return Promise.all([one("publisher_platform,platform_position"), one("age,gender"), one("hourly_stats_aggregated_by_advertiser_time_zone")]).then(function (r) { return { place: r[0], age: r[1], hour: r[2] }; });
 };
@@ -1410,6 +1470,24 @@ T.verdictChip = verdictChip;
 function tab(name) { return '<div class="tabpanel' + (S.tab === name ? " active" : "") + '" id="panel-' + name + '"></div>'; }
 
 /* ------------------------------- Resumen --------------------------------- */
+function kindsOf(m) { return Object.keys(m.byKind || {}).filter(function (k) { return m.byKind[k].spend > 0; }); }
+function mixedKinds(m) { return kindsOf(m).length > 1; }
+function kindLabel(A, k) {
+  var cm = /^custom\.(\d+)$/.exec(k);
+  if (cm) { var c = (A.convs || []).filter(function (x) { return x.id === cm[1]; })[0]; return c ? c.name : "Conversión personalizada"; }
+  if (k === "pixel_custom") return "Evento personalizado del píxel";
+  if (k === "complete_registration") return "Registros completados";
+  return E.METRIC_LABELS[k] || "Sin tipo definido";
+}
+/* En modo Automático cada campaña cuenta un resultado distinto. El total mezclado engaña, así que se muestra por tipo. */
+function kindsCard(A, m) {
+  var rows = kindsOf(m).sort(function (a, b) { return m.byKind[b].spend - m.byKind[a].spend; }).map(function (k) {
+    var b = m.byKind[k];
+    return '<tr><td>' + F.esc(kindLabel(A, k)) + '</td><td>' + F.money(b.spend) + '</td><td>' + F.num(b.results) + '</td><td>' + (b.results > 0 ? F.money(b.spend / b.results) : "—") + '</td></tr>';
+  }).join("");
+  return '<div class="card pad"><h3>Resultados por tipo</h3><div class="sub" style="margin:2px 0 8px">Tus campañas optimizan para resultados distintos. El costo de arriba es un promedio de todos; cada tipo tiene su costo real.</div>' +
+    '<table class="tbl"><thead><tr><th>Tipo de resultado</th><th>Gasto</th><th>Resultados</th><th>Costo por resultado</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+}
 T.resumen = function (A) {
   var m = A.account.m, ser = A.account.series, hv = halves(ser);
   var cprD = hv && hv[0].cpr && hv[1].cpr ? T.delta(hv[0].cpr, hv[1].cpr, true, "contra la primera mitad") : "";
@@ -1433,9 +1511,11 @@ T.resumen = function (A) {
 
   html += '<div class="grid g3 kpis">' +
     T.kpi({ label: "Gastaste", val: F.money(m.spend), note: days ? F.money(m.spend / days) + " por día" : "" }) +
-    T.kpi({ label: "Conseguiste", val: F.num(m.results), note: S.metric === "auto" ? "mensajes, visitas o ventas según cada campaña" : E.METRIC_LABELS[S.metric] }) +
+    T.kpi({ label: "Conseguiste", val: F.num(m.results), note: S.metric === "auto" ? (mixedKinds(m) ? "Mezcla tipos distintos. Mira el desglose de abajo" : "según el objetivo de cada campaña") : E.METRIC_LABELS[S.metric] }) +
     T.kpi({ label: "Cada uno te costó", val: F.money(m.cpr), chip: v && hasGoal ? F.chip(lv, lv === "g" ? "Barato" : (lv === "r" ? "Caro" : (lv === "y" ? "En el límite" : "Faltan datos")), v.why) : "", delta: cprD, note: bench && bench.text ? bench.text : "" }) +
     '</div>';
+
+  if (S.metric === "auto" && mixedKinds(m)) html += kindsCard(A, m);
 
   if (S.prefs.showHero) {
     var rolling = ser.map(function (d, i) {
@@ -1521,7 +1601,7 @@ T.row = function (it, type) {
 T.campanas = function (A) {
   var lvl = S.level, list = lvl === "campaign" ? A.campaigns : (lvl === "adset" ? A.adsets : A.ads);
   var q = (S.q || "").toLowerCase();
-  list = list.filter(function (x) { return (!q || x.name.toLowerCase().indexOf(q) >= 0) && (S.statusFilter === "all" || (S.statusFilter === "active" ? x.status === "ACTIVE" : x.status !== "ACTIVE")); });
+  list = list.filter(function (x) { return (!q || x.name.toLowerCase().indexOf(q) >= 0) && (S.statusFilter === "all" || (S.statusFilter === "active" ? (x.effStatus || x.status) === "ACTIVE" : (x.effStatus || x.status) !== "ACTIVE")); });
   list = list.slice().sort(function (a, b) { return b.m.spend - a.m.spend; });
   var html = '<div class="filters"><div class="seg" id="levelSeg"><button data-level="campaign" class="' + (lvl === "campaign" ? "on" : "") + '">Campañas</button><button data-level="adset" class="' + (lvl === "adset" ? "on" : "") + '">Conjuntos</button><button data-level="ad" class="' + (lvl === "ad" ? "on" : "") + '">Anuncios</button></div>' +
     '<div class="fgroup"><label>Buscar</label><input id="qInput" value="' + F.esc(S.q || "") + '" placeholder="nombre..." style="width:150px"></div>' +
@@ -2245,7 +2325,7 @@ var AB = root.AB, S = AB.S, G = AB.G, F = AB.F, UI = AB.UI, T = AB.T, Ch = AB.Ch
 
 /* desglose por texto y titular (anuncios flexibles o de contenido dinámico) */
 AB.loadCopy = function () {
-  var acct = S.acct, rp = AB.rangeParams(), base = { level: "account", time_range: rp.time_range, fields: "spend,impressions,inline_link_clicks,actions", limit: 200 };
+  var acct = S.acct, rp = AB.rangeParams(), base = { level: "account", time_range: rp.time_range, use_unified_attribution_setting: true, fields: "spend,impressions,inline_link_clicks,actions", limit: 200 };
   function one(bd) { return G.all(acct + "/insights", Object.assign({ breakdowns: bd }, base), 3).catch(function (e) { return { error: e.userMsg || e.message }; }); }
   return Promise.all([one("body_asset"), one("title_asset"), one("image_asset")]).then(function (r) { return { body: r[0], title: r[1], image: r[2] }; });
 };
@@ -2526,7 +2606,7 @@ T.ventas = function (A) {
   var n = list.length, rev = E.sum(list, function (x) { return x.amount || 0; }), spend = A.account.m.spend, res = A.account.m.results;
   var cpa = n ? spend / n : null, roas = spend ? rev / spend : null, close = res ? n / res : null;
   var ads = A.ads.filter(function (a) { return a.m.spend > 0; }).sort(function (a, b) { return b.m.spend - a.m.spend; });
-  var today = new Date().toISOString().slice(0, 10);
+  var today = AB.todayIn(S.tz);
   var h = '<div class="sec-head"><h2>Tus ventas reales</h2><div class="hint">Las que cerraste por WhatsApp, llamada o en persona</div></div>' +
     '<div class="grid g21"><div class="card pad glass"><div class="eyebrow">Registrar una venta</div><div class="sub" style="margin:2px 0 10px">Meta no ve lo que cierras por WhatsApp. Anótalo aquí y sabrás cuánto te cuesta cada venta de verdad.</div>' +
     '<div class="row3"><div class="field"><label>Fecha</label><input type="date" id="slDate" value="' + today + '"></div>' +
@@ -2588,7 +2668,7 @@ T.attrib = function (A) {
   var r = S.attr;
   if (!r) return h + '<div class="state"><div class="spinner"></div>Comparando ventanas de atribución…</div>';
   if (r.error) return h + '<div class="state"><b>No se pudo comparar</b>' + F.esc(r.error) + '</div>';
-  var types = E.RESULT_TYPES[A.primaryMetric] || [];
+  var types = E.kindTypes(A.primaryMetric);
   function tot(w) { var t = 0; r.forEach(function (row) { (row.actions || []).forEach(function (a) { if (types.indexOf(a.action_type) >= 0) t += Number(a[w] || 0); }); }); return t; }
   var c1 = tot("1d_click"), c7 = tot("7d_click"), v1 = tot("1d_view"), spend = E.sum(r, function (x) { return E.num(x.spend); });
   if (!c7 && !v1) return h + '<div class="state"><b>Sin resultados para comparar en este periodo</b></div>';
@@ -3177,12 +3257,12 @@ function startSession() {
     return perm;
   }).then(function (perm) {
     if (!S.demo) { var g = (perm && perm.data || []).filter(function (x) { return x.status === "granted"; }).map(function (x) { return x.permission; }); S.canEdit = g.indexOf("ads_management") >= 0 || (S.keyMode && !perm); }
-    return G.all("me/adaccounts", { fields: "id,name,currency,account_status", limit: 100 }, 3);
+    return G.all("me/adaccounts", { fields: "id,name,currency,account_status,timezone_name", limit: 100 }, 3);
   }).then(function (accts) {
     S.accounts = accts.filter(function (a) { return a.account_status === 1 || a.account_status === undefined || S.demo; });
     if (!S.accounts.length) { UI.loading(false); showGate(); UI.toast("No encontramos cuentas publicitarias activas con tu usuario. Si la app está en modo desarrollo, tu usuario debe tener rol en la app.", "bad"); return; }
     var pick = S.accounts.filter(function (a) { return a.id === S.savedAcct; })[0] || S.accounts[0];
-    S.acct = pick.id; S.currency = pick.currency; S.offset = F.offsetFor(pick.currency);
+    S.acct = pick.id; S.currency = pick.currency; S.tz = pick.timezone_name || null; S.offset = F.offsetFor(pick.currency);
     S.mode = "app"; showApp(); return AB.refresh(false);
   }).catch(function (e) {
     UI.loading(false); showGate();
@@ -3233,7 +3313,7 @@ function headerAlerts() {
     var bad = A.ads.filter(function (a) { return a.effStatus === "DISAPPROVED" || a.effStatus === "WITH_ISSUES"; });
     if (bad.length) h += '<div class="alert on bad"><div><b>' + bad.length + (bad.length === 1 ? " anuncio con problemas" : " anuncios con problemas") + '</b><div class="sub">' + bad.slice(0, 3).map(function (a) { return F.esc(a.name); }).join(", ") + (bad.length > 3 ? "…" : "") + '. Revísalos en Ads Manager o apela la decisión.</div></div></div>';
   }
-  if (A && A.errors && A.errors.length) h += '<div class="alert on bad"><div><b>Algunas secciones no cargaron</b><div class="sub">' + A.errors.map(function (e) { return F.esc(e.tag + ": " + e.msg); }).join(" · ") + '</div></div></div>';
+  if (A && A.errors && A.errors.length) h += '<div class="alert on bad"><div><b>Algunas secciones no cargaron o cargaron incompletas</b><div class="sub">' + A.errors.map(function (e) { return F.esc(e.tag + ": " + e.msg); }).join(" · ") + '</div></div></div>';
   if (false && S.token && !S.demo && !S.canEdit) h += '<div class="alert on"><div><b>Estás en modo solo lectura</b><div class="sub">Puedes ver todo el análisis. Para pausar, cambiar presupuestos o crear campañas desde aquí pulsa «Activar modo edición».</div></div></div>';
   $("alerts").innerHTML = h;
 }
@@ -3241,9 +3321,11 @@ function headerAlerts() {
 /* -------------------------------- datos ---------------------------------- */
 AB.refresh = function (silent) {
   if (!silent) UI.loading(true, "Leyendo tu cuenta…");
+  var rid = S._rid = (S._rid || 0) + 1;
   return AB.loadData().then(function (R) {
+    if (rid !== S._rid) return null;
     S.data = R; S.seg = null; S.copy = null; S.rules = null; S.attr = null; S.vrules = null; return AB.recompute();
-  }).then(function () { UI.loading(false); }).catch(function (e) {
+  }).then(function () { if (rid === S._rid) UI.loading(false); }).catch(function (e) {
     UI.loading(false);
     if (e.fb && e.fb.code === 190) { S.token = null; S.mode = "gate"; showGate(); UI.toast(e.userMsg, "bad"); return; }
     UI.toast(e.userMsg || e.message || "No se pudieron cargar los datos", "bad");
@@ -3254,7 +3336,12 @@ AB.recompute = function () {
   if (!S.data) return;
   S.A = AB.analyze(S.data); AB.render();
 };
-AB.render = function () { buildTabs(); headerAlerts(); AB.renderTab(); $("periodNote").textContent = S.A ? F.date(S.A.since) + " al " + F.date(S.A.until) : ""; };
+AB.fillMetricSel = function () {
+  var sel = $("metricSel"); if (!sel) return;
+  sel.innerHTML = Object.keys(E.METRIC_LABELS).map(function (k) { return '<option value="' + k + '">' + F.esc(E.METRIC_LABELS[k]) + '</option>'; }).join("");
+  sel.value = E.METRIC_LABELS[S.metric] ? S.metric : "auto";
+};
+AB.render = function () { AB.fillMetricSel(); buildTabs(); headerAlerts(); AB.renderTab(); $("periodNote").textContent = S.A ? F.date(S.A.since) + " al " + F.date(S.A.until) : ""; };
 
 AB.renderTab = function () {
   var A = S.A, panel = $("panel"); if (!A) return;
@@ -3447,7 +3534,7 @@ document.addEventListener("change", function (e) {
   if (id === "metricSel") { S.metric = v; AB.saveLocal(); AB.refresh(false); return; }
   if (id === "accountSelect") {
     var a = S.accounts.filter(function (x) { return x.id === v; })[0]; if (!a) return;
-    S.acct = a.id; S.currency = a.currency; S.offset = F.offsetFor(a.currency); S.savedAcct = a.id; AB.saveLocal(); AB.wizReset(); AB.refresh(false);
+    S.acct = a.id; S.currency = a.currency; S.tz = a.timezone_name || null; S.offset = F.offsetFor(a.currency); S.savedAcct = a.id; AB.saveLocal(); AB.wizReset(); AB.refresh(false);
   }
 });
 
@@ -3455,7 +3542,7 @@ document.addEventListener("change", function (e) {
 function init() {
   UI.tip();
   $("rangeSel").innerHTML = [["7", "Últimos 7 días"], ["14", "Últimos 14 días"], ["30", "Últimos 30 días"], ["60", "Últimos 60 días"], ["90", "Últimos 90 días"]].map(function (r) { return '<option value="' + r[0] + '">' + r[1] + '</option>'; }).join("");
-  if ($("metricSel")) $("metricSel").innerHTML = Object.keys(E.METRIC_LABELS).map(function (k) { return '<option value="' + k + '">' + F.esc(E.METRIC_LABELS[k]) + '</option>'; }).join("");
+  AB.fillMetricSel();
   $("rangeSel").value = S.range; if ($("metricSel")) $("metricSel").value = S.metric;
   AB.applyTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light");
   showGate(); loadSDK();

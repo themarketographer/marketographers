@@ -85,6 +85,14 @@ E.AUTO_BY_OBJECTIVE = {
   OUTCOME_AWARENESS: [],
   OUTCOME_APP_PROMOTION: []
 };
+E.kindTypes = function (kind) {
+  if (E.RESULT_TYPES[kind]) return E.RESULT_TYPES[kind];
+  var cm = /^custom\.(\d+)$/.exec(kind || "");
+  if (cm) return ["offsite_conversion.custom." + cm[1]];
+  if (kind === "pixel_custom") return ["offsite_conversion.fb_pixel_custom"];
+  if (kind === "complete_registration") return E.PIXEL_EVENT_KEY.COMPLETE_REGISTRATION;
+  return [];
+};
 E.act = function (list, types) {
   if (!list || !list.length) return 0;
   for (var t = 0; t < types.length; t++) {
@@ -113,7 +121,7 @@ E.anyCustom = function (list) {
 };
 /* metric = clave elegida por el usuario; objective = objetivo de la campaña; promoted = objeto promocionado del conjunto */
 E.pickResult = function (actions, metric, objective, promoted) {
-  if (metric && metric !== "auto") return E.act(actions, E.RESULT_TYPES[metric] || []);
+  if (metric && metric !== "auto") return E.act(actions, E.kindTypes(metric));
   var pt = E.promotedTypes(promoted);
   if (pt) { var pv = E.act(actions, pt); if (pv > 0) return pv; }
   var order = E.AUTO_BY_OBJECTIVE[objective] || ["purchases", "checkout", "leads", "messages", "lpv", "clicks"];
@@ -804,7 +812,7 @@ C.run = function (A) {
   var activeAds = A.ads.filter(function (a) { return a.status === "ACTIVE" || a.effStatus === "ACTIVE"; });
 
   A.ads.forEach(function (ad) {
-    var m = ad.m, active = ad.effStatus === "ACTIVE" || ad.status === "ACTIVE";
+    var m = ad.m, active = (ad.effStatus || ad.status) === "ACTIVE";
     if (ad.effStatus === "DISAPPROVED" || ad.effStatus === "WITH_ISSUES") {
       add({ id: "rej-" + ad.id, sev: "r", title: "Anuncio con problemas de aprobación: " + ad.name, why: "Meta lo frenó por política o por un error de configuración. Cada día así es entrega perdida.",
         fix: "Ábrelo en Ads Manager, lee el motivo y corrige. Evita promesas de resultado garantizado y frases que asumen atributos personales de quien mira.", entity: { type: "ad", id: ad.id }, impact: 1 });
@@ -849,7 +857,7 @@ C.run = function (A) {
   });
 
   A.adsets.forEach(function (s) {
-    if (s.status !== "ACTIVE") return;
+    if ((s.effStatus || s.status) !== "ACTIVE") return;
     var m = s.m;
     if (s.freq && s.freq >= 3.5 && m.spend > 0) {
       add({ id: "freq-" + s.id, sev: s.freq >= 4.5 ? "r" : "y", title: "Frecuencia alta en \"" + s.name + "\": " + s.freq.toFixed(1), why: "La misma gente ve tus anuncios 3,5 veces o más. En audiencias frías eso suele acompañar caídas de CTR y subidas de costo.",
@@ -880,7 +888,7 @@ C.run = function (A) {
   /* Rentabilidad por campaña */
   if (A.goal && A.goal.ok) {
     A.campaigns.forEach(function (c) {
-      if (c.status !== "ACTIVE" || !c.profit || c.m.spend < target * 2) return;
+      if ((c.effStatus || c.status) !== "ACTIVE" || !c.profit || c.m.spend < target * 2) return;
       if (c.profit.net < 0 && c.m.results >= 5) {
         add({ id: "loss-" + c.id, sev: "r", title: "\"" + c.name + "\" pierde dinero según tu calculadora", why: "Gastó " + money(c.m.spend) + " y con tu tasa de cierre esperada devuelve " + money(c.profit.gain) + " de ganancia limpia.",
           fix: "Sube el cierre (respuesta más rápida, oferta más clara) o baja el costo por resultado antes de escalar.", entity: { type: "campaign", id: c.id }, impact: -c.profit.net });
@@ -1303,6 +1311,9 @@ AB.loadData = function () {
       if (R[k[0]] && R[k[0]].truncated) R.errors.push({ tag: k[1], msg: "hay más registros de los que se pudieron leer (" + R[k[0]].length + "). Acorta el rango de fechas para ver todo." });
     });
     R.convs = R.convs || [];
+    Object.keys(E.METRIC_LABELS).forEach(function (k) { if (k.indexOf("custom.") === 0) delete E.METRIC_LABELS[k]; });
+    R.convs.forEach(function (c) { E.METRIC_LABELS["custom." + c.id] = c.name; });
+    if (S.metric.indexOf("custom.") === 0 && !E.METRIC_LABELS[S.metric]) S.metric = "auto";
     R.totals = R.totals || []; R.camps = R.camps || []; R.adsets = R.adsets || []; R.ads = R.ads || []; R.pixels = R.pixels || []; R.auds = R.auds || [];
     return R;
   });
@@ -1405,9 +1416,9 @@ AB.analyze = function (R) {
     account: account, campaigns: campaigns, adsets: adsets, ads: ads, dow: E.byDow(accSeries), dim: dim, scale: E.scaleVerdict(dim), pacing: pacing,
     diversity: E.diversity(activeAds), convs: R.convs, pixels: R.pixels, auds: R.auds, info: R.info, errors: R.errors, dailyBudget: dailyBudget
   };
-  var kinds = ["purchases", "checkout", "leads", "messages"], best = null, bv = 0;
-  kinds.forEach(function (k) { var t = E.sum(R.totals, function (r) { return E.act(r.actions, E.RESULT_TYPES[k]); }); if (t > bv) { bv = t; best = k; } });
-  A.primaryMetric = S.metric !== "auto" ? S.metric : (best || "lpv");
+  var bk = accM.byKind || {}, best = null, bv = 0;
+  Object.keys(bk).forEach(function (k) { if (bk[k].results > bv) { bv = bk[k].results; best = k; } });
+  A.primaryMetric = S.metric !== "auto" ? S.metric : (best && best !== "auto" ? best : "lpv");
   A.coach = Coach.run(A);
   return A;
 };
@@ -1590,7 +1601,7 @@ T.row = function (it, type) {
 T.campanas = function (A) {
   var lvl = S.level, list = lvl === "campaign" ? A.campaigns : (lvl === "adset" ? A.adsets : A.ads);
   var q = (S.q || "").toLowerCase();
-  list = list.filter(function (x) { return (!q || x.name.toLowerCase().indexOf(q) >= 0) && (S.statusFilter === "all" || (S.statusFilter === "active" ? x.status === "ACTIVE" : x.status !== "ACTIVE")); });
+  list = list.filter(function (x) { return (!q || x.name.toLowerCase().indexOf(q) >= 0) && (S.statusFilter === "all" || (S.statusFilter === "active" ? (x.effStatus || x.status) === "ACTIVE" : (x.effStatus || x.status) !== "ACTIVE")); });
   list = list.slice().sort(function (a, b) { return b.m.spend - a.m.spend; });
   var html = '<div class="filters"><div class="seg" id="levelSeg"><button data-level="campaign" class="' + (lvl === "campaign" ? "on" : "") + '">Campañas</button><button data-level="adset" class="' + (lvl === "adset" ? "on" : "") + '">Conjuntos</button><button data-level="ad" class="' + (lvl === "ad" ? "on" : "") + '">Anuncios</button></div>' +
     '<div class="fgroup"><label>Buscar</label><input id="qInput" value="' + F.esc(S.q || "") + '" placeholder="nombre..." style="width:150px"></div>' +
@@ -2595,7 +2606,7 @@ T.ventas = function (A) {
   var n = list.length, rev = E.sum(list, function (x) { return x.amount || 0; }), spend = A.account.m.spend, res = A.account.m.results;
   var cpa = n ? spend / n : null, roas = spend ? rev / spend : null, close = res ? n / res : null;
   var ads = A.ads.filter(function (a) { return a.m.spend > 0; }).sort(function (a, b) { return b.m.spend - a.m.spend; });
-  var today = new Date().toISOString().slice(0, 10);
+  var today = AB.todayIn(S.tz);
   var h = '<div class="sec-head"><h2>Tus ventas reales</h2><div class="hint">Las que cerraste por WhatsApp, llamada o en persona</div></div>' +
     '<div class="grid g21"><div class="card pad glass"><div class="eyebrow">Registrar una venta</div><div class="sub" style="margin:2px 0 10px">Meta no ve lo que cierras por WhatsApp. Anótalo aquí y sabrás cuánto te cuesta cada venta de verdad.</div>' +
     '<div class="row3"><div class="field"><label>Fecha</label><input type="date" id="slDate" value="' + today + '"></div>' +
@@ -2657,7 +2668,7 @@ T.attrib = function (A) {
   var r = S.attr;
   if (!r) return h + '<div class="state"><div class="spinner"></div>Comparando ventanas de atribución…</div>';
   if (r.error) return h + '<div class="state"><b>No se pudo comparar</b>' + F.esc(r.error) + '</div>';
-  var types = E.RESULT_TYPES[A.primaryMetric] || [];
+  var types = E.kindTypes(A.primaryMetric);
   function tot(w) { var t = 0; r.forEach(function (row) { (row.actions || []).forEach(function (a) { if (types.indexOf(a.action_type) >= 0) t += Number(a[w] || 0); }); }); return t; }
   var c1 = tot("1d_click"), c7 = tot("7d_click"), v1 = tot("1d_view"), spend = E.sum(r, function (x) { return E.num(x.spend); });
   if (!c7 && !v1) return h + '<div class="state"><b>Sin resultados para comparar en este periodo</b></div>';
@@ -3325,7 +3336,12 @@ AB.recompute = function () {
   if (!S.data) return;
   S.A = AB.analyze(S.data); AB.render();
 };
-AB.render = function () { buildTabs(); headerAlerts(); AB.renderTab(); $("periodNote").textContent = S.A ? F.date(S.A.since) + " al " + F.date(S.A.until) : ""; };
+AB.fillMetricSel = function () {
+  var sel = $("metricSel"); if (!sel) return;
+  sel.innerHTML = Object.keys(E.METRIC_LABELS).map(function (k) { return '<option value="' + k + '">' + F.esc(E.METRIC_LABELS[k]) + '</option>'; }).join("");
+  sel.value = E.METRIC_LABELS[S.metric] ? S.metric : "auto";
+};
+AB.render = function () { AB.fillMetricSel(); buildTabs(); headerAlerts(); AB.renderTab(); $("periodNote").textContent = S.A ? F.date(S.A.since) + " al " + F.date(S.A.until) : ""; };
 
 AB.renderTab = function () {
   var A = S.A, panel = $("panel"); if (!A) return;
@@ -3526,7 +3542,7 @@ document.addEventListener("change", function (e) {
 function init() {
   UI.tip();
   $("rangeSel").innerHTML = [["7", "Últimos 7 días"], ["14", "Últimos 14 días"], ["30", "Últimos 30 días"], ["60", "Últimos 60 días"], ["90", "Últimos 90 días"]].map(function (r) { return '<option value="' + r[0] + '">' + r[1] + '</option>'; }).join("");
-  if ($("metricSel")) $("metricSel").innerHTML = Object.keys(E.METRIC_LABELS).map(function (k) { return '<option value="' + k + '">' + F.esc(E.METRIC_LABELS[k]) + '</option>'; }).join("");
+  AB.fillMetricSel();
   $("rangeSel").value = S.range; if ($("metricSel")) $("metricSel").value = S.metric;
   AB.applyTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light");
   showGate(); loadSDK();

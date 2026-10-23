@@ -334,6 +334,14 @@ mktEv('VioLandingMasterclass');
         try { if (window.mktEv) mktEv('EntrarZoom', { content_name: 'Clase Más sesiones todas las semanas', cta_position: pos }); } catch (e) {}
       });
     });
+    /* Enlace chico al grupo (se agrega después del bucle para que siga yendo a WhatsApp) */
+    var gl = document.createElement('a');
+    gl.className = 'cap copy';
+    gl.href = 'https://chat.whatsapp.com/Hskq4Mv0CpK3RxYR4gTIH1?mode=gi_t';
+    gl.target = '_blank'; gl.rel = 'noopener';
+    gl.setAttribute('data-join', 'vivo-grupo');
+    gl.textContent = 'Únete al grupo para las próximas clases';
+    q('.micro').parentNode.insertBefore(gl, $('copyLink'));
   } else if (ESTADO === 'despues') {
     document.title = 'Próximamente | Más sesiones todas las semanas';
     q('.kick').textContent = 'Clase gratis por Zoom';

@@ -212,7 +212,7 @@ const cursos = [
   {
     "slug": "landing-pages-con-ia",
     "nombre": "Landing pages con IA, gratis",
-    "corto": "Tu landing con IA, sin pagar hosting",
+    "corto": "Tu landing propia en lugar de un PDF",
     "categoria": "creativos",
     "estado": "disponible",
     "publicado": "si",
@@ -223,17 +223,17 @@ const cursos = [
     "portada": "https://marketographers.com/cursos/assets/portadas/landing-pages-con-ia.jpg",
     "glifo": "IA",
     "eyebrow": "Para fotógrafos, diseñadores y negocios",
-    "h1": "Tu landing page hecha con IA <mark>y publicada gratis</mark>",
-    "sub": "Estructura, textos, dominio propio y pixel para anuncios, sin pagar hosting.",
-    "historia": "Vendí un curso casi 200 veces en Udemy. La mayoría de esas ventas entró por el marketplace y por afiliados, así que me llegaba una parte chica de cada una, y nunca tuve los datos de esos alumnos.\nPor eso ahora vendo desde páginas propias, como esta. La armé con Claude, está publicada en Netlify sin pagar hosting y tiene mi pixel instalado. En el curso haces lo mismo para tu negocio.",
-    "paraQuien": "Pagas Wix, Squarespace o similar todos los meses.\nTu portafolio muestra fotos y no te trae clientes.\nQuieres una página para anuncios con pixel y eventos.\nEres fotógrafo, diseñador o tienes un restaurante o negocio local.",
-    "modulos": "# Módulo 1 · Estructura que vende\nLas secciones de una landing que convierte\nTu promesa, tus pruebas y tu llamado a la acción\nCopy con IA sin sonar a robot\n# Módulo 2 · Construir con IA\nArmar la página con Claude paso a paso\nImágenes optimizadas con Cloudinary\nAjustes de diseño sin saber código\nVersiones para fotógrafos, diseñadores y restaurantes\n# Módulo 3 · Publicar gratis\nGitHub y Netlify explicados para humanos\nConectar tu dominio\nSEO básico, vista previa al compartir y Google Search Console\n# Módulo 4 · Lista para anuncios\nPixel de Meta y GA4\nBotones con eventos de conversión\nAgenda y WhatsApp integrados",
-    "resultados": "Tu landing publicada con tu dominio y sin pagar hosting.\nEl pixel de Meta y Google Analytics instalados, con eventos en tus botones.",
-    "faq": "¿De verdad es gratis?\nEl hosting en Netlify y la IA en su plan gratuito alcanzan. Solo pagas el dominio, unos 12 dólares al año.\n\n¿Necesito saber programar?\nLa IA escribe el código. Tú aprendes a pedirle bien las cosas, y eso es lo que te enseño.\n\n¿Hay versión para restaurantes?\nSí, el módulo 2 incluye una versión con menú y botón de reservas.",
-    "problemaFrase": "",
-    "problemas": "",
-    "antes": "",
-    "despues": ""
+    "h1": "Deja de mandar tu portafolio en <mark>un PDF por WhatsApp</mark>",
+    "sub": "Descubre por qué una landing page propia trabaja por ti mejor que un archivo adjunto, y cuántos problemas de tu negocio puede resolver.",
+    "historia": "Vendí un curso casi 200 veces en Udemy. La mayoría de esas ventas entró por el marketplace y por afiliados, así que me llegaba una parte chica de cada una, y nunca tuve los datos de esos alumnos.\nPor eso ahora vendo desde páginas propias, como esta. Este curso es para que tú tengas la tuya.",
+    "paraQuien": "Mandas tu portafolio o tus precios en un PDF.\nTu portafolio muestra fotos y no te trae clientes.\nQuieres una página propia con tu marca y tu estilo.\nEres fotógrafo, diseñador o tienes un restaurante o negocio local.",
+    "modulos": "# Cerca de 10 clases\nPróximamente",
+    "resultados": "Vas a entender por qué una landing vende mejor que un PDF y cómo aplicarlo a tu trabajo.\nVas a tener tu propia página web, lista para mandar en lugar del PDF.",
+    "faq": "¿Cuántas clases son?\nCerca de 10. Cada una tiene su teoría en video y un Zoom de preguntas y respuestas.\n\n¿Por qué el temario dice próximamente?\nTodavía estoy terminando de preparar las clases. Cuando estén listas vas a ver aquí el temario completo.\n\n¿Para quién es el curso?\nPara fotógrafos, diseñadores y negocios locales que hoy mandan su información en un PDF o dependen solo de las redes sociales.",
+    "problemaFrase": "Mandas un PDF y no sabes si alguien lo abrió. Ahí se pierde la venta.",
+    "problemas": "El PDF se pierde en el chat | Lo mandas, queda enterrado entre mensajes y nadie lo vuelve a abrir. Cambiaste un precio y toca reenviarlo a todos. | Solución: un enlace siempre actualizado\nTu portafolio no dice qué hacer después | El cliente ve las fotos, le gustan y se va, porque nadie le explicó cómo contratarte. | Solución: un botón claro para escribirte\nVendes a ciegas | Con un archivo adjunto no sabes cuántas personas miraron tu trabajo ni qué les interesó. | Solución: ver quién entra y qué toca",
+    "antes": "Un archivo pesado que se descarga y se olvida\nCambias un precio y reenvías todo a todos\nNo sabes quién lo abrió ni qué le interesó\nEl cliente tiene que adivinar cómo contratarte",
+    "despues": "Un solo enlace que abre rápido en cualquier celular\nCambias un texto y todos ven la versión nueva\nVes cuántos entraron y qué botones tocaron\nUn botón claro para escribirte o agendar"
   }
 ];
 

@@ -156,3 +156,35 @@ p.eyebrow{margin-bottom:12px;}
 .logros li:last-child{border-bottom:none;}
 .logros li::before{content:"✓";position:absolute;left:0;top:12px;color:var(--gold);font-weight:800;}
 @media (max-width:640px){.logros{padding:20px;}}
+
+/* SOLUCIONES, CLASES Y TEMARIO (landing-pages-con-ia) */
+.sol-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+.sol{padding:26px;border-radius:22px;display:flex;flex-direction:column;gap:14px;}
+.sol-ico{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:rgba(253,220,91,.12);border:1px solid rgba(253,220,91,.35);color:var(--gold);flex-shrink:0;}
+.sol-ico svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.sol p{font-size:15px;line-height:1.5;}
+.sol p span{display:block;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px;}
+.sol-p{color:var(--muted);}
+.sol-p span{color:var(--red,#ff5c5c);}
+.sol-s{color:var(--ink);font-weight:500;padding-top:14px;border-top:1px solid rgba(255,255,255,.08);}
+.sol-s span{color:var(--gold);}
+.big-n{text-align:center;margin-bottom:32px;}
+.big-n b{display:block;font-family:var(--font-display);font-weight:400;font-size:clamp(72px,14vw,130px);line-height:1;color:transparent;-webkit-text-stroke:1.5px var(--gold);}
+.big-n span{display:block;color:var(--muted);margin-top:6px;}
+.cl-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;max-width:900px;margin:0 auto;}
+.cl{padding:30px;border-radius:22px;}
+.cl .sol-ico{margin-bottom:16px;}
+.cl h3{font-size:22px;margin-bottom:8px;}
+.cl p{color:var(--muted);}
+.lg{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
+.lg>div{padding:18px 12px;border-radius:16px;border:1px dashed rgba(255,255,255,.22);background:rgba(255,255,255,.03);text-align:center;}
+.lg b{display:block;font-family:var(--font-display);font-weight:400;font-size:26px;color:var(--ink);margin-bottom:2px;}
+.lg span{font-size:12px;color:var(--gold);font-weight:600;}
+@media (max-width:860px){
+  .sol-grid{grid-template-columns:1fr 1fr;}
+  .lg{grid-template-columns:repeat(3,1fr);}
+}
+@media (max-width:640px){
+  .sol-grid,.cl-grid{grid-template-columns:1fr;}
+  .lg{grid-template-columns:repeat(2,1fr);}
+}

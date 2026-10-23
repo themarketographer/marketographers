@@ -158,6 +158,9 @@ footer{padding-left:var(--space-3);padding-right:var(--space-3)}
 }
 @media (prefers-reduced-transparency:reduce){.dock,.toast{background:var(--white);-webkit-backdrop-filter:none;backdrop-filter:none}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}.js .rv,.js .wd{opacity:1;transform:none}}
+.live-dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--ok);margin-right:8px;box-shadow:0 0 0 0 rgba(47,191,113,.6);animation:livePulse 1.6s infinite}
+@keyframes livePulse{70%{box-shadow:0 0 0 10px rgba(47,191,113,0)}100%{box-shadow:0 0 0 0 rgba(47,191,113,0)}}
+@media (prefers-reduced-motion:reduce){.live-dot{animation:none}}
 </style>
 <!-- GA4 (mismo ID que el resto de marketographers.com) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-GQY8VYBD5T"></script>
@@ -297,15 +300,65 @@ mktEv('VioLandingMasterclass');
   var START = Date.UTC(2026, 9, 24, 0, 0, 0), LIVE_MS = 3 * 3600 * 1000;
   var $ = function(id){ return document.getElementById(id); };
   function pad(n){ return n < 10 ? '0' + n : '' + n; }
+  /* Tres estados: antes (cuenta regresiva), vivo (link directo a Zoom) y despues (Próximamente).
+     Se calculan por hora. Para probar: ?estado=antes | vivo | despues */
+  var ZOOM = 'https://us06web.zoom.us/j/89080671089?pwd=RLm5YEE7a12vbxK3OJl5MDJypM6eJx.1';
+  var END = START + LIVE_MS;
+  function porHora(){ var t = Date.now(); return t < START ? 'antes' : (t < END ? 'vivo' : 'despues'); }
+  var ov = '';
+  try { ov = new URLSearchParams(location.search).get('estado') || ''; } catch (e) {}
+  var ESTADO = /^(antes|vivo|despues)$/.test(ov) ? ov : porHora();
+  function q(sel){ return document.querySelector(sel); }
+  function ocultar(sel){ document.querySelectorAll(sel).forEach(function(e){ e.style.display = 'none'; }); }
+  function btnTxt(a, t){ if (a && a.firstChild && a.firstChild.nodeType === 3) a.firstChild.nodeValue = t; }
+  function secciones(){ ocultar('section[aria-labelledby="para-ti"],section[aria-labelledby="como"]'); }
+  if (ESTADO === 'vivo') {
+    document.title = 'ESTAMOS EN VIVO | Más sesiones todas las semanas';
+    q('.kick').innerHTML = '<span class="live-dot"></span>Más sesiones todas las semanas';
+    $('h1').textContent = 'ESTAMOS EN VIVO.';
+    q('.lead').textContent = 'La clase ya empezó. Entra ahora por Zoom.';
+    q('.when').innerHTML = 'Hoy, ahora mismo<span>Entra con un clic</span>';
+    q('.micro').textContent = 'Se abre en Zoom, desde el celular o la compu.';
+    ocultar('#copyLink');
+    secciones();
+    $('cierre').textContent = 'Ya empezó. Entra.';
+    q('.dock-t b').textContent = 'Estamos en vivo';
+    q('.dock-t span').textContent = 'Entra a Zoom';
+    document.querySelectorAll('[data-join]').forEach(function(a){
+      var pos = a.getAttribute('data-join');
+      a.href = ZOOM;
+      a.removeAttribute('data-join');
+      a.setAttribute('data-zoom', pos);
+      btnTxt(a, pos === 'dock' ? 'Entrar' : (pos === 'header' ? 'Entrar a Zoom' : 'Entrar a la clase en Zoom'));
+      a.addEventListener('click', function(){
+        try { if (window.mktEv) mktEv('EntrarZoom', { content_name: 'Clase Más sesiones todas las semanas', cta_position: pos }); } catch (e) {}
+      });
+    });
+  } else if (ESTADO === 'despues') {
+    document.title = 'Próximamente | Más sesiones todas las semanas';
+    q('.kick').textContent = 'Clase gratis por Zoom';
+    $('h1').textContent = 'Próximamente.';
+    q('.lead').textContent = 'Pronto abrimos la próxima clase gratis para fotógrafos. Entra al grupo y te avisamos primero.';
+    ocultar('.offer');
+    q('.micro').textContent = 'Ahí te avisamos la fecha de la próxima clase.';
+    secciones();
+    $('cierre').textContent = 'Próxima clase, muy pronto.';
+    q('.dock-t b').textContent = 'Próxima clase, muy pronto';
+    q('.dock-t span').textContent = 'Gratis';
+  }
   function render(){
-    var now = Date.now(), diff = START - now, tm = $('timer');
-    if (diff <= 0) {
-      tm.classList.add('live');
-      $('tLive').textContent = now > START + LIVE_MS ? 'La clase ya terminó' : 'La clase está en vivo';
-      return;
+    var tm = $('timer');
+    if (ESTADO === 'despues') { tm.style.display = 'none'; }
+    else if (ESTADO === 'vivo') { tm.classList.add('live'); $('tLive').textContent = 'ESTAMOS EN VIVO'; }
+    else {
+      var diff = START - Date.now();
+      if (diff > 0) {
+        var s = Math.floor(diff / 1000), d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60), sec = s % 60;
+        $('tD').textContent = d; $('tH').textContent = pad(h); $('tM').textContent = pad(m); $('tS').textContent = pad(sec);
+      }
     }
-    var s = Math.floor(diff / 1000), d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60), sec = s % 60;
-    $('tD').textContent = d; $('tH').textContent = pad(h); $('tM').textContent = pad(m); $('tS').textContent = pad(sec);
+    /* Si la hora cambia el estado con la página abierta, se recarga sola (solo sin ?estado=) */
+    if (!ov && porHora() !== ESTADO) location.reload();
   }
   render(); setInterval(render, 1000);
   try {

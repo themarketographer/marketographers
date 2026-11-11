@@ -332,7 +332,6 @@ fbq('init','467504537642622');
   <div class="ring" style="width:320px;height:320px;left:-120px;bottom:-150px"></div>
   <div class="wrap">
     <h1>Cobra lo que <mark>realmente necesitas</mark> para vivir de tu cámara</h1>
-    <p class="lead">Responde en 8 pasos cortos. Al final sabrás cuánto cobrar por hora y por paquete.</p>
   </div>
 </section>
 
@@ -367,7 +366,6 @@ fbq('init','467504537642622');
   <section class="panel" id="p-moneda" style="padding:0;">
     <div class="panel-head">
       <h2>¿En qué moneda trabajas?</h2>
-      <p>Escribe todo en tu moneda. Yo lo convierto a dólares solo.</p>
     </div>
     <div class="card glass">
       <div class="cols">
@@ -379,20 +377,10 @@ fbq('init','467504537642622');
           <div class="field">
             <label for="cur-rate">¿Cuánto vale 1 dólar en tu moneda?</label>
             <div class="inline"><input class="glass-input num" id="cur-rate" type="number" min="0" step="any" inputmode="decimal"><span class="unit" id="cur-unit"></span></div>
-            <span class="hint">Si usas dólares, déjalo en 1. Si tu país tiene dos tipos de cambio, pon el que realmente pagas.</span>
           </div>
           <button class="link" id="btnLiveRate">Traer la tasa oficial de hoy</button> <span class="hint" id="liveMsg" style="display:inline"></span>
         </div>
       </div>
-    </div>
-    <div class="card glass">
-      <h3 class="sec-t">Así funciona</h3>
-      <ol class="steps" style="margin-top:14px;">
-        <li><span>Pasos 2 al 5: cuéntame tus gastos, tus costos y tu equipo.</span></li>
-        <li><span>Paso 6: dime cuántos clientes atiendes. Ahí salen tus precios.</span></li>
-        <li><span>Pasos 7 y 8: cuántos clientes necesitas y cuánto invertir en anuncios.</span></li>
-        <li><span>Todo se guarda solo en tu navegador. Nada se envía a ningún servidor.</span></li>
-      </ol>
     </div>
   </section>
 
@@ -400,7 +388,6 @@ fbq('init','467504537642622');
   <section class="panel" id="p-gastos" style="padding:0;">
     <div class="panel-head">
       <h2>¿Cuánto gastas al mes para vivir?</h2>
-      <p>Pon lo de un mes normal. Si algo no aplica, déjalo vacío.</p>
     </div>
     <div class="card glass">
       <h3 class="sec-t">Lo esencial</h3>
@@ -418,7 +405,6 @@ fbq('init','467504537642622');
   <section class="panel" id="p-costos" style="padding:0;">
     <div class="panel-head">
       <h2>¿Cuánto cuesta tener tu negocio?</h2>
-      <p>Suscripciones, estudio, seguros, impuestos y formación. Lo que pagas aunque no tengas clientes.</p>
     </div>
     <div class="card glass">
       <div id="list-costs"></div>
@@ -430,7 +416,6 @@ fbq('init','467504537642622');
   <section class="panel" id="p-equipo" style="padding:0;">
     <div class="panel-head">
       <h2>Tu equipo se va a gastar. ¿Cuánto apartar?</h2>
-      <p>Escribe lo que tienes. Calculo cuánto guardar cada mes para reponerlo, con inflación.</p>
     </div>
     <div class="two">
       <div>
@@ -446,7 +431,6 @@ fbq('init','467504537642622');
         </div>
         <div class="card glass">
           <h3 class="sec-t">Equipo nuevo que quieres comprar</h3>
-          <p class="sub">Lo pagas en cuotas. El precio va en dólares y la cuota se suma a lo que apartas.</p>
           <div id="list-neweq"></div>
           <button class="add-link" data-add="neweq">+ Agregar equipo nuevo</button>
         </div>
@@ -454,7 +438,7 @@ fbq('init','467504537642622');
       <div class="sticky">
         <div class="card glass">
           <div class="fld"><div class="fld-top"><label for="life">Vida útil del equipo</label><div class="pill"><input id="life" type="number" min="0.5" step="0.5" inputmode="decimal"><span>años</span></div></div><input type="range" id="life-r" min="1" max="10" step="0.5" aria-label="Vida útil"></div>
-          <div class="fld"><div class="fld-top"><label for="infl">Inflación a cubrir</label><div class="pill"><input id="infl" type="number" min="0" step="0.5" inputmode="decimal"><span>%</span></div></div><input type="range" id="infl-r" min="0" max="100" step="1" aria-label="Inflación"><p class="hint">Cuánto más caro será reponerlo.</p></div>
+          <div class="fld"><div class="fld-top"><label for="infl">Inflación a cubrir</label><div class="pill"><input id="infl" type="number" min="0" step="0.5" inputmode="decimal"><span>%</span></div></div><input type="range" id="infl-r" min="0" max="100" step="1" aria-label="Inflación"></div>
           <input type="hidden" id="eq-rate"><span id="eq-rate-u" hidden></span>
         </div>
         <div class="res dark tool-hero-dark">
@@ -470,7 +454,6 @@ fbq('init','467504537642622');
   <section class="panel" id="p-fondos" style="padding:0;">
     <div class="panel-head">
       <h2>¿Cómo repartes tu dinero?</h2>
-      <p>Cada mes tu plata se divide en 5 fondos. La regla ideal es 50 · 10 · 20 · 10 · 10. Gastos y Costos se llenan solos.</p>
     </div>
     <div class="card glass">
       <div id="funds"></div>
@@ -491,7 +474,6 @@ fbq('init','467504537642622');
   <section class="panel" id="p-precios" style="padding:0;">
     <div class="panel-head">
       <h2>Ahora sí: ¿cuánto cobrar?</h2>
-      <p>Dime cuánto trabajas y te digo tu precio mínimo.</p>
     </div>
     <div class="two">
       <div class="card glass">
@@ -513,7 +495,6 @@ fbq('init','467504537642622');
               <div class="field"><label for="pr-m1">Estándar sube</label><div class="inline"><input class="glass-input num" id="pr-m1" type="number" min="0" step="5" inputmode="decimal"><span class="unit">%</span></div></div>
               <div class="field"><label for="pr-m2">Premium sube</label><div class="inline"><input class="glass-input num" id="pr-m2" type="number" min="0" step="5" inputmode="decimal"><span class="unit">%</span></div></div>
             </div>
-            <span class="hint">Estándar y Premium son tu precio mínimo más ese porcentaje. En el Excel eran 50% y 150%.</span>
           </div>
         </details>
         <input type="hidden" id="pr-total"><input type="hidden" id="pr-hours">
@@ -529,7 +510,6 @@ fbq('init','467504537642622');
     </div>
     <div class="card glass">
       <h3 class="sec-t">Tus paquetes</h3>
-      <p class="sub">Precio por cliente. Toca uno para usarlo en los pasos siguientes.</p>
       <div class="pkgs" id="pkg-cards"></div>
     </div>
   </section>
@@ -538,14 +518,13 @@ fbq('init','467504537642622');
   <section class="panel" id="p-equilibrio" style="padding:0;">
     <div class="panel-head">
       <h2>¿Cuántos clientes necesitas?</h2>
-      <p>Para cubrir todos tus gastos con cada paquete. Sumo un cliente extra de colchón.</p>
     </div>
     <div class="card glass">
       <div class="scroll-x"><table class="tbl" style="min-width:0;"><thead><tr><th>Paquete</th><th>Precio</th><th>Equilibrio</th><th>Clientes al mes</th></tr></thead><tbody id="eq-table"></tbody></table></div>
     </div>
     <div class="card glass">
       <div class="bar-row">
-        <div><h3 class="sec-t">Tus próximos 12 meses</h3><p class="sub" style="margin:0">Con el paquete que elijas.</p></div>
+        <div><h3 class="sec-t">Tus próximos 12 meses</h3></div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;">
           <div class="seg" id="seg-pkg"><button data-pkg="Básico">Básico</button><button data-pkg="Estándar">Estándar</button><button data-pkg="Premium">Premium</button></div>
           <div class="seg" id="seg-mode"><button data-mode="acc">Acumulado</button><button data-mode="mon">Cada mes</button></div>
@@ -565,12 +544,10 @@ fbq('init','467504537642622');
   <section class="panel" id="p-embudo" style="padding:0;">
     <div class="panel-head">
       <h2>¿Cuánto invertir en anuncios?</h2>
-      <p>Con el paquete que elegiste, así debería verse tu embudo de Meta Ads.</p>
     </div>
     <div class="two">
       <div class="card glass">
         <h3 class="sec-t">Tu embudo ideal</h3>
-        <p class="sub">De impresiones a ventas, mes 1.</p>
         <div class="funnel" id="funnel"></div>
       </div>
       <div class="res dark tool-hero-dark sticky">
@@ -592,7 +569,6 @@ fbq('init','467504537642622');
     </div>
     <div class="card glass">
       <h3 class="sec-t">Tu última campaña</h3>
-      <p class="sub">Si ya hiciste anuncios, escribe los resultados y los comparo con el ideal.</p>
       <div class="two" style="gap:28px;">
         <div class="cols" style="gap:12px;">
           <div class="field"><label for="m-imp">Impresiones</label><input class="glass-input num" id="m-imp" type="number" min="0" inputmode="numeric"></div>
@@ -603,7 +579,7 @@ fbq('init','467504537642622');
           <div class="field"><label for="m-sales">Ventas</label><input class="glass-input num" id="m-sales" type="number" min="0" inputmode="numeric"></div>
           <div class="field"><label for="m-aband">Abandonos</label><input class="glass-input num" id="m-aband" type="number" min="0" inputmode="numeric"></div>
         </div>
-        <div><div class="rate-grid" id="rates" style="grid-template-columns:1fr 1fr;"></div><p class="hint" style="margin-top:12px;">Verde: cumples el ideal. Amarillo: estás por debajo. Un guion significa que falta el dato anterior.</p></div>
+        <div><div class="rate-grid" id="rates" style="grid-template-columns:1fr 1fr;"></div></div>
       </div>
     </div>
     <details class="more">
@@ -613,7 +589,7 @@ fbq('init','467504537642622');
         <div class="field"><label for="x-click">Clicks / alcance</label><div class="inline"><input class="glass-input num" id="x-click" type="number" step="0.5" min="0"><span class="unit">%</span></div></div>
         <div class="field"><label for="x-msg">Mensajes / clicks</label><div class="inline"><input class="glass-input num" id="x-msg" type="number" step="0.5" min="0"><span class="unit">%</span></div></div>
         <div class="field"><label for="x-meet">Reuniones / mensajes</label><div class="inline"><input class="glass-input num" id="x-meet" type="number" step="0.5" min="0"><span class="unit">%</span></div></div>
-        <div class="field"><label for="x-close">Cierre, ventas / reuniones</label><div class="inline"><input class="glass-input num" id="x-close" type="number" step="1" min="1"><span class="unit">%</span></div><span class="hint">Supuesto nuestro, no estaba en el Excel.</span></div>
+        <div class="field"><label for="x-close">Cierre (supuesto)</label><div class="inline"><input class="glass-input num" id="x-close" type="number" step="1" min="1"><span class="unit">%</span></div></div>
       </div></div>
     </details>
   </section>
@@ -643,15 +619,6 @@ fbq('init','467504537642622');
         <div class="note" id="r-alerts" style="margin-top:18px;"></div>
       </div>
     </div>
-    <details class="more fixes">
-      <summary>Qué corregí respecto al Excel original</summary>
-      <div class="more-body"><ul>
-        <li><b>Impresiones del embudo.</b> El Excel multiplicaba inversión × CPM × 1000. Lo correcto es inversión ÷ CPM × 1000.</li>
-        <li><b>Inversión en Ads del mes 1.</b> El Excel siempre usaba el precio Premium sin importar el paquete elegido.</li>
-        <li><b>Cuota del equipo nuevo.</b> Solo se sumaba en dólares y se quedaba fuera de los fondos. Ahora cuenta en ambos.</li>
-        <li><b>Precio por cliente (AOV).</b> Mezclaba el paquete Estándar fijo con el elegido y monedas distintas.</li>
-      </ul><p class="note" style="margin-top:14px;">Con los datos de ejemplo todo lo demás da igual que el Excel: hora mínima 148,43 y paquetes 593,71 / 890,56 / 1.484,27.</p></div>
-    </details>
   </section>
 
   <!-- ===================== GUÍA ===================== -->
@@ -680,6 +647,16 @@ fbq('init','467504537642622');
         <dt>AOV</dt><dd>Lo que paga un cliente en promedio, el precio de tu paquete.</dd>
       </dl>
     </div>
+
+    <details class="more fixes">
+      <summary>Qué corregí del Excel original</summary>
+      <div class="more-body"><ul>
+        <li><b>Impresiones del embudo.</b> El Excel multiplicaba inversión × CPM × 1000. Lo correcto es inversión ÷ CPM × 1000.</li>
+        <li><b>Inversión en Ads del mes 1.</b> El Excel siempre usaba el precio Premium sin importar el paquete elegido.</li>
+        <li><b>Cuota del equipo nuevo.</b> Solo se sumaba en dólares y se quedaba fuera de los fondos. Ahora cuenta en ambos.</li>
+        <li><b>Precio por cliente (AOV).</b> Mezclaba el paquete Estándar fijo con el elegido y monedas distintas.</li>
+      </ul></div>
+    </details>
   </section>
 
 </div>
@@ -698,7 +675,6 @@ fbq('init','467504537642622');
   <div class="wrap">
     <div class="community-card dark tool-hero-dark">
       <h2>Ya sabes cuánto cobrar. Ahora falta que te lo paguen.</h2>
-      <p>Calcular el precio es la mitad. La otra mitad es venderlo con estrategia, anuncios y gente que te empuje. Eso es la comunidad.</p>
       <a class="btn btn-gold" href="/#planes">Únete a la comunidad →</a>
     </div>
   </div>
@@ -1017,7 +993,7 @@ function paintFunds(){
     $('funds').innerHTML = FUND_INFO.map((f,i)=>{
       const auto=i<2;
       return `<div class="fund" data-f="${i}">
-        <div class="f-main"><div class="f-top"><span class="nm">${f[0]}</span><span class="sema" data-fs="${i}"></span></div><div class="ds">${f[1]}</div>
+        <div class="f-main"><div class="f-top"><span class="nm" title="${f[1]}">${f[0]}</span><span class="sema" data-fs="${i}"></span></div>
           <div class="fund-bar"><div class="fill" data-fb="${i}"></div><div class="mark" data-fm="${i}"></div></div></div>
         <div class="f-nums">
           <label class="amt"><span class="cs" data-sym></span>${auto?`<input data-fa="${i}" readonly aria-label="Monto de ${f[0]}">`:`<input data-fa="${i}" type="number" min="0" step="any" inputmode="decimal" placeholder="0" aria-label="Monto de ${f[0]}">`}</label>
@@ -1116,7 +1092,7 @@ function paintFunnel(){
   const cell=(l,v)=>`<div><div class="mini-l">${l}</div><div class="mini-v">${v}</div></div>`;
   setHTML('results', cell('Costo por mensaje',L(O.cpl))+cell('Costo por venta',L(O.cac))+cell('ROAS',num(O.roas)+'x'));
   const rv=O.rev;
-  set('rev-sub','Para vender '+O.sessions1+' '+(O.sessions1===1?'paquete':'paquetes')+' al mes con tus tasas ideales ('+N1(rt.close)+'% de cierre):');
+  set('rev-sub','Para vender '+O.sessions1+' al mes:');
   const rc=(l,v,s)=>`<div class="rate"><div class="l">${l}</div><div class="v">${v}</div><div class="c">${s||''}</div></div>`;
   setHTML('reverse',
     rc('Reuniones necesarias',N0(Math.ceil(rv.meets)))+rc('Mensajes necesarios',N0(Math.ceil(rv.msgs)))+rc('Impresiones necesarias',N0(rv.imp))+

@@ -62,263 +62,246 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/global.css">
 <style>
-  /* Estilos propios de esta herramienta. Paleta, tipografía, botones, header y
-     footer vienen de /assets/global.css; movimiento y tema claro de /assets/fx.css.
-     Aquí solo lo exclusivo de la calculadora. Solo usa variables del sistema para
-     que el tema claro funcione solo. */
-  :root{--ok:#6ee7a0;--warn:#fddc5b;color-scheme:dark;}
+  /* Estilos propios de la calculadora. Paleta, tipografía, botones, header y footer
+     vienen de /assets/global.css; tema claro y movimiento base de /assets/fx.css.
+     Solo variables del sistema, así el tema claro funciona solo. */
+  :root{
+    --ok:#6ee7a0;--warn:#fddc5b;color-scheme:dark;
+    --out:cubic-bezier(.23,1,.32,1);
+  }
   :root[data-theme="light"]{--ok:#1f8f4f;--warn:#8a6a00;}
   body{overflow-x:hidden;}
+  :where(input,select,button){accent-color:var(--gold);caret-color:var(--gold);}
+  ::-webkit-scrollbar{width:10px;height:10px;} ::-webkit-scrollbar-thumb{background:var(--glass-b);border-radius:10px;border:2px solid transparent;background-clip:padding-box;}
+  input[type=number]{-moz-appearance:textfield;} input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  .num,.tbl,.big,.dl b{font-variant-numeric:tabular-nums;}
 
-  .tool-hero{padding:36px 0 14px;text-align:center;}
-  .tool-hero h1{font-size:clamp(32px,5.5vw,56px);max-width:820px;margin:16px auto 0;line-height:1.1;}
-  .tool-hero .lead{max-width:620px;margin:18px auto 0;color:var(--muted);font-size:16px;}
+  /* ---------- Hero compacto ---------- */
+  .tool-hero{padding:26px 0 6px;text-align:center;}
+  .tool-hero h1{font-size:clamp(28px,4.6vw,48px);max-width:760px;margin:0 auto;line-height:1.1;}
+  .tool-hero .lead{max-width:540px;margin:14px auto 0;color:var(--muted);font-size:15.5px;text-wrap:pretty;}
 
-  .glass{
-    background:linear-gradient(160deg,var(--surface-2),var(--cream-alt));
-    border:1px solid var(--line);border-radius:26px;
-    box-shadow:0 30px 60px -34px rgba(0,0,0,.8);
-  }
-  .dark{
-    background:linear-gradient(165deg,#242424,#141414);color:var(--ink);
-    border:1px solid rgba(253,220,91,.35);box-shadow:0 60px 120px -40px rgba(0,0,0,.9);border-radius:26px;
-  }
+  /* ---------- Superficies ---------- */
+  .glass{background:linear-gradient(160deg,var(--surface-2),var(--cream-alt));border:1px solid var(--line);border-radius:26px;box-shadow:0 30px 60px -34px rgba(0,0,0,.8);}
+  .dark{background:linear-gradient(165deg,#242424,#141414);color:var(--ink);border:1px solid rgba(253,220,91,.35);box-shadow:0 60px 120px -40px rgba(0,0,0,.9);border-radius:26px;}
+  :root[data-theme="light"] .dark{--ink:#f8f8f8;--muted:#b3b3b3;--line:rgba(255,255,255,.1);--glass-b:rgba(255,255,255,.14);--glass:rgba(255,255,255,.07);--gold-text:#fddc5b;--ok:#6ee7a0;color:var(--ink);}
 
-  /* ---------- Barra superior ---------- */
-  .app{position:relative;z-index:1;padding:14px 0 56px;}
-  .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px;}
-  .toolbar .grp{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
-  .chip-btn{
-    font-family:inherit;font-size:12.5px;font-weight:600;color:var(--ink);cursor:pointer;
-    background:var(--glass);border:1px solid var(--glass-b);
-    backdrop-filter:blur(14px) saturate(160%);-webkit-backdrop-filter:blur(14px) saturate(160%);
-    padding:8px 14px;border-radius:999px;transition:transform .18s var(--ease),background .25s,border-color .25s;
-  }
-  .chip-btn:hover{transform:translateY(-2px);border-color:var(--gold);}
-  .chip-btn.danger{color:var(--red);}
-  .saved{font-size:12px;color:var(--muted);font-weight:500;}
+  /* ---------- Barra de pasos ---------- */
+  .app{position:relative;z-index:1;padding:14px 0 150px;}
+  .appbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;min-height:40px;}
+  .stepper{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;margin-left:-12px;}
+  .stepper::-webkit-scrollbar{display:none;}
+  .rail-i{position:relative;background:none;border:0;color:var(--muted);font-family:inherit;font-size:13.5px;font-weight:500;padding:9px 12px;border-radius:999px;cursor:pointer;white-space:nowrap;transition:color .2s,background .2s;}
+  .rail-i:hover{color:var(--ink);background:var(--glass);}
+  .rail-i.done{color:var(--ink);}
+  .rail-i.on{color:var(--ink);font-weight:600;}
+  .rail-i::after{content:"";position:absolute;left:12px;right:12px;bottom:3px;height:2px;border-radius:2px;background:var(--gold);transform:scaleX(0);transition:transform .35s var(--out);}
+  .rail-i.on::after{transform:scaleX(1);}
+  .stepmeta{display:none;font-size:14px;color:var(--muted);}
+  .stepmeta b{color:var(--ink);font-weight:600;}
+  .progress{height:3px;border-radius:3px;background:var(--glass-b);overflow:hidden;margin-bottom:26px;}
+  .progress i{display:block;height:100%;background:var(--gold);transform-origin:0 50%;transform:scaleX(.1);transition:transform .6s var(--out);}
 
-  .demo-banner{
-    display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;
-    background:rgba(253,220,91,.1);border:1px solid rgba(253,220,91,.35);border-radius:18px;
-    padding:12px 18px;margin-bottom:14px;font-size:13.5px;
-  }
-  .demo-banner strong{font-weight:600;color:var(--gold-text);}
+  .menuwrap{position:relative;flex-shrink:0;}
+  .icon-btn{width:40px;height:40px;border-radius:50%;border:1px solid var(--glass-b);background:var(--glass);color:var(--ink);cursor:pointer;display:grid;place-items:center;transition:transform .16s var(--out),border-color .2s;}
+  .icon-btn:hover{border-color:var(--gold);} .icon-btn:active{transform:scale(.95);}
+  .menu{position:absolute;right:0;top:48px;min-width:230px;padding:6px;border-radius:18px;background:var(--surface-2);border:1px solid var(--glass-b);box-shadow:0 24px 60px -20px rgba(0,0,0,.7);z-index:40;
+    transform-origin:top right;opacity:0;transform:scale(.96) translateY(-4px);visibility:hidden;pointer-events:none;transition:opacity .16s,transform .18s var(--out),visibility 0s .18s;}
+  .menu.open{opacity:1;transform:none;visibility:visible;pointer-events:auto;transition-delay:0s;}
+  .menu button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:0;color:var(--ink);font-family:inherit;font-size:14px;padding:10px 12px;border-radius:12px;cursor:pointer;transition:background .15s;}
+  .menu button:hover{background:var(--glass);} .menu button.danger{color:var(--red);}
+  .menu svg{width:17px;height:17px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;opacity:.8;}
+  .menu hr{border:0;height:1px;background:var(--line);margin:6px 8px;}
 
-  /* ---------- Pestañas ---------- */
-  .tabs{
-    position:sticky;top:66px;z-index:20;margin:0 -24px 18px;padding:10px 24px;
-    background:color-mix(in srgb,var(--cream) 82%,transparent);
-    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-    border-bottom:1px solid var(--line);
-    display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;
-  }
-  .tabs::-webkit-scrollbar{display:none;}
-  .tab{
-    flex-shrink:0;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;
-    padding:8px 16px 8px 10px;border-radius:999px;border:1px solid var(--glass-b);
-    background:var(--glass);color:var(--muted);display:flex;align-items:center;gap:8px;
-    transition:background .25s,color .25s,border-color .25s,transform .18s var(--ease);
-  }
-  .tab:hover{transform:translateY(-1px);color:var(--ink);}
-  .tab .n{
-    width:22px;height:22px;border-radius:50%;background:var(--glass-b);
-    font-size:11px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;
-  }
-  .tab.on{background:var(--gold);color:var(--ink-on-gold);border-color:var(--gold);}
-  .tab.on .n{background:var(--ink-on-gold);color:var(--gold);}
+  .demo{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin:-8px 0 22px;flex-wrap:wrap;}
+  .link{background:none;border:0;color:var(--gold-text);font:inherit;font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:0;}
+  .x{background:none;border:0;color:var(--muted);font-size:18px;line-height:1;cursor:pointer;padding:2px 6px;border-radius:8px;} .x:hover{color:var(--ink);}
 
+  /* ---------- Paneles: un foco por pantalla ---------- */
   .panel{display:none;}
-  .panel.on{display:block;animation:fade-up .5s var(--ease) both;}
-  @keyframes fade-up{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
-  .panel-head{margin-bottom:20px;}
-  .panel-head h2{font-size:clamp(26px,4vw,38px);}
-  .panel-head p{color:var(--muted);font-size:15px;margin-top:10px;max-width:700px;}
+  .panel.on{display:block;}
+  .panel.on>*{animation:rise .55s var(--out) both;}
+  .panel.on>:nth-child(2){animation-delay:60ms} .panel.on>:nth-child(3){animation-delay:120ms} .panel.on>:nth-child(4){animation-delay:180ms}
+  .panel.on>:nth-child(5){animation-delay:240ms} .panel.on>:nth-child(n+6){animation-delay:300ms}
+  @keyframes rise{from{opacity:0;transform:translate(var(--dx,0px),16px);}to{opacity:1;transform:none;}}
+  .panel-head{margin-bottom:26px;}
+  .panel-head h2{font-size:clamp(30px,4.6vw,46px);text-wrap:balance;}
+  .panel-head p{color:var(--muted);font-size:16px;margin-top:12px;max-width:620px;text-wrap:pretty;}
 
   .card{padding:28px 30px;margin-bottom:20px;}
-  .card .sub{font-size:13.5px;color:var(--muted);margin-bottom:16px;}
-  .legend{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-text);margin-bottom:14px;}
+  .sec-t{font-family:var(--font-display);font-size:20px;letter-spacing:-.01em;margin-bottom:4px;}
+  .sub{font-size:14px;color:var(--muted);margin-bottom:18px;max-width:60ch;}
   .cols{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;}
+  .two{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:20px;align-items:start;}
   .cols-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  .sticky{position:sticky;top:96px;}
 
-  /* ---------- Inputs ---------- */
-  .field{margin-bottom:14px;}
-  .field label{display:block;font-size:13.5px;font-weight:600;margin-bottom:6px;}
-  .field .hint{display:block;font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;}
-  .glass-input{
-    width:100%;font-family:inherit;font-size:14px;font-weight:500;color:var(--ink);
-    padding:10px 16px;border-radius:999px;background:var(--glass);
-    border:1px solid var(--glass-b);transition:border-color .2s,box-shadow .2s;min-width:0;
-  }
-  .glass-input::placeholder{color:var(--muted);opacity:.7;}
-  .glass-input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(253,220,91,.22);}
-  .glass-input.num{text-align:right;font-variant-numeric:tabular-nums;}
-  select.glass-input{cursor:pointer;}
-  select.glass-input option{background:var(--surface-2);color:var(--ink);}
+  /* ---------- Campos ---------- */
+  .field{margin-bottom:16px;}
+  .field label,.fld label{display:block;font-size:14px;font-weight:600;margin-bottom:6px;}
+  .hint{display:block;font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.5;}
+  .glass-input{width:100%;font-family:inherit;font-size:14.5px;font-weight:500;color:var(--ink);padding:11px 16px;border-radius:999px;background:var(--glass);border:1px solid var(--glass-b);transition:border-color .2s,box-shadow .2s;min-width:0;}
+  .glass-input:focus,.item-in:focus,.amt:focus-within{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(253,220,91,.22);}
+  .glass-input.num{text-align:right;}
+  select.glass-input{cursor:pointer;} select.glass-input option{background:var(--surface-2);color:var(--ink);}
   .glass-input[readonly]{background:transparent;color:var(--muted);border-style:dashed;}
-  .inline{display:flex;gap:10px;align-items:center;}
-  .unit{font-size:12.5px;color:var(--muted);font-weight:500;white-space:nowrap;}
+  .inline{display:flex;gap:10px;align-items:center;} .unit{font-size:13px;color:var(--muted);white-space:nowrap;}
+  .fld{padding:16px 0;border-top:1px solid var(--line);} .fld:first-of-type{border-top:0;padding-top:4px;}
+  .fld-top{display:flex;justify-content:space-between;align-items:center;gap:16px;}
+  .pill{display:flex;align-items:center;gap:6px;background:var(--glass);border:1px solid var(--glass-b);border-radius:999px;padding:6px 14px;min-width:96px;justify-content:flex-end;transition:border-color .2s,box-shadow .2s;}
+  .pill:focus-within{border-color:var(--gold);box-shadow:0 0 0 3px rgba(253,220,91,.22);}
+  .pill input{width:64px;background:none;border:0;color:var(--ink);font:600 15px 'Poppins',sans-serif;text-align:right;outline:none;} .pill span{color:var(--muted);font-size:13px;}
+  .fld input[type=range]{width:100%;height:26px;cursor:pointer;margin-top:8px;}
+  .fld p.hint{margin:4px 0 0;max-width:46ch;}
 
-  /* ---------- Lista editable ---------- */
-  .rows{display:flex;flex-direction:column;gap:8px;}
-  .rowhead,.row,.totalrow{display:grid;grid-template-columns:minmax(120px,1.1fr) minmax(130px,1.6fr) minmax(96px,.9fr) minmax(86px,.7fr) 34px;gap:8px;align-items:center;}
-  .rowhead{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:0 4px;margin-bottom:8px;}
-  .rowhead span:nth-child(3),.rowhead span:nth-child(4){text-align:right;}
-  .row .usd{font-size:13px;font-weight:500;text-align:right;color:var(--muted);font-variant-numeric:tabular-nums;}
-  .del{
-    width:34px;height:34px;border-radius:50%;border:1px solid var(--glass-b);background:transparent;color:var(--muted);
-    cursor:pointer;font-size:16px;line-height:1;transition:background .2s,color .2s,border-color .2s;
-  }
-  .del:hover{background:var(--red);color:#fff;border-color:var(--red);}
-  .add{margin-top:14px;}
-  .totalrow{margin-top:16px;padding-top:16px;border-top:1px solid var(--line);font-weight:600;font-size:14.5px;}
-  .totalrow span:nth-child(3),.totalrow span:nth-child(4){text-align:right;font-variant-numeric:tabular-nums;}
-  .totalrow span:nth-child(4){color:var(--muted);font-weight:500;}
+  /* ---------- Grupos y filas ---------- */
+  .grp{border-top:1px solid var(--line);} .grp:first-child{border-top:0;}
+  .grp>summary{display:flex;align-items:center;gap:12px;padding:15px 2px;cursor:pointer;list-style:none;font-weight:600;font-size:15.5px;user-select:none;}
+  .grp>summary::-webkit-details-marker{display:none;}
+  .grp>summary::before{content:"";width:7px;height:7px;border-right:1.6px solid var(--muted);border-bottom:1.6px solid var(--muted);transform:rotate(-45deg);transition:transform .28s var(--out);flex-shrink:0;margin:0 3px;}
+  .grp[open]>summary::before{transform:rotate(45deg);}
+  .g-name{flex:1;} .g-sub{font-weight:500;font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums;}
+  .g-body{padding:0 0 14px 22px;}
+  .row{display:grid;grid-template-columns:minmax(0,1fr) 150px 76px 30px;gap:10px;align-items:center;padding:2px 0;transition:opacity .16s,transform .17s var(--out);}
+  .row.out{opacity:0;transform:translateX(14px);}
+  .row.fresh{animation:rise .4s var(--out) both;}
+  .item-in{background:transparent;border:1px solid transparent;border-radius:12px;padding:9px 12px;color:var(--ink);font:inherit;font-size:14.5px;width:100%;min-width:0;transition:border-color .2s;}
+  .item-in:hover{border-color:var(--glass-b);} .item-in::placeholder{color:var(--muted);opacity:.6;}
+  .amt{display:flex;align-items:center;gap:6px;background:var(--glass);border:1px solid var(--glass-b);border-radius:999px;padding:0 14px;transition:border-color .2s,box-shadow .2s;}
+  .amt .cs{color:var(--muted);font-size:13px;} .amt input{flex:1;min-width:0;background:none;border:0;color:var(--ink);font:500 14.5px 'Poppins',sans-serif;text-align:right;padding:9px 0;outline:none;}
+  .row .usd{font-size:12.5px;color:var(--muted);text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;}
+  .del{width:30px;height:30px;border-radius:50%;border:0;background:transparent;color:var(--muted);cursor:pointer;font-size:17px;line-height:1;opacity:.45;transition:opacity .2s,background .2s,color .2s,transform .15s;}
+  .del:hover{opacity:1;background:var(--red);color:#fff;} .del:active{transform:scale(.92);}
+  .g-add,.add-link{background:none;border:0;color:var(--muted);font:inherit;font-size:13.5px;padding:9px 4px;cursor:pointer;transition:color .2s;} .g-add:hover,.add-link:hover{color:var(--gold-text);}
+  .row.ne{grid-template-columns:minmax(0,2fr) minmax(110px,1fr) minmax(120px,1fr) 80px 30px;}
+  .sum{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-top:10px;padding-top:18px;border-top:1px solid var(--line);}
+  .sum span{color:var(--muted);font-size:14px;} .sum b{font-family:var(--font-display);font-weight:400;font-size:28px;letter-spacing:-.02em;font-variant-numeric:tabular-nums;} .sum small{font-size:13.5px;color:var(--muted);margin-left:8px;font-variant-numeric:tabular-nums;}
 
-  .cat-bars{margin-top:20px;display:flex;flex-direction:column;gap:8px;}
-  .cat-bar{display:grid;grid-template-columns:130px 1fr 96px;gap:10px;align-items:center;font-size:12.5px;color:var(--muted);}
-  .cat-bar .track{height:8px;border-radius:99px;background:var(--glass-b);overflow:hidden;}
-  .cat-bar .fill{height:100%;border-radius:99px;background:var(--gold);transition:width .5s var(--ease);}
-  .cat-bar b{text-align:right;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums;}
+  /* ---------- Resultado grande (precios y resumen) ---------- */
+  .res{padding:30px;}
+  .res .k{font-size:14px;color:var(--muted);}
+  .big{font-family:var(--font-display);font-size:clamp(44px,6.4vw,76px);line-height:1;color:var(--gold-text);letter-spacing:-.03em;margin:10px 0 4px;white-space:nowrap;}
+  .dark .big{color:var(--gold);}
+  .big-u{font-size:14.5px;color:var(--muted);font-variant-numeric:tabular-nums;}
+  .rrows{margin-top:22px;border-top:1px solid var(--line);}
+  .rrows>div{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:13px 0;border-bottom:1px solid var(--line);font-size:15px;}
+  .rrows span{color:var(--muted);} .rrows b{font-weight:600;font-variant-numeric:tabular-nums;} .rrows small{color:var(--muted);font-weight:400;margin-left:6px;font-size:12.5px;}
+  .lead-result{padding:8px 0 28px;}
+  .lead-result .k{font-size:17px;color:var(--muted);}
+  .lead-result .big{font-size:clamp(52px,9vw,104px);}
+  .lead-result p.s{font-size:clamp(17px,2vw,20px);max-width:36ch;line-height:1.5;margin-top:6px;text-wrap:pretty;}
+  .lead-result b{color:var(--gold-text);font-weight:600;}
 
-  /* ---------- KPIs ---------- */
-  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
-  .kpi{padding:22px 24px;}
-  .kpi .l{font-size:11.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
-  .kpi .v{font-family:var(--font-display);font-size:clamp(24px,3vw,34px);letter-spacing:-.02em;margin-top:8px;font-variant-numeric:tabular-nums;line-height:1.1;}
-  .kpi .u{font-size:13px;color:var(--muted);margin-top:4px;font-variant-numeric:tabular-nums;}
-  .kpi.gold .v{color:var(--gold-text);}
-  .kpi.dark .v{color:var(--gold);}
-  .kpi.dark .l,.kpi.dark .u{color:var(--muted);}
-  :root[data-theme="light"] .kpi.dark{--gold-text:#fddc5b;--muted:#b3b3b3;--ink:#f8f8f8;--line:rgba(255,255,255,.1);--glass-b:rgba(255,255,255,.14);--glass:rgba(255,255,255,.07);--surface-2:#1d1d1d;--cream-alt:#151515;}
-  :root[data-theme="light"] .dark{--ink:#f8f8f8;--muted:#b3b3b3;--line:rgba(255,255,255,.1);--glass-b:rgba(255,255,255,.14);--glass:rgba(255,255,255,.07);--gold-text:#fddc5b;--ok:#6ee7a0;color:var(--ink);}
-  .mini-l{font-size:11.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
-  .mini-v{font-family:var(--font-display);font-size:26px;margin-top:4px;letter-spacing:-.02em;font-variant-numeric:tabular-nums;}
-
-  /* ---------- Tablas ---------- */
-  .tbl{width:100%;border-collapse:collapse;font-size:13.5px;}
-  .tbl th{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:right;padding:8px 10px;}
-  .tbl th:first-child,.tbl td:first-child{text-align:left;}
-  .tbl td{padding:11px 10px;text-align:right;border-top:1px solid var(--line);font-variant-numeric:tabular-nums;}
-  .tbl td:first-child{font-weight:600;}
-  .tbl tr.sub td{color:var(--muted);font-weight:500;}
-  .tbl tr.strong td{font-weight:700;}
-  .scroll-x{overflow-x:auto;}
-  .scroll-x .tbl{min-width:880px;}
-  .tbl.months td,.tbl.months th{padding:9px 7px;font-size:12.5px;white-space:nowrap;}
-
-  /* Paquetes */
+  /* ---------- Paquetes (tarjetas pulsables) ---------- */
   .pkgs{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
-  .pkg{padding:24px;border-radius:22px;background:var(--glass);border:1px solid var(--glass-b);transition:border-color .3s,box-shadow .3s;}
-  .pkg.sel{border-color:var(--gold);box-shadow:0 0 0 3px rgba(253,220,91,.18);}
-  .pkg .n{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-text);}
-  .pkg .p{font-family:var(--font-display);font-size:clamp(28px,3.4vw,38px);letter-spacing:-.02em;margin-top:8px;font-variant-numeric:tabular-nums;line-height:1.05;}
-  .pkg .d{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;margin-top:2px;}
-  .pkg .meta{margin-top:14px;padding-top:14px;border-top:1px solid var(--line);font-size:13px;color:var(--muted);line-height:1.8;}
-  .pkg .meta b{color:var(--ink);font-weight:600;}
+  .pkg{display:block;width:100%;text-align:left;font:inherit;color:var(--ink);cursor:pointer;padding:24px;border-radius:22px;background:var(--glass);border:1px solid var(--glass-b);transition:border-color .25s,box-shadow .25s,transform .18s var(--out),background .25s;position:relative;}
+  .pkg:hover{transform:translateY(-3px);border-color:rgba(253,220,91,.5);} .pkg:active{transform:scale(.98);}
+  .pkg.sel{border-color:var(--gold);box-shadow:0 0 0 3px rgba(253,220,91,.18);background:rgba(253,220,91,.07);}
+  .pkg.sel::after{content:"Elegido";position:absolute;top:18px;right:18px;font-size:12px;font-weight:600;color:var(--ink-on-gold);background:var(--gold);padding:3px 10px;border-radius:99px;}
+  .pkg .n{font-size:15px;font-weight:600;}
+  .pkg .p{font-family:var(--font-display);font-size:clamp(30px,3.6vw,40px);letter-spacing:-.02em;margin-top:12px;line-height:1;font-variant-numeric:tabular-nums;}
+  .pkg .d{font-size:13.5px;color:var(--muted);margin-top:4px;font-variant-numeric:tabular-nums;}
+  .pkg .meta{margin-top:14px;padding-top:14px;border-top:1px solid var(--line);font-size:13.5px;color:var(--muted);line-height:1.8;} .pkg .meta b{color:var(--ink);font-weight:600;}
 
-  /* Fondos */
-  .fund,.fundhead,.fundtotal{display:grid;grid-template-columns:1.5fr 84px 1fr 72px 1fr 1fr;gap:10px;align-items:center;}
-  .fund{padding:16px 0;border-top:1px solid var(--line);}
-  .fund:first-child{border-top:0;}
-  .fund .nm{font-family:var(--font-display);font-size:19px;letter-spacing:-.01em;}
-  .fund .ds{font-size:12.5px;color:var(--muted);margin-top:2px;line-height:1.45;}
-  .fund .usd{font-size:12.5px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums;}
-  .fundhead{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding-bottom:10px;}
-  .fundhead span:not(:first-child){text-align:right;}
-  .fund .pct{text-align:right;font-weight:700;font-variant-numeric:tabular-nums;}
-  .fundtotal{margin-top:6px;padding-top:16px;border-top:1px solid var(--line);font-weight:600;}
-  .fundtotal span:not(:first-child){text-align:right;font-variant-numeric:tabular-nums;}
-  .sema{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;padding:4px 10px;border-radius:99px;color:var(--muted);background:color-mix(in srgb,currentColor 14%,transparent);}
+  /* ---------- Fondos ---------- */
+  .fund{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(190px,1fr);gap:24px;align-items:center;padding:20px 0;border-top:1px solid var(--line);} .fund:first-child{border-top:0;padding-top:4px;}
+  .f-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;} .fund .nm{font-family:var(--font-display);font-size:22px;letter-spacing:-.01em;}
+  .fund .ds{font-size:13.5px;color:var(--muted);margin-top:4px;line-height:1.5;max-width:52ch;}
+  .f-nums{display:flex;flex-direction:column;gap:8px;} .f-nums .amt{padding:0 16px;} .f-nums .amt input{font-size:16px;padding:11px 0;}
+  .f-sub{font-size:13px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums;}
+  .f-ideal{display:flex;align-items:center;justify-content:flex-end;gap:6px;font-size:12.5px;color:var(--muted);}
+  .f-ideal input{width:52px;background:transparent;border:1px solid var(--glass-b);border-radius:10px;padding:4px 6px;color:var(--ink);font:500 13px 'Poppins',sans-serif;text-align:right;outline:none;} .f-ideal input:focus{border-color:var(--gold);}
+  .sema{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 10px;border-radius:99px;color:var(--muted);background:color-mix(in srgb,currentColor 14%,transparent);}
   .sema::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;}
   .sema.ok{color:var(--ok);} .sema.warn{color:var(--warn);} .sema.bad{color:var(--red);}
-  .fund-bar{margin-top:8px;height:8px;border-radius:99px;background:var(--glass-b);position:relative;}
-  .fund-bar .fill{height:100%;border-radius:99px;background:var(--gold);max-width:100%;transition:width .5s var(--ease);}
-  .fund-bar .mark{position:absolute;top:-4px;width:2px;height:16px;background:var(--ink);border-radius:2px;}
-  .stack{display:flex;height:20px;border-radius:99px;overflow:hidden;background:var(--glass-b);margin:6px 0 12px;}
-  .stack i{display:block;height:100%;transition:width .5s var(--ease);}
-  .stack-leg{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12.5px;color:var(--muted);}
-  .stack-leg b{color:var(--ink);font-weight:600;} .stack-leg i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;}
+  .fund-bar{margin-top:12px;height:8px;border-radius:99px;background:var(--glass-b);position:relative;max-width:420px;}
+  .fund-bar .fill{height:100%;border-radius:99px;background:var(--gold);max-width:100%;transition:width .55s var(--out);}
+  .fund-bar .mark{position:absolute;top:-4px;width:2px;height:16px;background:var(--ink);border-radius:2px;transition:left .4s var(--out);}
+  .stack{display:flex;height:20px;border-radius:99px;overflow:hidden;background:var(--glass-b);margin:6px 0 12px;} .stack i{display:block;height:100%;transition:width .55s var(--out);}
+  .stack-leg{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted);} .stack-leg b{color:var(--ink);font-weight:600;} .stack-leg i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;}
 
-  /* Proyección */
-  .chart{display:flex;align-items:flex-end;gap:8px;height:190px;margin-top:14px;}
+  /* ---------- Tablas y gráfico ---------- */
+  .tbl{width:100%;border-collapse:collapse;font-size:14px;}
+  .tbl th{font-size:12.5px;font-weight:500;color:var(--muted);text-align:right;padding:8px 10px;} .tbl th:first-child,.tbl td:first-child{text-align:left;}
+  .tbl td{padding:12px 10px;text-align:right;border-top:1px solid var(--line);} .tbl td:first-child{font-weight:600;}
+  .tbl tr.sub td{color:var(--muted);font-weight:500;} .tbl tr.strong td{font-weight:700;}
+  .scroll-x{overflow-x:auto;} .scroll-x .tbl{min-width:880px;} .tbl.months td,.tbl.months th{padding:9px 7px;font-size:12.5px;white-space:nowrap;}
+  .chart{display:flex;align-items:flex-end;gap:8px;height:200px;margin-top:6px;}
   .chart .col{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px;height:100%;min-width:0;}
   .chart .bars{width:100%;flex:1;display:flex;align-items:flex-end;gap:2px;}
-  .chart .bars i{flex:1;border-radius:6px 6px 2px 2px;display:block;min-height:2px;transition:height .5s var(--ease);}
-  .chart .lb{font-size:10.5px;color:var(--muted);font-weight:500;}
+  .chart .bars i{flex:1;border-radius:6px 6px 2px 2px;display:block;min-height:2px;transform-origin:bottom;transition:height .55s var(--out);}
+  .chart.g .bars i{animation:grow .8s var(--out) both;animation-delay:calc(var(--k,0)*40ms);}
+  @keyframes grow{from{transform:scaleY(0);}to{transform:scaleY(1);}}
+  .chart .lb{font-size:11px;color:var(--muted);}
   .b-gross{background:color-mix(in srgb,var(--ink) 28%,transparent);} .b-net{background:var(--gold);} .b-gas{background:var(--red);opacity:.8;}
-  .chart-leg{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:10px;}
-  .chart-leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;}
-
-  .seg{display:inline-flex;background:var(--glass);border:1px solid var(--glass-b);border-radius:99px;padding:3px;gap:2px;}
-  .seg button{font-family:inherit;font-size:12.5px;font-weight:600;border:none;background:transparent;color:var(--muted);padding:7px 14px;border-radius:99px;cursor:pointer;}
+  .chart-leg{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:12px;} .chart-leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;}
+  .seg{display:inline-flex;background:var(--glass);border:1px solid var(--glass-b);border-radius:99px;padding:3px;gap:2px;position:relative;}
+  .seg button{font-family:inherit;font-size:13.5px;font-weight:600;border:none;background:transparent;color:var(--muted);padding:8px 16px;border-radius:99px;cursor:pointer;transition:background .25s var(--out),color .2s;} .seg button:active{transform:scale(.97);}
   .seg button.on{background:var(--gold);color:var(--ink-on-gold);}
+  .bar-row{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px;}
 
-  /* Embudo */
+  /* ---------- Embudo ---------- */
   .funnel{display:flex;flex-direction:column;gap:8px;align-items:center;}
-  .fstep{
-    height:46px;border-radius:14px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;
-    background:linear-gradient(90deg,rgba(253,220,91,.95),rgba(253,220,91,.55));color:#181818;font-weight:500;font-size:13.5px;
-    font-variant-numeric:tabular-nums;transition:width .5s var(--ease);min-width:150px;
-  }
-  .fstep b{font-weight:700;}
+  .fstep{height:48px;border-radius:14px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:linear-gradient(90deg,rgba(253,220,91,.95),rgba(253,220,91,.5));color:#181818;font-size:14px;font-variant-numeric:tabular-nums;min-width:160px;transform-origin:center;}
+  .panel.on .fstep{animation:rise .6s var(--out) both;animation-delay:calc(var(--k,0)*70ms + 200ms);} .fstep b{font-weight:700;}
   .rate-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
   .rate{padding:16px 18px;border-radius:18px;background:var(--glass);border:1px solid var(--glass-b);}
-  .rate .l{font-size:12px;font-weight:600;color:var(--muted);line-height:1.35;}
-  .rate .v{font-family:var(--font-display);font-size:26px;margin-top:4px;font-variant-numeric:tabular-nums;letter-spacing:-.01em;}
-  .rate .c{font-size:12px;color:var(--muted);margin-top:2px;}
+  .rate .l{font-size:13px;font-weight:600;color:var(--muted);line-height:1.35;} .rate .v{font-family:var(--font-display);font-size:28px;margin-top:4px;letter-spacing:-.01em;font-variant-numeric:tabular-nums;} .rate .c{font-size:12.5px;color:var(--muted);margin-top:2px;}
 
-  .note{font-size:13px;color:var(--muted);background:var(--glass);border:1px solid var(--line);border-radius:16px;padding:12px 16px;line-height:1.6;}
-  .note.warn{background:rgba(255,92,92,.08);border-color:rgba(255,92,92,.3);}
-  .note b{color:var(--ink);font-weight:600;}
-  details.fixes summary{cursor:pointer;font-weight:600;font-size:14.5px;}
-  details.fixes ul{margin:14px 0 0 18px;font-size:13.5px;color:var(--muted);line-height:1.7;}
-  details.fixes li{margin-bottom:6px;} details.fixes li b{color:var(--ink);font-weight:600;}
-  .steps{counter-reset:s;list-style:none;display:flex;flex-direction:column;gap:14px;}
-  .steps li{counter-increment:s;display:flex;gap:14px;font-size:14.5px;line-height:1.6;}
+  .note{font-size:13.5px;color:var(--muted);background:var(--glass);border:1px solid var(--line);border-radius:16px;padding:13px 18px;line-height:1.6;} .note.warn{background:rgba(255,92,92,.08);border-color:rgba(255,92,92,.3);} .note b{color:var(--ink);font-weight:600;}
+  details.more{margin-bottom:20px;} details.more>summary{cursor:pointer;font-weight:600;font-size:14.5px;padding:10px 4px;list-style:none;display:flex;align-items:center;gap:10px;color:var(--muted);transition:color .2s;} details.more>summary:hover{color:var(--ink);}
+  details.more>summary::-webkit-details-marker{display:none;}
+  details.more>summary::before{content:"";width:7px;height:7px;border-right:1.6px solid currentColor;border-bottom:1.6px solid currentColor;transform:rotate(-45deg);transition:transform .28s var(--out);margin:0 3px;} details.more[open]>summary::before{transform:rotate(45deg);}
+  details.more>.more-body{padding:12px 0 4px;}
+  .fixes ul{margin:8px 0 0 18px;font-size:14px;color:var(--muted);line-height:1.7;} .fixes li{margin-bottom:6px;} .fixes li b{color:var(--ink);font-weight:600;}
+  .steps{counter-reset:s;list-style:none;display:flex;flex-direction:column;gap:14px;} .steps li{counter-increment:s;display:flex;gap:14px;font-size:15px;line-height:1.6;}
   .steps li::before{content:counter(s);flex-shrink:0;width:28px;height:28px;border-radius:50%;background:var(--gold);color:var(--ink-on-gold);font-weight:600;font-size:13px;display:flex;align-items:center;justify-content:center;}
-  .glossary dt{font-weight:600;font-size:14px;margin-top:14px;} .glossary dd{font-size:13.5px;color:var(--muted);line-height:1.6;}
+  .glossary dt{font-weight:600;font-size:14.5px;margin-top:14px;} .glossary dd{font-size:14px;color:var(--muted);line-height:1.6;}
+  .mini-l{font-size:13px;color:var(--muted);} .mini-v{font-family:var(--font-display);font-size:30px;margin-top:2px;letter-spacing:-.02em;font-variant-numeric:tabular-nums;}
 
-  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--gold);color:var(--ink-on-gold);padding:12px 22px;border-radius:99px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:all .3s var(--ease);z-index:99;}
-  .toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+  /* ---------- Barra inferior ---------- */
+  .dock{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:55;display:flex;align-items:center;gap:14px;width:min(740px,calc(100vw - 32px));padding:8px 8px 8px 24px;border-radius:999px;
+    background:rgba(18,18,18,.74);border:1px solid var(--line);backdrop-filter:blur(20px) saturate(170%);-webkit-backdrop-filter:blur(20px) saturate(170%);box-shadow:0 14px 44px -14px rgba(0,0,0,.85);
+    transition:transform .45s var(--out),opacity .3s;}
+  :root[data-theme="light"] .dock{background:rgba(255,255,255,.82);}
+  .dock.off{transform:translateX(-50%) translateY(140%);opacity:0;pointer-events:none;}
+  .dock-live{flex:1;display:flex;gap:26px;min-width:0;}
+  .dl{display:flex;flex-direction:column;line-height:1.15;min-width:0;} .dl span{font-size:12px;color:var(--muted);white-space:nowrap;} .dl b{font-family:var(--font-display);font-weight:400;font-size:21px;letter-spacing:-.01em;white-space:nowrap;}
+  .dock .btn{padding:13px 24px;font-size:14.5px;} .dock .btn-gold{min-width:132px;justify-content:center;}
+  .btn-ghost{background:transparent;color:var(--muted);} .btn-ghost:hover{color:var(--ink);background:var(--glass);}
 
-  .tool-cta{padding:8px 0 80px;position:relative;z-index:1;}
-  .community-card{max-width:var(--max-article);margin:0 auto;padding:42px 40px;text-align:center;}
-  .community-card .eyebrow{color:var(--gold);}
-  .community-card h2{font-size:clamp(24px,3.6vw,32px);margin-top:12px;}
-  .community-card p{color:rgba(250,249,246,.75);margin:12px auto 0;max-width:480px;font-size:15px;}
-  .community-card .btn{margin-top:24px;}
+  .toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(16px);background:var(--gold);color:var(--ink-on-gold);padding:12px 22px;border-radius:99px;font-size:13.5px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .25s,transform .3s var(--out);z-index:99;}
+  .toast.on{opacity:1;transform:translateX(-50%);}
+  .tool-cta{padding:8px 0 90px;position:relative;z-index:1;}
+  .community-card{max-width:var(--max-article);margin:0 auto;padding:42px 40px;text-align:center;} .community-card h2{font-size:clamp(24px,3.6vw,32px);}
+  .community-card p{color:rgba(250,249,246,.75);margin:12px auto 0;max-width:480px;font-size:15px;} .community-card .btn{margin-top:24px;}
 
   @media (max-width:900px){
-    .kpis{grid-template-columns:repeat(2,1fr);}
-    .cols,.cols-3,.pkgs,.rate-grid{grid-template-columns:1fr;}
-    .fund,.fundtotal{grid-template-columns:1fr 1fr;}
-    .fundhead{display:none;}
-    .fund .pct,.fund .usd,.fundtotal span:not(:first-child){text-align:left;}
+    .two,.cols,.cols-3,.pkgs,.rate-grid{grid-template-columns:1fr;} .sticky{position:static;}
+    .fund{grid-template-columns:1fr;gap:14px;} .f-sub,.f-ideal{text-align:left;justify-content:flex-start;}
+    .stepper{display:none;} .stepmeta{display:block;}
   }
   @media (max-width:640px){
-    .card{padding:22px 18px;}
-    .rowhead{display:none;}
-    .row,.totalrow{grid-template-columns:1fr 1fr 34px;}
-    .row .cat,.row .item{grid-column:1/3;}
-    .row .amt{grid-column:1;} .row .usd{grid-column:2;text-align:left;}
-    .row .del{grid-column:3;grid-row:3;}
-    .row{padding:12px;border-radius:18px;background:var(--glass);border:1px solid var(--line);}
-    .totalrow span:nth-child(2){display:none;}
-    .cat-bar{grid-template-columns:100px 1fr 80px;}
-    .tabs{margin:0 -24px 14px;top:58px;}
+    .card{padding:22px 18px;} .res{padding:24px 20px;}
+    .row{grid-template-columns:minmax(0,1fr) 100px 26px;gap:6px;} .item-in{padding:9px 6px;font-size:14px;} .amt{padding:0 10px;} .row .usd{display:none;}
+    .row.ne{grid-template-columns:1fr 1fr 30px;} .row.ne .item-in{grid-column:1/-1;} .row.ne .usd{display:block;grid-column:1;text-align:left;}
+    .g-body{padding-left:8px;}
+    .dock{left:auto;right:12px;transform:none;width:calc(100vw - 80px);padding-left:16px;gap:8px;} .dock.off{transform:translateY(140%);}
+    .dl:nth-child(2){display:none;} .dl b{font-size:18px;} .dock .btn{padding:11px 16px;font-size:13.5px;} .dock .btn-gold{min-width:0;}
+    .dock .btn-ghost{padding:11px 10px;}
     .community-card{padding:34px 24px;}
   }
-  @media (prefers-reduced-motion:reduce){.panel.on{animation:none;}}
-
+  @media (prefers-reduced-motion:reduce){
+    .panel.on>*,.row.fresh,.panel.on .fstep,.chart.g .bars i{animation:none;}
+    .progress i,.fund-bar .fill,.stack i,.dock,.menu{transition-duration:.01ms;}
+  }
   @media print{
     :root{--ink:#111;--muted:#555;--line:#ccc;--cream:#fff;--cream-alt:#fff;--surface-2:#fff;--glass:#f4f4f4;--glass-b:#ccc;--ok:#1f8f4f;--warn:#8a6a00;--gold-text:#7a5f00;}
     body{background:#fff;color:#111;}
-    .ring,header,.bar,.tabs,.toolbar,.demo-banner,.add,.del,.tool-cta,footer,.toast,.mk-theme,[class*="theme"]{display:none !important;}
-    .panel{display:block !important;animation:none;page-break-inside:avoid;margin-bottom:24px;}
-    .glass,.dark{box-shadow:none;background:#fff;border:1px solid #ccc;color:#111;}
-    .kpi.dark .v{color:#7a5f00;}
-    .scroll-x .tbl{min-width:0;} .tool-hero{padding:0;}
+    .ring,header,.bar,.appbar,.progress,.demo,.dock,.g-add,.add-link,.del,.tool-cta,footer,.toast,.tool-hero{display:none !important;}
+    .panel{display:block !important;margin-bottom:28px;page-break-inside:avoid;} .panel.on>*{animation:none;}
+    .glass,.dark{box-shadow:none;background:#fff;border:1px solid #ccc;color:#111;} .big{color:#7a5f00;}
+    details:not([open])>*:not(summary){display:block;} .scroll-x .tbl{min-width:0;}
   }
 </style>
 <script>try{if(localStorage.getItem("mk-theme")==="light")document.documentElement.setAttribute("data-theme","light")}catch(e){}</script><link rel="stylesheet" href="/assets/fx.css">
@@ -348,121 +331,67 @@ fbq('init','467504537642622');
   <div class="ring" style="width:520px;height:520px;right:-170px;top:-130px"></div>
   <div class="ring" style="width:320px;height:320px;left:-120px;bottom:-150px"></div>
   <div class="wrap">
-    <p class="eyebrow">· MarkeTools · Gratis, sin registro ·</p>
     <h1>Cobra lo que <mark>realmente necesitas</mark> para vivir de tu cámara</h1>
-    <p class="lead">Pon tus gastos, tus costos y tu equipo. La calculadora te dice cuánto cobrar por hora y por paquete, cuántos clientes necesitas y cuánto invertir en anuncios.</p>
+    <p class="lead">Responde en 8 pasos cortos. Al final sabrás cuánto cobrar por hora y por paquete.</p>
   </div>
 </section>
 
 <main class="app">
 <div class="wrap">
 
-  <div class="toolbar">
-    <div class="grp">
-      <button class="chip-btn" id="btnPrint">🖨️ Imprimir / PDF</button>
-      <button class="chip-btn" id="btnExport">⬇️ Guardar archivo</button>
-      <button class="chip-btn" id="btnImport">⬆️ Cargar archivo</button>
+  <div class="appbar">
+    <div class="stepper" id="stepper" role="navigation" aria-label="Pasos"></div>
+    <div class="stepmeta" id="stepmeta" aria-live="polite"></div>
+    <div class="menuwrap">
+      <button class="icon-btn" id="btnMenu" aria-label="Más opciones" aria-haspopup="true" aria-expanded="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg></button>
+      <div class="menu" id="menu" role="menu">
+        <button role="menuitem" id="btnGuide"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01"/></svg>Cómo se calcula</button>
+        <button role="menuitem" id="btnPrint"><svg viewBox="0 0 24 24"><path d="M7 9V3h10v6M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M7 14h10v7H7z"/></svg>Imprimir o guardar PDF</button>
+        <button role="menuitem" id="btnExport"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 21h16"/></svg>Guardar archivo</button>
+        <button role="menuitem" id="btnImport"><svg viewBox="0 0 24 24"><path d="M12 15V3m0 0L8 7m4-4 4 4M4 21h16"/></svg>Cargar archivo</button>
+        <hr>
+        <button role="menuitem" class="danger" id="btnReset"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5"/></svg>Reiniciar todo</button>
+      </div>
       <input type="file" id="fileImport" accept="application/json,.json" hidden>
     </div>
-    <div class="grp">
-      <span class="saved" id="savedMsg">Se guarda solo en tu navegador</span>
-      <button class="chip-btn danger" id="btnReset">Reiniciar todo</button>
-    </div>
   </div>
+  <div class="progress" aria-hidden="true"><i id="progress"></i></div>
 
-  <div class="demo-banner" id="demoBanner">
-    <span><strong>Estás viendo datos de ejemplo.</strong> Son los del Excel original. Cámbialos por los tuyos o parte de cero.</span>
-    <span class="grp" style="display:flex;gap:8px;flex-wrap:wrap;">
-      <button class="chip-btn" id="btnZero">Poner todos los montos en 0</button>
-      <button class="chip-btn" id="btnDismiss">Entendido</button>
-    </span>
+  <div class="demo" id="demoBanner">
+    <span>Estás viendo datos de ejemplo.</span>
+    <button class="link" id="btnZero">Empezar de cero</button>
+    <button class="x" id="btnDismiss" aria-label="Cerrar aviso">×</button>
   </div>
-
-  <nav class="tabs" id="tabs" aria-label="Secciones"></nav>
-
-  <!-- ===================== RESUMEN ===================== -->
-  <section class="panel" id="p-resumen" style="padding:0;">
-    <div class="panel-head">
-      <h2>Tu resumen de precios</h2>
-      <p>Aquí ves todo junto. Cambia cualquier dato en los pasos 1 al 8 y esto se actualiza solo.</p>
-    </div>
-    <div class="kpis">
-      <div class="kpi glass dark tool-hero-dark"><div class="l">Lo que necesitas al mes</div><div class="v" id="r-total"></div><div class="u" id="r-total-u"></div></div>
-      <div class="kpi glass gold"><div class="l">Tu hora mínima</div><div class="v" id="r-hmin"></div><div class="u" id="r-hmin-u"></div></div>
-      <div class="kpi glass"><div class="l">Paquete elegido</div><div class="v" id="r-pkg"></div><div class="u" id="r-pkg-u"></div></div>
-      <div class="kpi glass"><div class="l">Clientes para no perder</div><div class="v" id="r-cli"></div><div class="u" id="r-cli-u"></div></div>
-    </div>
-    <div class="cols">
-      <div class="card glass">
-        <div class="legend">Tus 3 horas</div>
-        <table class="tbl"><thead><tr><th></th><th>Mínima</th><th>Estándar</th><th>Ideal</th></tr></thead>
-          <tbody id="r-hours"></tbody></table>
-        <div class="legend" style="margin-top:22px;">Tus 3 paquetes</div>
-        <table class="tbl"><thead><tr><th></th><th>Básico</th><th>Estándar</th><th>Premium</th></tr></thead>
-          <tbody id="r-pkgs"></tbody></table>
-      </div>
-      <div class="card glass">
-        <div class="legend">A dónde se va tu plata</div>
-        <div class="stack" id="r-stack"></div>
-        <div class="stack-leg" id="r-stack-leg"></div>
-        <div class="legend" style="margin-top:22px;">Si vendes el paquete elegido durante 12 meses</div>
-        <div class="kpis" style="grid-template-columns:1fr 1fr;margin:0;">
-          <div><div class="mini-l">Ingreso neto anual</div><div class="mini-v" id="r-net"></div></div>
-          <div><div class="mini-l">ROAS esperado</div><div class="mini-v" id="r-roas"></div></div>
-        </div>
-        <div class="note" id="r-alerts" style="margin-top:18px;"></div>
-      </div>
-    </div>
-    <div class="card glass">
-      <details class="fixes">
-        <summary>Qué cambió respecto al Excel original (4 correcciones)</summary>
-        <ul>
-          <li><b>Impresiones del embudo.</b> El Excel las calculaba multiplicando inversión × CPM × 1000. Lo correcto es inversión ÷ CPM × 1000. Con la fórmula vieja salían más impresiones de las que tu plata compra.</li>
-          <li><b>Inversión en Ads del mes 1.</b> El Excel siempre usaba el precio Premium sin importar el paquete elegido. Ahora usa el paquete que elijas.</li>
-          <li><b>Cuota del equipo nuevo.</b> En el Excel solo se sumaba en dólares y se quedaba fuera de los fondos (en moneda local). Ahora cuenta en ambos, y entra en tu fondo de Costos.</li>
-          <li><b>Precio por cliente (AOV) del embudo.</b> Antes tomaba el paquete Estándar fijo en una celda y el elegido en otra, mezclando monedas. Ahora usa el paquete elegido.</li>
-        </ul>
-        <p class="note" style="margin-top:14px;">Con los datos de ejemplo, todo lo demás da exactamente igual que el Excel (hora mínima 148,43, paquetes 593,71 / 890,56 / 1.484,27).</p>
-      </details>
-    </div>
-  </section>
 
   <!-- ===================== 1 MONEDA ===================== -->
   <section class="panel" id="p-moneda" style="padding:0;">
     <div class="panel-head">
-      <h2>1 · Tipo de cambio</h2>
-      <p>Empecemos definiendo cuánto vale un dólar en tu moneda. Todos los montos que escribas aquí abajo son en tu moneda local y se convierten solos a dólares.</p>
+      <h2>¿En qué moneda trabajas?</h2>
+      <p>Escribe todo en tu moneda. Yo lo convierto a dólares solo.</p>
     </div>
     <div class="card glass">
       <div class="cols">
         <div>
-          <div class="field">
-            <label for="cur-code">Tu moneda</label>
-            <select class="glass-input" id="cur-code"></select>
-          </div>
-          <div class="field" id="cur-custom-wrap" style="display:none;">
-            <label for="cur-custom">Código o símbolo de tu moneda</label>
-            <input class="glass-input" id="cur-custom" maxlength="6" placeholder="Ej: Q">
-          </div>
+          <div class="field"><label for="cur-code">Tu moneda</label><select class="glass-input" id="cur-code"></select></div>
+          <div class="field" id="cur-custom-wrap" style="display:none;"><label for="cur-custom">Símbolo o código</label><input class="glass-input" id="cur-custom" maxlength="6" placeholder="Ej: Q"></div>
         </div>
         <div>
           <div class="field">
-            <label for="cur-rate">Cuántas unidades de tu moneda equivalen a 1 USD</label>
+            <label for="cur-rate">¿Cuánto vale 1 dólar en tu moneda?</label>
             <div class="inline"><input class="glass-input num" id="cur-rate" type="number" min="0" step="any" inputmode="decimal"><span class="unit" id="cur-unit"></span></div>
-            <span class="hint">Si usas dólares, déjalo en 1. En países con dos tipos de cambio (oficial y paralelo), usa el que realmente te toca pagar.</span>
+            <span class="hint">Si usas dólares, déjalo en 1. Si tu país tiene dos tipos de cambio, pon el que realmente pagas.</span>
           </div>
-          <button class="chip-btn" id="btnLiveRate">🌐 Traer tasa actual (oficial)</button>
-          <span class="saved" id="liveMsg"></span>
+          <button class="link" id="btnLiveRate">Traer la tasa oficial de hoy</button> <span class="hint" id="liveMsg" style="display:inline"></span>
         </div>
       </div>
     </div>
     <div class="card glass">
-      <div class="legend">Cómo usar esta herramienta</div>
-      <ol class="steps">
-        <li><span>Llena los pasos <b>2 al 5</b> con tus números reales: gastos personales, costos del negocio, equipo y cómo repartes el dinero.</span></li>
-        <li><span>En el paso <b>6</b> dime cuántos clientes puedes atender y cuántas horas le dedicas a cada uno. Ahí salen tus precios.</span></li>
-        <li><span>En el paso <b>7</b> verás cuántos clientes necesitas para cubrir todo, y en el <b>8</b> cómo debería verse tu campaña de anuncios.</span></li>
-        <li><span>Todo se guarda solo en tu navegador. Si cambias de compu, usa <b>Guardar archivo</b> y luego <b>Cargar archivo</b>.</span></li>
+      <h3 class="sec-t">Así funciona</h3>
+      <ol class="steps" style="margin-top:14px;">
+        <li><span>Pasos 2 al 5: cuéntame tus gastos, tus costos y tu equipo.</span></li>
+        <li><span>Paso 6: dime cuántos clientes atiendes. Ahí salen tus precios.</span></li>
+        <li><span>Pasos 7 y 8: cuántos clientes necesitas y cuánto invertir en anuncios.</span></li>
+        <li><span>Todo se guarda solo en tu navegador. Nada se envía a ningún servidor.</span></li>
       </ol>
     </div>
   </section>
@@ -470,147 +399,137 @@ fbq('init','467504537642622');
   <!-- ===================== 2 GASTOS ===================== -->
   <section class="panel" id="p-gastos" style="padding:0;">
     <div class="panel-head">
-      <h2>2 · Gastos mensuales personales</h2>
-      <p>Lo que necesitas para vivir, más tus gustos. Pon lo que gastas en un mes normal. Puedes agregar o borrar filas.</p>
+      <h2>¿Cuánto gastas al mes para vivir?</h2>
+      <p>Pon lo de un mes normal. Si algo no aplica, déjalo vacío.</p>
     </div>
     <div class="card glass">
-      <div class="legend">Básicos y esenciales</div>
-      <div class="rowhead"><span>Categoría</span><span>Ítem</span><span>Monto (<span class="lc"></span>)</span><span>Monto (USD)</span><span></span></div>
-      <div class="rows" id="list-basics"></div>
-      <button class="chip-btn add" data-add="basics">+ Agregar gasto</button>
-      <div class="totalrow"><span>Total</span><span></span><span id="t-basics"></span><span id="t-basics-u"></span><span></span></div>
-      <div class="cat-bars" id="cb-basics"></div>
+      <h3 class="sec-t">Lo esencial</h3>
+      <div id="list-basics"></div>
+      <div class="sum"><span>Total esencial</span><div><b id="t-basics"></b><small id="t-basics-u"></small></div></div>
     </div>
     <div class="card glass">
-      <div class="legend">Gustos y entretenimiento</div>
-      <div class="rowhead"><span>Categoría</span><span>Ítem</span><span>Monto (<span class="lc"></span>)</span><span>Monto (USD)</span><span></span></div>
-      <div class="rows" id="list-fun"></div>
-      <button class="chip-btn add" data-add="fun">+ Agregar gusto</button>
-      <div class="totalrow"><span>Total</span><span></span><span id="t-fun"></span><span id="t-fun-u"></span><span></span></div>
-      <div class="cat-bars" id="cb-fun"></div>
-    </div>
-    <div class="card glass dark tool-hero-dark" style="padding:22px 28px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;align-items:center;">
-      <strong>Total de gastos personales al mes</strong>
-      <span style="font-family:var(--font-display);font-size:26px;"><span id="t-gastos"></span> <span style="font-size:13px;opacity:.65;font-weight:600;" id="t-gastos-u"></span></span>
+      <h3 class="sec-t">Gustos y entretenimiento</h3>
+      <div id="list-fun"></div>
+      <div class="sum"><span>Total gustos</span><div><b id="t-fun"></b><small id="t-fun-u"></small></div></div>
     </div>
   </section>
 
   <!-- ===================== 3 COSTOS ===================== -->
   <section class="panel" id="p-costos" style="padding:0;">
     <div class="panel-head">
-      <h2>3 · Costos mensuales del negocio</h2>
-      <p>Lo que te cuesta tener tu negocio funcionando: suscripciones, estudio, seguros, impuestos y formación.</p>
+      <h2>¿Cuánto cuesta tener tu negocio?</h2>
+      <p>Suscripciones, estudio, seguros, impuestos y formación. Lo que pagas aunque no tengas clientes.</p>
     </div>
     <div class="card glass">
-      <div class="rowhead"><span>Categoría</span><span>Ítem</span><span>Monto (<span class="lc"></span>)</span><span>Monto (USD)</span><span></span></div>
-      <div class="rows" id="list-costs"></div>
-      <button class="chip-btn add" data-add="costs">+ Agregar costo</button>
-      <div class="totalrow"><span>Total</span><span></span><span id="t-costs"></span><span id="t-costs-u"></span><span></span></div>
-      <div class="cat-bars" id="cb-costs"></div>
+      <div id="list-costs"></div>
+      <div class="sum"><span>Total del negocio</span><div><b id="t-costs"></b><small id="t-costs-u"></small></div></div>
     </div>
   </section>
 
   <!-- ===================== 4 EQUIPO ===================== -->
   <section class="panel" id="p-equipo" style="padding:0;">
     <div class="panel-head">
-      <h2>4 · Inversión en tu empresa</h2>
-      <p>Tu equipo se desgasta y algún día hay que cambiarlo. Aquí calculamos cuánto debes apartar cada mes para reponerlo, ajustado por inflación.</p>
+      <h2>Tu equipo se va a gastar. ¿Cuánto apartar?</h2>
+      <p>Escribe lo que tienes. Calculo cuánto guardar cada mes para reponerlo, con inflación.</p>
     </div>
-    <div class="card glass">
-      <div class="cols-3">
-        <div class="field"><label for="life">Vida útil del equipo</label><div class="inline"><input class="glass-input num" id="life" type="number" min="0.5" step="0.5" inputmode="decimal"><span class="unit">años</span></div></div>
-        <div class="field"><label for="infl">Inflación a cubrir</label><div class="inline"><input class="glass-input num" id="infl" type="number" min="0" step="0.5" inputmode="decimal"><span class="unit">%</span></div><span class="hint">Cuánto más caro será reponerlo.</span></div>
-        <div class="field"><label>Tipo de cambio</label><div class="inline"><input class="glass-input num" id="eq-rate" readonly><span class="unit" id="eq-rate-u"></span></div></div>
+    <div class="two">
+      <div>
+        <div class="card glass">
+          <h3 class="sec-t">Equipo fotográfico</h3>
+          <div id="list-equip"></div>
+          <div class="sum"><span>Total equipo</span><div><b id="t-equip"></b><small id="t-equip-u"></small></div></div>
+        </div>
+        <div class="card glass">
+          <h3 class="sec-t">Computadora, celular y oficina</h3>
+          <div id="list-office"></div>
+          <div class="sum"><span>Total básicos</span><div><b id="t-office"></b><small id="t-office-u"></small></div></div>
+        </div>
+        <div class="card glass">
+          <h3 class="sec-t">Equipo nuevo que quieres comprar</h3>
+          <p class="sub">Lo pagas en cuotas. El precio va en dólares y la cuota se suma a lo que apartas.</p>
+          <div id="list-neweq"></div>
+          <button class="add-link" data-add="neweq">+ Agregar equipo nuevo</button>
+        </div>
       </div>
-    </div>
-    <div class="card glass">
-      <div class="legend">Equipo fotográfico</div>
-      <div class="rowhead"><span>Categoría</span><span>Ítem</span><span>Monto (<span class="lc"></span>)</span><span>Monto (USD)</span><span></span></div>
-      <div class="rows" id="list-equip"></div>
-      <button class="chip-btn add" data-add="equip">+ Agregar equipo</button>
-      <div class="totalrow"><span>Total</span><span></span><span id="t-equip"></span><span id="t-equip-u"></span><span></span></div>
-    </div>
-    <div class="card glass">
-      <div class="legend">Básicos (computadora, celular, oficina)</div>
-      <div class="rowhead"><span>Categoría</span><span>Ítem</span><span>Monto (<span class="lc"></span>)</span><span>Monto (USD)</span><span></span></div>
-      <div class="rows" id="list-office"></div>
-      <button class="chip-btn add" data-add="office">+ Agregar básico</button>
-      <div class="totalrow"><span>Total</span><span></span><span id="t-office"></span><span id="t-office-u"></span><span></span></div>
-    </div>
-    <div class="card glass">
-      <div class="legend">Nuevo equipo que quieres comprar</div>
-      <p class="sub">Lo pagas en cuotas. El precio va en dólares. La cuota mensual se suma a lo que apartas cada mes.</p>
-      <div class="rows" id="list-neweq"></div>
-      <button class="chip-btn add" data-add="neweq">+ Agregar equipo nuevo</button>
-    </div>
-    <div class="card glass dark tool-hero-dark">
-      <div class="legend">Cálculo mensual</div>
-      <table class="tbl">
-        <thead><tr><th>Ítem</th><th>Monto (<span class="lc"></span>)</th><th>Monto (USD)</th></tr></thead>
-        <tbody id="eq-calc"></tbody>
-      </table>
+      <div class="sticky">
+        <div class="card glass">
+          <div class="fld"><div class="fld-top"><label for="life">Vida útil del equipo</label><div class="pill"><input id="life" type="number" min="0.5" step="0.5" inputmode="decimal"><span>años</span></div></div><input type="range" id="life-r" min="1" max="10" step="0.5" aria-label="Vida útil"></div>
+          <div class="fld"><div class="fld-top"><label for="infl">Inflación a cubrir</label><div class="pill"><input id="infl" type="number" min="0" step="0.5" inputmode="decimal"><span>%</span></div></div><input type="range" id="infl-r" min="0" max="100" step="1" aria-label="Inflación"><p class="hint">Cuánto más caro será reponerlo.</p></div>
+          <input type="hidden" id="eq-rate"><span id="eq-rate-u" hidden></span>
+        </div>
+        <div class="res dark tool-hero-dark">
+          <p class="k">Debes apartar al mes</p>
+          <div class="big" id="eq-big"></div><div class="big-u" id="eq-big-u"></div>
+          <div class="rrows" id="eq-calc"></div>
+        </div>
+      </div>
     </div>
   </section>
 
   <!-- ===================== 5 FONDOS ===================== -->
   <section class="panel" id="p-fondos" style="padding:0;">
     <div class="panel-head">
-      <h2>5 · Fondos: cómo repartes tu dinero</h2>
-      <p>Cada mes tu plata se divide en 5 fondos. La regla ideal es 50 · 10 · 20 · 10 · 10. Gastos y Costos se llenan solos con lo que ya pusiste. Ahorros, Emergencia e Inversión los defines tú.</p>
+      <h2>¿Cómo repartes tu dinero?</h2>
+      <p>Cada mes tu plata se divide en 5 fondos. La regla ideal es 50 · 10 · 20 · 10 · 10. Gastos y Costos se llenan solos.</p>
     </div>
     <div class="card glass">
-      <div class="fundhead"><span>Fondo</span><span>Ideal</span><span>Monto (<span class="lc"></span>)</span><span>Real</span><span>Monto (USD)</span><span>Estado</span></div>
       <div id="funds"></div>
-      <div class="fundtotal">
-        <span>Total</span><span id="f-ideal-sum"></span><span id="f-total"></span><span>100%</span><span id="f-total-u"></span><span></span>
-      </div>
+      <div class="sum"><span>Total al mes <small>(ideal suma <span id="f-ideal-sum"></span>)</small></span><div><b id="f-total"></b><small id="f-total-u"></small></div></div>
       <div class="note warn" id="f-warn" style="margin-top:14px;display:none;">Tus porcentajes ideales no suman 100%. Ajústalos para que cuadren.</div>
     </div>
-    <div class="card glass">
-      <div class="legend">Y si quisieras cumplir la regla al pie de la letra</div>
-      <p class="sub">Tus gastos son tu base. Si ellos deben ser el <b id="f-gp"></b> de lo que ganas, necesitas ingresar al mes:</p>
-      <div class="mini-v" style="font-size:34px;color:var(--gold-text);" id="f-need"></div>
-      <div class="scroll-x" style="margin-top:14px;"><table class="tbl" style="min-width:0;"><thead><tr><th>Fondo</th><th>Monto ideal</th><th>Tienes</th><th>Diferencia</th></tr></thead><tbody id="f-gap"></tbody></table></div>
-    </div>
+    <details class="more glass card" style="padding:12px 24px;">
+      <summary>Si cumplieras la regla al pie de la letra</summary>
+      <div class="more-body">
+        <p class="sub">Si tus gastos deben ser el <b id="f-gp"></b> de lo que ganas, necesitarías ingresar al mes:</p>
+        <div class="mini-v" style="font-size:34px;color:var(--gold-text);" id="f-need"></div>
+        <div class="scroll-x" style="margin-top:14px;"><table class="tbl" style="min-width:0;"><thead><tr><th>Fondo</th><th>Ideal</th><th>Tienes</th><th>Diferencia</th></tr></thead><tbody id="f-gap"></tbody></table></div>
+      </div>
+    </details>
   </section>
 
   <!-- ===================== 6 PRECIOS ===================== -->
   <section class="panel" id="p-precios" style="padding:0;">
     <div class="panel-head">
-      <h2>6 · Cálculo de precios</h2>
-      <p>Con lo que necesitas ganar al mes y el tiempo que tienes, sale lo mínimo que debes cobrar. Lo estándar y lo ideal son ese mínimo con un margen encima.</p>
+      <h2>Ahora sí: ¿cuánto cobrar?</h2>
+      <p>Dime cuánto trabajas y te digo tu precio mínimo.</p>
     </div>
-    <div class="cols">
+    <div class="two">
       <div class="card glass">
-        <div class="legend">Tu capacidad</div>
-        <div class="field"><label>Total de gastos (viene de Fondos)</label><div class="inline"><input class="glass-input num" id="pr-total" readonly><span class="unit lc"></span></div></div>
-        <div class="field"><label for="pr-clients">¿Cuántos clientes puedes manejar a la semana?</label><input class="glass-input num" id="pr-clients" type="number" min="0" step="1" inputmode="numeric"></div>
-        <div class="field"><label>¿Cuántas horas trabajas aproximadamente por cliente?</label><input class="glass-input num" id="pr-hours" readonly><span class="hint">Es la suma de las tres etapas de la derecha.</span></div>
-        <div class="field"><label for="pr-ads">¿Qué porcentaje puedes destinar a anuncios?</label><div class="inline"><input class="glass-input num" id="pr-ads" type="number" min="0" step="1" inputmode="decimal"><span class="unit">%</span></div></div>
+        <div class="fld"><div class="fld-top"><label for="pr-clients">Clientes que atiendes a la semana</label><div class="pill"><input id="pr-clients" type="number" min="0" step="1" inputmode="numeric"></div></div><input type="range" id="pr-clients-r" min="1" max="20" step="1" aria-label="Clientes por semana"></div>
+        <div class="fld"><div class="fld-top"><label for="pr-ads">Porcentaje para anuncios</label><div class="pill"><input id="pr-ads" type="number" min="0" step="1" inputmode="decimal"><span>%</span></div></div><input type="range" id="pr-ads-r" min="0" max="40" step="1" aria-label="Porcentaje para anuncios"></div>
+        <div class="fld">
+          <div class="fld-top"><label>Horas por cliente</label><span class="unit"><b id="pr-hours-t" style="color:var(--ink)"></b> en total</span></div>
+          <div class="cols-3" style="margin-top:10px;">
+            <div><label class="hint" for="pr-pre" style="margin:0 0 4px">Pre producción</label><input class="glass-input num" id="pr-pre" type="number" min="0" step="0.5" inputmode="decimal"></div>
+            <div><label class="hint" for="pr-prod" style="margin:0 0 4px">Producción</label><input class="glass-input num" id="pr-prod" type="number" min="0" step="0.5" inputmode="decimal"></div>
+            <div><label class="hint" for="pr-post" style="margin:0 0 4px">Post producción</label><input class="glass-input num" id="pr-post" type="number" min="0" step="0.5" inputmode="decimal"></div>
+          </div>
+        </div>
+        <details class="more" style="margin:6px 0 0;">
+          <summary>Ajustes avanzados</summary>
+          <div class="more-body">
+            <div class="cols-3">
+              <div class="field"><label for="pr-weeks">Semanas por mes</label><input class="glass-input num" id="pr-weeks" type="number" min="1" step="0.1" inputmode="decimal"></div>
+              <div class="field"><label for="pr-m1">Estándar sube</label><div class="inline"><input class="glass-input num" id="pr-m1" type="number" min="0" step="5" inputmode="decimal"><span class="unit">%</span></div></div>
+              <div class="field"><label for="pr-m2">Premium sube</label><div class="inline"><input class="glass-input num" id="pr-m2" type="number" min="0" step="5" inputmode="decimal"><span class="unit">%</span></div></div>
+            </div>
+            <span class="hint">Estándar y Premium son tu precio mínimo más ese porcentaje. En el Excel eran 50% y 150%.</span>
+          </div>
+        </details>
+        <input type="hidden" id="pr-total"><input type="hidden" id="pr-hours">
       </div>
-      <div class="card glass">
-        <div class="legend">Cantidad de horas por sesión</div>
-        <div class="cols-3">
-          <div class="field"><label for="pr-pre">Pre producción</label><input class="glass-input num" id="pr-pre" type="number" min="0" step="0.5" inputmode="decimal"></div>
-          <div class="field"><label for="pr-prod">Producción</label><input class="glass-input num" id="pr-prod" type="number" min="0" step="0.5" inputmode="decimal"></div>
-          <div class="field"><label for="pr-post">Post producción</label><input class="glass-input num" id="pr-post" type="number" min="0" step="0.5" inputmode="decimal"></div>
+      <div class="res dark tool-hero-dark sticky" aria-live="polite">
+        <p class="k">Tu hora mínima</p>
+        <div class="big" id="p-hmin"></div><div class="big-u" id="p-hmin-u"></div>
+        <div class="rrows">
+          <div><span>Hora estándar</span><b><span id="p-hstd" style="color:inherit"></span><small id="p-hstd-u"></small></b></div>
+          <div><span>Hora ideal</span><b><span id="p-hideal" style="color:inherit"></span><small id="p-hideal-u"></small></b></div>
         </div>
-        <div class="legend" style="margin-top:8px;">Ajustes del cálculo</div>
-        <div class="cols-3">
-          <div class="field"><label for="pr-weeks">Semanas por mes</label><input class="glass-input num" id="pr-weeks" type="number" min="1" step="0.1" inputmode="decimal"></div>
-          <div class="field"><label for="pr-m1">Sube Estándar</label><div class="inline"><input class="glass-input num" id="pr-m1" type="number" min="0" step="5" inputmode="decimal"><span class="unit">%</span></div></div>
-          <div class="field"><label for="pr-m2">Sube Premium</label><div class="inline"><input class="glass-input num" id="pr-m2" type="number" min="0" step="5" inputmode="decimal"><span class="unit">%</span></div></div>
-        </div>
-        <span class="hint" style="font-size:11.5px;color:var(--muted);">Estándar y Premium son tu precio mínimo más ese porcentaje. En el Excel eran 50% y 150%.</span>
       </div>
     </div>
     <div class="card glass">
-      <div class="legend">Cálculo por hora</div>
-      <div class="pkgs" id="hours-cards"></div>
-    </div>
-    <div class="card glass">
-      <div class="legend">Paquetes sugeridos</div>
-      <p class="sub">Precio por cliente. Elige uno para ver su punto de equilibrio y su embudo en los pasos siguientes.</p>
+      <h3 class="sec-t">Tus paquetes</h3>
+      <p class="sub">Precio por cliente. Toca uno para usarlo en los pasos siguientes.</p>
       <div class="pkgs" id="pkg-cards"></div>
     </div>
   </section>
@@ -618,33 +537,63 @@ fbq('init','467504537642622');
   <!-- ===================== 7 EQUILIBRIO ===================== -->
   <section class="panel" id="p-equilibrio" style="padding:0;">
     <div class="panel-head">
-      <h2>7 · Punto de equilibrio</h2>
-      <p>Cuántos clientes necesitas al mes para cubrir todos tus gastos con cada paquete. Se suma un cliente extra de colchón.</p>
+      <h2>¿Cuántos clientes necesitas?</h2>
+      <p>Para cubrir todos tus gastos con cada paquete. Sumo un cliente extra de colchón.</p>
     </div>
     <div class="card glass">
       <div class="scroll-x"><table class="tbl" style="min-width:0;"><thead><tr><th>Paquete</th><th>Precio</th><th>Equilibrio</th><th>Clientes al mes</th></tr></thead><tbody id="eq-table"></tbody></table></div>
     </div>
     <div class="card glass">
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:6px;">
-        <div class="field" style="margin:0;min-width:220px;"><label for="eq-pkg">Proyección a 12 meses con el paquete</label><select class="glass-input" id="eq-pkg"><option>Básico</option><option>Estándar</option><option>Premium</option></select></div>
-        <div class="seg" id="seg-mode"><button data-mode="acc" class="on">Acumulado</button><button data-mode="mon">Cada mes</button></div>
+      <div class="bar-row">
+        <div><h3 class="sec-t">Tus próximos 12 meses</h3><p class="sub" style="margin:0">Con el paquete que elijas.</p></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <div class="seg" id="seg-pkg"><button data-pkg="Básico">Básico</button><button data-pkg="Estándar">Estándar</button><button data-pkg="Premium">Premium</button></div>
+          <div class="seg" id="seg-mode"><button data-mode="acc">Acumulado</button><button data-mode="mon">Cada mes</button></div>
+        </div>
       </div>
       <div class="chart" id="proj-chart"></div>
-      <div class="chart-leg"><span><i class="b-gross"></i>Ingreso bruto</span><span><i class="b-net"></i>Ingreso neto (después de Ads)</span><span><i class="b-gas"></i>Gastos</span></div>
-      <div class="scroll-x" style="margin-top:18px;"><table class="tbl months"><thead id="proj-head"></thead><tbody id="proj-body"></tbody></table></div>
-      <p class="note" style="margin-top:14px;" id="proj-note"></p>
+      <div class="chart-leg"><span><i class="b-gross"></i>Ingreso bruto</span><span><i class="b-net"></i>Neto, después de Ads</span><span><i class="b-gas"></i>Gastos</span></div>
+      <p class="note" style="margin-top:18px;" id="proj-note"></p>
     </div>
+    <details class="more">
+      <summary>Ver la tabla mes a mes</summary>
+      <div class="more-body"><div class="scroll-x"><table class="tbl months"><thead id="proj-head"></thead><tbody id="proj-body"></tbody></table></div></div>
+    </details>
   </section>
 
   <!-- ===================== 8 EMBUDO ===================== -->
   <section class="panel" id="p-embudo" style="padding:0;">
     <div class="panel-head">
-      <h2>8 · Embudo de Meta Ads</h2>
-      <p>A la izquierda pones los resultados de tu última campaña. A la derecha ves cómo debería verse tu embudo con el presupuesto que sale de tus números.</p>
+      <h2>¿Cuánto invertir en anuncios?</h2>
+      <p>Con el paquete que elegiste, así debería verse tu embudo de Meta Ads.</p>
     </div>
-    <div class="cols">
+    <div class="two">
       <div class="card glass">
-        <div class="legend">Análisis campaña previa</div>
+        <h3 class="sec-t">Tu embudo ideal</h3>
+        <p class="sub">De impresiones a ventas, mes 1.</p>
+        <div class="funnel" id="funnel"></div>
+      </div>
+      <div class="res dark tool-hero-dark sticky">
+        <p class="k">Inversión ideal en el mes 1</p>
+        <div class="big" id="e-inv"></div><div class="big-u" id="e-inv-u"></div>
+        <div class="rrows" id="budget"></div>
+        <div class="field" style="margin:20px 0 0;"><label for="f-cpm" style="font-weight:500;color:var(--muted);">CPM, lo que cuestan mil impresiones</label><div class="inline"><input class="glass-input num" id="f-cpm" type="number" min="0" step="0.05" inputmode="decimal"><span class="unit">USD</span></div><span class="hint" id="f-cpm-l"></span></div>
+      </div>
+    </div>
+    <div class="card glass">
+      <h3 class="sec-t">Resultados esperados</h3>
+      <div class="cols-3" id="results" style="margin-top:12px;"></div>
+    </div>
+    <div class="card glass">
+      <h3 class="sec-t">El embudo al revés</h3>
+      <p class="sub" id="rev-sub"></p>
+      <div class="rate-grid" id="reverse"></div>
+      <p class="note" id="rev-note" style="margin-top:16px;"></p>
+    </div>
+    <div class="card glass">
+      <h3 class="sec-t">Tu última campaña</h3>
+      <p class="sub">Si ya hiciste anuncios, escribe los resultados y los comparo con el ideal.</p>
+      <div class="two" style="gap:28px;">
         <div class="cols" style="gap:12px;">
           <div class="field"><label for="m-imp">Impresiones</label><input class="glass-input num" id="m-imp" type="number" min="0" inputmode="numeric"></div>
           <div class="field"><label for="m-reach">Alcance</label><input class="glass-input num" id="m-reach" type="number" min="0" inputmode="numeric"></div>
@@ -654,63 +603,71 @@ fbq('init','467504537642622');
           <div class="field"><label for="m-sales">Ventas</label><input class="glass-input num" id="m-sales" type="number" min="0" inputmode="numeric"></div>
           <div class="field"><label for="m-aband">Abandonos</label><input class="glass-input num" id="m-aband" type="number" min="0" inputmode="numeric"></div>
         </div>
+        <div><div class="rate-grid" id="rates" style="grid-template-columns:1fr 1fr;"></div><p class="hint" style="margin-top:12px;">Verde: cumples el ideal. Amarillo: estás por debajo. Un guion significa que falta el dato anterior.</p></div>
       </div>
-      <div class="card glass">
-        <div class="legend">Tus métricas actuales son</div>
-        <div class="rate-grid" id="rates"></div>
-        <p class="note" style="margin-top:14px;">Lo verde cumple el ideal de tu embudo. Lo naranja está por debajo. Si ves un guion es que falta el dato anterior.</p>
-      </div>
+    </div>
+    <details class="more">
+      <summary>Cambiar las tasas del embudo ideal</summary>
+      <div class="more-body"><div class="cols-3" style="gap:10px;">
+        <div class="field"><label for="x-reach">Alcance / impresiones</label><div class="inline"><input class="glass-input num" id="x-reach" type="number" step="0.5" min="0"><span class="unit">%</span></div></div>
+        <div class="field"><label for="x-click">Clicks / alcance</label><div class="inline"><input class="glass-input num" id="x-click" type="number" step="0.5" min="0"><span class="unit">%</span></div></div>
+        <div class="field"><label for="x-msg">Mensajes / clicks</label><div class="inline"><input class="glass-input num" id="x-msg" type="number" step="0.5" min="0"><span class="unit">%</span></div></div>
+        <div class="field"><label for="x-meet">Reuniones / mensajes</label><div class="inline"><input class="glass-input num" id="x-meet" type="number" step="0.5" min="0"><span class="unit">%</span></div></div>
+        <div class="field"><label for="x-close">Cierre, ventas / reuniones</label><div class="inline"><input class="glass-input num" id="x-close" type="number" step="1" min="1"><span class="unit">%</span></div><span class="hint">Supuesto nuestro, no estaba en el Excel.</span></div>
+      </div></div>
+    </details>
+  </section>
+
+  <!-- ===================== RESUMEN ===================== -->
+  <section class="panel" id="p-resumen" style="padding:0;">
+    <div class="lead-result">
+      <p class="k">Para vivir de tu cámara necesitas</p>
+      <div class="big" id="r-total"></div>
+      <p class="s">al mes. Cobra al menos <b id="r-hmin"></b> por hora, o <b id="r-pkg"></b> por el paquete <span id="r-pkg-name"></span>. Con <b id="r-cli"></b> clientes al mes cubres todo.</p>
     </div>
     <div class="cols">
       <div class="card glass">
-        <div class="legend">Presupuesto ideal</div>
-        <div class="field"><label for="f-cpm">CPM (costo por mil impresiones)</label><div class="inline"><input class="glass-input num" id="f-cpm" type="number" min="0" step="0.05" inputmode="decimal"><span class="unit">USD</span></div><span class="hint" id="f-cpm-l"></span></div>
-        <table class="tbl"><thead><tr><th></th><th>Monto (USD)</th><th>Monto (<span class="lc"></span>)</th></tr></thead><tbody id="budget"></tbody></table>
-        <p class="note" style="margin-top:14px;">La inversión sale del paquete elegido en el paso 7: es lo que apartas para Ads en tu primer mes.</p>
+        <h3 class="sec-t">Tus horas</h3>
+        <table class="tbl"><thead><tr><th></th><th>Mínima</th><th>Estándar</th><th>Ideal</th></tr></thead><tbody id="r-hours"></tbody></table>
+        <h3 class="sec-t" style="margin-top:26px;">Tus paquetes</h3>
+        <table class="tbl"><thead><tr><th></th><th>Básico</th><th>Estándar</th><th>Premium</th></tr></thead><tbody id="r-pkgs"></tbody></table>
       </div>
       <div class="card glass">
-        <div class="legend">Embudo ideal</div>
-        <div class="funnel" id="funnel"></div>
-        <details class="fixes" style="margin-top:16px;"><summary>Cambiar las tasas del embudo ideal</summary>
-          <div class="cols-3" style="margin-top:12px;gap:10px;">
-            <div class="field"><label for="x-reach">Alcance / impresiones</label><div class="inline"><input class="glass-input num" id="x-reach" type="number" step="0.5" min="0"><span class="unit">%</span></div></div>
-            <div class="field"><label for="x-click">Clicks / alcance</label><div class="inline"><input class="glass-input num" id="x-click" type="number" step="0.5" min="0"><span class="unit">%</span></div></div>
-            <div class="field"><label for="x-msg">Mensajes / clicks</label><div class="inline"><input class="glass-input num" id="x-msg" type="number" step="0.5" min="0"><span class="unit">%</span></div></div>
-            <div class="field"><label for="x-meet">Reuniones / mensajes</label><div class="inline"><input class="glass-input num" id="x-meet" type="number" step="0.5" min="0"><span class="unit">%</span></div></div>
-            <div class="field"><label for="x-close">Cierre (ventas / reuniones)</label><div class="inline"><input class="glass-input num" id="x-close" type="number" step="1" min="1"><span class="unit">%</span></div><span class="hint">Supuesto nuestro, no estaba en el Excel.</span></div>
-          </div>
-        </details>
+        <h3 class="sec-t">A dónde se va tu plata</h3>
+        <div class="stack" id="r-stack"></div><div class="stack-leg" id="r-stack-leg"></div>
+        <h3 class="sec-t" style="margin-top:26px;">En 12 meses con tu paquete</h3>
+        <div class="cols" style="gap:14px;margin-top:8px;">
+          <div><div class="mini-l">Ingreso neto</div><div class="mini-v" id="r-net"></div></div>
+          <div><div class="mini-l">ROAS esperado</div><div class="mini-v" id="r-roas"></div></div>
+        </div>
+        <div class="note" id="r-alerts" style="margin-top:18px;"></div>
       </div>
     </div>
-    <div class="card glass dark tool-hero-dark">
-      <div class="legend">Resultados esperados</div>
-      <div class="cols-3" id="results"></div>
-    </div>
-    <div class="card glass">
-      <div class="legend">Embudo al revés: ¿qué necesitas para llegar a tus ventas?</div>
-      <p class="sub" id="rev-sub"></p>
-      <div class="cols-3" id="reverse"></div>
-      <p class="note" id="rev-note" style="margin-top:14px;"></p>
-    </div>
+    <details class="more fixes">
+      <summary>Qué corregí respecto al Excel original</summary>
+      <div class="more-body"><ul>
+        <li><b>Impresiones del embudo.</b> El Excel multiplicaba inversión × CPM × 1000. Lo correcto es inversión ÷ CPM × 1000.</li>
+        <li><b>Inversión en Ads del mes 1.</b> El Excel siempre usaba el precio Premium sin importar el paquete elegido.</li>
+        <li><b>Cuota del equipo nuevo.</b> Solo se sumaba en dólares y se quedaba fuera de los fondos. Ahora cuenta en ambos.</li>
+        <li><b>Precio por cliente (AOV).</b> Mezclaba el paquete Estándar fijo con el elegido y monedas distintas.</li>
+      </ul><p class="note" style="margin-top:14px;">Con los datos de ejemplo todo lo demás da igual que el Excel: hora mínima 148,43 y paquetes 593,71 / 890,56 / 1.484,27.</p></div>
+    </details>
   </section>
 
   <!-- ===================== GUÍA ===================== -->
   <section class="panel" id="p-guia" style="padding:0;">
-    <div class="panel-head">
-      <h2>Guía y glosario</h2>
-      <p>Las instrucciones del Excel, adaptadas a esta herramienta.</p>
-    </div>
+    <div class="panel-head"><h2>Cómo se calcula</h2><p>Las instrucciones del Excel, adaptadas a esta herramienta.</p></div>
     <div class="card glass">
-      <div class="legend">Cómo se usa</div>
-      <ol class="steps">
-        <li><span>No hay que hacer copias ni proteger celdas. <b>Edita los campos con borde blanco</b>. Los que tienen borde punteado se calculan solos.</span></li>
-        <li><span>Ingresa los montos de tus gastos e ingresos en tu moneda. Los totales se calculan automáticamente.</span></li>
-        <li><span>Para cambiar de moneda, hazlo en el paso 1. No tienes que reformatear nada.</span></li>
-        <li><span>Tus datos se guardan solos en este navegador. <b>Nunca se envían a ningún servidor.</b> Para llevarlos a otro equipo usa Guardar archivo y Cargar archivo.</span></li>
+      <h3 class="sec-t">Cómo se usa</h3>
+      <ol class="steps" style="margin-top:14px;">
+        <li><span>No hace falta copiar ni proteger nada. Edita los campos con borde. Los de borde punteado se calculan solos.</span></li>
+        <li><span>Escribe tus montos en tu moneda. Los totales se calculan automáticamente.</span></li>
+        <li><span>Para cambiar de moneda, hazlo en el paso 1. No hay que reformatear nada.</span></li>
+        <li><span>Tus datos se guardan solos en este navegador y nunca se envían. Para llevarlos a otro equipo usa Guardar archivo y Cargar archivo, en el menú de arriba.</span></li>
       </ol>
     </div>
     <div class="card glass">
-      <div class="legend">Cómo se calcula</div>
+      <h3 class="sec-t">Las fórmulas</h3>
       <dl class="glossary">
         <dt>Total de gastos</dt><dd>Suma de los 5 fondos: Gastos personales + Costos del negocio (con la reposición del equipo) + Ahorros + Emergencia + Inversión.</dd>
         <dt>Reposición del equipo</dt><dd>(Equipo total × (1 + inflación)) ÷ vida útil ÷ 12, más las cuotas del equipo nuevo.</dd>
@@ -720,7 +677,7 @@ fbq('init','467504537642622');
         <dt>Ingreso neto</dt><dd>Ingreso bruto menos la inversión en Ads. La proyección del Excel es acumulada: el mes 2 incluye el mes 1.</dd>
         <dt>CPM</dt><dd>Lo que cuesta mostrar tu anuncio mil veces.</dd>
         <dt>ROAS</dt><dd>Cuántos dólares entran por cada dólar que pones en anuncios.</dd>
-        <dt>AOV</dt><dd>Lo que paga un cliente en promedio (el precio de tu paquete).</dd>
+        <dt>AOV</dt><dd>Lo que paga un cliente en promedio, el precio de tu paquete.</dd>
       </dl>
     </div>
   </section>
@@ -728,10 +685,18 @@ fbq('init','467504537642622');
 </div>
 </main>
 
+<div class="dock" id="dock">
+  <div class="dock-live" aria-live="polite">
+    <div class="dl"><span>Necesitas al mes</span><b id="dk-total"></b></div>
+    <div class="dl"><span>Hora mínima</span><b id="dk-hmin"></b></div>
+  </div>
+  <button class="btn btn-ghost" id="btnBack">Atrás</button>
+  <button class="btn btn-gold" id="btnNext">Continuar</button>
+</div>
+
 <section class="tool-cta">
   <div class="wrap">
     <div class="community-card dark tool-hero-dark">
-      <p class="eyebrow">The Marketographers</p>
       <h2>Ya sabes cuánto cobrar. Ahora falta que te lo paguen.</h2>
       <p>Calcular el precio es la mitad. La otra mitad es venderlo con estrategia, anuncios y gente que te empuje. Eso es la comunidad.</p>
       <a class="btn btn-gold" href="/#planes">Únete a la comunidad →</a>
@@ -891,7 +856,7 @@ function merge(base, extra){
 let saveT;
 function save(){
   clearTimeout(saveT);
-  saveT = setTimeout(()=>{ try{ localStorage.setItem(KEY, JSON.stringify(S)); $('savedMsg').textContent='Guardado en tu navegador ✓'; }catch(e){ $('savedMsg').textContent='No se pudo guardar (navegador en modo privado)'; } }, 250);
+  saveT = setTimeout(()=>{ try{ localStorage.setItem(KEY, JSON.stringify(S));  }catch(e){  } }, 250);
 }
 
 /* ---------- formato ---------- */
@@ -908,122 +873,157 @@ const setHTML = (id,t)=>{ const e=$(id); if(e) e.innerHTML=t; };
 const esc = t => String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function toast(t){ const e=$('toast'); e.textContent=t; e.classList.add('on'); clearTimeout(toast.t); toast.t=setTimeout(()=>e.classList.remove('on'),2200); }
 
-/* ---------- pestañas ---------- */
-const TABS = [['resumen','Resumen','★'],['moneda','Tipo de cambio','1'],['gastos','Gastos','2'],['costos','Costos','3'],['equipo','Equipo','4'],['fondos','Fondos','5'],['precios','Precios','6'],['equilibrio','Equilibrio','7'],['embudo','Embudo Ads','8'],['guia','Guía','?']];
-function buildTabs(){
-  $('tabs').innerHTML = TABS.map(t=>`<button class="tab" data-tab="${t[0]}"><span class="n">${t[2]}</span>${t[1]}</button>`).join('');
-  $('tabs').addEventListener('click',e=>{ const b=e.target.closest('.tab'); if(b) go(b.dataset.tab,true); });
-}
-function go(id,scroll){
-  if(!TABS.some(t=>t[0]===id)) id='resumen';
-  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('on',p.id==='p-'+id));
-  document.querySelectorAll('.tab').forEach(b=>{ const on=b.dataset.tab===id; b.classList.toggle('on',on); if(on) b.scrollIntoView({block:'nearest',inline:'center'}); });
-  history.replaceState(null,'','#'+id);
-  if(scroll) window.scrollTo({top:document.querySelector('.app').offsetTop-70,behavior:'smooth'});
+/* ---------- números que se animan (solo los grandes) ---------- */
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const shown = {}, tok = {};
+function setNum(id,val,fmt){
+  const el=$(id); if(!el) return;
+  const f=fmt||L; val=isFinite(val)?val:0;
+  const from=shown[id];
+  if(RM || from===undefined || from===val || !el.getClientRects().length){ shown[id]=val; el.textContent=f(val); return; }
+  const my=(tok[id]=(tok[id]||0)+1); let t0=null;
+  requestAnimationFrame(function step(ts){
+    if(tok[id]!==my) return; if(t0===null) t0=ts;
+    const p=Math.min((ts-t0)/380,1), e=1-Math.pow(1-p,3), v=from+(val-from)*e;
+    shown[id]=p<1?v:val; el.textContent=f(shown[id]); if(p<1) requestAnimationFrame(step);
+  });
 }
 
-/* ---------- listas editables ---------- */
+/* ---------- pasos ---------- */
+const STEPS=[['moneda','Moneda'],['gastos','Gastos'],['costos','Costos'],['equipo','Equipo'],['fondos','Fondos'],['precios','Precios'],['equilibrio','Equilibrio'],['embudo','Embudo'],['resumen','Resumen']];
+let cur='moneda', lastStep='moneda';
+const stepIdx = id => STEPS.findIndex(s=>s[0]===id);
+function buildRail(){
+  $('stepper').innerHTML=STEPS.map(s=>`<button class="rail-i" data-step="${s[0]}">${s[1]}</button>`).join('');
+  $('stepper').addEventListener('click',e=>{ const b=e.target.closest('.rail-i'); if(b) go(b.dataset.step); });
+}
+function replayChart(){ const c=$('proj-chart'); c.classList.remove('g'); void c.offsetWidth; c.classList.add('g'); }
+function go(id,opts){
+  const guide = id==='guia';
+  if(!guide && stepIdx(id)<0) id='moneda';
+  const from=stepIdx(cur), to=stepIdx(id);
+  const dir = to>=from ? 1 : -1;
+  document.querySelectorAll('.panel').forEach(p=>{
+    const on=p.id==='p-'+id;
+    if(on && !p.classList.contains('on')) p.style.setProperty('--dx',(dir*20)+'px');
+    p.classList.toggle('on',on);
+  });
+  cur=id; if(!guide) lastStep=id;
+  const i=guide?STEPS.length-1:to;
+  document.querySelectorAll('.rail-i').forEach((b,k)=>{ b.classList.toggle('on',!guide&&k===i); b.classList.toggle('done',!guide&&k<i); });
+  $('progress').style.transform='scaleX('+(guide?1:(i+1)/STEPS.length)+')';
+  $('stepmeta').innerHTML = guide ? '<b>Cómo se calcula</b>' : 'Paso <b>'+(i+1)+'</b> de '+STEPS.length+' · '+STEPS[i][1];
+  $('dock').classList.toggle('off',guide);
+  $('btnBack').style.visibility = (!guide&&i===0)?'hidden':'visible';
+  $('btnNext').textContent = guide?'Volver':(i===STEPS.length-1?'Guardar mi plan':'Continuar');
+  history.replaceState(null,'','#'+id);
+  if(id==='equilibrio') replayChart();
+  if(!opts||opts.scroll!==false) window.scrollTo({top:Math.max(0,document.querySelector('.app').offsetTop-24),behavior:RM?'auto':'smooth'});
+}
+const next = () => { if(cur==='guia') return go(lastStep); const i=stepIdx(cur); if(i>=STEPS.length-1) return exportFile(); go(STEPS[i+1][0]); };
+const back = () => { if(cur==='guia') return go(lastStep); const i=stepIdx(cur); if(i>0) go(STEPS[i-1][0]); };
+
+/* ---------- listas agrupadas ---------- */
+const LISTS = {basics:'list-basics',fun:'list-fun',costs:'list-costs',equip:'list-equip',office:'list-office',neweq:'list-neweq'};
+const closedG = {basics:new Set(),fun:new Set(),costs:new Set(),equip:new Set(),office:new Set()};
 function rowHTML(key,i,r){
-  const cats = CATS[key];
-  const opts = (cats.includes(r.cat)?cats:[...cats,r.cat]).map(c=>`<option${c===r.cat?' selected':''}>${esc(c)}</option>`).join('');
   return `<div class="row" data-i="${i}">
-    <select class="glass-input cat" data-k="cat" aria-label="Categoría">${opts}</select>
-    <input class="glass-input item" data-k="item" value="${esc(r.item)}" placeholder="Ítem" aria-label="Ítem">
-    <input class="glass-input num amt" data-k="amt" type="number" min="0" step="any" inputmode="decimal" value="${r.amt===0?'':r.amt}" placeholder="0" aria-label="Monto">
+    <input class="item-in" data-k="item" value="${esc(r.item)}" placeholder="Nombre" aria-label="Ítem">
+    <label class="amt"><span class="cs" data-sym></span><input data-k="amt" type="number" min="0" step="any" inputmode="decimal" value="${r.amt===0?'':r.amt}" placeholder="0" aria-label="Monto de ${esc(r.item||'ítem')}"></label>
     <span class="usd" data-usd></span>
-    <button class="del" title="Borrar" aria-label="Borrar fila">×</button></div>`;
+    <button class="del" title="Borrar" aria-label="Borrar ${esc(r.item||'ítem')}">×</button></div>`;
 }
 function newEqHTML(i,r){
-  return `<div class="row" data-i="${i}" style="grid-template-columns:minmax(130px,2fr) minmax(90px,1fr) minmax(90px,1fr) minmax(90px,.8fr) 34px;">
-    <input class="glass-input" data-k="item" value="${esc(r.item)}" placeholder="Ítem" aria-label="Ítem">
-    <div class="inline"><input class="glass-input num" data-k="months" type="number" min="1" step="1" value="${r.months||''}" placeholder="6" aria-label="Plazo en meses"><span class="unit">meses</span></div>
-    <div class="inline"><input class="glass-input num" data-k="usd" type="number" min="0" step="any" value="${r.usd===0?'':r.usd}" placeholder="0" aria-label="Precio en dólares"><span class="unit">USD</span></div>
+  return `<div class="row ne" data-i="${i}">
+    <input class="item-in" data-k="item" value="${esc(r.item)}" placeholder="Nombre" aria-label="Ítem">
+    <label class="amt"><input data-k="months" type="number" min="1" step="1" value="${r.months||''}" placeholder="6" aria-label="Plazo en meses"><span class="cs" style="margin-left:2px">meses</span></label>
+    <label class="amt"><span class="cs">$</span><input data-k="usd" type="number" min="0" step="any" value="${r.usd===0?'':r.usd}" placeholder="0" aria-label="Precio en dólares"></label>
     <span class="usd" data-usd></span>
-    <button class="del" title="Borrar" aria-label="Borrar fila">×</button></div>`;
+    <button class="del" title="Borrar" aria-label="Borrar">×</button></div>`;
 }
-const LISTS = {basics:'list-basics',fun:'list-fun',costs:'list-costs',equip:'list-equip',office:'list-office',neweq:'list-neweq'};
 function renderList(key){
-  const el = $(LISTS[key]);
-  el.innerHTML = S[key].map((r,i)=> key==='neweq'?newEqHTML(i,r):rowHTML(key,i,r)).join('');
+  const el=$(LISTS[key]);
+  if(key==='neweq'){ el.innerHTML=S.neweq.map((r,i)=>newEqHTML(i,r)).join(''); return; }
+  const cats=[...CATS[key]]; S[key].forEach(r=>{ if(!cats.includes(r.cat)) cats.push(r.cat); });
+  el.innerHTML=cats.map(c=>{
+    const rows=S[key].map((r,i)=>[r,i]).filter(([r])=>r.cat===c);
+    return `<details class="grp" data-cat="${esc(c)}"${closedG[key].has(c)?'':' open'}><summary><span class="g-name">${esc(c)}</span><span class="g-sub" data-sub></span></summary><div class="g-body">${rows.map(([r,i])=>rowHTML(key,i,r)).join('')}<button class="g-add" data-addcat="${esc(c)}">+ Agregar a ${esc(c.toLowerCase())}</button></div></details>`;
+  }).join('');
 }
 function bindList(key){
-  const el = $(LISTS[key]);
+  const el=$(LISTS[key]);
   el.addEventListener('input',e=>{
     const t=e.target, row=t.closest('.row'); if(!row||!t.dataset.k) return;
     const r=S[key][+row.dataset.i], k=t.dataset.k;
     r[k] = (t.type==='number') ? (t.value===''?0:parseFloat(t.value)) : t.value;
     update();
   });
-  el.addEventListener('change',e=>{
-    const t=e.target, row=t.closest('.row'); if(!row||t.tagName!=='SELECT') return;
-    S[key][+row.dataset.i].cat = t.value; update();
-  });
   el.addEventListener('click',e=>{
-    const b=e.target.closest('.del'); if(!b) return;
-    S[key].splice(+b.closest('.row').dataset.i,1); renderList(key); update();
+    const b=e.target.closest('.del');
+    if(b){ const row=b.closest('.row'), i=+row.dataset.i; row.classList.add('out');
+      setTimeout(()=>{ S[key].splice(i,1); renderList(key); update(); }, RM?0:170); return; }
+    const a=e.target.closest('.g-add'); if(a) addRow(key,a.dataset.addcat);
   });
+  if(key!=='neweq') el.addEventListener('toggle',e=>{ const d=e.target; if(!d.classList||!d.classList.contains('grp')) return; const c=d.dataset.cat; d.open?closedG[key].delete(c):closedG[key].add(c); },true);
 }
-function addRow(key){
-  if(key==='neweq') S.neweq.push({item:'',months:6,usd:0});
-  else S[key].push(mk(CATS[key][0],''));
+function addRow(key,cat){
+  if(key==='neweq') S.neweq.push({item:'',months:6,usd:0}); else { S[key].push(mk(cat||CATS[key][0],'')); closedG[key].delete(cat||CATS[key][0]); }
   renderList(key); update();
-  const rows=$(LISTS[key]).querySelectorAll('.row'); const last=rows[rows.length-1];
-  if(last){ const f=last.querySelector('input[data-k="item"]'); f&&f.focus(); }
+  const row=$(LISTS[key]).querySelector('.row[data-i="'+(S[key].length-1)+'"]');
+  if(row){ row.classList.add('fresh'); const f=row.querySelector('[data-k="item"]'); f&&f.focus(); }
 }
 
-/* ---------- barras por categoría ---------- */
-function catBars(id,arr){
-  const by={}; arr.forEach(r=>{ if(r.amt>0) by[r.cat]=(by[r.cat]||0)+r.amt; });
-  const ent=Object.entries(by).sort((a,b)=>b[1]-a[1]); const max=ent.length?ent[0][1]:1;
-  setHTML(id, ent.map(([c,v])=>`<div class="cat-bar"><span>${esc(c)}</span><div class="track"><div class="fill" style="width:${v/max*100}%"></div></div><b>${L(v)}</b></div>`).join(''));
-}
-
-/* ---------- pintar todo ---------- */
+/* ---------- pintar ---------- */
 function update(){
   O = calc(S); paint(); save();
   $('demoBanner').style.display = S.demo ? '' : 'none';
 }
+const RANGES=[['pr-clients',()=>S.pr.clients],['pr-ads',()=>S.pr.ads],['life',()=>S.life],['infl',()=>S.infl]];
 function paint(){
   const rate=O.rate;
-  document.querySelectorAll('.lc').forEach(e=>e.textContent=lcName());
-  set('cur-unit', lcName()+' = 1 USD'); set('eq-rate-u', lcName()+' = 1 USD'); $('eq-rate').value=num(S.cur.rate);
+  document.querySelectorAll('[data-sym]').forEach(e=>{ e.textContent=sym(); });
+  set('cur-unit', lcName()+' = 1 USD'); $('eq-rate').value=num(S.cur.rate);
 
-  // USD por fila
+  // filas: USD y subtotales por grupo
   Object.keys(LISTS).forEach(k=>{
     $(LISTS[k]).querySelectorAll('.row').forEach(row=>{
       const r=S[k][+row.dataset.i]; const u=row.querySelector('[data-usd]');
-      u.textContent = k==='neweq' ? (r.months>0 ? U((+r.usd||0)/r.months)+'/mes' : '') : U((+r.amt||0)/rate);
+      u.textContent = k==='neweq' ? (r.months>0&&r.usd>0 ? U(r.usd/r.months)+'/mes' : '') : (r.amt>0 ? '≈ '+U(r.amt/rate) : '');
+    });
+    if(k!=='neweq') $(LISTS[k]).querySelectorAll('.grp').forEach(g=>{
+      const s=S[k].filter(r=>r.cat===g.dataset.cat).reduce((t,r)=>t+(+r.amt||0),0);
+      g.querySelector('[data-sub]').textContent = s>0 ? L(s) : '';
     });
   });
   const T=(id,v)=>{ set(id,L(v)); set(id+'-u',U(v/rate)); };
-  T('t-basics',O.basics); T('t-fun',O.fun); T('t-gastos',O.gastos); T('t-costs',O.costs); T('t-equip',O.equip); T('t-office',O.office);
-  catBars('cb-basics',S.basics); catBars('cb-fun',S.fun); catBars('cb-costs',S.costs);
+  T('t-basics',O.basics); T('t-fun',O.fun); T('t-costs',O.costs); T('t-equip',O.equip); T('t-office',O.office);
 
-  // Equipo
-  const row=(a,l,u,cls='')=>`<tr class="${cls}"><td>${a}</td><td>${L(l)}</td><td>${U(u)}</td></tr>`;
+  // equipo
+  setNum('eq-big',O.monthlyEq); set('eq-big-u',U(O.monthlyEq/rate)+' al mes');
+  const rr=(a,l,u)=>`<div><span>${a}</span><b>${L(l)}<small>${U(u)}</small></b></div>`;
   setHTML('eq-calc',
-    row('Total invertido',O.invested,O.invested/rate)+
-    row('Con inflación ('+N1(S.infl)+'%)',O.inflated,O.inflated/rate)+
-    row('Total ahorro anual',O.yearly,O.yearly/rate)+
-    row('Cuota de equipo nuevo (mensual)',O.newMonthly,O.newMonthlyUsd)+
-    row('Total ahorro mensual',O.monthlyEq,O.monthlyEq/rate,'strong'));
+    rr('Total invertido',O.invested,O.invested/rate)+rr('Con inflación ('+N1(S.infl)+'%)',O.inflated,O.inflated/rate)+
+    rr('Ahorro anual',O.yearly,O.yearly/rate)+rr('Cuota de equipo nuevo',O.newMonthly,O.newMonthlyUsd));
 
   paintFunds(); paintPrices(); paintEq(); paintFunnel(); paintSummary();
+  // barra inferior
+  setNum('dk-total',O.total); setNum('dk-hmin',O.hMin);
+  RANGES.forEach(([id,g])=>{ const r=$(id+'-r'); if(r&&document.activeElement!==r) r.value=g(); });
 }
 
 function paintFunds(){
   const rate=O.rate;
   if(!$('funds').firstChild){
     $('funds').innerHTML = FUND_INFO.map((f,i)=>{
-      const auto = i<2;
+      const auto=i<2;
       return `<div class="fund" data-f="${i}">
-        <div><div class="nm">${f[0]}</div><div class="ds">${f[1]}</div></div>
-        <div class="inline"><input class="glass-input num fi" data-fi="${i}" type="number" min="0" step="1" aria-label="Porcentaje ideal de ${f[0]}"><span class="unit">%</span></div>
-        <div>${auto?`<input class="glass-input num" data-fa="${i}" readonly aria-label="Monto de ${f[0]}">`:`<input class="glass-input num" data-fa="${i}" type="number" min="0" step="any" inputmode="decimal" aria-label="Monto de ${f[0]}">`}</div>
-        <div class="pct" data-fp="${i}"></div>
-        <div class="usd" data-fu="${i}"></div>
-        <div><span class="sema" data-fs="${i}"></span><div class="fund-bar"><div class="fill" data-fb="${i}"></div><div class="mark" data-fm="${i}"></div></div></div>
-      </div>`;
+        <div class="f-main"><div class="f-top"><span class="nm">${f[0]}</span><span class="sema" data-fs="${i}"></span></div><div class="ds">${f[1]}</div>
+          <div class="fund-bar"><div class="fill" data-fb="${i}"></div><div class="mark" data-fm="${i}"></div></div></div>
+        <div class="f-nums">
+          <label class="amt"><span class="cs" data-sym></span>${auto?`<input data-fa="${i}" readonly aria-label="Monto de ${f[0]}">`:`<input data-fa="${i}" type="number" min="0" step="any" inputmode="decimal" placeholder="0" aria-label="Monto de ${f[0]}">`}</label>
+          <div class="f-sub"><span data-fp="${i}"></span> de tu plata · <span data-fu="${i}"></span></div>
+          <label class="f-ideal">ideal <input data-fi="${i}" type="number" min="0" step="1" aria-label="Porcentaje ideal de ${f[0]}"> %</label>
+        </div></div>`;
     }).join('');
     $('funds').addEventListener('input',e=>{
       const t=e.target;
@@ -1032,59 +1032,60 @@ function paintFunds(){
     });
   }
   FUND_INFO.forEach((f,i)=>{
-    const q=s=>$('funds').querySelector(`[data-${s}="${i}"]`);
+    const q=s=>$('funds').querySelector('[data-'+s+'="'+i+'"]');
     const ai=q('fi'), aa=q('fa');
-    if(document.activeElement!==ai) ai.value = S.funds[i].ideal;
+    if(document.activeElement!==ai) ai.value=S.funds[i].ideal;
     const amt=O.fundAmts[i];
     if(document.activeElement!==aa) aa.value = i<2 ? num(amt) : (amt===0?'':amt);
     const real=O.fundPct[i], ideal=(S.funds[i].ideal||0)/100;
     q('fp').textContent=P(real); q('fu').textContent=U(amt/rate);
-    // Gastos y Costos: lo ideal es no pasarse. Ahorros/Emergencia/Inversión: lo ideal es llegar.
-    const diff = real-ideal; const over = i<2;
-    const good = over ? diff<=0.02 : diff>=-0.02;
-    const mid  = over ? diff<=0.10 : diff>=-0.10;
+    const diff=real-ideal, over=i<2;
+    const good=over?diff<=0.02:diff>=-0.02, mid=over?diff<=0.10:diff>=-0.10;
     const sm=q('fs'); sm.className='sema '+(good?'ok':mid?'warn':'bad'); sm.textContent = good?(over?'Dentro':'Cumples'):(mid?'Cerca':(over?'Te pasas':'Te falta'));
     q('fb').style.width=Math.min(real*100,100)+'%'; q('fm').style.left=Math.min(ideal*100,100)+'%';
   });
-  set('f-ideal-sum', N1(O.idealSum)+'%'); set('f-total',L(O.total)); set('f-total-u',U(O.total/rate));
+  set('f-ideal-sum',N1(O.idealSum)+'%'); set('f-total',L(O.total)); set('f-total-u',U(O.total/rate));
   $('f-warn').style.display = Math.abs(O.idealSum-100)>0.01 ? '' : 'none';
-  set('f-gp', N1(S.funds[0].ideal)+'%'); set('f-need', L(O.needIncome)+'  ('+U(O.needIncome/rate)+')');
+  set('f-gp',N1(S.funds[0].ideal)+'%'); set('f-need',L(O.needIncome)+'  ('+U(O.needIncome/rate)+')');
   setHTML('f-gap', FUND_INFO.map((f,i)=>{
     const ideal=O.needIncome*(S.funds[i].ideal||0)/100, have=O.fundAmts[i], d=have-ideal;
-    return `<tr><td>${f[0]}</td><td>${L(ideal)}</td><td>${L(have)}</td><td style="color:${d>=0?'var(--ok)':'var(--bad)'};font-weight:700">${d>=0?'+':'−'}${L(Math.abs(d))}</td></tr>`;
+    return `<tr><td>${f[0]}</td><td>${L(ideal)}</td><td>${L(have)}</td><td style="color:${d>=0?'var(--ok)':'var(--red)'};font-weight:600">${d>=0?'+':'−'}${L(Math.abs(d))}</td></tr>`;
   }).join(''));
 }
 
 function paintPrices(){
   const rate=O.rate;
-  $('pr-total').value=num(O.total); $('pr-hours').value=N1(O.hours);
-  const card=(n,p,extra,sel)=>`<div class="pkg${sel?' sel':''}"><div class="n">${n}</div><div class="p">${L(p)}</div><div class="d">${U(p/rate)}</div>${extra?`<div class="meta">${extra}</div>`:''}</div>`;
-  setHTML('hours-cards',
-    card('Hora mínima',O.hMin,'Lo mínimo para no perder.')+
-    card('Hora estándar',O.hStd,'Mínima + '+N1(S.pr.m1)+'%.')+
-    card('Hora ideal',O.hIdeal,'Mínima + '+N1(S.pr.m2)+'%.'));
+  $('pr-total').value=num(O.total); $('pr-hours').value=N1(O.hours); set('pr-hours-t',N1(O.hours)+' h');
+  setNum('p-hmin',O.hMin); set('p-hmin-u',U(O.hMin/rate)+' por hora');
+  setNum('p-hstd',O.hStd); set('p-hstd-u',U(O.hStd/rate)); setNum('p-hideal',O.hIdeal); set('p-hideal-u',U(O.hIdeal/rate));
   const names=['Básico','Estándar','Premium'];
-  setHTML('pkg-cards', names.map((n,i)=>card(n,O.prices[i],
-    `Equilibrio: <b>${isFinite(O.eqv[i])&&O.prices[i]>0?num(O.eqv[i]):'—'}</b> clientes<br>Necesitas: <b>${O.eqClients[i]||'—'}</b> al mes<br><button class="chip-btn" data-pick="${n}" style="margin-top:8px;">${i===O.sel?'✓ Elegido':'Usar este paquete'}</button>`,i===O.sel)).join(''));
+  setHTML('pkg-cards', names.map((n,i)=>`<button class="pkg${i===O.sel?' sel':''}" data-pick="${n}" aria-pressed="${i===O.sel}"><div class="n">${n}</div><div class="p">${L(O.prices[i])}</div><div class="d">${U(O.prices[i]/rate)}</div>
+    <div class="meta">Equilibrio: <b>${O.prices[i]>0?num(O.eqv[i]):'—'}</b> clientes<br>Necesitas: <b>${O.eqClients[i]||'—'}</b> al mes</div></button>`).join(''));
 }
 
 function paintEq(){
   const names=['Básico','Estándar','Premium'];
   setHTML('eq-table', names.map((n,i)=>`<tr${i===O.sel?' class="strong"':''}><td>${n}</td><td>${L(O.prices[i])}</td><td>${O.prices[i]>0?num(O.eqv[i]):'—'}</td><td>${O.eqClients[i]||'—'}</td></tr>`).join(''));
-  if($('eq-pkg').value!==S.eq.pkg) $('eq-pkg').value=S.eq.pkg;
+  document.querySelectorAll('#seg-pkg button').forEach(b=>b.classList.toggle('on',b.dataset.pkg===S.eq.pkg));
   document.querySelectorAll('#seg-mode button').forEach(b=>b.classList.toggle('on',b.dataset.mode===S.eq.mode));
-  const acc = S.eq.mode==='acc';
+  const acc=S.eq.mode==='acc';
   const val=(m,k)=> acc ? m[k]*m.n : m[k];
   const rows=[['Sesiones','sessions',N0],['Ingreso bruto','gross',L],['Inversión en Ads','ads',L],['Ingreso neto','net',L],['Gastos','gastos',L]];
   setHTML('proj-head','<tr><th></th>'+O.m.map(m=>`<th>Mes ${m.n}</th>`).join('')+`<th>${acc?'Anual':'Total 12m'}</th></tr>`);
   const net=O.m.map(m=>val(m,'net')-val(m,'gastos'));
-  setHTML('proj-body', rows.map(([lab,k,f],ri)=>`<tr class="${k==='net'?'strong':k==='gastos'?'sub':''}"><td>${lab}</td>${O.m.map(m=>`<td>${f(val(m,k))}</td>`).join('')}<td>${f(acc?val(O.m[11],k):O.m.reduce((t,m)=>t+m[k],0))}</td></tr>`).join('')+
-    `<tr class="strong"><td>Utilidad</td>${net.map(v=>`<td style="color:${v>=0?'var(--ok)':'var(--bad)'}">${L(v)}</td>`).join('')}<td style="color:${net[11]>=0?'var(--ok)':'var(--bad)'}">${L(acc?net[11]:net.reduce((a,b)=>a+b,0))}</td></tr>`);
+  setHTML('proj-body', rows.map(([lab,k,f])=>`<tr class="${k==='net'?'strong':k==='gastos'?'sub':''}"><td>${lab}</td>${O.m.map(m=>`<td>${f(val(m,k))}</td>`).join('')}<td>${f(acc?val(O.m[11],k):O.m.reduce((t,m)=>t+m[k],0))}</td></tr>`).join('')+
+    `<tr class="strong"><td>Utilidad</td>${net.map(v=>`<td style="color:${v>=0?'var(--ok)':'var(--red)'}">${L(v)}</td>`).join('')}<td style="color:${net[11]>=0?'var(--ok)':'var(--red)'}">${L(acc?net[11]:net.reduce((a,b)=>a+b,0))}</td></tr>`);
+  // gráfico: se construye una vez y se actualiza, así no se reinicia la animación al teclear
+  const ch=$('proj-chart');
+  if(ch.children.length!==12) ch.innerHTML=O.m.map((m,k)=>`<div class="col" style="--k:${k}"><div class="bars"><i class="b-gross"></i><i class="b-net"></i><i class="b-gas"></i></div><span class="lb">${m.n}</span></div>`).join('');
   const mx=Math.max(1,...O.m.map(m=>Math.max(val(m,'gross'),val(m,'gastos'))));
-  setHTML('proj-chart', O.m.map(m=>`<div class="col" title="Mes ${m.n}: bruto ${L(val(m,'gross'))} · neto ${L(val(m,'net'))} · gastos ${L(val(m,'gastos'))}"><div class="bars"><i class="b-gross" style="height:${val(m,'gross')/mx*100}%"></i><i class="b-net" style="height:${val(m,'net')/mx*100}%"></i><i class="b-gas" style="height:${val(m,'gastos')/mx*100}%"></i></div><span class="lb">${m.n}</span></div>`).join(''));
-  const p=S.eq.pkg;
+  [...ch.children].forEach((col,k)=>{
+    const m=O.m[k], b=col.querySelectorAll('i');
+    col.title='Mes '+m.n+': bruto '+L(val(m,'gross'))+' · neto '+L(val(m,'net'))+' · gastos '+L(val(m,'gastos'));
+    b[0].style.height=val(m,'gross')/mx*100+'%'; b[1].style.height=val(m,'net')/mx*100+'%'; b[2].style.height=val(m,'gastos')/mx*100+'%';
+  });
   set('proj-note', O.price>0
-    ? `Con ${O.sessions1} clientes al mes del paquete ${p} (${L(O.price)}), cubres tus gastos de ${L(O.total)} y te sobra ${L(O.monthProfit)} cada mes después de Ads. En 12 meses: ${L(O.annual.profit)} de utilidad.`
+    ? 'Con '+O.sessions1+' clientes al mes del paquete '+S.eq.pkg+' ('+L(O.price)+') cubres tus gastos de '+L(O.total)+' y te sobra '+L(O.monthProfit)+' cada mes después de Ads. En 12 meses: '+L(O.annual.profit)+' de utilidad.'
     : 'Pon tus gastos y clientes por semana para ver la proyección.');
 }
 
@@ -1094,7 +1095,6 @@ function paintFunnel(){
   if(document.activeElement!==$('f-cpm')) $('f-cpm').value=S.fn.cpm;
   const rt=S.fn.rates; [['reach','x-reach'],['click','x-click'],['msg','x-msg'],['meet','x-meet'],['close','x-close']].forEach(([k,id])=>{ if(document.activeElement!==$(id)) $(id).value=rt[k]; });
   set('f-cpm-l','Equivale a '+L(O.cpmLocal)+' por mil impresiones.');
-  // métricas actuales vs ideal
   const c=O.cur;
   const defs=[['Engagement Rate','Alcance ÷ impresiones',c.eng,rt.reach/100,c.has[0]&&c.has[1]],
     ['Click Through Rate','Clicks ÷ alcance',c.ctr,rt.click/100,c.has[1]&&c.has[2]],
@@ -1103,24 +1103,20 @@ function paintFunnel(){
     ['Closing Rate','Ventas ÷ reuniones',c.close,rt.close/100,c.has[4]&&c.has[5]],
     ['Churn Rate','Abandonos ÷ ventas',c.churn,null,c.has[5]]];
   setHTML('rates', defs.map(([n,f,v,ideal,ok])=>{
-    const col = !ok||ideal===null ? 'var(--ink)' : (v>=ideal?'var(--ok)':'var(--warn)');
+    const col=!ok||ideal===null?'var(--ink)':(v>=ideal?'var(--ok)':'var(--warn)');
     return `<div class="rate"><div class="l">${n}</div><div class="v" style="color:${col}">${ok?P(v):'—'}</div><div class="c">${f}${ideal!==null?' · ideal '+P(ideal):''}</div></div>`;
   }).join(''));
-  const bl=(n,u,l)=>`<tr><td>${n}</td><td>${u}</td><td>${l}</td></tr>`;
+  setNum('e-inv',O.budgetLocal); set('e-inv-u',U(O.budgetUsd));
+  const bl=(a,l,u)=>`<div><span>${a}</span><b>${l}${u?`<small>${u}</small>`:''}</b></div>`;
   setHTML('budget',
-    bl('CPM',U(S.fn.cpm),L(O.cpmLocal))+
-    bl('Inversión ideal (mes 1)',U(O.budgetUsd),L(O.budgetLocal))+
-    bl('AOV (precio del paquete)',U(O.aovUsd),L(O.aov))+
-    bl('Ingresos esperados',U(O.incomeUsd),L(O.incomeLocal))+
-    `<tr class="strong"><td>ROAS</td><td colspan="2">${num(O.roas)}x</td></tr>`);
+    bl('CPM',L(O.cpmLocal),U(S.fn.cpm))+bl('Precio del paquete (AOV)',L(O.aov),U(O.aovUsd))+
+    bl('Ingresos esperados',L(O.incomeLocal),U(O.incomeUsd))+bl('ROAS',num(O.roas)+'x',''));
   const f=O.f, steps=[['Impresiones',f.imp],['Alcance',f.reach],['Clicks',f.clicks],['Mensajes',f.msgs],['Reuniones',f.meets],['Ventas',f.sales]];
-  setHTML('funnel', steps.map(([n,v],i)=>`<div class="fstep" style="width:${100-i*13}%"><span>${n}</span><b>${f===undefined?'':(v>=100?N0(v):num(v,v<10?1:0))}</b></div>`).join(''));
-  setHTML('results',
-    `<div><div class="kpi" style="padding:0"><div class="l" >Costo por mensaje</div><div class="v">${L(O.cpl)}</div></div></div>
-     <div><div class="kpi" style="padding:0"><div class="l" >Costo por venta</div><div class="v">${L(O.cac)}</div></div></div>
-     <div><div class="kpi" style="padding:0"><div class="l" >ROAS</div><div class="v">${num(O.roas)}x</div></div></div>`);
+  setHTML('funnel', steps.map(([n,v],i)=>`<div class="fstep" style="width:${100-i*13}%;--k:${i}"><span>${n}</span><b>${v>=100?N0(v):num(v,v<10?1:0)}</b></div>`).join(''));
+  const cell=(l,v)=>`<div><div class="mini-l">${l}</div><div class="mini-v">${v}</div></div>`;
+  setHTML('results', cell('Costo por mensaje',L(O.cpl))+cell('Costo por venta',L(O.cac))+cell('ROAS',num(O.roas)+'x'));
   const rv=O.rev;
-  set('rev-sub',`Para vender ${O.sessions1} ${O.sessions1===1?'paquete':'paquetes'} al mes con tus tasas ideales (y ${N1(rt.close)}% de cierre):`);
+  set('rev-sub','Para vender '+O.sessions1+' '+(O.sessions1===1?'paquete':'paquetes')+' al mes con tus tasas ideales ('+N1(rt.close)+'% de cierre):');
   const rc=(l,v,s)=>`<div class="rate"><div class="l">${l}</div><div class="v">${v}</div><div class="c">${s||''}</div></div>`;
   setHTML('reverse',
     rc('Reuniones necesarias',N0(Math.ceil(rv.meets)))+rc('Mensajes necesarios',N0(Math.ceil(rv.msgs)))+rc('Impresiones necesarias',N0(rv.imp))+
@@ -1132,41 +1128,43 @@ function paintFunnel(){
 }
 
 function paintSummary(){
-  const rate=O.rate, names=['Básico','Estándar','Premium'];
-  set('r-total',L(O.total)); set('r-total-u',U(O.total/rate));
-  set('r-hmin',L(O.hMin)); set('r-hmin-u',U(O.hMin/rate)+' por hora');
-  set('r-pkg',L(O.price)); set('r-pkg-u',S.eq.pkg+' · '+U(O.price/rate));
-  set('r-cli',O.sessions1?N0(O.sessions1)+' al mes':'—'); set('r-cli-u','Equilibrio: '+(O.price>0?num(O.eqv[O.sel]):'—'));
+  const rate=O.rate;
+  setNum('r-total',O.total); setNum('r-hmin',O.hMin); setNum('r-pkg',O.price);
+  set('r-pkg-name',S.eq.pkg); set('r-cli',O.sessions1?N0(O.sessions1):'—');
   setHTML('r-hours',`<tr><td>Local</td><td>${L(O.hMin)}</td><td>${L(O.hStd)}</td><td>${L(O.hIdeal)}</td></tr><tr class="sub"><td>USD</td><td>${U(O.hMin/rate)}</td><td>${U(O.hStd/rate)}</td><td>${U(O.hIdeal/rate)}</td></tr>`);
   setHTML('r-pkgs',`<tr><td>Local</td>${O.prices.map(p=>`<td>${L(p)}</td>`).join('')}</tr><tr class="sub"><td>USD</td>${O.prices.map(p=>`<td>${U(p/rate)}</td>`).join('')}</tr><tr class="sub"><td>Clientes</td>${O.eqClients.map(c=>`<td>${c||'—'}</td>`).join('')}</tr>`);
   setHTML('r-stack',FUND_INFO.map((f,i)=>`<i style="width:${O.fundPct[i]*100}%;background:${f[2]}" title="${f[0]} ${P(O.fundPct[i])}"></i>`).join(''));
   setHTML('r-stack-leg',FUND_INFO.map((f,i)=>`<span><i style="background:${f[2]}"></i>${f[0]} <b>${P(O.fundPct[i])}</b></span>`).join(''));
-  set('r-net',L(O.annual.net)); set('r-roas',num(O.roas)+'x');
-  // alertas
+  setNum('r-net',O.annual.net); set('r-roas',num(O.roas)+'x');
   const al=[];
   if(O.idealSum && Math.abs(O.idealSum-100)>0.01) al.push('Tus porcentajes ideales de Fondos no suman 100%.');
-  if(O.fundPct[0]>(S.funds[0].ideal/100)+0.1) al.push(`Tus gastos personales son el ${P(O.fundPct[0])} de lo que necesitas. El ideal es ${N1(S.funds[0].ideal)}%.`);
+  if(O.fundPct[0]>(S.funds[0].ideal/100)+0.1) al.push('Tus gastos personales son el '+P(O.fundPct[0])+' de lo que necesitas. El ideal es '+N1(S.funds[0].ideal)+'%.');
   if(O.monthProfit<0) al.push('Con el paquete elegido pierdes plata cada mes. Sube de paquete o atiende más clientes.');
   if(O.total===0) al.push('Todavía no hay gastos cargados. Empieza por el paso 2.');
   setHTML('r-alerts', al.length ? '<b>Para revisar:</b><br>• '+al.join('<br>• ') : '<b>Todo en orden.</b> No hay alertas con tus números actuales.');
 }
 
-/* ---------- eventos ---------- */
-function bindNum(id,get,setv,afterRender){
-  $(id).addEventListener('input',e=>{ const v=e.target.value; setv(v===''?0:parseFloat(v)); update(); });
+/* ---------- archivo ---------- */
+function exportFile(){
+  const blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'}), a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download='mis-precios-marketographers.json'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); toast('Plan guardado en tu equipo');
 }
+
+/* ---------- eventos ---------- */
+function bindNum(id,setv){ $(id).addEventListener('input',e=>{ const v=e.target.value; setv(v===''?0:parseFloat(v)); update(); }); }
+function menu(open){ $('menu').classList.toggle('open',open); $('btnMenu').setAttribute('aria-expanded',open); }
 function init(){
-  buildTabs();
+  buildRail();
   Object.keys(LISTS).forEach(k=>{ renderList(k); bindList(k); });
   document.querySelectorAll('[data-add]').forEach(b=>b.addEventListener('click',()=>addRow(b.dataset.add)));
 
   // moneda
   $('cur-code').innerHTML = Object.keys(CURRENCIES).map(c=>`<option value="${c}">${c} (${CURRENCIES[c]})</option>`).join('')+'<option value="OTRA">Otra moneda…</option>';
-  $('cur-code').value = S.cur.code; $('cur-rate').value = S.cur.rate; $('cur-custom').value=S.cur.custom;
-  $('cur-custom-wrap').style.display = S.cur.code==='OTRA'?'':'none';
+  $('cur-code').value=S.cur.code; $('cur-rate').value=S.cur.rate; $('cur-custom').value=S.cur.custom;
+  $('cur-custom-wrap').style.display=S.cur.code==='OTRA'?'':'none';
   $('cur-code').addEventListener('change',e=>{ S.cur.code=e.target.value; $('cur-custom-wrap').style.display=S.cur.code==='OTRA'?'':'none'; if(S.cur.code==='USD'){S.cur.rate=1;$('cur-rate').value=1;} update(); });
   $('cur-custom').addEventListener('input',e=>{ S.cur.custom=e.target.value.slice(0,6); update(); });
-  $('cur-rate').addEventListener('input',e=>{ const v=parseFloat(e.target.value); S.cur.rate = v>0?v:0; update(); });
+  $('cur-rate').addEventListener('input',e=>{ const v=parseFloat(e.target.value); S.cur.rate=v>0?v:0; update(); });
   $('btnLiveRate').addEventListener('click',async()=>{
     const code=S.cur.code; if(code==='OTRA'||code==='USD'){ set('liveMsg',' Elige una moneda de la lista.'); return; }
     set('liveMsg',' Buscando…');
@@ -1177,46 +1175,46 @@ function init(){
     }catch(e){ set('liveMsg',' No se pudo traer. Escríbela a mano.'); }
   });
 
-  // equipo
+  // equipo y precios: número + deslizador
   $('life').value=S.life; $('infl').value=S.infl;
-  bindNum('life',0,v=>S.life=v>0?v:1); bindNum('infl',0,v=>S.infl=v);
-
-  // precios
-  const pr=[['pr-clients','clients'],['pr-pre','pre'],['pr-prod','prod'],['pr-post','post'],['pr-ads','ads'],['pr-weeks','weeks'],['pr-m1','m1'],['pr-m2','m2']];
-  pr.forEach(([id,k])=>{ $(id).value=S.pr[k]; bindNum(id,0,v=>S.pr[k]=(k==='weeks'&&v<=0)?1:v); });
-  $('pkg-cards').addEventListener('click',e=>{ const b=e.target.closest('[data-pick]'); if(!b) return; S.eq.pkg=b.dataset.pick; update(); toast('Paquete '+S.eq.pkg+' elegido para equilibrio y embudo'); });
+  bindNum('life',v=>S.life=v>0?v:1); bindNum('infl',v=>S.infl=v);
+  [['pr-clients','clients'],['pr-pre','pre'],['pr-prod','prod'],['pr-post','post'],['pr-ads','ads'],['pr-weeks','weeks'],['pr-m1','m1'],['pr-m2','m2']].forEach(([id,k])=>{ $(id).value=S.pr[k]; bindNum(id,v=>S.pr[k]=(k==='weeks'&&v<=0)?1:v); });
+  RANGES.forEach(([id])=>$(id+'-r').addEventListener('input',e=>{ $(id).value=e.target.value; $(id).dispatchEvent(new Event('input')); }));
+  $('pkg-cards').addEventListener('click',e=>{ const b=e.target.closest('[data-pick]'); if(!b) return; S.eq.pkg=b.dataset.pick; update(); toast('Paquete '+S.eq.pkg+' elegido'); });
 
   // equilibrio
-  $('eq-pkg').addEventListener('change',e=>{ S.eq.pkg=e.target.value; update(); });
+  $('seg-pkg').addEventListener('click',e=>{ const b=e.target.closest('button'); if(b){ S.eq.pkg=b.dataset.pkg; update(); replayChart(); } });
   $('seg-mode').addEventListener('click',e=>{ const b=e.target.closest('button'); if(b){ S.eq.mode=b.dataset.mode; update(); } });
 
   // embudo
-  ['imp','reach','clicks','msgs','meets','sales','aband'].forEach(k=>bindNum('m-'+k,0,v=>S.fn.prev[k]=v));
-  bindNum('f-cpm',0,v=>S.fn.cpm=v>0?v:0.01);
-  [['reach','x-reach'],['click','x-click'],['msg','x-msg'],['meet','x-meet'],['close','x-close']].forEach(([k,id])=>bindNum(id,0,v=>S.fn.rates[k]=(k==='close'&&v<=0)?1:v));
+  ['imp','reach','clicks','msgs','meets','sales','aband'].forEach(k=>bindNum('m-'+k,v=>S.fn.prev[k]=v));
+  bindNum('f-cpm',v=>S.fn.cpm=v>0?v:0.01);
+  [['reach','x-reach'],['click','x-click'],['msg','x-msg'],['meet','x-meet'],['close','x-close']].forEach(([k,id])=>bindNum(id,v=>S.fn.rates[k]=(k==='close'&&v<=0)?1:v));
 
-  // barra superior
-  $('btnPrint').addEventListener('click',()=>window.print());
-  $('btnExport').addEventListener('click',()=>{
-    const blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'}); const a=document.createElement('a');
-    a.href=URL.createObjectURL(blob); a.download='mis-precios-marketographers.json'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); toast('Archivo guardado');
-  });
-  $('btnImport').addEventListener('click',()=>$('fileImport').click());
+  // menú y navegación
+  $('btnMenu').addEventListener('click',e=>{ e.stopPropagation(); menu(!$('menu').classList.contains('open')); });
+  document.addEventListener('click',e=>{ if(!e.target.closest('.menuwrap')) menu(false); });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape') menu(false); });
+  $('btnGuide').addEventListener('click',()=>{ menu(false); go('guia'); });
+  $('btnPrint').addEventListener('click',()=>{ menu(false); window.print(); });
+  $('btnExport').addEventListener('click',()=>{ menu(false); exportFile(); });
+  $('btnImport').addEventListener('click',()=>{ menu(false); $('fileImport').click(); });
   $('fileImport').addEventListener('change',e=>{
     const f=e.target.files[0]; if(!f) return; const rd=new FileReader();
     rd.onload=()=>{ try{ const j=JSON.parse(rd.result); if(!j||typeof j!=='object'||!j.cur||!Array.isArray(j.basics)) throw 0; S=merge(defaults(),j); S.demo=false; rebuild(); toast('Archivo cargado'); }catch(err){ toast('Ese archivo no es válido'); } };
     rd.readAsText(f); e.target.value='';
   });
-  $('btnReset').addEventListener('click',()=>{ if(confirm('¿Reiniciar todo y volver a los datos de ejemplo?')){ S=defaults(); rebuild(); toast('Todo reiniciado'); } });
+  $('btnReset').addEventListener('click',()=>{ menu(false); if(confirm('¿Reiniciar todo y volver a los datos de ejemplo?')){ S=defaults(); rebuild(); go('moneda'); toast('Todo reiniciado'); } });
   $('btnZero').addEventListener('click',()=>{
     ['basics','fun','costs','equip','office'].forEach(k=>S[k].forEach(r=>r.amt=0));
     S.neweq.forEach(r=>r.usd=0); S.funds.forEach(f=>{ if('amt' in f) f.amt=0; }); S.demo=false; rebuild(); toast('Montos en 0. Ahora pon los tuyos.');
   });
   $('btnDismiss').addEventListener('click',()=>{ S.demo=false; update(); });
+  $('btnNext').addEventListener('click',next); $('btnBack').addEventListener('click',back);
+  window.addEventListener('hashchange',()=>go(location.hash.slice(1),{scroll:false}));
 
-  window.addEventListener('hashchange',()=>go(location.hash.slice(1)));
-  go(location.hash.slice(1)||'resumen');
   update();
+  go(location.hash.slice(1) || (S.demo?'moneda':'resumen'),{scroll:false});
 }
 function rebuild(){
   Object.keys(LISTS).forEach(renderList);
@@ -1228,6 +1226,6 @@ function rebuild(){
 init();
 })();
 </script>
-<script src="/assets/fx.js"></script><script>mkFx({"reveal":[".tool-hero .eyebrow",".tool-hero h1",".tool-hero .lead",".tool-cta .community-card"],"tilt":[]})</script>
+<script src="/assets/fx.js"></script><script>mkFx({"reveal":[".tool-hero h1",".tool-hero .lead",".tool-cta .community-card"],"tilt":[]})</script>
 </body>
 </html>

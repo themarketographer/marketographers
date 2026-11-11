@@ -26,6 +26,7 @@ Algunas tools son un solo `index.html` autocontenido (sin build, sin carpeta `-a
 
 - **wireframe** — MarkeTool: constructor de wireframes de landing pages para alumnos, con export de wireframe + prompt maestro para generar el HTML final. Ver `wireframe-app/README.md`.
 - **link-wpp** — Generador de links de WhatsApp (wa.me) personalizados, con mensaje precargado, nombre del cliente incrustable y preview en mockup de celular. Archivo único, sin build.
+- **pricing** — Calculadora de precios completa (versión web del Excel "Motion Pricing v3"): gastos, costos, equipo, fondos 50/10/20/10/10, precio por hora y paquetes, punto de equilibrio, proyección a 12 meses y embudo de Meta Ads. Archivo único, sin build. El motor de cálculo está aislado en `<script id="calc">` (sin DOM). Guarda todo en `localStorage`.
 
 ## Página índice
 

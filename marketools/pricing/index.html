@@ -304,6 +304,27 @@
   .row:hover .item-in{border-color:var(--glass-b);}
   .row:focus-within{background:color-mix(in srgb,var(--c,var(--gold)) 7%,transparent);border-radius:14px;}
   .row{transition:opacity .16s,transform .17s var(--out),background .25s;}
+
+  /* ---------- Sugerencias, comparativa, donut, captura rápida ---------- */
+  .cmp-row{display:grid;grid-template-columns:52px 1fr;align-items:center;gap:12px;font-size:14px;color:var(--muted);} .cmp-row .stack{margin:6px 0;height:24px;}
+  .stack-leg.col{flex-direction:column;gap:10px;font-size:14px;} .stack-leg small{color:var(--muted);font-weight:400;}
+  .needbox{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;}
+  .needbox .mini-v{font-size:clamp(30px,4vw,42px);} .needbox .hint{margin-top:4px;}
+  .f-sug{font-size:12.5px;text-align:right;font-variant-numeric:tabular-nums;font-weight:500;}
+  .f-sug.ok{color:var(--ok);} .f-sug.bad{color:var(--red);}
+  .donut-wrap{display:flex;align-items:center;gap:28px;flex-wrap:wrap;margin-top:10px;}
+  .donut{position:relative;width:220px;height:220px;flex-shrink:0;} .donut svg{width:100%;height:100%;}
+  .panel.on .donut circle:not(:first-child){animation:dash 1s var(--out) both;} @keyframes dash{from{stroke-dasharray:0 302;}}
+  .d-c{position:absolute;inset:0;display:grid;place-content:center;text-align:center;} .d-c b{font-family:var(--font-display);font-weight:400;font-size:22px;letter-spacing:-.01em;} .d-c span{font-size:12.5px;color:var(--muted);}
+  .pkg.static{cursor:default;} .pkg.static:hover{transform:none;border-color:var(--glass-b);} .pkg.static .meta{margin-top:12px;}
+  .quick{display:flex;align-items:center;gap:12px;padding:8px 8px 8px 10px;border-radius:999px;background:var(--glass);border:1px solid var(--glass-b);margin-bottom:20px;transition:border-color .2s,box-shadow .2s;}
+  .quick:focus-within{border-color:var(--gold);box-shadow:0 0 0 3px rgba(253,220,91,.22);}
+  .quick input{flex:1;min-width:0;background:none;border:0;color:var(--ink);font:500 16px 'Poppins',sans-serif;outline:none;padding:8px 4px;} .quick input::placeholder{color:var(--muted);opacity:.8;}
+  .qa-go{width:40px;height:40px;border-radius:50%;border:0;background:var(--gold);color:var(--ink-on-gold);cursor:pointer;display:grid;place-items:center;flex-shrink:0;transition:transform .16s var(--out);} .qa-go:hover{transform:rotate(90deg);} .qa-go:active{transform:scale(.9);}
+  .quick.shake{animation:shake .38s;} @keyframes shake{20%{transform:translateX(-6px);}40%{transform:translateX(6px);}60%{transform:translateX(-4px);}80%{transform:translateX(3px);}}
+  .meter{display:inline-block;vertical-align:middle;width:96px;height:8px;border-radius:8px;background:var(--glass-b);overflow:hidden;margin-right:8px;} .meter i{display:block;height:100%;border-radius:8px;transition:width .5s var(--out);}
+  .fstep .fp{font-size:12px;opacity:.7;margin-left:10px;font-weight:500;} .fstep b{margin-left:auto;}
+  .row.flash{animation:flash 1.2s var(--out);} @keyframes flash{0%,40%{background:color-mix(in srgb,var(--c,var(--gold)) 22%,transparent);}}
   @media (max-width:900px){
     .two,.cols,.cols-3,.pkgs,.rate-grid{grid-template-columns:1fr;} .sticky{position:static;}
     .fund{grid-template-columns:1fr;gap:14px;} .f-sub,.f-ideal{text-align:left;justify-content:flex-start;}
@@ -321,7 +342,7 @@
   }
   @media (prefers-reduced-motion:reduce){
     .panel.on>*,.row.fresh,.panel.on .fstep,.chart.g .bars i{animation:none;}
-    .progress i,.fund-bar .fill,.stack i,.dock,.menu,.g-track i{transition-duration:.01ms;} .bump,.pkg.pop,.panel.on .ib.lg,.rail-i.on .ic{animation:none;}
+    .progress i,.fund-bar .fill,.stack i,.dock,.menu,.g-track i{transition-duration:.01ms;} .bump,.pkg.pop,.panel.on .donut circle,.quick.shake,.row.flash,.panel.on .ib.lg,.rail-i.on .ic{animation:none;}
   }
   @media print{
     :root{--ink:#111;--muted:#555;--line:#ccc;--cream:#fff;--cream-alt:#fff;--surface-2:#fff;--glass:#f4f4f4;--glass-b:#ccc;--ok:#1f8f4f;--warn:#8a6a00;--gold-text:#7a5f00;}
@@ -418,6 +439,7 @@ fbq('init','467504537642622');
     <div class="panel-head">
       <h2>¿Cuánto gastas al mes para vivir?</h2>
     </div>
+    <form class="quick" id="qa-gastos" autocomplete="off"><span class="ib" style="--c:#fddc5b"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></span><input id="qa-gastos-in" placeholder="Escribe «Netflix 600» o «Alquiler 4000» y Enter" aria-label="Agregar rápido"><button class="qa-go" type="submit" aria-label="Agregar"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></button></form>
     <div class="card glass">
       <h3 class="sec-t">Lo esencial</h3>
       <div id="list-basics"></div>
@@ -435,6 +457,7 @@ fbq('init','467504537642622');
     <div class="panel-head">
       <h2>¿Cuánto cuesta tener tu negocio?</h2>
     </div>
+    <form class="quick" id="qa-costos" autocomplete="off"><span class="ib" style="--c:#fddc5b"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></span><input id="qa-costos-in" placeholder="Escribe «Adobe 55» o «Contador 300» y Enter" aria-label="Agregar rápido"><button class="qa-go" type="submit" aria-label="Agregar"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></button></form>
     <div class="card glass">
       <div id="list-costs"></div>
       <div class="sum"><span>Total del negocio</span><div><b id="t-costs"></b><small id="t-costs-u"></small></div></div>
@@ -485,18 +508,20 @@ fbq('init','467504537642622');
       <h2>¿Cómo repartes tu dinero?</h2>
     </div>
     <div class="card glass">
-      <div id="funds"></div>
-      <div class="sum"><span>Total al mes <small>(ideal suma <span id="f-ideal-sum"></span>)</small></span><div><b id="f-total"></b><small id="f-total-u"></small></div></div>
-      <div class="note warn" id="f-warn" style="margin-top:14px;display:none;">Tus porcentajes ideales no suman 100%. Ajústalos para que cuadren.</div>
+      <div class="cmp-row"><span>Hoy</span><div class="stack" id="cmp-now"></div></div>
+      <div class="cmp-row"><span>Ideal</span><div class="stack" id="cmp-ideal"></div></div>
+      <div class="stack-leg" id="cmp-leg"></div>
     </div>
-    <details class="more glass card" style="padding:12px 24px;">
-      <summary>Si cumplieras la regla al pie de la letra</summary>
-      <div class="more-body">
-        <p class="sub">Si tus gastos deben ser el <b id="f-gp"></b> de lo que ganas, necesitarías ingresar al mes:</p>
-        <div class="mini-v" style="font-size:34px;color:var(--gold-text);" id="f-need"></div>
-        <div class="scroll-x" style="margin-top:14px;"><table class="tbl" style="min-width:0;"><thead><tr><th>Fondo</th><th>Ideal</th><th>Tienes</th><th>Diferencia</th></tr></thead><tbody id="f-gap"></tbody></table></div>
-      </div>
-    </details>
+    <div class="card glass needbox">
+      <div><div class="mini-l">Para cumplir la regla necesitas ingresar al mes</div><div class="mini-v" id="f-need" style="color:var(--gold-text)"></div><div class="hint" id="f-need-sub"></div></div>
+      <button class="btn btn-gold" id="btnApply">Aplicar sugerencias</button>
+    </div>
+    <div class="card glass">
+      <div id="funds"></div>
+      <div class="sum"><span>Total al mes</span><div><b id="f-total"></b><small id="f-total-u"></small></div></div>
+      <div class="note warn" id="f-warn" style="margin-top:14px;display:none;">Tus porcentajes ideales no suman 100%. Ajústalos para que cuadren.</div>
+      <span id="f-ideal-sum" hidden></span><span id="f-gp" hidden></span>
+    </div>
   </section>
 
   <!-- ===================== 6 PRECIOS ===================== -->
@@ -549,7 +574,7 @@ fbq('init','467504537642622');
       <h2>¿Cuántos clientes necesitas?</h2>
     </div>
     <div class="card glass">
-      <div class="scroll-x"><table class="tbl" style="min-width:0;"><thead><tr><th>Paquete</th><th>Precio</th><th>Equilibrio</th><th>Clientes al mes</th></tr></thead><tbody id="eq-table"></tbody></table></div>
+      <div class="scroll-x"><table class="tbl" style="min-width:0;"><thead><tr><th>Paquete</th><th>Precio</th><th>Equilibrio</th><th>Clientes al mes</th><th>Tu capacidad</th></tr></thead><tbody id="eq-table"></tbody></table></div>
     </div>
     <div class="card glass">
       <div class="bar-row">
@@ -630,17 +655,19 @@ fbq('init','467504537642622');
       <div class="big" id="r-total"></div>
       <p class="s">al mes. Cobra al menos <b id="r-hmin"></b> por hora, o <b id="r-pkg"></b> por el paquete <span id="r-pkg-name"></span>. Con <b id="r-cli"></b> clientes al mes cubres todo.</p>
     </div>
+    <div class="card glass">
+      <h3 class="sec-t">Tu hora</h3>
+      <div class="pkgs" id="r-hours" style="margin-bottom:26px;"></div>
+      <h3 class="sec-t">Tus paquetes</h3>
+      <div class="pkgs" id="r-pkgs"></div>
+    </div>
     <div class="cols">
       <div class="card glass">
-        <h3 class="sec-t">Tus horas</h3>
-        <table class="tbl"><thead><tr><th></th><th>Mínima</th><th>Estándar</th><th>Ideal</th></tr></thead><tbody id="r-hours"></tbody></table>
-        <h3 class="sec-t" style="margin-top:26px;">Tus paquetes</h3>
-        <table class="tbl"><thead><tr><th></th><th>Básico</th><th>Estándar</th><th>Premium</th></tr></thead><tbody id="r-pkgs"></tbody></table>
+        <h3 class="sec-t">A dónde se va tu plata</h3>
+        <div class="donut-wrap"><div class="donut" id="r-donut"></div><div class="stack-leg col" id="r-stack-leg"></div></div>
       </div>
       <div class="card glass">
-        <h3 class="sec-t">A dónde se va tu plata</h3>
-        <div class="stack" id="r-stack"></div><div class="stack-leg" id="r-stack-leg"></div>
-        <h3 class="sec-t" style="margin-top:26px;">En 12 meses con tu paquete</h3>
+        <h3 class="sec-t">En 12 meses con tu paquete</h3>
         <div class="cols" style="gap:14px;margin-top:8px;">
           <div><div class="mini-l">Ingreso neto</div><div class="mini-v" id="r-net"></div></div>
           <div><div class="mini-l">ROAS esperado</div><div class="mini-v" id="r-roas"></div></div>
@@ -648,6 +675,7 @@ fbq('init','467504537642622');
         <div class="note" id="r-alerts" style="margin-top:18px;"></div>
       </div>
     </div>
+
   </section>
 
   <!-- ===================== GUÍA ===================== -->
@@ -903,6 +931,34 @@ function setNum(id,val,fmt){
   if(id.startsWith('dk-')){ el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump'); }
 }
 
+
+/* ---------- captura rápida: «Netflix 600» ---------- */
+const KW = {
+  gastos:[[/alquiler|renta|expensa|hipoteca|departamento|casa/i,'basics','Vivienda'],[/luz|electric|agua|gas\b|internet|wifi|celular|tel[eé]fono|plan de datos/i,'basics','Servicios'],
+    [/super|mercado|comida|delivery|snack|bebida|almuerzo|cena/i,'basics','Alimentación'],[/gasolina|combustible|bus|taxi|uber|pasaje|auto|moto|mec[aá]nico|parqueo/i,'basics','Transporte'],
+    [/m[eé]dic|medicin|salud|terapia|psic|dentista|consulta|seguro m/i,'basics','Salud'],
+    [/netflix|disney|hbo|spotify|youtube|prime|apple tv|max\b|suscrip/i,'fun','Membresías'],[/gym|gimnasio|yoga|pilates|deporte|fitness|crossfit/i,'fun','Deporte'],
+    [/ropa|zapat|accesorio|compras|costura/i,'fun','Ropa / Accesorios'],[/cine|restaurant|caf[eé]|bar\b|salida|concierto|evento|fiesta/i,'fun','Entretenimiento']],
+  costos:[[/estudio|alquiler|renta|coworking/i,'costs','Alquiler / Renta'],[/seguro/i,'costs','Seguro'],[/impuesto|contador|legal|abogado|nit|factura|r[eé]gimen/i,'costs','Impuestos / Legal'],
+    [/curso|formaci|marketographers|capacitaci|libro|mentor/i,'costs','Formación'],[/luz|agua|internet|tel[eé]fono|electric/i,'costs','Servicios']]
+};
+function quickAdd(kind,text){
+  const form=$('qa-'+kind);
+  const m=text.trim().match(/^(.*?)[\s:=\-–]*(?:bs\.?|usd|\$)?\s*(\d[\d.,]*)\s*(?:bs\.?|usd|\$)?$/i);
+  let name=m&&m[1].replace(/[\s:=\-–]+$/,'').trim(), amt=m&&parseFloat(m[2].replace(/,/g,m[2].includes('.')?'':'.'));
+  if(!m||!name||!isFinite(amt)){ form.classList.remove('shake'); void form.offsetWidth; form.classList.add('shake'); toast('Escribe un nombre y un monto: Netflix 600'); return false; }
+  name=name.charAt(0).toUpperCase()+name.slice(1);
+  let list,cat; const hit=(KW[kind].find(r=>r[0].test(name))||[]);
+  if(kind==='gastos'){ list=hit[1]||'basics'; cat=hit[2]||'Otros'; } else { list=hit[1]||'costs'; cat=hit[2]||'Suscripciones'; }
+  // si ya existe en cualquiera de las listas del paso, solo actualiza el monto
+  const lists=kind==='gastos'?['basics','fun']:['costs']; let idx=-1;
+  for(const l of lists){ const i=S[l].findIndex(r=>r.item.trim().toLowerCase()===name.toLowerCase()); if(i>=0){ list=l; idx=i; cat=S[l][i].cat; S[l][i].amt=amt; break; } }
+  if(idx<0){ S[list].push(mk(cat,name,amt)); idx=S[list].length-1; }
+  closedG[list].delete(cat); renderList(list); update();
+  const row=$(LISTS[list]).querySelector('.row[data-i="'+idx+'"]'); if(row){ row.classList.add('flash'); row.scrollIntoView({block:'center',behavior:RM?'auto':'smooth'}); }
+  toast(name+' · '+L(amt)+' en '+cat); return true;
+}
+
 /* ---------- pasos ---------- */
 const STEPS=[['moneda','Moneda'],['gastos','Gastos'],['costos','Costos'],['equipo','Equipo'],['fondos','Fondos'],['precios','Precios'],['equilibrio','Equilibrio'],['embudo','Embudo'],['resumen','Resumen']];
 let cur='moneda', lastStep='moneda';
@@ -974,6 +1030,7 @@ function bindList(key){
     r[k] = (t.type==='number') ? (t.value===''?0:parseFloat(t.value)) : t.value;
     update();
   });
+  el.addEventListener('keydown',e=>{ if(e.key!=='Enter'||e.target.dataset.k!=='amt') return; e.preventDefault(); const all=[...document.querySelectorAll('#p-'+cur+' [data-k="amt"]')]; const n=all[all.indexOf(e.target)+1]; if(n){ n.focus(); n.select(); } });
   el.addEventListener('click',e=>{
     const b=e.target.closest('.del');
     if(b){ const row=b.closest('.row'), i=+row.dataset.i; row.classList.add('out');
@@ -1030,6 +1087,10 @@ function paint(){
   RANGES.forEach(([id,g])=>{ const r=$(id+'-r'); if(r&&document.activeElement!==r) r.value=g(); });
 }
 
+function barStack(id,widths){
+  const el=$(id); if(el.children.length!==widths.length) el.innerHTML=FUND_INFO.map(f=>'<i style="background:'+f[2]+'"></i>').join('');
+  [...el.children].forEach((c,i)=>{ c.style.width=Math.max(0,widths[i])+'%'; });
+}
 function paintFunds(){
   const rate=O.rate;
   if(!$('funds').firstChild){
@@ -1040,7 +1101,7 @@ function paintFunds(){
           <div class="fund-bar"><div class="fill" data-fb="${i}"></div><div class="mark" data-fm="${i}"></div></div></div>
         <div class="f-nums">
           <label class="amt"><span class="cs" data-sym></span>${auto?`<input data-fa="${i}" readonly aria-label="Monto de ${f[0]}">`:`<input data-fa="${i}" type="number" min="0" step="any" inputmode="decimal" placeholder="0" aria-label="Monto de ${f[0]}">`}</label>
-          <div class="f-sub"><span data-fp="${i}"></span> de tu plata · <span data-fu="${i}"></span></div>
+          <div class="f-sub"><span data-fp="${i}"></span> de tu plata · <span data-fu="${i}"></span></div><div class="f-sug" data-fg="${i}"></div>
           <label class="f-ideal">ideal <input data-fi="${i}" type="number" min="0" step="1" aria-label="Porcentaje ideal de ${f[0]}"> %</label>
         </div></div>`;
     }).join('');
@@ -1062,10 +1123,15 @@ function paintFunds(){
     const good=over?diff<=0.02:diff>=-0.02, mid=over?diff<=0.10:diff>=-0.10;
     const sm=q('fs'); sm.className='sema '+(good?'ok':mid?'warn':'bad'); sm.textContent = good?(over?'Dentro':'Cumples'):(mid?'Cerca':(over?'Te pasas':'Te falta'));
     q('fb').style.width=Math.min(real*100,100)+'%'; q('fm').style.left=Math.min(ideal*100,100)+'%';
+    const idealAmt=O.needIncome*ideal, d=amt-idealAmt, sg=q('fg');
+    if(over){ sg.className='f-sug '+(d>1?'bad':'ok'); sg.textContent = d>1 ? L(d)+' por encima del ideal' : 'Dentro del ideal ('+L(idealAmt)+')'; }
+    else { sg.className='f-sug '+(d<-1?'bad':'ok'); sg.textContent = d<-1 ? 'Sugerido '+L(idealAmt)+' · te faltan '+L(-d) : 'Cumples el ideal'; }
   });
   set('f-ideal-sum',N1(O.idealSum)+'%'); set('f-total',L(O.total)); set('f-total-u',U(O.total/rate));
   $('f-warn').style.display = Math.abs(O.idealSum-100)>0.01 ? '' : 'none';
-  set('f-gp',N1(S.funds[0].ideal)+'%'); set('f-need',L(O.needIncome)+'  ('+U(O.needIncome/rate)+')');
+  barStack('cmp-now',O.fundPct.map(v=>v*100)); barStack('cmp-ideal',S.funds.map(f=>+f.ideal||0));
+  setHTML('cmp-leg',FUND_INFO.map((f,i)=>'<span><i style="background:'+f[2]+'"></i>'+f[0]+' <b>'+P(O.fundPct[i])+'</b> <small>ideal '+N1(S.funds[i].ideal)+'%</small></span>').join(''));
+  setNum('f-need',O.needIncome); set('f-need-sub', O.needIncome>O.total+1 ? 'Hoy: '+L(O.total)+' · te faltan '+L(O.needIncome-O.total)+' · '+U(O.needIncome/rate) : 'Hoy: '+L(O.total)+' · ya cumples la regla');
   setHTML('f-gap', FUND_INFO.map((f,i)=>{
     const ideal=O.needIncome*(S.funds[i].ideal||0)/100, have=O.fundAmts[i], d=have-ideal;
     return `<tr><td>${f[0]}</td><td>${L(ideal)}</td><td>${L(have)}</td><td style="color:${d>=0?'var(--ok)':'var(--red)'};font-weight:600">${d>=0?'+':'−'}${L(Math.abs(d))}</td></tr>`;
@@ -1084,7 +1150,9 @@ function paintPrices(){
 
 function paintEq(){
   const names=['Básico','Estándar','Premium'];
-  setHTML('eq-table', names.map((n,i)=>`<tr${i===O.sel?' class="strong"':''}><td>${n}</td><td>${L(O.prices[i])}</td><td>${O.prices[i]>0?num(O.eqv[i]):'—'}</td><td>${O.eqClients[i]||'—'}</td></tr>`).join(''));
+  const cap=S.pr.clients*S.pr.weeks;
+  setHTML('eq-table', names.map((n,i)=>{ const use=cap>0?O.eqClients[i]/cap:0, col=use<=.8?'var(--ok)':use<=1?'var(--warn)':'var(--red)';
+    return `<tr${i===O.sel?' class="strong"':''}><td>${n}</td><td>${L(O.prices[i])}</td><td>${O.prices[i]>0?num(O.eqv[i]):'—'}</td><td>${O.eqClients[i]||'—'}</td><td><span class="meter"><i style="width:${Math.min(use*100,100)}%;background:${col}"></i></span><small style="color:${col}">${cap>0&&O.eqClients[i]?P(use):'—'}</small></td></tr>`; }).join(''));
   document.querySelectorAll('#seg-pkg button').forEach(b=>b.classList.toggle('on',b.dataset.pkg===S.eq.pkg));
   document.querySelectorAll('#seg-mode button').forEach(b=>b.classList.toggle('on',b.dataset.mode===S.eq.mode));
   const acc=S.eq.mode==='acc';
@@ -1131,7 +1199,7 @@ function paintFunnel(){
     bl('CPM',L(O.cpmLocal),U(S.fn.cpm))+bl('Precio del paquete (AOV)',L(O.aov),U(O.aovUsd))+
     bl('Ingresos esperados',L(O.incomeLocal),U(O.incomeUsd))+bl('ROAS',num(O.roas)+'x',''));
   const f=O.f, steps=[['Impresiones',f.imp],['Alcance',f.reach],['Clicks',f.clicks],['Mensajes',f.msgs],['Reuniones',f.meets],['Ventas',f.sales]];
-  setHTML('funnel', steps.map(([n,v],i)=>`<div class="fstep" style="width:${100-i*13}%;--k:${i}"><span>${n}</span><b>${v>=100?N0(v):num(v,v<10?1:0)}</b></div>`).join(''));
+  setHTML('funnel', steps.map(([n,v],i)=>`<div class="fstep" style="width:${100-i*13}%;--k:${i}"><span>${n}</span><b>${v>=100?N0(v):num(v,v<10?1:0)}</b>${i>0&&steps[i-1][1]>0?`<span class="fp">${P(v/steps[i-1][1])}</span>`:''}</div>`).join(''));
   const cell=(l,v)=>`<div><div class="mini-l">${l}</div><div class="mini-v">${v}</div></div>`;
   setHTML('results', cell('Costo por mensaje',L(O.cpl))+cell('Costo por venta',L(O.cac))+cell('ROAS',num(O.roas)+'x'));
   const rv=O.rev;
@@ -1150,15 +1218,18 @@ function paintSummary(){
   const rate=O.rate;
   setNum('r-total',O.total); setNum('r-hmin',O.hMin); setNum('r-pkg',O.price);
   set('r-pkg-name',S.eq.pkg); set('r-cli',O.sessions1?N0(O.sessions1):'—');
-  setHTML('r-hours',`<tr><td>Local</td><td>${L(O.hMin)}</td><td>${L(O.hStd)}</td><td>${L(O.hIdeal)}</td></tr><tr class="sub"><td>USD</td><td>${U(O.hMin/rate)}</td><td>${U(O.hStd/rate)}</td><td>${U(O.hIdeal/rate)}</td></tr>`);
-  setHTML('r-pkgs',`<tr><td>Local</td>${O.prices.map(p=>`<td>${L(p)}</td>`).join('')}</tr><tr class="sub"><td>USD</td>${O.prices.map(p=>`<td>${U(p/rate)}</td>`).join('')}</tr><tr class="sub"><td>Clientes</td>${O.eqClients.map(c=>`<td>${c||'—'}</td>`).join('')}</tr>`);
-  setHTML('r-stack',FUND_INFO.map((f,i)=>`<i style="width:${O.fundPct[i]*100}%;background:${f[2]}" title="${f[0]} ${P(O.fundPct[i])}"></i>`).join(''));
-  setHTML('r-stack-leg',FUND_INFO.map((f,i)=>`<span><i style="background:${f[2]}"></i>${f[0]} <b>${P(O.fundPct[i])}</b></span>`).join(''));
+  const tile=(n,p,ic,c,extra)=>`<div class="pkg static" style="--c:${c}"><span class="ib">${ICON(ic)}</span><div class="n">${n}</div><div class="p">${L(p)}</div><div class="d">${U(p/rate)}</div>${extra?`<div class="meta">${extra}</div>`:''}</div>`;
+  setHTML('r-hours',tile('Mínima',O.hMin,'tag','#7cc4ff')+tile('Estándar',O.hStd,'tag','#6ee7a0')+tile('Ideal',O.hIdeal,'tag','#fddc5b'));
+  setHTML('r-pkgs',['Básico','Estándar','Premium'].map((n,i)=>tile(n,O.prices[i],['bag','camera','flash'][i],['#7cc4ff','#6ee7a0','#fddc5b'][i],'Necesitas <b>'+(O.eqClients[i]||'—')+'</b> clientes al mes')).join(''));
+  const C=2*Math.PI*48; let off=0;
+  setHTML('r-donut','<svg viewBox="0 0 120 120" role="img" aria-label="Reparto de tus fondos"><circle cx="60" cy="60" r="48" fill="none" stroke="var(--glass-b)" stroke-width="14"/>'+FUND_INFO.map((f,i)=>{ const len=O.fundPct[i]*C; const s='<circle cx="60" cy="60" r="48" fill="none" stroke="'+f[2]+'" stroke-width="14" stroke-dasharray="'+len.toFixed(2)+' '+(C-len).toFixed(2)+'" stroke-dashoffset="'+(-off).toFixed(2)+'" transform="rotate(-90 60 60)"><title>'+f[0]+' '+P(O.fundPct[i])+'</title></circle>'; off+=len; return s; }).join('')+'</svg><div class="d-c"><b>'+L(O.total)+'</b><span>al mes</span></div>');
+  setHTML('r-stack-leg',FUND_INFO.map((f,i)=>'<span><i style="background:'+f[2]+'"></i>'+f[0]+' <b>'+P(O.fundPct[i])+'</b></span>').join(''));
   setNum('r-net',O.annual.net); set('r-roas',num(O.roas)+'x');
   const al=[];
   if(O.idealSum && Math.abs(O.idealSum-100)>0.01) al.push('Tus porcentajes ideales de Fondos no suman 100%.');
   if(O.fundPct[0]>(S.funds[0].ideal/100)+0.1) al.push('Tus gastos personales son el '+P(O.fundPct[0])+' de lo que necesitas. El ideal es '+N1(S.funds[0].ideal)+'%.');
   if(O.monthProfit<0) al.push('Con el paquete elegido pierdes plata cada mes. Sube de paquete o atiende más clientes.');
+  const capm=S.pr.clients*S.pr.weeks; if(capm>0&&O.sessions1>capm+0.01) al.push('Con el paquete '+S.eq.pkg+' necesitas '+O.sessions1+' clientes al mes y solo puedes atender '+num(capm,1)+'. Sube de paquete o atiende más clientes.');
   if(O.total===0) al.push('Todavía no hay gastos cargados. Empieza por el paso 2.');
   setHTML('r-alerts', al.length ? '<b>Para revisar:</b><br>• '+al.join('<br>• ') : '<b>Todo en orden.</b> No hay alertas con tus números actuales.');
 }
@@ -1211,6 +1282,8 @@ function init(){
   bindNum('f-cpm',v=>S.fn.cpm=v>0?v:0.01);
   [['reach','x-reach'],['click','x-click'],['msg','x-msg'],['meet','x-meet'],['close','x-close']].forEach(([k,id])=>bindNum(id,v=>S.fn.rates[k]=(k==='close'&&v<=0)?1:v));
 
+  ['gastos','costos'].forEach(k=>$('qa-'+k).addEventListener('submit',e=>{ e.preventDefault(); const i=$('qa-'+k+'-in'); if(quickAdd(k,i.value)) i.value=''; i.focus(); }));
+  $('btnApply').addEventListener('click',()=>{ [2,3,4].forEach(i=>{ S.funds[i].amt=Math.round(O.needIncome*(S.funds[i].ideal||0)/100); }); update(); toast('Sugerencias aplicadas a Ahorros, Emergencia e Inversión'); });
   // menú y navegación
   $('btnMenu').addEventListener('click',e=>{ e.stopPropagation(); menu(!$('menu').classList.contains('open')); });
   document.addEventListener('click',e=>{ if(!e.target.closest('.menuwrap')) menu(false); });

@@ -132,9 +132,10 @@
   .sec-t{font-family:var(--font-display);font-size:20px;letter-spacing:-.01em;margin-bottom:4px;}
   .sub{font-size:14px;color:var(--muted);margin-bottom:18px;max-width:60ch;}
   .cols{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;}
+  .two>*,.cols>*{min-width:0;}
   .two{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:20px;align-items:start;}
   .cols-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
-  .sticky{position:sticky;top:96px;}
+  .sticky,.res.sticky{position:sticky;top:96px;}
 
   /* ---------- Campos ---------- */
   .field{margin-bottom:16px;}
@@ -185,6 +186,7 @@
   .big-u{font-size:14.5px;color:var(--muted);font-variant-numeric:tabular-nums;}
   .rrows{margin-top:22px;border-top:1px solid var(--line);}
   .rrows>div{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:13px 0;border-bottom:1px solid var(--line);font-size:15px;}
+  .rrows>div{flex-wrap:wrap;} .rrows b{text-align:right;} .rrows b small{white-space:nowrap;}
   .rrows span{color:var(--muted);} .rrows b{font-weight:600;font-variant-numeric:tabular-nums;} .rrows small{color:var(--muted);font-weight:400;margin-left:6px;font-size:12.5px;}
   .lead-result{padding:8px 0 28px;}
   .lead-result .k{font-size:17px;color:var(--muted);}
@@ -242,7 +244,7 @@
 
   /* ---------- Embudo ---------- */
   .funnel{display:flex;flex-direction:column;gap:8px;align-items:center;}
-  .fstep{height:48px;border-radius:14px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:linear-gradient(90deg,rgba(253,220,91,.95),rgba(253,220,91,.5));color:#181818;font-size:14px;font-variant-numeric:tabular-nums;min-width:160px;transform-origin:center;}
+  .fstep{width:calc(100% - var(--k,0)*var(--dec,13%));gap:8px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:linear-gradient(90deg,rgba(253,220,91,.95),rgba(253,220,91,.5));color:#181818;font-size:14px;font-variant-numeric:tabular-nums;min-width:0;transform-origin:center;}
   .panel.on .fstep{animation:rise .6s var(--out) both;animation-delay:calc(var(--k,0)*70ms + 200ms);} .fstep b{font-weight:700;}
   .rate-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
   .rate{padding:16px 18px;border-radius:18px;background:var(--glass);border:1px solid var(--glass-b);}
@@ -265,8 +267,9 @@
     transition:transform .45s var(--out),opacity .3s;}
   :root[data-theme="light"] .dock{background:rgba(255,255,255,.82);}
   .dock.off{transform:translateX(-50%) translateY(140%);opacity:0;pointer-events:none;}
-  .dock-live{flex:1;display:flex;gap:26px;min-width:0;}
+  .dock-live{flex:1 1 0;display:flex;gap:26px;min-width:0;overflow:hidden;} .dock .btn{flex-shrink:0;}
   .dl{display:flex;flex-direction:column;line-height:1.15;min-width:0;} .dl span{font-size:12px;color:var(--muted);white-space:nowrap;} .dl b{font-family:var(--font-display);font-weight:400;font-size:21px;letter-spacing:-.01em;white-space:nowrap;}
+  .dock.last .dock-live{display:none;} .dock.last{justify-content:flex-end;}
   .dock .btn{padding:13px 24px;font-size:14.5px;} .dock .btn-gold{min-width:132px;justify-content:center;}
   .btn-ghost{background:transparent;color:var(--muted);} .btn-ghost:hover{color:var(--ink);background:var(--glass);}
 
@@ -326,14 +329,15 @@
   .fstep .fp{font-size:12px;opacity:.7;margin-left:10px;font-weight:500;} .fstep b{margin-left:auto;}
   .row.flash{animation:flash 1.2s var(--out);} @keyframes flash{0%,40%{background:color-mix(in srgb,var(--c,var(--gold)) 22%,transparent);}}
   @media (max-width:900px){
-    .two,.cols,.cols-3,.pkgs,.rate-grid{grid-template-columns:1fr;} .sticky{position:static;}
+    .two,.cols,.cols-3,.pkgs,.rate-grid{grid-template-columns:minmax(0,1fr);} .sticky,.res.sticky{position:static;top:auto;}
     .fund{grid-template-columns:1fr;gap:14px;} .f-sub,.f-ideal{text-align:left;justify-content:flex-start;}
     .stepper{display:none;} .stepmeta{display:block;}
   }
   @media (max-width:640px){
     .card{padding:22px 18px;} .res{padding:24px 20px;}
     .row{grid-template-columns:minmax(0,1fr) 100px 26px;gap:6px;} .item-in{padding:9px 6px;font-size:14px;} .amt{padding:0 10px;} .row .usd{display:none;}
-    .row.ne{grid-template-columns:1fr 1fr 30px;} .row.ne .item-in{grid-column:1/-1;} .row.ne .usd{display:block;grid-column:1;text-align:left;}
+    .row.ne{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 26px;} .row.ne .item-in{grid-column:1/-1;} .row.ne .del{grid-column:3;grid-row:2;} .row.ne .usd{display:block;grid-column:1/-1;grid-row:3;text-align:left;}
+    .fstep{--dec:6%;padding:0 14px;font-size:13px;} .fstep .fp{margin-left:6px;} .fld .cols-3{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;}
     .g-body{padding-left:8px;} .g-track,.g-n{display:none;} .g-sub{min-width:0;}
     .dock{left:auto;right:12px;transform:none;width:calc(100vw - 80px);padding-left:16px;gap:8px;} .dock.off{transform:translateY(140%);}
     .dl:nth-child(2){display:none;} .dl b{font-size:18px;} .dock .btn{padding:11px 16px;font-size:13.5px;} .dock .btn-gold{min-width:0;}
@@ -983,9 +987,9 @@ function go(id,opts){
   document.querySelectorAll('.rail-i').forEach((b,k)=>{ b.classList.toggle('on',!guide&&k===i); b.classList.toggle('done',!guide&&k<i); });
   $('progress').style.transform='scaleX('+(guide?1:(i+1)/STEPS.length)+')';
   $('stepmeta').innerHTML = guide ? '<b>Cómo se calcula</b>' : 'Paso <b>'+(i+1)+'</b> de '+STEPS.length+' · '+STEPS[i][1];
-  $('dock').classList.toggle('off',guide);
+  $('dock').classList.toggle('off',guide); $('dock').classList.toggle('last',!guide&&i===STEPS.length-1);
   $('btnBack').style.visibility = (!guide&&i===0)?'hidden':'visible';
-  $('btnNext').textContent = guide?'Volver':(i===STEPS.length-1?'Guardar mi plan':'Continuar');
+  $('btnNext').textContent = guide?'Volver':(i===STEPS.length-1?'Guardar plan':'Continuar');
   history.replaceState(null,'','#'+id);
   if(id==='equilibrio') replayChart();
   if(id==='resumen') requestAnimationFrame(()=>[['r-total',O.total],['r-hmin',O.hMin],['r-pkg',O.price],['r-net',O.annual.net]].forEach(([k,v])=>{ shown[k]=0; setNum(k,v); }));
@@ -1196,10 +1200,10 @@ function paintFunnel(){
   setNum('e-inv',O.budgetLocal); set('e-inv-u',U(O.budgetUsd));
   const bl=(a,l,u)=>`<div><span>${a}</span><b>${l}${u?`<small>${u}</small>`:''}</b></div>`;
   setHTML('budget',
-    bl('CPM',L(O.cpmLocal),U(S.fn.cpm))+bl('Precio del paquete (AOV)',L(O.aov),U(O.aovUsd))+
+    bl('CPM',L(O.cpmLocal),U(S.fn.cpm))+bl('Precio del paquete',L(O.aov),U(O.aovUsd))+
     bl('Ingresos esperados',L(O.incomeLocal),U(O.incomeUsd))+bl('ROAS',num(O.roas)+'x',''));
   const f=O.f, steps=[['Impresiones',f.imp],['Alcance',f.reach],['Clicks',f.clicks],['Mensajes',f.msgs],['Reuniones',f.meets],['Ventas',f.sales]];
-  setHTML('funnel', steps.map(([n,v],i)=>`<div class="fstep" style="width:${100-i*13}%;--k:${i}"><span>${n}</span><b>${v>=100?N0(v):num(v,v<10?1:0)}</b>${i>0&&steps[i-1][1]>0?`<span class="fp">${P(v/steps[i-1][1])}</span>`:''}</div>`).join(''));
+  setHTML('funnel', steps.map(([n,v],i)=>`<div class="fstep" style="--k:${i}"><span>${n}</span><b>${v>=100?N0(v):num(v,v<10?1:0)}</b>${i>0&&steps[i-1][1]>0?`<span class="fp">${P(v/steps[i-1][1])}</span>`:''}</div>`).join(''));
   const cell=(l,v)=>`<div><div class="mini-l">${l}</div><div class="mini-v">${v}</div></div>`;
   setHTML('results', cell('Costo por mensaje',L(O.cpl))+cell('Costo por venta',L(O.cac))+cell('ROAS',num(O.roas)+'x'));
   const rv=O.rev;

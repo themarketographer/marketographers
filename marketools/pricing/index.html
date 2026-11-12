@@ -328,6 +328,11 @@
   .meter{display:inline-block;vertical-align:middle;width:96px;height:8px;border-radius:8px;background:var(--glass-b);overflow:hidden;margin-right:8px;} .meter i{display:block;height:100%;border-radius:8px;transition:width .5s var(--out);}
   .fstep .fp{font-size:12px;opacity:.7;margin-left:10px;font-weight:500;} .fstep b{margin-left:auto;}
   .row.flash{animation:flash 1.2s var(--out);} @keyframes flash{0%,40%{background:color-mix(in srgb,var(--c,var(--gold)) 22%,transparent);}}
+
+  .eqhead,.eqrow{display:grid;grid-template-columns:1fr 1.2fr .9fr 1fr 1.5fr;gap:10px;align-items:center;}
+  .eqhead{font-size:12.5px;color:var(--muted);padding:0 4px 8px;} .eqhead span:nth-child(n+2){text-align:right;}
+  .eqrow{padding:14px 4px;border-top:1px solid var(--line);font-variant-numeric:tabular-nums;} .eqrow>span{text-align:right;} .eqrow .lb{display:none;font-style:normal;}
+  .eqrow.sel{font-weight:700;background:color-mix(in srgb,var(--gold) 6%,transparent);border-radius:14px;} .eqrow .cp{display:flex;align-items:center;justify-content:flex-end;}
   @media (max-width:900px){
     .two,.cols,.cols-3,.pkgs,.rate-grid{grid-template-columns:minmax(0,1fr);} .sticky,.res.sticky{position:static;top:auto;}
     .fund{grid-template-columns:1fr;gap:14px;} .f-sub,.f-ideal{text-align:left;justify-content:flex-start;}
@@ -335,7 +340,14 @@
   }
   @media (max-width:640px){
     .card{padding:22px 18px;} .res{padding:24px 20px;}
-    .row{grid-template-columns:minmax(0,1fr) 100px 26px;gap:6px;} .item-in{padding:9px 6px;font-size:14px;} .amt{padding:0 10px;} .row .usd{display:none;}
+    .row{grid-template-columns:minmax(0,1fr) 88px 24px;gap:4px;} .item-in{padding:9px 4px;font-size:14px;} .amt{padding:0 12px;} .amt>.cs[data-sym]{display:none;} .amt input{font-size:14px;} .del{width:24px;height:24px;font-size:16px;}
+    .card{padding:20px 14px;} .g-body{padding-left:4px;} .grp>summary{padding:13px 0;gap:10px;}
+    .eqhead{display:none;} .eqrow{grid-template-columns:1fr 1fr;row-gap:6px;padding:16px 12px;margin-bottom:8px;border:1px solid var(--line);border-radius:18px;} .eqrow .pr{font-family:var(--font-display);font-size:20px;} .eqrow>span:nth-child(n+3){display:flex;justify-content:space-between;align-items:center;grid-column:1/-1;font-size:14px;} .eqrow .lb{display:inline;color:var(--muted);font-weight:400;} .eqrow .cp .meter{margin-left:auto;}
+    .rate-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;} .rate{padding:12px 14px;} .rate .v{font-size:21px;} .rate .l{font-size:12px;} .cols.camp{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 10px !important;} .camp .field{margin-bottom:8px;}
+    .pkg.static{display:grid;grid-template-columns:auto 1fr auto;align-items:center;column-gap:12px;row-gap:0;padding:14px 16px;} .pkg.static .ib{margin:0;grid-row:1/3;} .pkg.static .n{grid-column:2;font-size:14px;} .pkg.static .d{grid-column:2;margin:0;} .pkg.static .p{grid-column:3;grid-row:1/3;margin:0;font-size:22px;text-align:right;} .pkg.static .meta{grid-column:1/-1;margin-top:10px;padding-top:10px;}
+    .first-m{order:-1;} .fld .cols-3 label.hint{min-height:2.9em;display:flex;align-items:flex-end;}
+    .pkg{padding:16px 18px;} .pkg .ib{width:30px;height:30px;margin-bottom:6px;} .pkg .p{margin-top:8px;} .pkg .meta{margin-top:10px;padding-top:10px;} .pkg.sel::after{top:14px;right:14px;} .quick>.ib{display:none;} .quick{padding-left:18px;}
+    .dock .btn.btn-ghost{font-size:0;padding:0;width:42px;height:42px;justify-content:center;gap:0;} .dock .btn.btn-ghost::before{content:"‹";font-size:30px;line-height:1;color:var(--ink);padding-bottom:3px;} .row .usd{display:none;}
     .row.ne{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 26px;} .row.ne .item-in{grid-column:1/-1;} .row.ne .del{grid-column:3;grid-row:2;} .row.ne .usd{display:block;grid-column:1/-1;grid-row:3;text-align:left;}
     .fstep{--dec:6%;padding:0 14px;font-size:13px;} .fstep .fp{margin-left:6px;} .fld .cols-3{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;}
     .g-body{padding-left:8px;} .g-track,.g-n{display:none;} .g-sub{min-width:0;}
@@ -443,7 +455,7 @@ fbq('init','467504537642622');
     <div class="panel-head">
       <h2>¿Cuánto gastas al mes para vivir?</h2>
     </div>
-    <form class="quick" id="qa-gastos" autocomplete="off"><span class="ib" style="--c:#fddc5b"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></span><input id="qa-gastos-in" placeholder="Escribe «Netflix 600» o «Alquiler 4000» y Enter" aria-label="Agregar rápido"><button class="qa-go" type="submit" aria-label="Agregar"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></button></form>
+    <form class="quick" id="qa-gastos" autocomplete="off"><span class="ib" style="--c:#fddc5b"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></span><input id="qa-gastos-in" placeholder="Escribe «Netflix 600»" aria-label="Agregar rápido"><button class="qa-go" type="submit" aria-label="Agregar"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></button></form>
     <div class="card glass">
       <h3 class="sec-t">Lo esencial</h3>
       <div id="list-basics"></div>
@@ -461,7 +473,7 @@ fbq('init','467504537642622');
     <div class="panel-head">
       <h2>¿Cuánto cuesta tener tu negocio?</h2>
     </div>
-    <form class="quick" id="qa-costos" autocomplete="off"><span class="ib" style="--c:#fddc5b"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></span><input id="qa-costos-in" placeholder="Escribe «Adobe 55» o «Contador 300» y Enter" aria-label="Agregar rápido"><button class="qa-go" type="submit" aria-label="Agregar"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></button></form>
+    <form class="quick" id="qa-costos" autocomplete="off"><span class="ib" style="--c:#fddc5b"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></span><input id="qa-costos-in" placeholder="Escribe «Adobe 55»" aria-label="Agregar rápido"><button class="qa-go" type="submit" aria-label="Agregar"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></button></form>
     <div class="card glass">
       <div id="list-costs"></div>
       <div class="sum"><span>Total del negocio</span><div><b id="t-costs"></b><small id="t-costs-u"></small></div></div>
@@ -491,7 +503,7 @@ fbq('init','467504537642622');
           <button class="add-link" data-add="neweq">+ Agregar equipo nuevo</button>
         </div>
       </div>
-      <div class="sticky">
+      <div class="sticky first-m">
         <div class="card glass">
           <div class="fld"><div class="fld-top"><label for="life">Vida útil del equipo</label><div class="pill"><input id="life" type="number" min="0.5" step="0.5" inputmode="decimal"><span>años</span></div></div><input type="range" id="life-r" min="1" max="10" step="0.5" aria-label="Vida útil"></div>
           <div class="fld"><div class="fld-top"><label for="infl">Inflación a cubrir</label><div class="pill"><input id="infl" type="number" min="0" step="0.5" inputmode="decimal"><span>%</span></div></div><input type="range" id="infl-r" min="0" max="100" step="1" aria-label="Inflación"></div>
@@ -578,7 +590,8 @@ fbq('init','467504537642622');
       <h2>¿Cuántos clientes necesitas?</h2>
     </div>
     <div class="card glass">
-      <div class="scroll-x"><table class="tbl" style="min-width:0;"><thead><tr><th>Paquete</th><th>Precio</th><th>Equilibrio</th><th>Clientes al mes</th><th>Tu capacidad</th></tr></thead><tbody id="eq-table"></tbody></table></div>
+      <div class="eqhead"><span>Paquete</span><span>Precio</span><span>Equilibrio</span><span>Clientes al mes</span><span>Tu capacidad</span></div>
+      <div id="eq-table"></div>
     </div>
     <div class="card glass">
       <div class="bar-row">
@@ -628,7 +641,7 @@ fbq('init','467504537642622');
     <div class="card glass">
       <h3 class="sec-t">Tu última campaña</h3>
       <div class="two" style="gap:28px;">
-        <div class="cols" style="gap:12px;">
+        <div class="cols camp" style="gap:12px;">
           <div class="field"><label for="m-imp">Impresiones</label><input class="glass-input num" id="m-imp" type="number" min="0" inputmode="numeric"></div>
           <div class="field"><label for="m-reach">Alcance</label><input class="glass-input num" id="m-reach" type="number" min="0" inputmode="numeric"></div>
           <div class="field"><label for="m-clicks">Clicks</label><input class="glass-input num" id="m-clicks" type="number" min="0" inputmode="numeric"></div>
@@ -684,7 +697,7 @@ fbq('init','467504537642622');
 
   <!-- ===================== GUÍA ===================== -->
   <section class="panel" id="p-guia" style="padding:0;">
-    <div class="panel-head"><h2>Cómo se calcula</h2><p>Las instrucciones del Excel, adaptadas a esta herramienta.</p></div>
+    <div class="panel-head"><h2>Cómo se calcula</h2></div>
     <div class="card glass">
       <h3 class="sec-t">Cómo se usa</h3>
       <ol class="steps" style="margin-top:14px;">
@@ -987,7 +1000,7 @@ function go(id,opts){
   document.querySelectorAll('.rail-i').forEach((b,k)=>{ b.classList.toggle('on',!guide&&k===i); b.classList.toggle('done',!guide&&k<i); });
   $('progress').style.transform='scaleX('+(guide?1:(i+1)/STEPS.length)+')';
   $('stepmeta').innerHTML = guide ? '<b>Cómo se calcula</b>' : 'Paso <b>'+(i+1)+'</b> de '+STEPS.length+' · '+STEPS[i][1];
-  $('dock').classList.toggle('off',guide); $('dock').classList.toggle('last',!guide&&i===STEPS.length-1);
+  $('dock').classList.toggle('off',guide); document.querySelector('.tool-cta').style.display = id==='resumen'?'':'none'; $('dock').classList.toggle('last',!guide&&i===STEPS.length-1);
   $('btnBack').style.visibility = (!guide&&i===0)?'hidden':'visible';
   $('btnNext').textContent = guide?'Volver':(i===STEPS.length-1?'Guardar plan':'Continuar');
   history.replaceState(null,'','#'+id);
@@ -1001,6 +1014,7 @@ const back = () => { if(cur==='guia') return go(lastStep); const i=stepIdx(cur);
 /* ---------- listas agrupadas ---------- */
 const LISTS = {basics:'list-basics',fun:'list-fun',costs:'list-costs',equip:'list-equip',office:'list-office',neweq:'list-neweq'};
 const closedG = {basics:new Set(),fun:new Set(),costs:new Set(),equip:new Set(),office:new Set()};
+const seenG = {};
 function rowHTML(key,i,r){
   return `<div class="row" data-i="${i}">
     <input class="item-in" data-k="item" value="${esc(r.item)}" placeholder="Nombre" aria-label="Ítem">
@@ -1020,10 +1034,11 @@ function renderList(key){
   const el=$(LISTS[key]);
   if(key==='neweq'){ el.innerHTML=S.neweq.map((r,i)=>newEqHTML(i,r)).join(''); return; }
   const cats=[...CATS[key]]; S[key].forEach(r=>{ if(!cats.includes(r.cat)) cats.push(r.cat); });
+  if(!seenG[key]){ seenG[key]=true; if(cats.length>7) cats.forEach(c=>{ if(!S[key].some(r=>r.cat===c&&r.amt>0)) closedG[key].add(c); }); }
   el.innerHTML=cats.map(c=>{
     const rows=S[key].map((r,i)=>[r,i]).filter(([r])=>r.cat===c);
     const v=CATV[c]||['dots','#b3b3b3'];
-    return `<details class="grp" style="--c:${v[1]}" data-cat="${esc(c)}"${closedG[key].has(c)?'':' open'}><summary><span class="ib">${ICON(v[0])}</span><span class="g-name">${esc(c)}</span><span class="g-n" data-n></span><span class="g-track"><i data-bar></i></span><span class="g-sub" data-sub></span></summary><div class="g-body">${rows.map(([r,i])=>rowHTML(key,i,r)).join('')}<button class="g-add" data-addcat="${esc(c)}">+ Agregar a ${esc(c.toLowerCase())}</button></div></details>`;
+    return `<details class="grp" style="--c:${v[1]}" data-cat="${esc(c)}"${closedG[key].has(c)?'':' open'}><summary><span class="ib">${ICON(v[0])}</span><span class="g-name">${esc(c)}</span><span class="g-n" data-n></span><span class="g-track"><i data-bar></i></span><span class="g-sub" data-sub></span></summary><div class="g-body">${rows.map(([r,i])=>rowHTML(key,i,r)).join('')}<button class="g-add" data-addcat="${esc(c)}">+ Agregar</button></div></details>`;
   }).join('');
 }
 function bindList(key){
@@ -1156,7 +1171,7 @@ function paintEq(){
   const names=['Básico','Estándar','Premium'];
   const cap=S.pr.clients*S.pr.weeks;
   setHTML('eq-table', names.map((n,i)=>{ const use=cap>0?O.eqClients[i]/cap:0, col=use<=.8?'var(--ok)':use<=1?'var(--warn)':'var(--red)';
-    return `<tr${i===O.sel?' class="strong"':''}><td>${n}</td><td>${L(O.prices[i])}</td><td>${O.prices[i]>0?num(O.eqv[i]):'—'}</td><td>${O.eqClients[i]||'—'}</td><td><span class="meter"><i style="width:${Math.min(use*100,100)}%;background:${col}"></i></span><small style="color:${col}">${cap>0&&O.eqClients[i]?P(use):'—'}</small></td></tr>`; }).join(''));
+    return `<div class="eqrow${i===O.sel?' sel':''}"><b>${n}</b><span class="pr">${L(O.prices[i])}</span><span><i class="lb">Equilibrio</i>${O.prices[i]>0?num(O.eqv[i]):'—'}</span><span><i class="lb">Clientes al mes</i>${O.eqClients[i]||'—'}</span><span class="cp"><i class="lb">Tu capacidad</i><span class="meter"><i style="width:${Math.min(use*100,100)}%;background:${col}"></i></span><small style="color:${col}">${cap>0&&O.eqClients[i]?P(use):'—'}</small></span></div>`; }).join(''));
   document.querySelectorAll('#seg-pkg button').forEach(b=>b.classList.toggle('on',b.dataset.pkg===S.eq.pkg));
   document.querySelectorAll('#seg-mode button').forEach(b=>b.classList.toggle('on',b.dataset.mode===S.eq.mode));
   const acc=S.eq.mode==='acc';

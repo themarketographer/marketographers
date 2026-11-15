@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Generador de enlaces UTM para fotógrafos | MarkeTools</title>
+<meta name="description" content="Arma el enlace con UTM de cada anuncio, publicación o QR y sabe de dónde llegó cada cliente. Gratis, sin registro.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://marketographers.com/marketools/utm/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Marketographers">
+<meta property="og:title" content="Generador de enlaces UTM para fotógrafos | MarkeTools">
+<meta property="og:description" content="Arma el enlace con UTM de cada anuncio, publicación o QR y sabe de dónde llegó cada cliente. Gratis, sin registro.">
+<meta property="og:url" content="https://marketographers.com/marketools/utm/">
+<meta property="og:image" content="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1785200397/Banner_z6b496.png">
+<link rel="icon" type="image/png" href="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto,w_64,h_64/v1755314905/Marketographers_Negro_S_F_tgh9z2.png">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="/marketools/_ui/tokens.css">
+<link rel="stylesheet" href="/marketools/_ui/ui.css">
+<link rel="stylesheet" href="/marketools/_ui/tool.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Generador de enlaces UTM", "url": "https://marketographers.com/marketools/utm/", "description": "Arma el enlace con UTM de cada anuncio, publicación o QR y sabe de dónde llegó cada cliente. Gratis, sin registro.", "applicationCategory": "BusinessApplication", "operatingSystem": "Web", "inLanguage": "es", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "author": {"@type": "Person", "name": "Pablo Villarroel", "url": "https://marketographers.com/"}}</script>
+</head>
+<body>
+<header class="wrap nav">
+  <a class="brand" href="/marketools/">MarkeTools</a>
+  <a class="btn btn-secondary" href="/masterclass/" data-cta="utm-nav">Clase gratis</a>
+</header>
+<main class="wrap tool">
+  <header>
+    <h1>Generador de enlaces UTM</h1>
+    <p>Pones a dónde va el enlace y de dónde sale, y te devuelve el enlace listo para pegar. Así Google Analytics te dice qué publicación o qué anuncio te trajo cada consulta.</p>
+  </header>
+  
+  <div id="app">
+    <div class="cols2">
+      <form class="card stack" id="f">
+        <div class="field"><label for="url">Página a la que quieres llevar a la gente</label><input class="input" id="url" type="url" inputmode="url" placeholder="https://tusitio.com/sesiones" required><span class="field-error" id="urlErr" hidden>Pega la dirección completa, empezando con https://</span></div>
+        <div class="field"><label for="source">Dónde vas a poner el enlace</label><select class="input" id="source"><option value="instagram">Instagram</option><option value="facebook">Facebook</option><option value="tiktok">TikTok</option><option value="whatsapp">WhatsApp</option><option value="google">Google</option><option value="email">Correo</option><option value="qr">Código QR impreso</option></select></div>
+        <div class="field"><label for="medium">Qué tipo de pieza es</label><select class="input" id="medium"><option value="paid">Anuncio pagado</option><option value="organic">Publicación o historia</option><option value="bio">Enlace del perfil</option><option value="dm">Mensaje directo</option><option value="qr">Código QR</option><option value="email">Correo</option></select></div>
+        <div class="field"><label for="campaign">Nombre de la campaña</label><input class="input" id="campaign" maxlength="60" placeholder="sesiones-navidad"><span class="hint">Corto y siempre igual. Los espacios se cambian por guiones.</span></div>
+        <div class="field"><label for="content">Qué pieza es (opcional)</label><input class="input" id="content" maxlength="60" placeholder="reel-familia-v2"><span class="hint">Sirve para comparar dos anuncios de la misma campaña.</span></div>
+      </form>
+      <section class="card stack out" aria-live="polite">
+        <h2>Tu enlace</h2>
+        <pre id="link">Llena la página de destino para ver el enlace.</pre>
+        <div class="row"><button type="button" class="btn btn-primary" id="copy" disabled>Copiar enlace</button></div>
+        <details><summary><strong>Si es un anuncio de Meta</strong></summary><div class="stack" style="margin-top:var(--s3)"><p class="muted">En el anuncio, en "Parámetros de URL", pega esto. Meta llena solo el nombre de la campaña y del anuncio:</p><pre id="meta">utm_source={{site_source_name}}&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}</pre><button type="button" class="btn btn-secondary" id="copyMeta">Copiar parámetros</button></div></details>
+      </section>
+    </div>
+  </div>
+  <aside class="card pitch">
+    <div class="stack" style="max-width:60ch"><h2>¿Te sirvió?</h2><p class="muted">En la clase gratis en vivo vemos cómo llenar la agenda de sesiones con este tipo de números y mensajes. Entras al grupo de WhatsApp y te avisamos la fecha.</p></div>
+    <a class="btn btn-primary" href="/masterclass/" data-cta="utm-pie">Quiero entrar a la clase gratis</a>
+  </aside>
+</main>
+<footer class="wrap foot"><span>Una herramienta de <a href="/">The Marketographers</a>, por Pablo Villarroel.</span><a href="/marketools/">Ver todas las herramientas</a></footer>
+<script src="/marketools/_ui/tool.js"></script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var clean = function (s) { return s.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); };
+  function build() {
+    var raw = $('url').value.trim(), u;
+    try { u = new URL(raw); if (!/^https?:$/.test(u.protocol)) throw 0; } catch (e) { $('link').textContent = 'Llena la página de destino para ver el enlace.'; $('copy').disabled = true; $('urlErr').hidden = !raw; return; }
+    $('urlErr').hidden = true;
+    u.searchParams.set('utm_source', $('source').value); u.searchParams.set('utm_medium', $('medium').value);
+    var c = clean($('campaign').value), k = clean($('content').value);
+    if (c) u.searchParams.set('utm_campaign', c); else u.searchParams.delete('utm_campaign');
+    if (k) u.searchParams.set('utm_content', k); else u.searchParams.delete('utm_content');
+    $('link').textContent = u.toString(); $('copy').disabled = false; Tool.used('utm');
+  }
+  $('f').addEventListener('input', build);
+  $('copy').addEventListener('click', function () { Tool.copy($('link').textContent, this); });
+  $('copyMeta').addEventListener('click', function () { Tool.copy($('meta').textContent, this); });
+})();
+</script>
+</body>
+</html>

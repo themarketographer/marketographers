@@ -46,3 +46,7 @@
 - [Calculadora de precios](https://marketographers.com/marketools/pricing/): calcula tu precio por hora y por paquete a partir de tus gastos, tu equipo y tu meta de ingresos.
 - [Calculadora rápida](https://marketographers.com/marketools/calculadora/): versión corta para sacar un precio en un minuto.
 - [AdsBoard](https://marketographers.com/marketools/adsboard/): tablero para leer tus campañas de Meta Ads.
+- [Generador de enlaces UTM](https://marketographers.com/marketools/utm/): Arma el enlace de cada anuncio, publicación o QR y sabe de dónde llegó cada consulta.
+- [¿Cuánto puedes pagar por un cliente?](https://marketographers.com/marketools/costo-por-cliente/): Con tu precio y cuántos te contratan, te dice el tope por mensaje y si tu campaña gana o pierde.
+- [Seguimiento de cotización](https://marketographers.com/marketools/seguimiento/): Tres mensajes de WhatsApp para retomar una cotización sin respuesta, con el nombre de tu cliente ya puesto.
+- [Contrato de sesión de fotos](https://marketographers.com/marketools/contrato/): Anticipo, entrega, cambios de fecha y uso de imagen en un contrato listo para imprimir. Incluido en la membresía.

@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mensajes de seguimiento para cotizaciones de fotografía | MarkeTools</title>
+<meta name="description" content="Tres mensajes de WhatsApp para retomar una cotización que quedó sin respuesta, con el nombre de tu cliente y listos para enviar. Gratis.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://marketographers.com/marketools/seguimiento/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Marketographers">
+<meta property="og:title" content="Mensajes de seguimiento para cotizaciones de fotografía | MarkeTools">
+<meta property="og:description" content="Tres mensajes de WhatsApp para retomar una cotización que quedó sin respuesta, con el nombre de tu cliente y listos para enviar. Gratis.">
+<meta property="og:url" content="https://marketographers.com/marketools/seguimiento/">
+<meta property="og:image" content="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1785200397/Banner_z6b496.png">
+<link rel="icon" type="image/png" href="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto,w_64,h_64/v1755314905/Marketographers_Negro_S_F_tgh9z2.png">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="/marketools/_ui/tokens.css">
+<link rel="stylesheet" href="/marketools/_ui/ui.css">
+<link rel="stylesheet" href="/marketools/_ui/tool.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Seguimiento de cotización", "url": "https://marketographers.com/marketools/seguimiento/", "description": "Tres mensajes de WhatsApp para retomar una cotización que quedó sin respuesta, con el nombre de tu cliente y listos para enviar. Gratis.", "applicationCategory": "BusinessApplication", "operatingSystem": "Web", "inLanguage": "es", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "author": {"@type": "Person", "name": "Pablo Villarroel", "url": "https://marketographers.com/"}}</script>
+</head>
+<body>
+<header class="wrap nav">
+  <a class="brand" href="/marketools/">MarkeTools</a>
+  <a class="btn btn-secondary" href="/masterclass/" data-cta="seguimiento-nav">Clase gratis</a>
+</header>
+<main class="wrap tool">
+  <header>
+    <h1>Seguimiento de cotización</h1>
+    <p>Mandaste el precio y te dejaron en visto. Aquí salen los tres mensajes para retomar la conversación sin rogar, con el nombre de tu cliente ya puesto y el botón para abrirlos en WhatsApp.</p>
+  </header>
+  
+  <div id="app">
+    <div class="cols2">
+      <form class="card stack" id="f">
+        <div class="field"><label for="cliente">Nombre de tu cliente</label><input class="input" id="cliente" maxlength="40" placeholder="Carla"></div>
+        <div class="field"><label for="yo">Tu nombre</label><input class="input" id="yo" maxlength="40" placeholder="Pablo"></div>
+        <div class="field"><label for="sesion">Qué le cotizaste</label><input class="input" id="sesion" maxlength="60" placeholder="la sesión familiar"><span class="hint">Escríbelo como lo dirías en una frase: "la sesión familiar", "las fotos del menú".</span></div>
+        <div class="field"><label for="fecha">Para cuándo es (opcional)</label><input class="input" id="fecha" maxlength="40" placeholder="el sábado 12"></div>
+        <div class="field"><label for="tel">WhatsApp del cliente (opcional)</label><input class="input" id="tel" inputmode="numeric" maxlength="15" placeholder="59170000000"><span class="hint">Solo números, con código de país. Con esto aparece el botón para abrir el chat.</span></div>
+      </form>
+      <section class="stack out" id="out" aria-live="polite"></section>
+    </div>
+  </div>
+  <aside class="card pitch">
+    <div class="stack" style="max-width:60ch"><h2>¿Te sirvió?</h2><p class="muted">En la clase gratis en vivo vemos cómo llenar la agenda de sesiones con este tipo de números y mensajes. Entras al grupo de WhatsApp y te avisamos la fecha.</p></div>
+    <a class="btn btn-primary" href="/masterclass/" data-cta="seguimiento-pie">Quiero entrar a la clase gratis</a>
+  </aside>
+</main>
+<footer class="wrap foot"><span>Una herramienta de <a href="/">The Marketographers</a>, por Pablo Villarroel.</span><a href="/marketools/">Ver todas las herramientas</a></footer>
+<script src="/marketools/_ui/tool.js"></script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (s) { return s.replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  function build() {
+    var c = $('cliente').value.trim() || 'Carla', yo = $('yo').value.trim() || 'Pablo', s = $('sesion').value.trim() || 'la sesión', f = $('fecha').value.trim(), tel = $('tel').value.replace(/\D/g, '');
+    var msgs = [
+      ['A los 2 días', 'Hola ' + c + ', soy ' + yo + '. Te mandé la cotización de ' + s + ' hace un par de días. ¿Pudiste verla? Si algo no quedó claro dime y te lo explico en un audio.'],
+      ['A los 5 días', 'Hola ' + c + '. Te escribo por ' + s + (f ? (/^el /i.test(f) ? ' del ' + f.slice(3) : ' de ' + f) : '') + '. Todavía tengo ese espacio libre, pero la agenda se mueve y no quiero dártelo por seguro sin avisarte. ¿Te lo reservo o prefieres que lo suelte?'],
+      ['A los 10 días', 'Hola ' + c + ', último mensaje sobre ' + s + ', para no llenarte el chat. Si ya lo resolviste con otro fotógrafo, todo bien, me sirve saberlo. Si sigue en pie, respóndeme con un sí y lo retomamos donde quedó.']
+    ];
+    $('out').innerHTML = msgs.map(function (m, i) {
+      return '<article class="card stack"><h2>' + m[0] + '</h2><p class="msg" id="m' + i + '">' + esc(m[1]) + '</p><div class="row"><button type="button" class="btn btn-secondary" data-copy="m' + i + '">Copiar</button>' +
+        (tel.length >= 10 ? '<a class="btn btn-primary" target="_blank" rel="noopener" href="https://wa.me/' + tel + '?text=' + encodeURIComponent(m[1]) + '">Abrir en WhatsApp</a>' : '') + '</div></article>';
+    }).join('') + '<p class="muted">Si a los 10 días no responde, no insistas más. Guarda el contacto y escríbele cuando tengas algo nuevo que mostrarle.</p>';
+  }
+  $('f').addEventListener('input', function () { build(); Tool.used('seguimiento'); });
+  $('out').addEventListener('click', function (e) { var b = e.target.closest('[data-copy]'); if (b) Tool.copy($(b.dataset.copy).textContent, b); });
+  build();
+})();
+</script>
+</body>
+</html>

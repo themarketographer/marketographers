@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Generador de contrato de fotografía | MarkeTools para miembros</title>
+<meta name="description" content="Arma el contrato de tu sesión de fotos con anticipo, entrega, reprogramación y uso de imagen, listo para imprimir o mandar en PDF. Incluido en la membresía.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://marketographers.com/marketools/contrato/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Marketographers">
+<meta property="og:title" content="Generador de contrato de fotografía | MarkeTools para miembros">
+<meta property="og:description" content="Arma el contrato de tu sesión de fotos con anticipo, entrega, reprogramación y uso de imagen, listo para imprimir o mandar en PDF. Incluido en la membresía.">
+<meta property="og:url" content="https://marketographers.com/marketools/contrato/">
+<meta property="og:image" content="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1785200397/Banner_z6b496.png">
+<link rel="icon" type="image/png" href="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto,w_64,h_64/v1755314905/Marketographers_Negro_S_F_tgh9z2.png">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="/marketools/_ui/tokens.css">
+<link rel="stylesheet" href="/marketools/_ui/ui.css">
+<link rel="stylesheet" href="/marketools/_ui/tool.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Contrato de sesión de fotos", "url": "https://marketographers.com/marketools/contrato/", "description": "Arma el contrato de tu sesión de fotos con anticipo, entrega, reprogramación y uso de imagen, listo para imprimir o mandar en PDF. Incluido en la membresía.", "applicationCategory": "BusinessApplication", "operatingSystem": "Web", "inLanguage": "es", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "author": {"@type": "Person", "name": "Pablo Villarroel", "url": "https://marketographers.com/"}}</script>
+</head>
+<body>
+<header class="wrap nav">
+  <a class="brand" href="/marketools/">MarkeTools</a>
+  <a class="btn btn-secondary" href="/masterclass/" data-cta="contrato-nav">Clase gratis</a>
+</header>
+<main class="wrap tool">
+  <header>
+    <h1>Contrato de sesión de fotos</h1>
+    <p>Llenas los datos de la sesión y sale el contrato con las cláusulas que evitan los problemas de siempre: el anticipo, la fecha de entrega, los cambios de fecha y el uso de las fotos.</p>
+  </header>
+  <form class="card stack" id="gate" hidden style="max-width:440px">
+    <h2>Herramienta de la membresía</h2>
+    <p class="muted">Viene incluida en The Marketographers. La clave cambia cada mes y está fijada en la comunidad.</p>
+    <div class="field"><label for="gateKey">Clave de este mes</label><input class="input" id="gateKey" autocomplete="off" autocapitalize="characters" maxlength="12" required></div>
+    <button class="btn btn-primary" type="submit">Entrar</button>
+    <p class="field-error" id="gateErr" role="alert" hidden></p>
+    <p class="muted">¿Todavía no eres parte? <a href="/#planes" data-cta="contrato-membresia">Mira qué incluye la membresía</a>.</p>
+  </form>
+  <div id="app" hidden>
+    <div class="cols2">
+      <form class="card stack" id="f">
+        <div class="field"><label for="fotografo">Tu nombre o el de tu estudio</label><input class="input" id="fotografo" maxlength="60"></div>
+        <div class="field"><label for="cliente">Nombre completo del cliente</label><input class="input" id="cliente" maxlength="60"></div>
+        <div class="field"><label for="tipo">Tipo de sesión</label><input class="input" id="tipo" maxlength="60" placeholder="Sesión familiar en exteriores"></div>
+        <div class="field"><label for="fecha">Fecha y hora</label><input class="input" id="fecha" maxlength="60" placeholder="Sábado 12 de diciembre de 2026, 16:00"></div>
+        <div class="field"><label for="lugar">Lugar</label><input class="input" id="lugar" maxlength="80"></div>
+        <div class="field"><label for="precio">Precio total, con moneda</label><input class="input" id="precio" maxlength="30" placeholder="Bs 900"></div>
+        <div class="field"><label for="anticipo">Anticipo para reservar (% del total)</label><input class="input" id="anticipo" type="number" min="0" max="100" value="50"></div>
+        <div class="field"><label for="fotos">Cantidad de fotos editadas que entregas</label><input class="input" id="fotos" type="number" min="1" value="20"></div>
+        <div class="field"><label for="plazo">Días hábiles para entregar</label><input class="input" id="plazo" type="number" min="1" value="10"></div>
+        <div class="field"><label for="aviso">Días de aviso para cambiar la fecha sin costo</label><input class="input" id="aviso" type="number" min="0" value="3"></div>
+        <label class="row"><input type="checkbox" id="uso" checked style="width:20px;height:20px"> <span>El cliente autoriza que uses las fotos en tu portafolio y redes</span></label>
+      </form>
+      <section class="card stack out">
+        <div class="row no-print"><button type="button" class="btn btn-primary" id="print">Imprimir o guardar en PDF</button><button type="button" class="btn btn-secondary" id="copy">Copiar texto</button></div>
+        <pre id="doc"></pre>
+        <p class="muted no-print">Es una plantilla base. Las leyes cambian según el país: si el monto es grande, haz que un abogado de tu país la revise una vez y luego la reutilizas.</p>
+      </section>
+    </div>
+  </div>
+  <aside class="card pitch">
+    <div class="stack" style="max-width:60ch"><h2>¿Te sirvió?</h2><p class="muted">En la clase gratis en vivo vemos cómo llenar la agenda de sesiones con este tipo de números y mensajes. Entras al grupo de WhatsApp y te avisamos la fecha.</p></div>
+    <a class="btn btn-primary" href="/masterclass/" data-cta="contrato-pie">Quiero entrar a la clase gratis</a>
+  </aside>
+</main>
+<footer class="wrap foot"><span>Una herramienta de <a href="/">The Marketographers</a>, por Pablo Villarroel.</span><a href="/marketools/">Ver todas las herramientas</a></footer>
+<script src="/marketools/_ui/tool.js"></script>
+<script>
+Tool.premium(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var v = function (id, hueco) { return $(id).value.trim() || '[' + hueco + ']'; };
+  function build() {
+    var a = Math.min(100, Math.max(0, parseFloat($('anticipo').value) || 0));
+    var c = [
+      'CONTRATO DE SERVICIOS DE FOTOGRAFÍA',
+      'Entre ' + v('fotografo', 'tu nombre') + ' (el fotógrafo) y ' + v('cliente', 'nombre del cliente') + ' (el cliente) se acuerda lo siguiente.',
+      '1. Servicio. El fotógrafo realizará: ' + v('tipo', 'tipo de sesión') + ', el ' + v('fecha', 'fecha y hora') + ', en ' + v('lugar', 'lugar') + '.',
+      '2. Precio y forma de pago. El precio total es ' + v('precio', 'precio') + '. ' + (a > 0 ? 'El cliente paga un anticipo del ' + a + '% para reservar la fecha. La fecha queda reservada recién cuando el anticipo está pagado. ' + (a < 100 ? 'El ' + (100 - a) + '% restante se paga antes de la entrega de las fotos.' : '') : 'El total se paga antes de la entrega de las fotos.'),
+      '3. Entrega. El fotógrafo entregará ' + ($('fotos').value || '[cantidad]') + ' fotos editadas en formato digital, en un plazo de ' + ($('plazo').value || '[días]') + ' días hábiles contados desde la sesión. La selección y la edición las hace el fotógrafo según su estilo. No se entregan archivos sin editar.',
+      '4. Cambio de fecha. El cliente puede cambiar la fecha una vez sin costo si avisa con al menos ' + ($('aviso').value || '0') + ' días de anticipación, sujeto a la agenda del fotógrafo. Con menos aviso, o si el cliente no se presenta, el anticipo no se devuelve y cubre el tiempo reservado.',
+      '5. Cancelación. Si el cliente cancela, el anticipo no se devuelve. Si cancela el fotógrafo por una causa que no sea fuerza mayor, devuelve todo lo pagado.',
+      '6. Fuerza mayor y clima. Si la sesión no puede hacerse por lluvia, enfermedad o una causa ajena a ambas partes, se reprograma sin costo en la fecha más cercana disponible.',
+      '7. Derechos y uso de las fotos. El fotógrafo conserva la autoría de las fotos. El cliente puede usarlas para fines personales' + ($('uso').checked ? '. El cliente autoriza al fotógrafo a mostrar las fotos en su portafolio, sitio web y redes sociales.' : ' y el fotógrafo no las publicará sin autorización escrita del cliente.') + ' El uso comercial por parte del cliente se acuerda por separado.',
+      '8. Respaldo. El fotógrafo guarda las fotos entregadas durante 60 días desde la entrega. Pasado ese plazo no garantiza conservar copias.',
+      '9. Aceptación. Con su firma, o con el pago del anticipo, el cliente declara haber leído y aceptado este contrato.',
+      'Fecha: ____________________',
+      'Firma del fotógrafo: ____________________          Firma del cliente: ____________________'
+    ];
+    $('doc').textContent = c.join('\n\n');
+  }
+  $('f').addEventListener('input', function () { build(); Tool.used('contrato'); });
+  $('print').addEventListener('click', function () { window.print(); });
+  $('copy').addEventListener('click', function () { Tool.copy($('doc').textContent, this); });
+  build();
+});
+</script>
+</body>
+</html>

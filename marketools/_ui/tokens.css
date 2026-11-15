@@ -1,0 +1,13 @@
+/* The Marketographers: fondo casi negro, texto claro, dorado como relleno o como texto sobre oscuro. */
+@font-face{font-family:"Working";font-weight:400 800;font-display:swap;src:url("/assets/fonts/Working-400.otf") format("opentype")}
+:root{
+  color-scheme:dark;
+  --bg:#0c0c0c; --surface:#151515; --surface-2:#1d1d1d;
+  --text:#f8f8f8; --text-2:#b3b3b3;
+  --accent:#fddc5b; --accent-hover:#ffe680; --on-accent:#181818;
+  --line:rgba(255,255,255,.12); --line-strong:rgba(255,255,255,.3);
+  --ok:#5fd08b; --ok-bg:rgba(95,208,139,.12); --warn:#fddc5b; --warn-bg:rgba(253,220,91,.12); --err:#ff7b7b; --err-bg:rgba(255,92,92,.12);
+  --font-display:"Working","Poppins",system-ui,sans-serif;
+  --font-body:"Poppins",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 32px -14px rgba(0,0,0,.8);
+}

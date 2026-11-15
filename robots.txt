@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /ab/
+Disallow: /marketools/clave-del-mes/
 Disallow: /marketools/wireframe-app/
 Disallow: /marketools/adsboard-app/
 Disallow: /blog/_plantilla-nuevo-articulo/

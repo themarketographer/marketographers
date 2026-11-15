@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Clave del mes</title>
+<meta name="description" content="Página interna.">
+<meta name="robots" content="noindex,nofollow">
+<link rel="canonical" href="https://marketographers.com/marketools/clave-del-mes/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Marketographers">
+<meta property="og:title" content="Clave del mes">
+<meta property="og:description" content="Página interna.">
+<meta property="og:url" content="https://marketographers.com/marketools/clave-del-mes/">
+<meta property="og:image" content="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1785200397/Banner_z6b496.png">
+<link rel="icon" type="image/png" href="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto,w_64,h_64/v1755314905/Marketographers_Negro_S_F_tgh9z2.png">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="/marketools/_ui/tokens.css">
+<link rel="stylesheet" href="/marketools/_ui/ui.css">
+<link rel="stylesheet" href="/marketools/_ui/tool.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Clave del mes", "url": "https://marketographers.com/marketools/clave-del-mes/", "description": "Página interna.", "applicationCategory": "BusinessApplication", "operatingSystem": "Web", "inLanguage": "es", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "author": {"@type": "Person", "name": "Pablo Villarroel", "url": "https://marketographers.com/"}}</script>
+</head>
+<body>
+<header class="wrap nav">
+  <a class="brand" href="/marketools/">MarkeTools</a>
+  <a class="btn btn-secondary" href="/masterclass/" data-cta="clave-del-mes-nav">Clase gratis</a>
+</header>
+<main class="wrap tool">
+  <header>
+    <h1>Clave del mes</h1>
+    <p>Esta página es solo para ti. Muestra la clave de las herramientas premium de este mes y la del mes que viene, para que la fijes en la comunidad.</p>
+  </header>
+  
+  <div id="app">
+    <form class="card stack" id="f" style="max-width:440px">
+      <div class="field"><label for="sec">Secreto (el valor de MK_PREMIUM_SECRETO en Netlify)</label><input class="input" id="sec" type="password" autocomplete="current-password" required></div>
+      <button class="btn btn-primary" type="submit">Ver claves</button>
+      <p class="field-error" id="err" role="alert" hidden></p>
+    </form>
+    <section class="card stack" id="res" hidden style="max-width:560px;margin-top:var(--s5)"></section>
+  </div>
+</main>
+<footer class="wrap foot"><span>Una herramienta de <a href="/">The Marketographers</a>, por Pablo Villarroel.</span><a href="/marketools/">Ver todas las herramientas</a></footer>
+<script src="/marketools/_ui/tool.js"></script>
+<script>
+document.getElementById('f').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var err = document.getElementById('err'); err.hidden = true;
+  fetch('/.netlify/functions/premium', { headers: { Authorization: 'Bearer ' + document.getElementById('sec').value.trim() } }).then(function (r) { return r.json(); }).then(function (r) {
+    if (!r.ok) { err.textContent = r.error || 'No se pudo.'; err.hidden = false; return; }
+    var msg = 'Clave de las MarkeTools premium de este mes: ' + r.clave + '\nEntra en marketographers.com/marketools/contrato/ y pégala. Cambia el día 1.';
+    var res = document.getElementById('res'); res.hidden = false;
+    res.innerHTML = '<div><p class="muted">Este mes (' + r.mes + ')</p><p class="big">' + r.clave + '</p></div><div class="kv"><span>Mes que viene (' + r.proximoMes + ')</span><span>' + r.proxima + '</span></div><p class="msg" id="m"></p><button type="button" class="btn btn-secondary" id="c">Copiar mensaje para la comunidad</button>';
+    document.getElementById('m').textContent = msg;
+    document.getElementById('c').addEventListener('click', function () { Tool.copy(msg, this); });
+  }).catch(function () { err.textContent = 'No hay conexión.'; err.hidden = false; });
+});
+</script>
+</body>
+</html>

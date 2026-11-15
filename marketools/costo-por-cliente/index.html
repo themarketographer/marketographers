@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>¿Cuánto puedes pagar por un cliente? Calculadora de anuncios para fotógrafos</title>
+<meta name="description" content="Calcula cuánto puedes gastar en anuncios por cada mensaje y por cada cliente sin perder plata, con tus propios números. Gratis, sin registro.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://marketographers.com/marketools/costo-por-cliente/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Marketographers">
+<meta property="og:title" content="¿Cuánto puedes pagar por un cliente? Calculadora de anuncios para fotógrafos">
+<meta property="og:description" content="Calcula cuánto puedes gastar en anuncios por cada mensaje y por cada cliente sin perder plata, con tus propios números. Gratis, sin registro.">
+<meta property="og:url" content="https://marketographers.com/marketools/costo-por-cliente/">
+<meta property="og:image" content="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1785200397/Banner_z6b496.png">
+<link rel="icon" type="image/png" href="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto,w_64,h_64/v1755314905/Marketographers_Negro_S_F_tgh9z2.png">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="/marketools/_ui/tokens.css">
+<link rel="stylesheet" href="/marketools/_ui/ui.css">
+<link rel="stylesheet" href="/marketools/_ui/tool.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "¿Cuánto puedes pagar por un cliente?", "url": "https://marketographers.com/marketools/costo-por-cliente/", "description": "Calcula cuánto puedes gastar en anuncios por cada mensaje y por cada cliente sin perder plata, con tus propios números. Gratis, sin registro.", "applicationCategory": "BusinessApplication", "operatingSystem": "Web", "inLanguage": "es", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "author": {"@type": "Person", "name": "Pablo Villarroel", "url": "https://marketographers.com/"}}</script>
+</head>
+<body>
+<header class="wrap nav">
+  <a class="brand" href="/marketools/">MarkeTools</a>
+  <a class="btn btn-secondary" href="/masterclass/" data-cta="costo-por-cliente-nav">Clase gratis</a>
+</header>
+<main class="wrap tool">
+  <header>
+    <h1>¿Cuánto puedes pagar por un cliente?</h1>
+    <p>Antes de poner un peso en anuncios conviene saber hasta dónde te alcanza. Pones tus números y te dice el tope por mensaje y por cliente, y si tu campaña de hoy gana o pierde.</p>
+  </header>
+  
+  <div id="app">
+    <div class="cols2">
+      <form class="card stack" id="f">
+        <div class="field"><label for="precio">Cuánto cobras por una sesión</label><input class="input" id="precio" type="number" inputmode="decimal" min="0" placeholder="150"><span class="hint">En tu moneda. Usa el precio que más vendes.</span></div>
+        <div class="field"><label for="costo">Cuánto te cuesta hacerla</label><input class="input" id="costo" type="number" inputmode="decimal" min="0" placeholder="30"><span class="hint">Transporte, ayudante, impresiones, lo que gastes en esa sesión.</span></div>
+        <div class="field"><label for="cierre">De cada 10 personas que te escriben, cuántas te contratan</label><input class="input" id="cierre" type="number" inputmode="decimal" min="0" max="10" step="0.5" placeholder="2"></div>
+        <div class="field"><label for="cpm">Cuánto te cuesta hoy cada mensaje en tus anuncios (opcional)</label><input class="input" id="cpm" type="number" inputmode="decimal" min="0" step="0.01" placeholder="1.20"><span class="hint">En Meta aparece como "costo por resultado".</span></div>
+        <div class="field"><label for="presu">Cuánto piensas invertir al mes (opcional)</label><input class="input" id="presu" type="number" inputmode="decimal" min="0" placeholder="100"></div>
+      </form>
+      <section class="card stack out" aria-live="polite">
+        <h2>Tu tope</h2>
+        <div id="res"><p class="muted">Llena los tres primeros datos para ver el resultado.</p></div>
+      </section>
+    </div>
+  </div>
+  <aside class="card pitch">
+    <div class="stack" style="max-width:60ch"><h2>¿Te sirvió?</h2><p class="muted">En la clase gratis en vivo vemos cómo llenar la agenda de sesiones con este tipo de números y mensajes. Entras al grupo de WhatsApp y te avisamos la fecha.</p></div>
+    <a class="btn btn-primary" href="/masterclass/" data-cta="costo-por-cliente-pie">Quiero entrar a la clase gratis</a>
+  </aside>
+</main>
+<footer class="wrap foot"><span>Una herramienta de <a href="/">The Marketographers</a>, por Pablo Villarroel.</span><a href="/marketools/">Ver todas las herramientas</a></footer>
+<script src="/marketools/_ui/tool.js"></script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var n = function (id) { var v = parseFloat($(id).value); return isFinite(v) ? v : null; };
+  var m = function (x) { return (Math.round(x * 100) / 100).toLocaleString('es', { maximumFractionDigits: 2 }); };
+  function calc() {
+    var precio = n('precio'), costo = n('costo') || 0, cierre = n('cierre'), cpm = n('cpm'), presu = n('presu');
+    if (precio === null || cierre === null) { $('res').innerHTML = '<p class="muted">Llena los tres primeros datos para ver el resultado.</p>'; return; }
+    var ganancia = precio - costo, tasa = Math.min(Math.max(cierre, 0), 10) / 10;
+    if (ganancia <= 0) { $('res').innerHTML = '<p class="alert alert-err">Con esos números cada sesión te deja ' + m(ganancia) + '. Antes de anunciar hay que subir el precio o bajar el costo: cualquier anuncio agranda la pérdida.</p>'; return; }
+    if (!tasa) { $('res').innerHTML = '<p class="alert alert-warn">Si de 10 personas ninguna te contrata, el problema está en la conversación de venta. Ahí un anuncio solo trae más conversaciones que no cierran.</p>'; return; }
+    var topeCliente = ganancia, topeMensaje = ganancia * tasa;
+    var h = '<div><p class="muted">Lo máximo que puedes pagar por cada mensaje</p><p class="big">' + m(topeMensaje) + '</p></div>' +
+      '<div class="kv"><span>Ganancia por sesión</span><span>' + m(ganancia) + '</span></div>' +
+      '<div class="kv"><span>Tope por cliente conseguido</span><span>' + m(topeCliente) + '</span></div>' +
+      '<div class="kv"><span>Mensajes que necesitas para 1 cliente</span><span>' + m(1 / tasa) + '</span></div>' +
+      '<p class="muted">Pagando el tope quedas en cero: recuperas lo gastado y no ganas. Para que el anuncio valga la pena, apunta a pagar la mitad o menos.</p>';
+    if (cpm !== null && cpm > 0) {
+      var costoCliente = cpm / tasa, queda = ganancia - costoCliente;
+      h += '<p class="alert ' + (queda > 0 ? 'alert-ok' : 'alert-err') + '">Hoy cada cliente te cuesta ' + m(costoCliente) + ' en anuncios y te deja ' + m(queda) + (queda > 0 ? ' después de pagarlos.' : '. Estás perdiendo en cada cliente: baja el costo por mensaje o mejora cuántos te contratan.') + '</p>';
+      if (presu !== null && presu > 0) {
+        var mensajes = presu / cpm, clientes = mensajes * tasa;
+        h += '<div class="kv"><span>Mensajes con ' + m(presu) + ' al mes</span><span>' + m(mensajes) + '</span></div><div class="kv"><span>Clientes esperados</span><span>' + m(clientes) + '</span></div><div class="kv"><span>Lo que te queda después de anuncios y costos</span><span>' + m(clientes * ganancia - presu) + '</span></div>';
+      }
+    }
+    $('res').innerHTML = h; Tool.used('costo-por-cliente');
+  }
+  $('f').addEventListener('input', calc);
+  // Comprobación de la cuenta: 150 de precio, 30 de costo, 2 de 10 -> tope por mensaje 24.
+  console.assert(Math.abs((150 - 30) * 0.2 - 24) < 1e-9);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Panel de métricas</title>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="/marketools/_ui/tokens.css">
+<link rel="stylesheet" href="/marketools/_ui/ui.css">
+<style>
+main{padding-block:var(--s6) var(--s8)}
+section{padding-top:var(--s7)}
+section>h2{margin-bottom:var(--s2)}
+.sub{color:var(--text-2);margin-bottom:var(--s4)}
+.stats{display:grid;gap:var(--s4);grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+.stat{padding:var(--s4);border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+.stat b{display:block;font:800 1.75rem/1.1 var(--font-display);font-variant-numeric:tabular-nums}
+.stat span{color:var(--text-2);font-size:var(--t-sm)}
+.bars{display:grid;gap:var(--s2)}
+.bar-row{display:grid;grid-template-columns:72px 1fr 96px;gap:var(--s3);align-items:center;font-size:var(--t-sm);font-variant-numeric:tabular-nums}
+.bar-track{display:grid;gap:3px}
+.bar-track i{display:block;height:10px;border-radius:5px;background:var(--accent);min-width:2px}
+.bar-track i.b{background:var(--line-strong)}
+.legend{display:flex;gap:var(--s4);font-size:var(--t-xs);color:var(--text-2);margin-bottom:var(--s3)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:5px;background:var(--accent);margin-right:6px}
+.legend i.b{background:var(--line-strong)}
+.map{display:grid;gap:var(--s3);grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.funnel input{max-width:140px}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header class="stack">
+    <h1>Panel de métricas</h1>
+    <p class="muted">Carga los archivos que descargas de Meta Ads, Nas.io, Instagram o TikTok. Todo se guarda solo en este navegador: nada se sube a internet.</p>
+  </header>
+
+  <div id="alerts" class="stack" style="margin-top:var(--s5)"></div>
+
+  <section id="s-ads">
+    <h2>¿Qué campaña escalo y cuál corto?</h2>
+    <p class="sub">Compara el costo por resultado de cada campaña con el promedio de todas. La recomendación aparece recién con 10 resultados o más.</p>
+    <div id="ads"></div>
+  </section>
+
+  <section id="s-money">
+    <h2>¿Lo que entra por ventas cubre lo que gasto en anuncios?</h2>
+    <p class="sub">Ingresos y gasto en anuncios, mes por mes.</p>
+    <div id="money"></div>
+  </section>
+
+  <section id="s-funnel">
+    <h2>¿Dónde se cae el camino de clase gratis a membresía?</h2>
+    <p class="sub">Anota los números de tu última clase. Las membresías las puedes copiar de Nas.io.</p>
+    <form class="card stack funnel" id="funnel">
+      <div class="row">
+        <div class="field"><label for="fu-reg">Entraron al grupo</label><input class="input" id="fu-reg" type="number" min="0"></div>
+        <div class="field"><label for="fu-asi">Asistieron a la clase</label><input class="input" id="fu-asi" type="number" min="0"></div>
+        <div class="field"><label for="fu-mem">Compraron la membresía</label><input class="input" id="fu-mem" type="number" min="0"></div>
+      </div>
+      <div id="funnelOut"></div>
+    </form>
+  </section>
+
+  <section id="s-redes">
+    <h2>¿Mi cuenta crece o se estancó?</h2>
+    <p class="sub">Seguidores y alcance por mes, de Instagram o TikTok.</p>
+    <div id="redes"></div>
+  </section>
+
+  <section>
+    <h2>¿Qué versión de la landing convierte más?</h2>
+    <p class="sub">Las pruebas A/B tienen su propio panel en cada sitio.</p>
+    <div class="row"><a class="btn btn-secondary" href="/ab/">Pruebas de marketographers.com</a><a class="btn btn-secondary" href="https://estudiographica.com/ab/" rel="noopener">Pruebas de estudiographica.com</a></div>
+  </section>
+
+  <section id="s-import">
+    <h2>Cargar datos</h2>
+    <p class="sub">Elige qué tipo de archivo es y súbelo en CSV. Si una columna no se reconoce sola, la eliges tú una vez.</p>
+    <div class="card stack">
+      <div class="row">
+        <div class="field"><label for="tipo">Qué archivo es</label><select class="input" id="tipo"><option value="ads">Campañas de Meta Ads</option><option value="ventas">Ventas (Nas.io)</option><option value="redes">Instagram o TikTok</option></select></div>
+        <div class="field"><label for="file">Archivo CSV</label><input class="input" id="file" type="file" accept=".csv,text/csv"></div>
+      </div>
+      <div id="mapping"></div>
+      <p class="alert" id="importMsg" role="status" hidden></p>
+    </div>
+    <div class="row" style="margin-top:var(--s4)" id="loaded"></div>
+  </section>
+</main>
+<script src="metricas.js"></script>
+<script>
+(function () {
+  'use strict';
+  var Mx = window.Metricas, $ = function (id) { return document.getElementById(id); }, KEY = 'mk-metricas-v1';
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  var D = { ads: [], ventas: [], redes: [], funnel: {} };
+  try { D = Object.assign(D, JSON.parse(localStorage.getItem(KEY)) || {}); } catch (e) {}
+  var save = function () { try { localStorage.setItem(KEY, JSON.stringify(D)); } catch (e) { msg('No se pudo guardar: el navegador no tiene espacio. Borra un tipo de datos y vuelve a cargar.', 'err'); } };
+  var m = function (n, dec) { return n == null ? 'sin dato' : n.toLocaleString('es', { maximumFractionDigits: dec == null ? 2 : dec }); };
+  var LABEL = { ads: 'Campañas', ventas: 'Ventas', redes: 'Redes' };
+  var FIELDS = { ads: [['campana', 'Nombre de la campaña', 1], ['gasto', 'Gasto', 1], ['resultados', 'Resultados', 1], ['fecha', 'Fecha (para ver por mes)', 0]], ventas: [['fecha', 'Fecha', 1], ['monto', 'Monto', 1], ['producto', 'Producto', 0]], redes: [['fecha', 'Fecha', 1], ['seguidores', 'Seguidores', 0], ['alcance', 'Alcance', 0]] };
+  function empty(what) { return '<div class="empty"><strong>Todavía no hay ' + what + '</strong><span>Súbelas abajo, en "Cargar datos".</span></div>'; }
+
+  /* ---------- Importar ---------- */
+  var pending = null;
+  function msg(t, kind) { var e = $('importMsg'); e.textContent = t; e.className = 'alert alert-' + (kind || 'ok'); e.hidden = false; }
+  $('file').addEventListener('change', function (e) {
+    var file = e.target.files[0]; if (!file) return;
+    file.text().then(function (text) {
+      var p = Mx.parseCsv(text), type = $('tipo').value;
+      if (!p.rows.length) return msg('Ese archivo no tiene filas. Revisa que sea el CSV correcto.', 'err');
+      pending = { type: type, csv: p, map: Mx.guess(type, p.cols) };
+      drawMapping();
+    });
+  });
+  $('tipo').addEventListener('change', function () { pending = null; $('mapping').innerHTML = ''; $('file').value = ''; });
+  function drawMapping() {
+    var p = pending;
+    $('mapping').innerHTML = '<div class="map">' + FIELDS[p.type].map(function (f) {
+      return '<div class="field"><label>' + f[1] + (f[2] ? '' : ' (opcional)') + '<select class="input" data-map="' + f[0] + '"><option value="">No está en el archivo</option>' + p.csv.cols.map(function (c) { return '<option' + (c === p.map[f[0]] ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join('') + '</select></label></div>';
+    }).join('') + '</div><div class="row" style="margin-top:var(--s4)"><button type="button" class="btn btn-primary" id="doImport">Cargar ' + p.csv.rows.length + ' filas</button><label class="row"><input type="checkbox" id="replace" checked style="width:20px;height:20px"> Reemplazar lo que ya había de este tipo</label></div>';
+  }
+  $('mapping').addEventListener('change', function (e) { if (e.target.dataset.map) pending.map[e.target.dataset.map] = e.target.value; });
+  $('mapping').addEventListener('click', function (e) {
+    if (e.target.id !== 'doImport') return;
+    var p = pending, missing = FIELDS[p.type].filter(function (f) { return f[2] && !p.map[f[0]]; });
+    if (missing.length) return msg('Falta elegir la columna de: ' + missing.map(function (f) { return f[1]; }).join(', ') + '.', 'err');
+    var g = function (r, k) { return p.map[k] ? r[p.map[k]] : ''; }, skipped = 0;
+    var rows = p.csv.rows.map(function (r) {
+      if (p.type === 'ads') return { campana: g(r, 'campana'), gasto: Mx.num(g(r, 'gasto')), resultados: Mx.num(g(r, 'resultados')) || 0, fecha: Mx.fecha(g(r, 'fecha')) };
+      if (p.type === 'ventas') return { fecha: Mx.fecha(g(r, 'fecha')), monto: Mx.num(g(r, 'monto')), producto: g(r, 'producto') };
+      return { fecha: Mx.fecha(g(r, 'fecha')), seguidores: Mx.num(g(r, 'seguidores')), alcance: Mx.num(g(r, 'alcance')) };
+    }).filter(function (r) {
+      // Se descartan las filas de totales y las que no traen el dato principal.
+      var ok = p.type === 'ads' ? r.campana && !/^(total|totales|resultados totales|total results)$/i.test(r.campana) && r.gasto != null : p.type === 'ventas' ? r.fecha && r.monto != null : !!r.fecha;
+      if (!ok) skipped++; return ok;
+    });
+    D[p.type] = $('replace').checked ? rows : D[p.type].concat(rows);
+    save(); pending = null; $('mapping').innerHTML = ''; $('file').value = '';
+    msg('Cargadas ' + rows.length + ' filas de ' + LABEL[p.type].toLowerCase() + (skipped ? '. Se ' + (skipped === 1 ? 'saltó 1 fila' : 'saltaron ' + skipped + ' filas') + ' sin datos (suelen ser totales).' : '.'));
+    render();
+  });
+  $('loaded').addEventListener('click', function (e) {
+    var t = e.target.dataset.clear; if (!t || !confirm('¿Borrar los datos de ' + LABEL[t].toLowerCase() + ' de este navegador?')) return;
+    D[t] = []; save(); render();
+  });
+
+  /* ---------- Vistas ---------- */
+  var ACC = { escalar: ['Escalar', 'badge-ok'], cortar: ['Cortar', 'badge-err'], mantener: ['Mantener', ''], 'sin-datos': ['Faltan datos', 'badge-warn'] };
+  function bars(months, a, b, la, lb) {
+    var keys = months.slice(-12), max = Math.max.apply(null, keys.map(function (k) { return Math.max(a[k] || 0, b ? b[k] || 0 : 0); })) || 1;
+    return '<div class="legend"><span><i></i>' + la + '</span>' + (b ? '<span><i class="b"></i>' + lb + '</span>' : '') + '</div><div class="bars">' + keys.map(function (k) {
+      return '<div class="bar-row"><span>' + k + '</span><div class="bar-track"><i style="width:' + ((a[k] || 0) / max * 100) + '%"></i>' + (b ? '<i class="b" style="width:' + ((b[k] || 0) / max * 100) + '%"></i>' : '') + '</div><span>' + m(a[k] || 0, 0) + (b ? ' / ' + m(b[k] || 0, 0) : '') + '</span></div>';
+    }).join('') + '</div>';
+  }
+  function render() {
+    // Campañas
+    if (!D.ads.length) $('ads').innerHTML = empty('campañas cargadas');
+    else {
+      var c = Mx.campanas(D.ads);
+      $('ads').innerHTML = '<div class="stats" style="margin-bottom:var(--s4)"><div class="stat"><b>' + m(c.gasto) + '</b><span>Gasto total</span></div><div class="stat"><b>' + m(c.resultados, 0) + '</b><span>Resultados</span></div><div class="stat"><b>' + m(c.promedio) + '</b><span>Costo promedio por resultado</span></div></div>' +
+        '<div class="table-wrap"><table class="table"><thead><tr><th>Campaña</th><th class="r">Gasto</th><th class="r">Resultados</th><th class="r">Costo por resultado</th><th>Qué hacer</th></tr></thead><tbody>' +
+        c.lista.map(function (x) { return '<tr><td>' + esc(x.campana) + '</td><td class="r">' + m(x.gasto) + '</td><td class="r">' + m(x.resultados, 0) + '</td><td class="r">' + m(x.costo) + '</td><td><span class="badge ' + ACC[x.accion][1] + '">' + ACC[x.accion][0] + '</span></td></tr>'; }).join('') + '</tbody></table></div>' +
+        '<p class="muted" style="margin-top:var(--s3)">Escalar: cuesta 20% menos que el promedio. Cortar: cuesta 30% más, o gastó lo de tres resultados sin traer ninguno. Con menos de ' + Mx.MIN_RESULTADOS + ' resultados no hay recomendación.</p>';
+    }
+    // Ingresos contra gasto
+    var ing = Mx.porMes(D.ventas, 'monto'), gas = Mx.porMes(D.ads, 'gasto'), months = Object.keys(Object.assign({}, ing, gas)).sort();
+    $('money').innerHTML = !D.ventas.length ? empty('ventas cargadas') : bars(months, ing, Object.keys(gas).length ? gas : null, 'Ingresos', 'Gasto en anuncios') +
+      (Object.keys(gas).length ? '' : '<p class="muted" style="margin-top:var(--s3)">Para comparar con el gasto, carga las campañas con su columna de fecha.</p>');
+    // Redes
+    if (!D.redes.length) $('redes').innerHTML = empty('datos de redes');
+    else {
+      var last = {}, alc = Mx.porMes(D.redes, 'alcance');
+      D.redes.slice().sort(function (a, b) { return a.fecha < b.fecha ? -1 : 1; }).forEach(function (r) { if (r.seguidores != null) last[r.fecha.slice(0, 7)] = r.seguidores; });
+      var mk = Object.keys(Object.assign({}, last, alc)).sort();
+      $('redes').innerHTML = (Object.keys(last).length ? '<h3>Seguidores al cierre de cada mes</h3>' + bars(mk, last, null, 'Seguidores') : '') + (D.redes.some(function (r) { return r.alcance != null; }) ? '<h3 style="margin-top:var(--s5)">Alcance por mes</h3>' + bars(mk, alc, null, 'Alcance') : '');
+    }
+    // Alertas: el último mes completo contra los anteriores
+    var al = [], series = [['Ingresos', ing, false], ['Gasto en anuncios', gas, true], ['Alcance en redes', Mx.porMes(D.redes, 'alcance'), false]];
+    series.forEach(function (s) {
+      var ks = Object.keys(s[1]).sort(), a = Mx.alerta(ks.map(function (k) { return s[1][k]; }));
+      if (a) al.push('<p class="alert ' + (a.sube === s[2] ? 'alert-err' : 'alert-ok') + '"><span><strong>' + s[0] + ' de ' + ks[ks.length - 1] + ':</strong> ' + m(a.ultimo, 0) + ', ' + (a.sube ? 'por encima' : 'por debajo') + ' de su promedio de ' + m(a.promedio, 0) + ' (' + (a.cambio > 0 ? '+' : '') + m(a.cambio * 100, 0) + '%).</span></p>');
+    });
+    $('alerts').innerHTML = al.join('');
+    $('loaded').innerHTML = ['ads', 'ventas', 'redes'].filter(function (t) { return D[t].length; }).map(function (t) { return '<button type="button" class="btn btn-quiet" data-clear="' + t + '">Borrar ' + LABEL[t].toLowerCase() + ' (' + D[t].length + ' filas)</button>'; }).join('');
+    funnel();
+  }
+  function funnel() {
+    var f = D.funnel, r = +f.reg || 0, a = +f.asi || 0, c = +f.mem || 0, pct = function (x, y) { return y ? m(x / y * 100, 1) + '%' : 'sin dato'; };
+    if (!r) { $('funnelOut').innerHTML = '<p class="muted">Con los tres números se ve en qué paso se pierde más gente.</p>'; return; }
+    var steps = [['De los que entraron al grupo, asistieron', a, r, 'entre entrar al grupo y asistir a la clase'], ['De los que asistieron, compraron', c, a, 'entre asistir a la clase y comprar']];
+    var worst = steps.filter(function (s) { return s[2]; }).sort(function (x, y) { return x[1] / x[2] - y[1] / y[2]; })[0];
+    $('funnelOut').innerHTML = '<div class="table-wrap"><table class="table"><tbody>' + steps.map(function (s) { return '<tr><td>' + s[0] + '</td><td class="r">' + m(s[1], 0) + ' de ' + m(s[2], 0) + '</td><td class="r">' + pct(s[1], s[2]) + '</td></tr>'; }).join('') + '<tr><td>De cada 100 que entran al grupo, compran</td><td></td><td class="r">' + pct(c, r) + '</td></tr></tbody></table></div>' +
+      (worst && a ? '<p class="alert" style="margin-top:var(--s3)">El paso donde se pierde más gente: ' + worst[3] + '.</p>' : '');
+  }
+  ['reg', 'asi', 'mem'].forEach(function (k) { var i = $('fu-' + k); i.value = D.funnel[k] || ''; i.addEventListener('input', function () { D.funnel[k] = i.value; save(); funnel(); }); });
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /ab/
+Disallow: /panel-metricas/
 Disallow: /marketools/clave-del-mes/
 Disallow: /marketools/wireframe-app/
 Disallow: /marketools/adsboard-app/

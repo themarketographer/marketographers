@@ -1,0 +1,8 @@
+{
+  "name": "marketographers",
+  "private": true,
+  "description": "Dependencias de las funciones de Netlify (pruebas A/B).",
+  "dependencies": {
+    "@netlify/blobs": "^10.7.13"
+  }
+}

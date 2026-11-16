@@ -54,7 +54,7 @@
         <label class="row"><input type="checkbox" id="uso" checked style="width:20px;height:20px"> <span>El cliente autoriza que uses las fotos en tu portafolio y redes</span></label>
       </form>
       <section class="card stack out">
-        <div class="row no-print"><button type="button" class="btn btn-primary" id="print">Imprimir o guardar en PDF</button><button type="button" class="btn btn-secondary" id="copy">Copiar texto</button></div>
+        <div class="row no-print"><button type="button" class="btn btn-primary" id="print">Imprimir o guardar en PDF</button><button type="button" class="btn btn-secondary" id="copy">Copiar texto</button><button type="button" class="btn btn-secondary" id="nuevo">Empezar otro contrato</button></div>
         <pre id="doc"></pre>
         <p class="muted no-print">Es una plantilla base. Las leyes cambian según el país: si el monto es grande, haz que un abogado de tu país la revise una vez y luego la reutilizas.</p>
       </section>
@@ -90,7 +90,12 @@ Tool.premium(function () {
     ];
     $('doc').textContent = c.join('\n\n');
   }
-  $('f').addEventListener('input', function () { build(); Tool.used('contrato'); });
+  // Lo escrito se guarda en este navegador para no perderlo al recargar.
+  var campos = Array.prototype.slice.call($('f').querySelectorAll('input'));
+  function guardar() { try { var d = {}; campos.forEach(function (c) { d[c.id] = c.type === 'checkbox' ? c.checked : c.value; }); localStorage.setItem('mk-contrato', JSON.stringify(d)); } catch (e) {} }
+  try { var g = JSON.parse(localStorage.getItem('mk-contrato') || 'null'); if (g && typeof g === 'object') campos.forEach(function (c) { if (c.id in g) { if (c.type === 'checkbox') c.checked = !!g[c.id]; else if (typeof g[c.id] === 'string') c.value = g[c.id]; } }); } catch (e) {}
+  $('nuevo').addEventListener('click', function () { try { localStorage.removeItem('mk-contrato'); } catch (e) {} $('f').reset(); build(); });
+  $('f').addEventListener('input', function () { build(); guardar(); Tool.used('contrato'); });
   $('print').addEventListener('click', function () { window.print(); });
   $('copy').addEventListener('click', function () { Tool.copy($('doc').textContent, this); });
   build();

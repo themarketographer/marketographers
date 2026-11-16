@@ -97,7 +97,29 @@
     return { ultimo: last, promedio: mean, sube: last > mean, cambio: mean ? (last - mean) / mean : null };
   }
 
-  var api = { parseCsv: parseCsv, num: num, fecha: fecha, guess: guess, campanas: campanas, porMes: porMes, alerta: alerta, MIN_RESULTADOS: MIN_RESULTADOS };
+  // Resume las filas antes de guardarlas para no llenar el almacenamiento del navegador (unos 5 MB):
+  // anuncios por campaña y mes, ventas por producto y mes, redes una fila por día.
+  function resumir(tipo, rows) {
+    var by = {}, orden = [];
+    rows.forEach(function (r) {
+      var mes = r.fecha ? r.fecha.slice(0, 7) : '', k, base;
+      if (tipo === 'ads') { k = r.campana + '|' + mes; base = { campana: r.campana, gasto: 0, resultados: 0, fecha: mes ? mes + '-01' : r.fecha }; }
+      else if (tipo === 'ventas') { k = (r.producto || '') + '|' + mes; base = { fecha: mes ? mes + '-01' : r.fecha, monto: 0, producto: r.producto, n: 0 }; }
+      else { by[r.fecha] = { fecha: r.fecha, seguidores: r.seguidores, alcance: r.alcance }; if (orden.indexOf(r.fecha) < 0) orden.push(r.fecha); return; }
+      if (!by[k]) { by[k] = base; orden.push(k); }
+      if (tipo === 'ads') { by[k].gasto += r.gasto || 0; by[k].resultados += r.resultados || 0; }
+      else { by[k].monto += r.monto || 0; by[k].n += 1; }
+    });
+    return orden.map(function (k) { return by[k]; });
+  }
+  // Agrega filas nuevas saltando las idénticas a las que ya había, para que cargar dos veces el mismo archivo no duplique.
+  // shortcut: un archivo que solo se solapa en parte con uno anterior sí suma el tramo repetido; subir a claves por día si hace falta.
+  function sinRepetidas(existentes, nuevas) {
+    var vistas = {}; existentes.forEach(function (r) { vistas[JSON.stringify(r)] = 1; });
+    return nuevas.filter(function (r) { return !vistas[JSON.stringify(r)]; });
+  }
+
+  var api = { resumir: resumir, sinRepetidas: sinRepetidas, parseCsv: parseCsv, num: num, fecha: fecha, guess: guess, campanas: campanas, porMes: porMes, alerta: alerta, MIN_RESULTADOS: MIN_RESULTADOS };
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = api;
     if (require.main === module) {
@@ -115,7 +137,11 @@
       a.deepStrictEqual(porMes([{ fecha: '2026-10-30', monto: 33 }, { fecha: '2026-11-02', monto: 33 }, { fecha: '2026-11-20', monto: 49 }], 'monto'), { '2026-10': 33, '2026-11': 82 });
       a.strictEqual(alerta([10, 11, 9, 10]), null); a.strictEqual(alerta([10, 11, 9, 10, 10.5]), null);
       a(alerta([10, 11, 9, 10, 25]).sube); a.strictEqual(alerta([10, 11, 9, 10, 2]).sube, false);
-      console.log('metricas: 24 comprobaciones pasan');
+      var diarias = []; for (var d = 0; d < 1000; d++) { var dia = d % 60; diarias.push({ campana: 'C' + (d % 3), gasto: 1, resultados: 1, fecha: (dia < 30 ? '2026-10-' : '2026-11-') + String(dia % 30 + 1).padStart(2, '0') }); }
+      var res = resumir('ads', diarias); a.strictEqual(res.length, 6); a.strictEqual(res.reduce(function (t, r) { return t + r.gasto; }, 0), 1000);
+      var v1 = resumir('ventas', [{ fecha: '2026-11-02', monto: 33, producto: 'A' }, { fecha: '2026-11-20', monto: 49, producto: 'A' }]); a.deepStrictEqual(v1, [{ fecha: '2026-11-01', monto: 82, producto: 'A', n: 2 }]);
+      a.strictEqual(sinRepetidas(v1, resumir('ventas', [{ fecha: '2026-11-02', monto: 33, producto: 'A' }, { fecha: '2026-11-20', monto: 49, producto: 'A' }])).length, 0); // mismo archivo dos veces
+      console.log('metricas: 28 comprobaciones pasan');
     }
   } else root.Metricas = api;
 })(this);

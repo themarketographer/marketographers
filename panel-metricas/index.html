@@ -137,9 +137,12 @@ section>h2{margin-bottom:var(--s2)}
       var ok = p.type === 'ads' ? r.campana && !/^(total|totales|resultados totales|total results)$/i.test(r.campana) && r.gasto != null : p.type === 'ventas' ? r.fecha && r.monto != null : !!r.fecha;
       if (!ok) skipped++; return ok;
     });
+    var leidas = rows.length;
+    rows = Mx.resumir(p.type, rows);
+    if (!$('replace').checked) rows = Mx.sinRepetidas(D[p.type], rows);
     D[p.type] = $('replace').checked ? rows : D[p.type].concat(rows);
     save(); pending = null; $('mapping').innerHTML = ''; $('file').value = '';
-    msg('Cargadas ' + rows.length + ' filas de ' + LABEL[p.type].toLowerCase() + (skipped ? '. Se ' + (skipped === 1 ? 'saltó 1 fila' : 'saltaron ' + skipped + ' filas') + ' sin datos (suelen ser totales).' : '.'));
+    msg('Cargadas ' + leidas + ' filas de ' + LABEL[p.type].toLowerCase() + (skipped ? '. Se ' + (skipped === 1 ? 'saltó 1 fila' : 'saltaron ' + skipped + ' filas') + ' sin datos (suelen ser totales).' : '.'));
     render();
   });
   $('loaded').addEventListener('click', function (e) {

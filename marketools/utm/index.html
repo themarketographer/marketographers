@@ -69,7 +69,9 @@
     if (k) u.searchParams.set('utm_content', k); else u.searchParams.delete('utm_content');
     $('link').textContent = u.toString(); $('copy').disabled = false; Tool.used('utm');
   }
-  $('f').addEventListener('input', build);
+  // Plataforma y tipo de pieza se recuerdan en este navegador.
+  try { var g = JSON.parse(localStorage.getItem('mk-utm') || 'null'); if (g) ['source', 'medium'].forEach(function (k) { if (typeof g[k] === 'string' && Array.prototype.some.call($(k).options, function (o) { return o.value === g[k]; })) $(k).value = g[k]; }); } catch (e) {}
+  $('f').addEventListener('input', function () { build(); try { localStorage.setItem('mk-utm', JSON.stringify({ source: $('source').value, medium: $('medium').value })); } catch (e) {} });
   $('copy').addEventListener('click', function () { Tool.copy($('link').textContent, this); });
   $('copyMeta').addEventListener('click', function () { Tool.copy($('meta').textContent, this); });
 })();

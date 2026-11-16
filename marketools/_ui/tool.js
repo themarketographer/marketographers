@@ -25,11 +25,15 @@
       var K = 'mk-premium', box = document.getElementById('gate'), app = document.getElementById('app');
       var check = function (clave, silent) {
         return fetch('/.netlify/functions/premium', { method: 'POST', body: JSON.stringify({ clave: clave }) }).then(function (r) { return r.json(); }).then(function (r) {
-          if (r.ok) { try { localStorage.setItem(K, clave); } catch (e) {} box.hidden = true; app.hidden = false; onOk(); return; }
+          if (r.ok) { try { localStorage.setItem(K, clave); localStorage.setItem('mk-premium-ok', String(Date.now())); } catch (e) {} box.hidden = true; app.hidden = false; onOk(); return; }
           try { localStorage.removeItem(K); } catch (e) {}
           box.hidden = false; app.hidden = true;
           var er = document.getElementById('gateErr'); er.textContent = silent ? 'La clave del mes cambió. Búscala en la comunidad y vuelve a entrar.' : (r.error || 'Esa clave no es la de este mes.'); er.hidden = false;
-        }).catch(function () { box.hidden = false; var er = document.getElementById('gateErr'); er.textContent = 'No hay conexión. Vuelve a intentar.'; er.hidden = false; });
+        }).catch(function () {
+          // Sin internet: si la clave se validó hace menos de 24 horas, se deja entrar igual.
+          var ok = 0; try { ok = +localStorage.getItem('mk-premium-ok') || 0; } catch (e) {}
+          if (silent && Date.now() - ok < 864e5) { box.hidden = true; app.hidden = false; onOk(); return; }
+          box.hidden = false; var er = document.getElementById('gateErr'); er.textContent = 'No hay conexión. Vuelve a intentar.'; er.hidden = false; });
       };
       box.addEventListener('submit', function (e) { e.preventDefault(); check(document.getElementById('gateKey').value.trim().toUpperCase()); });
       var saved = null; try { saved = localStorage.getItem(K); } catch (e) {}

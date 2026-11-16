@@ -58,17 +58,19 @@
   var $ = function (id) { return document.getElementById(id); };
   var n = function (id) { var v = parseFloat($(id).value); return isFinite(v) ? v : null; };
   var m = function (x) { return (Math.round(x * 100) / 100).toLocaleString('es', { maximumFractionDigits: 2 }); };
+  // Cuenta pura: lo máximo que puedes pagar por mensaje según tu ganancia y cuántos de 10 cierran.
+  function tope(precio, costo, cierre) { var g = precio - costo, t = Math.min(Math.max(cierre, 0), 10) / 10; return { ganancia: g, porMensaje: g * t, mensajesPorCliente: t ? 1 / t : null }; }
   function calc() {
     var precio = n('precio'), costo = n('costo') || 0, cierre = n('cierre'), cpm = n('cpm'), presu = n('presu');
     if (precio === null || cierre === null) { $('res').innerHTML = '<p class="muted">Llena los tres primeros datos para ver el resultado.</p>'; return; }
-    var ganancia = precio - costo, tasa = Math.min(Math.max(cierre, 0), 10) / 10;
+    var tp = tope(precio, costo, cierre), ganancia = tp.ganancia, tasa = Math.min(Math.max(cierre, 0), 10) / 10;
     if (ganancia <= 0) { $('res').innerHTML = '<p class="alert alert-err">Con esos números cada sesión te deja ' + m(ganancia) + '. Antes de anunciar hay que subir el precio o bajar el costo: cualquier anuncio agranda la pérdida.</p>'; return; }
     if (!tasa) { $('res').innerHTML = '<p class="alert alert-warn">Si de 10 personas ninguna te contrata, el problema está en la conversación de venta. Ahí un anuncio solo trae más conversaciones que no cierran.</p>'; return; }
-    var topeCliente = ganancia, topeMensaje = ganancia * tasa;
+    var topeCliente = ganancia, topeMensaje = tp.porMensaje;
     var h = '<div><p class="muted">Lo máximo que puedes pagar por cada mensaje</p><p class="big">' + m(topeMensaje) + '</p></div>' +
       '<div class="kv"><span>Ganancia por sesión</span><span>' + m(ganancia) + '</span></div>' +
       '<div class="kv"><span>Tope por cliente conseguido</span><span>' + m(topeCliente) + '</span></div>' +
-      '<div class="kv"><span>Mensajes que necesitas para 1 cliente</span><span>' + m(1 / tasa) + '</span></div>' +
+      '<div class="kv"><span>Mensajes que necesitas para 1 cliente</span><span>' + m(tp.mensajesPorCliente) + '</span></div>' +
       '<p class="muted">Pagando el tope quedas en cero: recuperas lo gastado y no ganas. Para que el anuncio valga la pena, apunta a pagar la mitad o menos.</p>';
     if (cpm !== null && cpm > 0) {
       var costoCliente = cpm / tasa, queda = ganancia - costoCliente;
@@ -82,7 +84,9 @@
   }
   $('f').addEventListener('input', calc);
   // Comprobación de la cuenta: 150 de precio, 30 de costo, 2 de 10 -> tope por mensaje 24.
-  console.assert(Math.abs((150 - 30) * 0.2 - 24) < 1e-9);
+  console.assert(Math.abs(tope(150, 30, 2).porMensaje - 24) < 1e-9);
+  console.assert(tope(150, 200, 2).ganancia === -50);
+  console.assert(tope(150, 30, 0).mensajesPorCliente === null);
 })();
 </script>
 </body>

@@ -2,11 +2,14 @@
 
 Dashboard de campañas de Meta Ads para alumnos, sin backend.
 
-- HTML/CSS/JS plano, un solo archivo, sin dependencias ni build.
+- HTML/CSS/JS plano (`index.html` más `adsboard.js`), sin dependencias ni build.
 - No usa Vite/React porque no hace falta: no hay assets locales que
   requieran rutas base ni un paso de compilación.
-- Por eso `adsboard-app/index.html` y `adsboard/index.html` son
-  el mismo archivo, a diferencia de otras tools de esta carpeta.
+- Por eso `adsboard-app/` y `adsboard/` tienen los mismos archivos
+  (`index.html` y `adsboard.js`), a diferencia de otras tools de esta carpeta.
+- Cada vez que cambie `adsboard.js`, subir el mismo valor de versión en tres
+  lugares: `adsboard/index.html` (`adsboard.js?v=...`) y las dos líneas
+  de `adsboard/sw.js` (`CACHE` y `SHELL`). Hoy es `extras3`.
 - Login con Facebook (Facebook Login for Business), permiso ads_read
   únicamente. El token vive solo en el navegador del alumno, nunca
   pasa por ningún servidor nuestro.

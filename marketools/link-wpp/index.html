@@ -307,13 +307,19 @@
     .tool-hero mark{animation:none;opacity:1;background-size:100% 100%;}
   }
 </style>
+<script>
+/* Las librerías de medición cargan al primer toque o 2,5 s después de cargar la página. Los eventos quedan en cola y no se pierden. */
+(function(){var ya=false;function cargar(){if(ya)return;ya=true;
+  ['https://www.googletagmanager.com/gtag/js?id=G-GQY8VYBD5T','https://connect.facebook.net/en_US/fbevents.js'].forEach(function(u){var s=document.createElement('script');s.async=true;s.src=u;document.head.appendChild(s);});}
+['pointerdown','keydown','scroll','touchstart'].forEach(function(e){addEventListener(e,cargar,{once:true,passive:true});});
+addEventListener('load',function(){setTimeout(cargar,2500);});})();
+</script>
 </head>
 <body>
 
 <!-- GA4 — misma propiedad y Measurement ID que la landing principal
      (marketographers.com), para que esta pagina cuente dentro del mismo funnel
      en vez de quedar como punto ciego. -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-GQY8VYBD5T"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){ dataLayer.push(arguments); }
@@ -323,14 +329,7 @@
 
 <!-- Meta Pixel -->
 <script>
-!function(f,b,e,v,n,t,s)
-{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];
-s.parentNode.insertBefore(t,s)}(window, document,'script',
-'https://connect.facebook.net/en_US/fbevents.js');
+!function(f){if(f.fbq)return;var n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];}(window);
 fbq('set', 'autoConfig', false, '467504537642622');
 fbq('init', '467504537642622');
 function makeEventId(prefix){return prefix + '_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);}
@@ -362,6 +361,7 @@ trackBoth('PageView');
     </div>
   </div>
 </header>
+<main>
 
 <section class="tool-hero">
   <div class="wrap">
@@ -520,6 +520,7 @@ trackBoth('PageView');
   </div>
 </section>
 
+</main>
 <footer>
   <div class="wrap">
     <span class="mark" data-t="pg_linkwpp.t25">the marketo<i>g</i>raphers</span>
@@ -528,7 +529,6 @@ trackBoth('PageView');
   </div>
 </footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 (function(){
   const bizName = document.getElementById('bizName');
@@ -576,9 +576,11 @@ trackBoth('PageView');
   function buildLink(){
     const cc = getCC();
     const num = digitsOnly(numberInput.value);
-    const full = cc + num;
+    let limpio = num.replace(/^0+/, '');                                   // 0 inicial que se usa al marcar dentro del país
+    if (cc && limpio.indexOf(cc) === 0 && limpio.length > cc.length + 6) limpio = limpio.slice(cc.length);  // ya traía el código de país
+    const full = cc + limpio;
     const msg = personalize(messageInput.value);
-    const hasNumber = num.length >= 6;
+    const hasNumber = cc === '591' ? /^[67]\d{7}$/.test(limpio) : (limpio.length >= 7 && limpio.length <= 12);
     const link = hasNumber ? `https://wa.me/${full}?text=${encodeURIComponent(msg)}` : '';
     linkOutput.value = link;
     if(hasNumber){
@@ -588,6 +590,7 @@ trackBoth('PageView');
     } else {
       openWaBtn.href = '#';
       openWaBtn.setAttribute('aria-disabled','true');
+      waWarning.textContent = !num ? '⚠️ Completa el número de WhatsApp para activar el link.' : (cc === '591' ? '⚠️ En Bolivia el celular tiene 8 dígitos y empieza con 6 o 7.' : '⚠️ Revisa el número: debe tener entre 7 y 12 dígitos sin el código de país.');
       waWarning.style.display = 'block';
     }
     if(qrRendered) renderQR(link);
@@ -610,12 +613,35 @@ trackBoth('PageView');
     charCount.textContent = messageInput.value.length;
   }
 
-  function refresh(){ buildLink(); updatePreview(); }
+  const KEY = 'mk-linkwpp';
+  function guardar(){ try{ localStorage.setItem(KEY, JSON.stringify({ cc: ccSelect.value, ccc: ccCustom.value, biz: bizName.value, msg: messageInput.value })); }catch(e){} }
+  function cargarGuardado(){
+    try{
+      const d = JSON.parse(localStorage.getItem(KEY) || 'null');
+      if(!d || typeof d !== 'object') return;
+      if(typeof d.cc === 'string' && [...ccSelect.options].some(o => o.value === d.cc)) ccSelect.value = d.cc;
+      ccCustom.style.display = ccSelect.value === 'other' ? 'block' : 'none';
+      if(typeof d.ccc === 'string') ccCustom.value = d.ccc;
+      if(typeof d.biz === 'string') bizName.value = d.biz;
+      if(typeof d.msg === 'string' && d.msg) messageInput.value = d.msg;
+    }catch(e){}
+  }
+  function refresh(){ buildLink(); updatePreview(); guardar(); }
 
+  // Carga la librería de QR solo cuando alguien la pide.
+  function conQR(listo, falla){
+    if(window.QRCode) return listo();
+    var sc = document.createElement('script');
+    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+    sc.onload = listo; sc.onerror = falla;
+    document.head.appendChild(sc);
+  }
   function renderQR(link){
     qrCanvas.innerHTML = '';
     if(!link) return;
-    new QRCode(qrCanvas, { text: link, width: 176, height: 176, colorDark:'#141414', colorLight:'#ffffff', correctLevel: QRCode.CorrectLevel.M });
+    conQR(function(){
+      new QRCode(qrCanvas, { text: link, width: 176, height: 176, colorDark:'#141414', colorLight:'#ffffff', correctLevel: QRCode.CorrectLevel.M });
+    }, function(){ qrCanvas.textContent = 'No se pudo cargar el generador de QR. Revisa tu conexión y vuelve a tocar el botón.'; });
   }
 
   ccSelect.addEventListener('change', ()=>{
@@ -668,14 +694,25 @@ trackBoth('PageView');
   });
 
   qrDownload.addEventListener('click', ()=>{
-    const canvas = qrCanvas.querySelector('canvas');
-    if(!canvas) return;
-    const a = document.createElement('a');
-    a.download = 'qr-whatsapp.png';
-    a.href = canvas.toDataURL('image/png');
-    a.click();
+    if(!linkOutput.value) return;
+    // QR grande (1024 px) para imprimir; el de pantalla es chico y sale borroso.
+    conQR(function(){
+      const tmp = document.createElement('div');
+      tmp.style.cssText = 'position:fixed;left:-9999px;top:0';
+      document.body.appendChild(tmp);
+      new QRCode(tmp, { text: linkOutput.value, width: 1024, height: 1024, colorDark:'#141414', colorLight:'#ffffff', correctLevel: QRCode.CorrectLevel.M });
+      const canvas = tmp.querySelector('canvas');
+      if(canvas){
+        const a = document.createElement('a');
+        a.download = 'qr-whatsapp.png';
+        a.href = canvas.toDataURL('image/png');
+        a.click();
+      }
+      document.body.removeChild(tmp);
+    }, function(){ qrCanvas.textContent = 'No se pudo cargar el generador de QR. Revisa tu conexión.'; });
   });
 
+  cargarGuardado();
   refresh();
 
   // ---- Animaciones de aparición al hacer scroll ----

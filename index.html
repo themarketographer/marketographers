@@ -604,11 +604,17 @@ h1,h2,h3,.wl{text-wrap:balance}
 }
 @media(max-width:860px) and (prefers-reduced-transparency:reduce){body::before,body::after{-webkit-backdrop-filter:none;backdrop-filter:none}}
 </style>
+<script>
+/* Las librerías de medición cargan al primer toque o 2,5 s después de cargar la página. Los eventos quedan en cola y no se pierden. */
+(function(){var ya=false;function cargar(){if(ya)return;ya=true;
+  ['https://www.googletagmanager.com/gtag/js?id=G-GQY8VYBD5T','https://connect.facebook.net/en_US/fbevents.js'].forEach(function(u){var s=document.createElement('script');s.async=true;s.src=u;document.head.appendChild(s);});}
+['pointerdown','keydown','scroll','touchstart'].forEach(function(e){addEventListener(e,cargar,{once:true,passive:true});});
+addEventListener('load',function(){setTimeout(cargar,2500);});})();
+</script>
 </head>
 <body>
 
 <!-- ═══════════ GA4 ═══════════ -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-GQY8VYBD5T"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){ dataLayer.push(arguments); }
@@ -618,14 +624,7 @@ h1,h2,h3,.wl{text-wrap:balance}
 
 <!-- Meta Pixel -->
 <script>
-!function(f,b,e,v,n,t,s)
-{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];
-s.parentNode.insertBefore(t,s)}(window, document,'script',
-'https://connect.facebook.net/en_US/fbevents.js');
+!function(f){if(f.fbq)return;var n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];}(window);
 fbq('set', 'autoConfig', false, '467504537642622');
   fbq('init', '467504537642622');
 
@@ -731,7 +730,7 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
 <section class="hero">
     <div class="wrap head">
     <span data-t="home_hero.t01" class="eyebrow rv">Inscripciones abiertas a la comunidad</span>
-    <h1 data-t="home_hero.t02" class="h-hero rv" style="--i:1">Tu cliente ideal ya eligió. Eligió al fotógrafo <mark>que sí sabe venderse.</mark></h1>
+    <h1 data-t="home_hero.t02" class="h-hero">Tu cliente ideal ya eligió. Eligió al fotógrafo <mark>que sí sabe venderse.</mark></h1>
     <p data-t="home_hero.t03" class="lead rv" style="--i:2">Dale 90 segundos al video. Si no te interesa, no perdiste nada. Si te interesa, te espero más abajo.</p>
   </div>
   <div class="stage rv" style="--i:3" id="stage">

@@ -163,7 +163,6 @@ footer{padding-left:var(--space-3);padding-right:var(--space-3)}
 @media (prefers-reduced-motion:reduce){.live-dot{animation:none}}
 </style>
 <!-- GA4 (mismo ID que el resto de marketographers.com) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-GQY8VYBD5T"></script>
 <script>
 window.dataLayer=window.dataLayer||[];
 function gtag(){dataLayer.push(arguments);}
@@ -172,7 +171,7 @@ gtag('config','G-GQY8VYBD5T');
 </script>
 <!--PIXEL-->
 <script>
-!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+!function(f){if(f.fbq)return;var n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];}(window);
 fbq('set','autoConfig',false,'467504537642622');
 fbq('init','467504537642622');
 function mktEv(name,params){
@@ -202,6 +201,13 @@ mktEv('VioLandingMasterclass');
 </script>
 <noscript><img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=467504537642622&ev=PageView&noscript=1"></noscript>
 <!--/PIXEL-->
+<script>
+/* Las librerías de medición cargan al primer toque o 2,5 s después de cargar la página. Los eventos quedan en cola y no se pierden. */
+(function(){var ya=false;function cargar(){if(ya)return;ya=true;
+  ['https://www.googletagmanager.com/gtag/js?id=G-GQY8VYBD5T','https://connect.facebook.net/en_US/fbevents.js'].forEach(function(u){var s=document.createElement('script');s.async=true;s.src=u;document.head.appendChild(s);});}
+['pointerdown','keydown','scroll','touchstart'].forEach(function(e){addEventListener(e,cargar,{once:true,passive:true});});
+addEventListener('load',function(){setTimeout(cargar,2500);});})();
+</script>
 </head>
 <body>
 <header id="bar">

@@ -1,5 +1,5 @@
 /* The Marketographers: fondo casi negro, texto claro, dorado como relleno o como texto sobre oscuro. */
-@font-face{font-family:"Working";font-weight:400 800;font-display:swap;src:url("/assets/fonts/Working-400.otf") format("opentype")}
+@font-face{font-family:"Working";font-weight:400 800;font-display:swap;src:url("/assets/fonts/Working-400.woff2") format("woff2"),url("/assets/fonts/Working-400.otf") format("opentype")}
 :root{
   color-scheme:dark;
   --bg:#0c0c0c; --surface:#151515; --surface-2:#1d1d1d;

@@ -372,7 +372,7 @@
 <script>try{if(localStorage.getItem("mk-theme")==="light")document.documentElement.setAttribute("data-theme","light")}catch(e){}</script><link rel="stylesheet" href="/assets/fx.css">
 <!-- Meta Pixel + API de conversiones (PageView, mismo patron del sitio) -->
 <script>
-!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+!function(f){if(f.fbq)return;var n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];}(window);
 fbq('set','autoConfig',false,'467504537642622');
 fbq('init','467504537642622');
 (function(){
@@ -386,6 +386,12 @@ fbq('init','467504537642622');
 })();
 </script>
 <noscript><img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=467504537642622&ev=PageView&noscript=1"></noscript>
+<script>
+/* La librería de Meta carga al primer toque o 2,5 s después de cargar la página. Los eventos quedan en cola y no se pierden. */
+(function(){var ya=false;function cargar(){if(ya)return;ya=true;var s=document.createElement('script');s.async=true;s.src='https://connect.facebook.net/en_US/fbevents.js';document.head.appendChild(s);}
+['pointerdown','keydown','scroll','touchstart'].forEach(function(e){addEventListener(e,cargar,{once:true,passive:true});});
+addEventListener('load',function(){setTimeout(cargar,2500);});})();
+</script>
 </head>
 <body>
 
@@ -884,12 +890,14 @@ const FUND_INFO = [
 ];
 
 let S = load();
-let O = calc(S);
+let O;
+try{ O = calc(S); }
+catch(e){ S = defaults(); O = calc(S); setTimeout(()=>toast('Tus datos guardados estaban dañados y se reiniciaron.'),400); }
 
 function load(){
   try{
     const raw = localStorage.getItem(KEY);
-    if(raw){ return merge(defaults(), JSON.parse(raw)); }
+    if(raw){ return sano(merge(defaults(), JSON.parse(raw))); }
   }catch(e){}
   return defaults();
 }
@@ -903,10 +911,17 @@ function merge(base, extra){
   }
   return (extra===undefined||extra===null) ? base : extra;
 }
+// Si lo guardado (o un archivo importado) viene con listas rotas, se vuelve a los valores por defecto de esa lista
+function sano(s){
+  const d = defaults();
+  if(!Array.isArray(s.funds) || s.funds.length !== 5 || s.funds.some(f => !f || typeof f !== 'object')) s.funds = d.funds;
+  for(const k of ['basics','fun','costs','equip','office','neweq']) if(!Array.isArray(s[k]) || s[k].some(r => !r || typeof r !== 'object')) s[k] = d[k];
+  return s;
+}
 let saveT;
 function save(){
   clearTimeout(saveT);
-  saveT = setTimeout(()=>{ try{ localStorage.setItem(KEY, JSON.stringify(S));  }catch(e){  } }, 250);
+  saveT = setTimeout(()=>{ try{ localStorage.setItem(KEY, JSON.stringify(S));  }catch(e){ if(!save.avisado){ save.avisado = true; toast('Este navegador no está guardando tus datos. Usa "Exportar" para no perder tu plan.'); } } }, 250);
 }
 
 /* ---------- formato ---------- */
@@ -1313,7 +1328,7 @@ function init(){
   $('btnImport').addEventListener('click',()=>{ menu(false); $('fileImport').click(); });
   $('fileImport').addEventListener('change',e=>{
     const f=e.target.files[0]; if(!f) return; const rd=new FileReader();
-    rd.onload=()=>{ try{ const j=JSON.parse(rd.result); if(!j||typeof j!=='object'||!j.cur||!Array.isArray(j.basics)) throw 0; S=merge(defaults(),j); S.demo=false; rebuild(); toast('Archivo cargado'); }catch(err){ toast('Ese archivo no es válido'); } };
+    rd.onload=()=>{ try{ const j=JSON.parse(rd.result); if(!j||typeof j!=='object'||!j.cur||!Array.isArray(j.basics)) throw 0; S=sano(merge(defaults(),j)); S.demo=false; rebuild(); toast('Archivo cargado'); }catch(err){ toast('Ese archivo no es válido'); } };
     rd.readAsText(f); e.target.value='';
   });
   $('btnReset').addEventListener('click',()=>{ menu(false); if(confirm('¿Reiniciar todo y volver a los datos de ejemplo?')){ S=defaults(); rebuild(); go('moneda'); toast('Todo reiniciado'); } });

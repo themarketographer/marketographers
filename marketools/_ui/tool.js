@@ -4,7 +4,11 @@
   w.dataLayer = w.dataLayer || [];
   w.gtag = function () { w.dataLayer.push(arguments); };
   w.gtag('js', new Date()); w.gtag('config', 'G-GQY8VYBD5T');
-  var s = document.createElement('script'); s.async = true; s.src = 'https://www.googletagmanager.com/gtag/js?id=G-GQY8VYBD5T'; document.head.appendChild(s);
+  // La librería de Google carga al primer toque o 2,5 s después de cargar la página; los eventos quedan en cola.
+  var cargado = false;
+  function cargar() { if (cargado) return; cargado = true; var s = document.createElement('script'); s.async = true; s.src = 'https://www.googletagmanager.com/gtag/js?id=G-GQY8VYBD5T'; document.head.appendChild(s); }
+  ['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(function (e) { addEventListener(e, cargar, { once: true, passive: true }); });
+  addEventListener('load', function () { setTimeout(cargar, 2500); });
 
   var used = false;
   w.Tool = {

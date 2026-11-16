@@ -151,7 +151,7 @@
 </style>
 <script>try{if(localStorage.getItem("mk-theme")==="light")document.documentElement.setAttribute("data-theme","light")}catch(e){}</script><link rel="stylesheet" href="/assets/fx.css"><link rel="stylesheet" href="/assets/p-calc.css"><!-- Meta Pixel + API de conversiones (PageView, mismo patron del sitio) -->
 <script>
-!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+!function(f){if(f.fbq)return;var n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];}(window);
 fbq('set','autoConfig',false,'467504537642622');
 fbq('init','467504537642622');
 (function(){
@@ -165,12 +165,20 @@ fbq('init','467504537642622');
 })();
 </script>
 <noscript><img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=467504537642622&ev=PageView&noscript=1"></noscript>
+<script>
+/* La librería de Meta carga al primer toque o 2,5 s después de cargar la página. Los eventos quedan en cola y no se pierden. */
+(function(){var ya=false;function cargar(){if(ya)return;ya=true;var s=document.createElement('script');s.async=true;s.src='https://connect.facebook.net/en_US/fbevents.js';document.head.appendChild(s);}
+['pointerdown','keydown','scroll','touchstart'].forEach(function(e){addEventListener(e,cargar,{once:true,passive:true});});
+addEventListener('load',function(){setTimeout(cargar,2500);});})();
+</script>
 </head><body>
 
 <div class="bar" id="bar"></div><header><div class="nav wrap"><a class="logo" href="/" aria-label="The Marketographers" data-t="pg_calculadora.t01" data-ta="href:pg_calculadora.h1">the marketo<i>g</i>raphers</a><div class="nav-links"><a href="/" data-t="pg_calculadora.t02" data-ta="href:pg_calculadora.h2">Inicio</a><a href="/cursos/" data-t="pg_calculadora.t03" data-ta="href:pg_calculadora.h3">Cursos</a><a href="/marketools/" aria-current="page" data-t="pg_calculadora.t04" data-ta="href:pg_calculadora.h4">MarkeTools</a><a href="/blog/" data-t="pg_calculadora.t05" data-ta="href:pg_calculadora.h5">Blog</a></div><div class="nav-actions"><a class="btn btn-whatsapp" href="https://api.whatsapp.com/send?phone=+59169422335" target="_blank" rel="noopener" data-t="pg_calculadora.t06" data-ta="href:pg_calculadora.h6">WhatsApp</a><a class="btn btn-gold" href="/#planes" data-t="pg_calculadora.t07" data-ta="href:pg_calculadora.h7">Únete</a></div></div></header>
+<main>
 <section class="calc-hero"><div class="ring" style="width:520px;height:520px;right:-170px;top:-130px"></div><div class="ring" style="width:320px;height:320px;left:-120px;bottom:-150px"></div><div class="wrap"><p class="eyebrow" data-t="pg_calculadora.t08">· MarkeTools · Gratis, sin registro ·</p><h1 data-t="pg_calculadora.t09">Calcula cuánto cobrar <mark>por sesión</mark>, con tus números</h1><p class="lead" data-t="pg_calculadora.t10">Copiar el precio de otro fotógrafo es heredar sus errores de cálculo sin cobrar ni la herencia. Escribe tus datos y mira cuánto vale tu sesión de verdad.</p></div></section>
 <section class="calc-sec"><div class="wrap"><div class="calc-grid">
 <div class="calc-card card-glass"><h2 data-t="pg_calculadora.t11">Tus números</h2><p class="sub" data-t="pg_calculadora.t12">Mueve el control o escribe el valor. El resultado cambia al instante.</p>
+<div class="fld"><div class="fld-top"><label for="n-mon">Moneda</label><select id="n-mon"></select></div></div>
 <div class="fld"><div class="fld-top"><label for="n-sueldo" data-t="pg_calculadora.t13">Lo que quieres ganar al mes</label><div class="num"><span>$</span><input type="number" id="n-sueldo" inputmode="decimal" min="0" max="200000" step="50" value="1200"><span></span></div></div><p class="hint" data-t="pg_calculadora.t14">Tu sueldo, limpio, después de pagar todo lo demás. Si no lo cuentas aquí, lo pagas con tus fines de semana.</p><input type="range" id="r-sueldo" min="0" max="10000" step="50" value="1200" aria-label="Lo que quieres ganar al mes"></div>
 <div class="fld"><div class="fld-top"><label for="n-fijos" data-t="pg_calculadora.t15">Costos fijos al mes</label><div class="num"><span>$</span><input type="number" id="n-fijos" inputmode="decimal" min="0" max="100000" step="10" value="350"><span></span></div></div><p class="hint" data-t="pg_calculadora.t16">Equipo, software, estudio, transporte, internet. Lo que pagas aunque no hagas ni una sesión.</p><input type="range" id="r-fijos" min="0" max="5000" step="10" value="350" aria-label="Costos fijos al mes"></div>
 <div class="fld"><div class="fld-top"><label for="n-sesiones" data-t="pg_calculadora.t17">Sesiones al mes que puedes hacer de verdad</label><div class="num"><span></span><input type="number" id="n-sesiones" inputmode="decimal" min="1" max="800" step="1" value="12"><span data-t="pg_calculadora.t18">ses.</span></div></div><p class="hint" data-t="pg_calculadora.t19">Pon las que has hecho en tus meses buenos y réstale un poco. Los meses de sequía también cuentan.</p><input type="range" id="r-sesiones" min="1" max="40" step="1" value="12" aria-label="Sesiones al mes que puedes hacer de verdad"></div>
@@ -186,30 +194,41 @@ fbq('init','467504537642622');
 <p class="fine">Estimación con los datos que escribes. Revisa con tu contador los impuestos de tu país.</p></aside>
 </div></div></section>
 <section class="calc-cta"><div class="wrap"><div class="community-card"><p class="eyebrow" data-t="pg_calculadora.t28">The Marketographers</p><h2 data-t="pg_calculadora.t29">¿Te asustó tu número?</h2><p data-t="pg_calculadora.t30">Calcularlo es la mitad. La otra mitad es sostenerlo cuando un cliente dice que estás caro. Eso lo practicamos todas las semanas en la comunidad.</p><a class="btn btn-gold" href="/#planes" data-t="pg_calculadora.t31" data-ta="href:pg_calculadora.h31">Únete a la comunidad →</a></div></div></section>
+</main>
 <footer><div class="wrap"><span class="mark" data-t="pg_calculadora.t32">the marketo<i>g</i>raphers</span><p style="margin-bottom:10px;"><a href="/blog/" data-t="pg_calculadora.t33" data-ta="href:pg_calculadora.h33">Blog</a> · <a href="/#planes" data-t="pg_calculadora.t34" data-ta="href:pg_calculadora.h34">Comunidad</a> · <a href="/marketools/" data-t="pg_calculadora.t35" data-ta="href:pg_calculadora.h35">MarkeTools</a></p><p data-t="pg_calculadora.t36">© 2026 The Marketographers.</p></div></footer>
-<script src="/assets/fx.js"></script><script>mkFx({"reveal": [".calc-hero .eyebrow", ".calc-hero h1", ".calc-hero .lead", ".calc-card", ".res-card", ".calc-cta .community-card"], "tilt": [], "after": function(ctx){
+<script>document.addEventListener('DOMContentLoaded', function(){
   var $=function(id){return document.getElementById(id)};
   var ids=['sueldo','fijos','sesiones','horas','variables','imp','margen'];
+  var REDUCE=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var shown={}, tok={};
+  var MON={USD:'$',BOB:'Bs',MXN:'$',ARS:'$',COP:'$',CLP:'$',PEN:'S/',UYU:'$U',PYG:'\u20b2',BRL:'R$',DOP:'RD$',CRC:'\u20a1',GTQ:'Q',HNL:'L',NIO:'C$',VES:'Bs.',EUR:'\u20ac'};
+  var mon='USD';
   function fmt(n){ return isFinite(n)? Math.round(n).toLocaleString('es') : '\u2014'; }
   function tween(key,el,target,suffix){
     if(!isFinite(target)){ el.textContent='\u2014'; shown[key]=0; return; }
-    if(ctx.reduce){ el.textContent=fmt(target)+(suffix||''); shown[key]=target; return; }
+    if(REDUCE){ el.textContent=fmt(target)+(suffix||''); shown[key]=target; return; }
     var from=shown[key]||0, t0=null, my=(tok[key]=(tok[key]||0)+1);
     function step(ts){ if(tok[key]!==my) return; if(!t0) t0=ts; var p=Math.min((ts-t0)/380,1), e=1-Math.pow(1-p,3);
       var v=from+(target-from)*e; shown[key]=v; el.textContent=fmt(v)+(suffix||''); if(p<1) requestAnimationFrame(step); }
     requestAnimationFrame(step);
   }
+  function precio(sueldo,fijos,ses,vari,imp,mar){ var min=((sueldo+fijos)/ses+vari)/(1-imp/100); return {min:min,rec:min*(1+mar/100)}; }
+  console.assert(Math.abs(precio(1000,500,10,20,10,30).min-188.89)<0.01,'precio min');
+  console.assert(Math.abs(precio(1000,500,10,20,10,30).rec-245.56)<0.01,'precio rec');
+  function setMon(c){ mon=MON[c]?c:'USD'; $('n-mon').value=mon; var sym=MON[mon];
+    document.querySelectorAll('.num span').forEach(function(sp){ if(sp.textContent.trim()) sp.textContent=sym; });
+    var sm=document.querySelector('.big small'); if(sm) sm.textContent=mon; }
+  $('n-mon').innerHTML=Object.keys(MON).map(function(c){return '<option value="'+c+'">'+c+' ('+MON[c]+')</option>';}).join('');
+  $('n-mon').addEventListener('change',function(){ setMon(this.value); compute(); });
   function val(id){ var v=parseFloat($('n-'+id).value); return isFinite(v)&&v>0?v:0; }
   function compute(){
     var sueldo=val('sueldo'),fijos=val('fijos'),ses=val('sesiones'),horas=val('horas'),vari=val('variables'),imp=Math.min(val('imp'),60),mar=val('margen');
-    var den=1-imp/100;
-    if(ses<=0||den<=0){ ['rec','min','hora','mes','desc'].forEach(function(k){ $('o-'+k).textContent='\u2014'; }); $('o-ins').textContent='Escribe al menos una sesi\u00f3n al mes.'; return; }
-    var min=((sueldo+fijos)/ses+vari)/den, rec=min*(1+mar/100);
+    if(ses<=0||1-imp/100<=0){ ['rec','min','hora','mes','desc'].forEach(function(k){ $('o-'+k).textContent='\u2014'; }); $('o-ins').textContent='Escribe al menos una sesi\u00f3n al mes.'; return; }
+    var p=precio(sueldo,fijos,ses,vari,imp,mar), min=p.min, rec=p.rec;
     tween('rec',$('o-rec'),rec); tween('min',$('o-min'),min);
-    tween('hora',$('o-hora'),horas>0?rec/horas:NaN,' USD/h'); tween('mes',$('o-mes'),rec*ses,' USD');
+    tween('hora',$('o-hora'),horas>0?rec/horas:NaN,' '+mon+'/h'); tween('mes',$('o-mes'),rec*ses,' '+mon);
     tween('desc',$('o-desc'),(1-min/rec)*100,'%');
-    var n0=(sueldo+fijos)/(rec*den-vari), pd=rec*0.8, n1=(sueldo+fijos)/(pd*den-vari);
+    var den=1-imp/100, n0=(sueldo+fijos)/(rec*den-vari), pd=rec*0.8, n1=(sueldo+fijos)/(pd*den-vari);
     $('o-ins').innerHTML = (isFinite(n1)&&n1>0&&isFinite(n0)&&n0>0)
       ? 'Con tu precio recomendado necesitas <strong>'+Math.ceil(n0)+' sesiones</strong> al mes. Si regalas un 20% de descuento necesitas <strong>'+Math.ceil(n1)+'</strong>, un '+Math.round((n1/n0-1)*100)+'% m\u00e1s de trabajo para ganar lo mismo.'
       : 'Con un 20% de descuento ya no cubres tus costos. Ese descuento sale de tu bolsillo.';
@@ -220,10 +239,13 @@ fbq('init','467504537642622');
     n.addEventListener('input',function(){ if(n.value!=='') r.value=Math.min(n.value,r.max); compute(); });
   });
   try{ var q=new URLSearchParams(location.search); ids.forEach(function(id){ var v=q.get(id); if(v!==null&&v!==''&&isFinite(+v)){ $('n-'+id).value=v; $('r-'+id).value=Math.min(v,$('r-'+id).max); } }); }catch(_){}
+  try{ var qm=new URLSearchParams(location.search).get('mon'); if(qm) setMon(qm); }catch(_){}
   $('o-share').addEventListener('click',function(){
-    var q=ids.map(function(id){return id+'='+encodeURIComponent($('n-'+id).value)}).join('&');
+    var q=ids.map(function(id){return id+'='+encodeURIComponent($('n-'+id).value)}).concat('mon='+mon).join('&');
     var url=(location.origin+location.pathname+'?'+q), b=$('o-share'), done=function(){ b.textContent='Link copiado'; setTimeout(function(){b.textContent='Copiar link con mis n\u00fameros'},1800); };
-    if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(url).then(done,done); } else { done(); }
+    if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(url).then(done,function(){ prompt('Copia este link:',url); }); } else { prompt('Copia este link:',url); }
   });
+  setMon(mon);
   compute();
-}})</script></body></html>
+});</script>
+<script src="/assets/fx.js"></script><script>mkFx({"reveal": [".calc-hero .eyebrow", ".calc-hero h1", ".calc-hero .lead", ".calc-card", ".res-card", ".calc-cta .community-card"], "tilt": []})</script></body></html>

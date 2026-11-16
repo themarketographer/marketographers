@@ -220,7 +220,7 @@ mktEv('VioLandingMasterclass');
 <div class="hero">
   <div>
     <p class="cap kick rise" style="--d:0s">Clase gratis en vivo por Zoom</p>
-    <h1 id="h1" data-split>Más sesiones todas las semanas.</h1>
+    <h1 id="h1">Más sesiones todas las semanas.</h1>
     <p class="lead rise" style="--d:.24s">Para fotógrafos que ya tienen sesiones y quieren la agenda llena.</p>
     <div class="offer rise" style="--d:.3s">
       <div class="free"><b>Gratis</b></div>
@@ -383,8 +383,6 @@ mktEv('VioLandingMasterclass');
     el.setAttribute('aria-label', el.textContent.trim());
     el.innerHTML = words.map(function(w, i){ return '<span class="wd" aria-hidden="true" style="--i:' + i + '">' + w + '</span>'; }).join(' ');
   });
-  var h1 = $('h1');
-  requestAnimationFrame(function(){ requestAnimationFrame(function(){ h1.classList.add('in'); }); });
 
   /* Calendario del hero: llegan 5 mensajes, se llenan 5 huecos y se queda así */
   var slots = Array.prototype.slice.call(document.querySelectorAll('#wgrid .slot:not(.on)')).slice(0, 5);

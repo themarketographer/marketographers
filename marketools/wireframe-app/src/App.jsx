@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, lazy, Suspense } from 'react'
 import { BuilderProvider, useBuilder } from './state/BuilderContext'
 import { RADIUS_VALUES } from './data/themePresets'
 import Wizard from './components/Wizard/Wizard'
@@ -9,7 +9,8 @@ import ThemePanel from './components/Theme/ThemePanel'
 import AnimationPanel from './components/Animation/AnimationPanel'
 import ResponsiveToggle from './components/Preview/ResponsiveToggle'
 import ExportConfigForm from './components/Export/ExportConfigForm'
-import ExportModal from './components/Export/ExportModal'
+// El modal de exportar (y el generador del prompt) se baja solo cuando alguien exporta.
+const ExportModal = lazy(() => import('./components/Export/ExportModal'))
 import ConfirmDialog from './components/Shared/ConfirmDialog'
 import BrandMark from './components/Brand/BrandMark'
 import ThemeToggle from './components/Brand/ThemeToggle'
@@ -163,7 +164,9 @@ function BuilderLayout({ theme, onToggleTheme }) {
         />
       )}
       {exportStep === 'result' && (
-        <ExportModal trackingConfig={trackingConfig} onClose={() => setExportStep(null)} />
+        <Suspense fallback={null}>
+          <ExportModal trackingConfig={trackingConfig} onClose={() => setExportStep(null)} />
+        </Suspense>
       )}
       {confirmingRestart && (
         <ConfirmDialog

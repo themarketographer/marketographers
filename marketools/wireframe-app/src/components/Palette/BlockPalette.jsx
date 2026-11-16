@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useState, lazy, Suspense } from 'react'
 import { BLOCK_SCHEMA, BLOCK_GROUPS } from '../../data/blockSchema'
 import PaletteItem from './PaletteItem'
 import Icon from '../Shared/Icon'
-import InspirationPanel from './InspirationPanel'
+const InspirationPanel = lazy(() => import('./InspirationPanel'))
 
 const TABS = [
   { id: 'blocks', label: 'Bloques' },
@@ -38,7 +38,9 @@ export default function BlockPalette() {
       </div>
       {tab === 'inspiration' ? (
         <div className="flex min-h-0 flex-1 flex-col pt-3">
-          <InspirationPanel />
+          <Suspense fallback={null}>
+            <InspirationPanel />
+          </Suspense>
         </div>
       ) : (
       <>

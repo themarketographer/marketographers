@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cotizador en un link para fotógrafos | MarkeTools</title>
+<meta name="description" content="Arma tus paquetes una vez y comparte un link donde tu cliente elige, ve el total y te escribe por WhatsApp con todo detallado. Gratis, sin registro.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://marketographers.com/marketools/cotizador/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Marketographers">
+<meta property="og:title" content="Cotizador en un link para fotógrafos | MarkeTools">
+<meta property="og:description" content="Arma tus paquetes una vez y comparte un link donde tu cliente elige, ve el total y te escribe por WhatsApp con todo detallado. Gratis, sin registro.">
+<meta property="og:url" content="https://marketographers.com/marketools/cotizador/">
+<meta property="og:image" content="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1785200397/Banner_z6b496.png">
+<link rel="icon" type="image/png" href="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto,w_64,h_64/v1755314905/Marketographers_Negro_S_F_tgh9z2.png">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="/marketools/_ui/tokens.css">
+<link rel="stylesheet" href="/marketools/_ui/ui.css">
+<link rel="stylesheet" href="/marketools/_ui/tool.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Cotizador en un link", "url": "https://marketographers.com/marketools/cotizador/", "description": "Arma tus paquetes una vez y comparte un link donde tu cliente elige, ve el total y te escribe por WhatsApp con todo detallado. Gratis, sin registro.", "applicationCategory": "BusinessApplication", "operatingSystem": "Web", "inLanguage": "es", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "author": {"@type": "Person", "name": "Pablo Villarroel", "url": "https://marketographers.com/"}}</script>
+</head>
+<body>
+<header class="wrap nav">
+  <a class="brand" href="/marketools/">MarkeTools</a>
+  <a class="btn btn-secondary" href="/masterclass/" data-cta="cotizador-nav">Clase gratis</a>
+</header>
+<main class="wrap tool">
+  <header>
+    <h1>Cotizador en un link</h1>
+    <p>Cargas tus paquetes y tu WhatsApp, y te da un link. Tu cliente lo abre, elige uno y te escribe por WhatsApp con el mensaje ya armado. No se guarda nada en ningún servidor: todo va dentro del propio link.</p>
+  </header>
+  <div id="app">
+    <div id="armar" class="cols2">
+      <form class="card stack" id="f">
+        <div class="field"><label for="quien">Tu nombre o el de tu estudio</label><input class="input" id="quien" maxlength="50"></div>
+        <div class="field"><label for="tel">Tu WhatsApp</label><input class="input" id="tel" inputmode="numeric" maxlength="15" placeholder="59170000000"><span class="hint">Solo números, con código de país.</span></div>
+        <div class="field"><label for="moneda">Moneda</label><input class="input" id="moneda" maxlength="6" value="Bs"></div>
+        <div id="pks" class="stack"></div>
+        <div class="row"><button type="button" class="btn btn-secondary" id="mas">Agregar paquete</button></div>
+      </form>
+      <section class="card stack out" aria-live="polite"><h2>Tu link</h2><pre id="link">Llena tu WhatsApp y al menos un paquete.</pre><p class="alert alert-warn" id="largo" hidden>El link quedó muy largo y algunos programas lo cortan. Acorta los textos de "qué incluye".</p>
+        <div class="row"><button type="button" class="btn btn-primary" id="copy" disabled>Copiar link</button><a class="btn btn-secondary" id="ver" href="#" target="_blank" rel="noopener" hidden>Ver como lo verá tu cliente</a></div></section>
+    </div>
+    <section id="cliente" class="stack" hidden style="max-width:560px"><h2 id="cq"></h2><p class="muted">Elige el paquete que más te sirve y escríbenos: te respondemos con la fecha disponible.</p><div id="opts" class="stack"></div><p class="field-error" id="cerr" hidden></p><button type="button" class="btn btn-primary btn-block" id="cwa">Escribir por WhatsApp</button></section>
+  </div>
+  <aside class="card pitch">
+    <div class="stack" style="max-width:60ch"><h2>¿Te sirvió?</h2><p class="muted">En la clase gratis en vivo vemos cómo llenar la agenda de sesiones con este tipo de números y mensajes. Entras al grupo de WhatsApp y te avisamos la fecha.</p></div>
+    <a class="btn btn-primary" href="/masterclass/" data-cta="cotizador-pie">Quiero entrar a la clase gratis</a>
+  </aside>
+</main>
+<footer class="wrap foot"><span>Una herramienta de <a href="/">The Marketographers</a>, por Pablo Villarroel.</span><a href="/marketools/">Ver todas las herramientas</a></footer>
+<script src="/marketools/_ui/tool.js"></script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  // El paquete viaja dentro del link: JSON -> UTF-8 -> base64 seguro para direcciones.
+  function codificar(o) { return btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+  function decodificar(s) { try { s = s.replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '='; var o = JSON.parse(decodeURIComponent(escape(atob(s)))); return o && Array.isArray(o.p) && o.p.length && /^\d{8,15}$/.test(o.t) ? o : null; } catch (e) { return null; } }
+  var prueba = { q: 'Estudio Ñandú', t: '59170000000', m: 'Bs', p: [{ n: 'Esencial', c: 900, i: 'Sesión de 1 hora, 20 fotos editadas' }] };
+  console.assert(JSON.stringify(decodificar(codificar(prueba))) === JSON.stringify(prueba));
+  console.assert(decodificar('esto no es un paquete') === null);
+
+  addEventListener('hashchange', function () { location.reload(); });   // pegar otro link en la misma pestaña
+  var hash = location.hash.slice(1), data = hash ? decodificar(hash) : null;
+  if (hash && !data) { document.body.insertAdjacentHTML('afterbegin', '<p class="alert alert-err wrap" style="margin-top:16px">Este link está incompleto o dañado. Pídele a quien te lo mandó que lo copie de nuevo.</p>'); }
+  if (data) { vistaCliente(data); return; }
+
+  var pks = [{ n: '', c: '', i: '' }];
+  function pintar() {
+    $('pks').innerHTML = pks.map(function (p, i) { return '<fieldset class="card stack"><legend>Paquete ' + (i + 1) + '</legend><div class="field"><label>Nombre<input class="input" data-k="n" data-i="' + i + '" maxlength="30" value=""></label></div><div class="field"><label>Precio<input class="input" data-k="c" data-i="' + i + '" type="number" inputmode="decimal" min="0"></label></div><div class="field"><label>Qué incluye<input class="input" data-k="i" data-i="' + i + '" maxlength="90"></label></div>' + (pks.length > 1 ? '<button type="button" class="btn btn-quiet" data-q="' + i + '">Quitar</button>' : '') + '</fieldset>'; }).join('');
+    document.querySelectorAll('#pks input').forEach(function (el) { el.value = pks[+el.dataset.i][el.dataset.k]; });
+    $('mas').disabled = pks.length >= 4; armar();
+  }
+  function armar() {
+    var tel = $('tel').value.replace(/\D/g, ''), ok = pks.filter(function (p) { return p.n.trim() && Number(p.c) > 0; });
+    if (tel.length < 8 || !ok.length) { $('link').textContent = 'Llena tu WhatsApp y al menos un paquete.'; $('copy').disabled = true; $('ver').hidden = true; $('largo').hidden = true; return; }
+    var url = location.origin + location.pathname + '#' + codificar({ q: $('quien').value.trim(), t: tel, m: $('moneda').value.trim() || 'Bs', p: ok.map(function (p) { return { n: p.n.trim(), c: Number(p.c), i: p.i.trim() }; }) });
+    $('link').textContent = url; $('copy').disabled = false; $('ver').href = url; $('ver').hidden = false; $('largo').hidden = url.length < 1800; Tool.used('cotizador');
+  }
+  $('f').addEventListener('input', function (e) { var el = e.target; if (el.dataset.k) pks[+el.dataset.i][el.dataset.k] = el.value; armar(); });
+  $('pks').addEventListener('click', function (e) { var q = e.target.dataset.q; if (q !== undefined) { pks.splice(+q, 1); pintar(); } });
+  $('mas').addEventListener('click', function () { if (pks.length < 4) { pks.push({ n: '', c: '', i: '' }); pintar(); } });
+  $('copy').addEventListener('click', function () { Tool.copy($('link').textContent, this); });
+  pintar();
+
+  function vistaCliente(d) {
+    $('armar').hidden = true; $('cliente').hidden = false; document.querySelector('main > header').hidden = true;
+    $('cq').textContent = d.q ? 'Paquetes de ' + d.q : 'Paquetes';
+    var sel = 0;
+    d.p.forEach(function (p, i) {
+      var l = document.createElement('label'); l.className = 'card row'; l.style.cursor = 'pointer';
+      var r = document.createElement('input'); r.type = 'radio'; r.name = 'pk'; r.checked = i === 0; r.style.cssText = 'width:20px;height:20px'; r.addEventListener('change', function () { sel = i; });
+      var s = document.createElement('span'); s.style.flex = '1';
+      var b = document.createElement('strong'); b.textContent = p.n + ' · ' + d.m + ' ' + Number(p.c).toLocaleString('es'); s.append(b);
+      if (p.i) { var e = document.createElement('span'); e.className = 'muted'; e.style.display = 'block'; e.textContent = p.i; s.append(e); }
+      l.append(r, s); $('opts').append(l);
+    });
+    $('cwa').addEventListener('click', function () {
+      var p = d.p[sel], txt = 'Hola' + (d.q ? ', ' + d.q : '') + '. Vi tus paquetes y me interesa el paquete ' + p.n + ' (' + d.m + ' ' + Number(p.c).toLocaleString('es') + '). ¿Qué fechas tienes disponibles?';
+      window.open('https://wa.me/' + d.t + '?text=' + encodeURIComponent(txt), '_blank', 'noopener');
+    });
+  }
+})();
+</script>
+</body>
+</html>

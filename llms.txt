@@ -53,3 +53,9 @@
 - [¿Cuánto puedes pagar por un cliente?](https://marketographers.com/marketools/costo-por-cliente/): Con tu precio y cuántos te contratan, te dice el tope por mensaje y si tu campaña gana o pierde.
 - [Seguimiento de cotización](https://marketographers.com/marketools/seguimiento/): Tres mensajes de WhatsApp para retomar una cotización sin respuesta, con el nombre de tu cliente ya puesto.
 - [Contrato de sesión de fotos](https://marketographers.com/marketools/contrato/): Anticipo, entrega, cambios de fecha y uso de imagen en un contrato listo para imprimir. Incluido en la membresía.
+- [Simulador de embudo](https://marketographers.com/marketools/embudo/): Cuántos clics, mensajes y clientes necesitas para llenar tu agenda según tu presupuesto y tu tasa real de respuesta.
+- [Cotizador en un link](https://marketographers.com/marketools/cotizador/): Armas tus paquetes una vez y compartes un link donde el cliente elige y te escribe por WhatsApp con todo detallado.
+- [Diagnóstico de portafolio](https://marketographers.com/marketools/portafolio/): Subes tus mejores fotos y respondes seis preguntas. Recibes una lista de qué sobra, qué falta y en qué orden mostrarlas.
+- [Auditor de bio de Instagram](https://marketographers.com/marketools/bio/): Ocho preguntas de sí o no sobre tu perfil. Te dice cuántas cumples y qué arreglar primero.
+- [Anticipo y cuotas](https://marketographers.com/marketools/anticipo/): Calcula el anticipo y las cuotas con sus fechas, y copia el mensaje de WhatsApp para tu cliente.
+- [Pedir un testimonio](https://marketographers.com/marketools/testimonio/): Genera el mensaje de WhatsApp con tres preguntas concretas para que tu cliente te deje un testimonio útil.

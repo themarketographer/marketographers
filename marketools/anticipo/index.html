@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Calculadora de anticipo y cuotas para fotógrafos | MarkeTools</title>
+<meta name="description" content="Calcula el anticipo y las cuotas del saldo con sus fechas, y copia el mensaje de WhatsApp listo para mandarle a tu cliente. Gratis.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://marketographers.com/marketools/anticipo/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Marketographers">
+<meta property="og:title" content="Calculadora de anticipo y cuotas para fotógrafos | MarkeTools">
+<meta property="og:description" content="Calcula el anticipo y las cuotas del saldo con sus fechas, y copia el mensaje de WhatsApp listo para mandarle a tu cliente. Gratis.">
+<meta property="og:url" content="https://marketographers.com/marketools/anticipo/">
+<meta property="og:image" content="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1785200397/Banner_z6b496.png">
+<link rel="icon" type="image/png" href="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto,w_64,h_64/v1755314905/Marketographers_Negro_S_F_tgh9z2.png">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="/marketools/_ui/tokens.css">
+<link rel="stylesheet" href="/marketools/_ui/ui.css">
+<link rel="stylesheet" href="/marketools/_ui/tool.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Anticipo y cuotas", "url": "https://marketographers.com/marketools/anticipo/", "description": "Calcula el anticipo y las cuotas del saldo con sus fechas, y copia el mensaje de WhatsApp listo para mandarle a tu cliente. Gratis.", "applicationCategory": "BusinessApplication", "operatingSystem": "Web", "inLanguage": "es", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "author": {"@type": "Person", "name": "Pablo Villarroel", "url": "https://marketographers.com/"}}</script>
+</head>
+<body>
+<header class="wrap nav">
+  <a class="brand" href="/marketools/">MarkeTools</a>
+  <a class="btn btn-secondary" href="/masterclass/" data-cta="anticipo-nav">Clase gratis</a>
+</header>
+<main class="wrap tool">
+  <header>
+    <h1>Anticipo y cuotas</h1>
+    <p>Pones el precio, el anticipo y la fecha de la sesión. Te devuelve cuánto paga el cliente y cuándo, y el mensaje de WhatsApp ya escrito para mandárselo.</p>
+  </header>
+  <div id="app">
+    <div class="cols2">
+      <form class="card stack" id="f">
+        <div class="field"><label for="total">Precio total</label><input class="input" id="total" type="number" inputmode="decimal" min="0" placeholder="900"></div>
+        <div class="field"><label for="pct">Anticipo para reservar (%)</label><input class="input" id="pct" type="number" inputmode="decimal" min="0" max="100" value="50"></div>
+        <div class="field"><label for="n">En cuántas cuotas se paga el resto</label><input class="input" id="n" type="number" min="1" max="6" value="1"></div>
+        <div class="field"><label for="fecha">Fecha de la sesión</label><input class="input" id="fecha" type="date"></div>
+        <div class="field"><label for="cli">Nombre del cliente (opcional)</label><input class="input" id="cli" maxlength="40"></div>
+      </form>
+      <section class="card stack out" aria-live="polite"><h2>El plan de pagos</h2><div id="res"><p class="muted">Llena el precio y la fecha de la sesión.</p></div></section>
+    </div>
+  </div>
+  <aside class="card pitch">
+    <div class="stack" style="max-width:60ch"><h2>¿Te sirvió?</h2><p class="muted">En la clase gratis en vivo vemos cómo llenar la agenda de sesiones con este tipo de números y mensajes. Entras al grupo de WhatsApp y te avisamos la fecha.</p></div>
+    <a class="btn btn-primary" href="/masterclass/" data-cta="anticipo-pie">Quiero entrar a la clase gratis</a>
+  </aside>
+</main>
+<footer class="wrap foot"><span>Una herramienta de <a href="/">The Marketographers</a>, por Pablo Villarroel.</span><a href="/marketools/">Ver todas las herramientas</a></footer>
+<script src="/marketools/_ui/tool.js"></script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var m = function (x) { return (Math.round(x * 100) / 100).toLocaleString('es', { minimumFractionDigits: 0, maximumFractionDigits: 2 }); };
+  var DAY = 864e5, utc = function (iso) { var p = iso.split('-'); return Date.UTC(+p[0], +p[1] - 1, +p[2]); };
+  var iso = function (t) { return new Date(t).toISOString().slice(0, 10); };
+  var MES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+  var bonita = function (s) { var p = s.split('-'); return +p[2] + ' de ' + MES[+p[1] - 1]; };
+  // Cuenta pura. La última cuota vence 3 días antes de la sesión; las demás se reparten parejo desde hoy.
+  function plan(total, pct, n, sesion, hoy) {
+    var anticipo = Math.round(total * pct) / 100, saldo = Math.round((total - anticipo) * 100) / 100;
+    var ultima = utc(sesion) - 3 * DAY, dias = Math.round((ultima - utc(hoy)) / DAY), cuotas = [], base = Math.floor(saldo / n * 100) / 100, acum = 0;
+    for (var i = 1; i <= n; i++) { var monto = i === n ? Math.round((saldo - acum) * 100) / 100 : base; acum += monto; cuotas.push({ n: i, monto: monto, fecha: iso(utc(hoy) + Math.round(dias * i / n) * DAY) }); }
+    return { anticipo: anticipo, saldo: saldo, cuotas: cuotas, dias: dias };
+  }
+  var t = plan(900, 50, 2, '2026-12-20', '2026-11-18');
+  console.assert(t.anticipo === 450 && t.saldo === 450 && t.cuotas.length === 2 && t.cuotas[0].monto === 225 && t.cuotas[1].fecha === '2026-12-17' && t.cuotas[0].fecha === '2026-12-03');
+  var t3 = plan(100, 0, 3, '2026-12-20', '2026-11-18');
+  console.assert(t3.cuotas[0].monto + t3.cuotas[1].monto + t3.cuotas[2].monto === 100 && t3.cuotas[2].monto === 33.34);
+  function hoyLocal() { var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+  function calc() {
+    var total = parseFloat($('total').value), pct = Math.min(Math.max(parseFloat($('pct').value) || 0, 0), 100), n = Math.min(Math.max(parseInt($('n').value, 10) || 1, 1), 6), f = $('fecha').value;
+    if (!(total > 0) || !f) { $('res').innerHTML = '<p class="muted">Llena el precio y la fecha de la sesión.</p>'; return; }
+    var hoy = hoyLocal(), p = plan(total, pct, n, f, hoy);
+    if (p.dias < 1) { $('res').innerHTML = '<p class="alert alert-warn">Faltan menos de 4 días para la sesión. No alcanza para repartir el saldo en cuotas: pide el total ahora.</p>'; return; }
+    var cli = $('cli').value.trim(), L = ['Hola' + (cli ? ' ' + cli : '') + ', así queda el pago de tu sesión del ' + bonita(f) + ':', '', 'Total: ' + m(total), 'Anticipo para reservar la fecha: ' + m(p.anticipo) + ' (hoy)'];
+    p.cuotas.forEach(function (c) { L.push('Cuota ' + c.n + ': ' + m(c.monto) + ', hasta el ' + bonita(c.fecha)); });
+    L.push('', 'La fecha queda reservada cuando recibo el anticipo.');
+    var msg = L.join('\n');
+    $('res').innerHTML = '<div class="kv"><span>Anticipo (hoy)</span><span>' + m(p.anticipo) + '</span></div>' + p.cuotas.map(function (c) { return '<div class="kv"><span>Cuota ' + c.n + ', hasta el ' + bonita(c.fecha) + '</span><span>' + m(c.monto) + '</span></div>'; }).join('') +
+      '<pre id="msg" class="msg"></pre><button type="button" class="btn btn-primary" id="cmsg">Copiar mensaje</button>';
+    $('msg').textContent = msg; $('cmsg').onclick = function () { Tool.copy(msg, this); }; Tool.used('anticipo');
+  }
+  $('f').addEventListener('input', calc);
+})();
+</script>
+</body>
+</html>

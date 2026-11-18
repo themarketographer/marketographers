@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Simulador de embudo de anuncios para fotógrafos | MarkeTools</title>
+<meta name="description" content="Cuántos clics, mensajes y clientes te da tu presupuesto de anuncios, y si lo que ganas cubre lo que gastas. Con tus propios números, gratis.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://marketographers.com/marketools/embudo/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Marketographers">
+<meta property="og:title" content="Simulador de embudo de anuncios para fotógrafos | MarkeTools">
+<meta property="og:description" content="Cuántos clics, mensajes y clientes te da tu presupuesto de anuncios, y si lo que ganas cubre lo que gastas. Con tus propios números, gratis.">
+<meta property="og:url" content="https://marketographers.com/marketools/embudo/">
+<meta property="og:image" content="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1785200397/Banner_z6b496.png">
+<link rel="icon" type="image/png" href="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto,w_64,h_64/v1755314905/Marketographers_Negro_S_F_tgh9z2.png">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="/marketools/_ui/tokens.css">
+<link rel="stylesheet" href="/marketools/_ui/ui.css">
+<link rel="stylesheet" href="/marketools/_ui/tool.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Simulador de embudo", "url": "https://marketographers.com/marketools/embudo/", "description": "Cuántos clics, mensajes y clientes te da tu presupuesto de anuncios, y si lo que ganas cubre lo que gastas. Con tus propios números, gratis.", "applicationCategory": "BusinessApplication", "operatingSystem": "Web", "inLanguage": "es", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "author": {"@type": "Person", "name": "Pablo Villarroel", "url": "https://marketographers.com/"}}</script>
+</head>
+<body>
+<header class="wrap nav">
+  <a class="brand" href="/marketools/">MarkeTools</a>
+  <a class="btn btn-secondary" href="/masterclass/" data-cta="embudo-nav">Clase gratis</a>
+</header>
+<main class="wrap tool">
+  <header>
+    <h1>Simulador de embudo</h1>
+    <p>Pones cuánto vas a invertir y qué tan bien convierte cada paso. Te devuelve cuántos clics, mensajes y clientes salen, y si lo que entra cubre lo que gastas en anuncios.</p>
+  </header>
+  <div id="app">
+    <div class="cols2">
+      <form class="card stack" id="f">
+        <div class="field"><label for="presu">Cuánto vas a invertir al mes en anuncios</label><input class="input" id="presu" type="number" inputmode="decimal" min="0" placeholder="100"></div>
+        <div class="field"><label for="cpc">Cuánto te cuesta cada clic</label><input class="input" id="cpc" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.25"><span class="hint">En Meta aparece como "CPC (costo por clic en el enlace)".</span></div>
+        <div class="field"><label for="t1">De cada 100 clics, cuántos te escriben</label><input class="input" id="t1" type="number" inputmode="decimal" min="0" max="100" step="0.5" placeholder="5"></div>
+        <div class="field"><label for="t2">De cada 10 que te escriben, cuántos te contratan</label><input class="input" id="t2" type="number" inputmode="decimal" min="0" max="10" step="0.5" placeholder="2"></div>
+        <div class="field"><label for="precio">Cuánto cobras por una sesión</label><input class="input" id="precio" type="number" inputmode="decimal" min="0" placeholder="150"></div>
+      </form>
+      <section class="card stack out" aria-live="polite"><h2>Tu embudo</h2><div id="res"><p class="muted">Llena los cinco datos para ver el resultado.</p></div></section>
+    </div>
+  </div>
+  <aside class="card pitch">
+    <div class="stack" style="max-width:60ch"><h2>¿Te sirvió?</h2><p class="muted">En la clase gratis en vivo vemos cómo llenar la agenda de sesiones con este tipo de números y mensajes. Entras al grupo de WhatsApp y te avisamos la fecha.</p></div>
+    <a class="btn btn-primary" href="/masterclass/" data-cta="embudo-pie">Quiero entrar a la clase gratis</a>
+  </aside>
+</main>
+<footer class="wrap foot"><span>Una herramienta de <a href="/">The Marketographers</a>, por Pablo Villarroel.</span><a href="/marketools/">Ver todas las herramientas</a></footer>
+<script src="/marketools/_ui/tool.js"></script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var n = function (id) { var v = parseFloat($(id).value); return isFinite(v) && v >= 0 ? v : null; };
+  var m = function (x) { return (Math.round(x * 100) / 100).toLocaleString('es', { maximumFractionDigits: 2 }); };
+  // Cuenta pura. t1 = mensajes por cada 100 clics, t2 = clientes por cada 10 mensajes.
+  function embudo(presu, cpc, t1, t2, precio) {
+    var clics = cpc > 0 ? presu / cpc : 0, mensajes = clics * Math.min(t1, 100) / 100, clientes = mensajes * Math.min(t2, 10) / 10, ingresos = clientes * precio;
+    return { clics: clics, mensajes: mensajes, clientes: clientes, ingresos: ingresos, queda: ingresos - presu };
+  }
+  console.assert(JSON.stringify(embudo(100, 0.25, 5, 2, 150)) === JSON.stringify({ clics: 400, mensajes: 20, clientes: 4, ingresos: 600, queda: 500 }));
+  console.assert(embudo(100, 0, 5, 2, 150).clics === 0);
+  function calc() {
+    var v = ['presu', 'cpc', 't1', 't2', 'precio'].map(n);
+    if (v.some(function (x) { return x === null; })) { $('res').innerHTML = '<p class="muted">Llena los cinco datos para ver el resultado.</p>'; return; }
+    if (!(v[1] > 0)) { $('res').innerHTML = '<p class="alert alert-warn">El costo por clic tiene que ser mayor que cero.</p>'; return; }
+    var e = embudo(v[0], v[1], v[2], v[3], v[4]), max = e.clics || 1;
+    var fila = function (txt, val, w) { return '<div class="kv"><span>' + txt + '</span><span>' + m(val) + '</span></div><div style="height:8px;border-radius:4px;background:var(--surface-2);margin-bottom:var(--s3)"><i style="display:block;height:100%;width:' + Math.max(w, 1.5) + '%;border-radius:4px;background:var(--accent)"></i></div>'; };
+    var h = fila('Clics en tu enlace', e.clics, 100) + fila('Personas que te escriben', e.mensajes, e.mensajes / max * 100) + fila('Clientes que contratan', e.clientes, e.clientes / max * 100) +
+      '<div class="kv"><span>Ingresos</span><span>' + m(e.ingresos) + '</span></div><div class="kv"><span>Lo que queda después de anuncios</span><span>' + m(e.queda) + '</span></div>';
+    h += e.queda < 0 ? '<p class="alert alert-err">Con estos números gastas más de lo que entra. Antes de subir el presupuesto, mejora el paso donde más gente se pierde.</p>'
+      : '<p class="alert alert-ok">Con estos números los anuncios se pagan solos. Fíjate si de verdad te caben ' + m(e.clientes) + ' sesiones nuevas al mes.</p>';
+    $('res').innerHTML = h; Tool.used('embudo');
+  }
+  $('f').addEventListener('input', calc);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Diagnóstico de portafolio para fotógrafos | MarkeTools</title>
+<meta name="description" content="Ordena tus mejores fotos y responde seis preguntas: recibes una lista de qué sobra, qué falta y en qué orden mostrarlas. Tus fotos no se suben a ningún lado.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://marketographers.com/marketools/portafolio/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Marketographers">
+<meta property="og:title" content="Diagnóstico de portafolio para fotógrafos | MarkeTools">
+<meta property="og:description" content="Ordena tus mejores fotos y responde seis preguntas: recibes una lista de qué sobra, qué falta y en qué orden mostrarlas. Tus fotos no se suben a ningún lado.">
+<meta property="og:url" content="https://marketographers.com/marketools/portafolio/">
+<meta property="og:image" content="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1785200397/Banner_z6b496.png">
+<link rel="icon" type="image/png" href="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto,w_64,h_64/v1755314905/Marketographers_Negro_S_F_tgh9z2.png">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="/marketools/_ui/tokens.css">
+<link rel="stylesheet" href="/marketools/_ui/ui.css">
+<link rel="stylesheet" href="/marketools/_ui/tool.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Diagnóstico de portafolio", "url": "https://marketographers.com/marketools/portafolio/", "description": "Ordena tus mejores fotos y responde seis preguntas: recibes una lista de qué sobra, qué falta y en qué orden mostrarlas. Tus fotos no se suben a ningún lado.", "applicationCategory": "BusinessApplication", "operatingSystem": "Web", "inLanguage": "es", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "author": {"@type": "Person", "name": "Pablo Villarroel", "url": "https://marketographers.com/"}}</script>
+</head>
+<body>
+<header class="wrap nav">
+  <a class="brand" href="/marketools/">MarkeTools</a>
+  <a class="btn btn-secondary" href="/masterclass/" data-cta="portafolio-nav">Clase gratis</a>
+</header>
+<main class="wrap tool">
+  <header>
+    <h1>Diagnóstico de portafolio</h1>
+    <p>Pones tus mejores fotos y respondes seis preguntas de sí o no. Te devuelve una lista ordenada de qué arreglar primero. Tus fotos se quedan en tu navegador: no se suben a ningún lado.</p>
+  </header>
+  <div id="app">
+    <div class="cols2">
+      <div class="stack">
+        <section class="card stack"><h2>1. Tus fotos</h2><p class="muted">Hasta 12, en el orden en que hoy las muestras. Las flechas las mueven.</p>
+          <input class="input" id="fotos" type="file" accept="image/*" multiple aria-label="Elegir fotos"><div id="grid" class="grid" style="grid-template-columns:repeat(auto-fill,minmax(110px,1fr))"></div></section>
+        <form class="card stack" id="f"><h2>2. Seis preguntas</h2><div id="qs" class="stack"></div></form>
+      </div>
+      <section class="card stack out" aria-live="polite"><h2>Qué arreglar primero</h2><div id="res"><p class="muted">Responde las seis preguntas para ver la lista.</p></div></section>
+    </div>
+  </div>
+  <aside class="card pitch">
+    <div class="stack" style="max-width:60ch"><h2>¿Te sirvió?</h2><p class="muted">En la clase gratis en vivo vemos cómo llenar la agenda de sesiones con este tipo de números y mensajes. Entras al grupo de WhatsApp y te avisamos la fecha.</p></div>
+    <a class="btn btn-primary" href="/masterclass/" data-cta="portafolio-pie">Quiero entrar a la clase gratis</a>
+  </aside>
+</main>
+<footer class="wrap foot"><span>Una herramienta de <a href="/">The Marketographers</a>, por Pablo Villarroel.</span><a href="/marketools/">Ver todas las herramientas</a></footer>
+<script src="/marketools/_ui/tool.js"></script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  // Cada pregunta: bien = la respuesta que está bien; arreglo = qué hacer si no. Van en el orden en que conviene arreglarlas.
+  var Q = [
+    { k: 'seEntiende', t: '¿Alguien que ve tus fotos entiende qué vendes en cinco segundos?', bien: true, arreglo: 'Deja solo las fotos que muestran el tipo de sesión que quieres vender. Si una foto no ayuda a vender, no va.' },
+    { k: 'clienteIdeal', t: '¿Aparece el tipo de cliente que quieres atraer?', bien: true, arreglo: 'Agrega al menos tres fotos de ese tipo de cliente. Quien te mira tiene que verse ahí.' },
+    { k: 'mismoTipo', t: '¿Todas son del mismo tipo de sesión?', bien: true, arreglo: 'Mezclar bodas, productos y retratos confunde. Elige el tipo que más quieres vender y muestra solo ese. El resto, en otra carpeta.' },
+    { k: 'primeraMejor', t: '¿La primera foto es la mejor de todas?', bien: true, arreglo: 'Pon tu mejor foto primera. Mucha gente no pasa de la primera.' },
+    { k: 'repetidas', t: '¿Hay más de dos fotos de la misma sesión?', bien: false, arreglo: 'Deja máximo dos fotos por sesión. Más de dos parecen relleno y muestran poca variedad.' },
+    { k: 'antiguas', t: '¿Hay fotos de hace más de dos años?', bien: false, arreglo: 'Cambia las fotos viejas por trabajo reciente, salvo que sean tu mejor trabajo. Un portafolio viejo se lee como un negocio parado.' }
+  ];
+  // Cuenta pura: devuelve los arreglos pendientes, en orden de prioridad.
+  function pendientes(resp) { return Q.filter(function (q) { return resp[q.k] !== undefined && resp[q.k] !== q.bien; }); }
+  console.assert(pendientes({ seEntiende: false, primeraMejor: false, repetidas: true }).map(function (q) { return q.k; }).join() === 'seEntiende,primeraMejor,repetidas');
+  console.assert(pendientes({ seEntiende: true, repetidas: false, antiguas: false }).length === 0);
+  var resp = {}, fotos = [];
+  $('qs').innerHTML = Q.map(function (q) { return '<fieldset><legend>' + q.t + '</legend><div class="row"><label class="row"><input type="radio" name="' + q.k + '" value="1" style="width:20px;height:20px"> Sí</label><label class="row"><input type="radio" name="' + q.k + '" value="0" style="width:20px;height:20px"> No</label></div></fieldset>'; }).join('');
+  $('f').addEventListener('change', function (e) { resp[e.target.name] = e.target.value === '1'; ver(); Tool.used('portafolio'); });
+  function ver() {
+    if (Object.keys(resp).length < Q.length) { $('res').innerHTML = '<p class="muted">Responde las seis preguntas para ver la lista. Faltan ' + (Q.length - Object.keys(resp).length) + '.</p>'; return; }
+    var p = pendientes(resp);
+    $('res').innerHTML = p.length ? '<ol class="stack">' + p.map(function (q) { return '<li>' + q.arreglo + '</li>'; }).join('') + '</ol><p class="muted">Arréglalas en este orden: la primera cambia más que la última.</p>'
+      : '<p class="alert alert-ok">Tus seis respuestas están bien. Lo que sigue es mostrar tu portafolio donde te encuentren clientes.</p>';
+  }
+  $('fotos').addEventListener('change', function (e) {
+    fotos.forEach(function (f) { URL.revokeObjectURL(f.u); });
+    fotos = [].slice.call(e.target.files, 0, 12).map(function (f) { return { u: URL.createObjectURL(f), n: f.name }; }); pintar();
+  });
+  function pintar() {
+    $('grid').innerHTML = '';
+    fotos.forEach(function (f, i) {
+      var c = document.createElement('div'); c.className = 'stack'; c.style.gap = '4px';
+      var im = document.createElement('img'); im.src = f.u; im.alt = 'Foto ' + (i + 1); im.style.cssText = 'width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px';
+      var r = document.createElement('div'); r.className = 'row'; r.style.cssText = 'justify-content:space-between;gap:4px';
+      var b1 = document.createElement('button'); b1.type = 'button'; b1.className = 'btn btn-quiet'; b1.textContent = '←'; b1.setAttribute('aria-label', 'Mover la foto ' + (i + 1) + ' antes'); b1.disabled = i === 0;
+      var n = document.createElement('span'); n.className = 'muted'; n.textContent = i + 1;
+      var b2 = document.createElement('button'); b2.type = 'button'; b2.className = 'btn btn-quiet'; b2.textContent = '→'; b2.setAttribute('aria-label', 'Mover la foto ' + (i + 1) + ' después'); b2.disabled = i === fotos.length - 1;
+      b1.onclick = function () { fotos.splice(i - 1, 0, fotos.splice(i, 1)[0]); pintar(); }; b2.onclick = function () { fotos.splice(i + 1, 0, fotos.splice(i, 1)[0]); pintar(); };
+      r.append(b1, n, b2); c.append(im, r); $('grid').append(c);
+    });
+  }
+})();
+</script>
+</body>
+</html>

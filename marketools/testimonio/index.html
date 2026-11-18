@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mensaje para pedir un testimonio a tu cliente | MarkeTools</title>
+<meta name="description" content="Genera el mensaje de WhatsApp para pedirle un testimonio a un cliente, con tres preguntas concretas que sacan una respuesta útil. Gratis.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://marketographers.com/marketools/testimonio/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Marketographers">
+<meta property="og:title" content="Mensaje para pedir un testimonio a tu cliente | MarkeTools">
+<meta property="og:description" content="Genera el mensaje de WhatsApp para pedirle un testimonio a un cliente, con tres preguntas concretas que sacan una respuesta útil. Gratis.">
+<meta property="og:url" content="https://marketographers.com/marketools/testimonio/">
+<meta property="og:image" content="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1785200397/Banner_z6b496.png">
+<link rel="icon" type="image/png" href="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto,w_64,h_64/v1755314905/Marketographers_Negro_S_F_tgh9z2.png">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="/marketools/_ui/tokens.css">
+<link rel="stylesheet" href="/marketools/_ui/ui.css">
+<link rel="stylesheet" href="/marketools/_ui/tool.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Pedir un testimonio", "url": "https://marketographers.com/marketools/testimonio/", "description": "Genera el mensaje de WhatsApp para pedirle un testimonio a un cliente, con tres preguntas concretas que sacan una respuesta útil. Gratis.", "applicationCategory": "BusinessApplication", "operatingSystem": "Web", "inLanguage": "es", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "author": {"@type": "Person", "name": "Pablo Villarroel", "url": "https://marketographers.com/"}}</script>
+</head>
+<body>
+<header class="wrap nav">
+  <a class="brand" href="/marketools/">MarkeTools</a>
+  <a class="btn btn-secondary" href="/masterclass/" data-cta="testimonio-nav">Clase gratis</a>
+</header>
+<main class="wrap tool">
+  <header>
+    <h1>Pedir un testimonio</h1>
+    <p>"Déjame un comentario" casi nunca funciona. Tres preguntas concretas sí. Pones el nombre de tu cliente y el tipo de sesión, y te sale el mensaje listo para mandar por WhatsApp.</p>
+  </header>
+  <div id="app">
+    <div class="cols2">
+      <form class="card stack" id="f">
+        <div class="field"><label for="cli">Nombre de tu cliente</label><input class="input" id="cli" maxlength="40" placeholder="Carla"></div>
+        <div class="field"><label for="ses">Qué sesión le hiciste</label><input class="input" id="ses" maxlength="60" placeholder="la sesión familiar"></div>
+        <div class="field"><label for="yo">Tu nombre</label><input class="input" id="yo" maxlength="40" placeholder="Pablo"></div>
+        <div class="field"><label for="tel">WhatsApp del cliente (opcional)</label><input class="input" id="tel" inputmode="numeric" maxlength="15" placeholder="59170000000"><span class="hint">Solo números, con código de país. Con esto aparece el botón para abrir el chat.</span></div>
+      </form>
+      <section class="card stack out" id="out" aria-live="polite"></section>
+    </div>
+  </div>
+  <aside class="card pitch">
+    <div class="stack" style="max-width:60ch"><h2>¿Te sirvió?</h2><p class="muted">En la clase gratis en vivo vemos cómo llenar la agenda de sesiones con este tipo de números y mensajes. Entras al grupo de WhatsApp y te avisamos la fecha.</p></div>
+    <a class="btn btn-primary" href="/masterclass/" data-cta="testimonio-pie">Quiero entrar a la clase gratis</a>
+  </aside>
+</main>
+<footer class="wrap foot"><span>Una herramienta de <a href="/">The Marketographers</a>, por Pablo Villarroel.</span><a href="/marketools/">Ver todas las herramientas</a></footer>
+<script src="/marketools/_ui/tool.js"></script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (s) { return s.replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  function mensaje(cli, ses, yo) {
+    return ['Hola ' + cli + ', soy ' + yo + '. Gracias por confiar en mí para ' + ses + '. Me ayudaría mucho que me cuentes tres cosas, en un audio o escritas, como te salga:', '',
+      '1. ¿Qué te preocupaba antes de la sesión?', '2. ¿Qué fue lo que más te gustó del proceso o del resultado?', '3. ¿A quién se lo recomendarías?', '',
+      '¿Me dejas usar tu respuesta, con tu nombre, en mi página y en mis redes? Si prefieres que no, también está bien.'].join('\n');
+  }
+  console.assert(mensaje('Ana', 'la sesión', 'Luis').indexOf('Hola Ana, soy Luis.') === 0 && mensaje('Ana', 'x', 'Luis').split('\n').length === 7);
+  function build() {
+    var cli = $('cli').value.trim() || 'Carla', ses = $('ses').value.trim() || 'la sesión', yo = $('yo').value.trim() || 'Pablo', tel = $('tel').value.replace(/\D/g, ''), msg = mensaje(cli, ses, yo);
+    $('out').innerHTML = '<h2>Tu mensaje</h2><pre class="msg" id="m">' + esc(msg) + '</pre><div class="row"><button type="button" class="btn btn-secondary" id="c">Copiar</button>' + (tel.length >= 10 ? '<a class="btn btn-primary" target="_blank" rel="noopener" href="https://wa.me/' + tel + '?text=' + encodeURIComponent(msg) + '">Abrir en WhatsApp</a>' : '') + '</div><p class="muted">Pide el testimonio entre 2 y 7 días después de entregar las fotos, cuando el cliente todavía está contento.</p>';
+    $('c').onclick = function () { Tool.copy(msg, this); };
+  }
+  $('f').addEventListener('input', function () { build(); Tool.used('testimonio'); });
+  build();
+})();
+</script>
+</body>
+</html>

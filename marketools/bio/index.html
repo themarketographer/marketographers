@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Auditor de bio de Instagram para fotógrafos | MarkeTools</title>
+<meta name="description" content="Ocho preguntas de sí o no sobre tu bio de Instagram. Te dice cuántas cumples y qué arreglar primero para que te escriban clientes. Gratis.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://marketographers.com/marketools/bio/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Marketographers">
+<meta property="og:title" content="Auditor de bio de Instagram para fotógrafos | MarkeTools">
+<meta property="og:description" content="Ocho preguntas de sí o no sobre tu bio de Instagram. Te dice cuántas cumples y qué arreglar primero para que te escriban clientes. Gratis.">
+<meta property="og:url" content="https://marketographers.com/marketools/bio/">
+<meta property="og:image" content="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1785200397/Banner_z6b496.png">
+<link rel="icon" type="image/png" href="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto,w_64,h_64/v1755314905/Marketographers_Negro_S_F_tgh9z2.png">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="/marketools/_ui/tokens.css">
+<link rel="stylesheet" href="/marketools/_ui/ui.css">
+<link rel="stylesheet" href="/marketools/_ui/tool.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Auditor de bio de Instagram", "url": "https://marketographers.com/marketools/bio/", "description": "Ocho preguntas de sí o no sobre tu bio de Instagram. Te dice cuántas cumples y qué arreglar primero para que te escriban clientes. Gratis.", "applicationCategory": "BusinessApplication", "operatingSystem": "Web", "inLanguage": "es", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "author": {"@type": "Person", "name": "Pablo Villarroel", "url": "https://marketographers.com/"}}</script>
+</head>
+<body>
+<header class="wrap nav">
+  <a class="brand" href="/marketools/">MarkeTools</a>
+  <a class="btn btn-secondary" href="/masterclass/" data-cta="bio-nav">Clase gratis</a>
+</header>
+<main class="wrap tool">
+  <header>
+    <h1>Auditor de bio de Instagram</h1>
+    <p>Abre tu perfil y responde ocho preguntas de sí o no. Te dice cuántas cumples y qué arreglar primero para que quien llega a tu perfil sepa qué vendes y cómo escribirte.</p>
+  </header>
+  <div id="app">
+    <div class="cols2">
+      <form class="card stack" id="f"><div id="qs" class="stack"></div></form>
+      <section class="card stack out" aria-live="polite"><h2>Tu resultado</h2><div id="res"><p class="muted">Responde las ocho preguntas.</p></div></section>
+    </div>
+  </div>
+  <aside class="card pitch">
+    <div class="stack" style="max-width:60ch"><h2>¿Te sirvió?</h2><p class="muted">En la clase gratis en vivo vemos cómo llenar la agenda de sesiones con este tipo de números y mensajes. Entras al grupo de WhatsApp y te avisamos la fecha.</p></div>
+    <a class="btn btn-primary" href="/masterclass/" data-cta="bio-pie">Quiero entrar a la clase gratis</a>
+  </aside>
+</main>
+<footer class="wrap foot"><span>Una herramienta de <a href="/">The Marketographers</a>, por Pablo Villarroel.</span><a href="/marketools/">Ver todas las herramientas</a></footer>
+<script src="/marketools/_ui/tool.js"></script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  // En orden de prioridad: lo primero que lee quien llega a tu perfil.
+  var Q = [
+    ['Dice a quién le sacas fotos', 'Escribe en la primera línea a quién le sacas fotos ("Fotos de comida para restaurantes").'],
+    ['Dice en qué ciudad trabajas', 'Agrega tu ciudad. Quien busca fotógrafo busca uno de su ciudad.'],
+    ['Tiene un enlace que funciona', 'Pon un enlace en tu bio y pruébalo desde el celular de otra persona.'],
+    ['El enlace lleva a WhatsApp o a una página de reserva', 'Cambia el enlace para que lleve a un lugar donde te escriben o reservan, no a tu página de inicio.'],
+    ['La foto de perfil es tu cara o tu logo, y se lee pequeña', 'Usa una foto de tu cara o un logo simple. Mírala del tamaño de un sello: si no se entiende, cámbiala.'],
+    ['El nombre incluye "fotógrafo" y la ciudad', 'Cambia el campo "Nombre" a algo como "Ana Rojas | Fotógrafa en Cochabamba". Es lo que Instagram busca.'],
+    ['Hay historias destacadas con precios o con tu proceso', 'Crea una historia destacada de "Cómo trabajo" y otra de "Precios" o "Paquetes".'],
+    ['Hay una llamada a la acción', 'Cierra la bio con una orden clara: "Escríbeme y te cotizo hoy".']
+  ];
+  // Cuenta pura: cuántas cumple y qué falta, en orden. resp = lista de 8 valores true/false.
+  function auditar(resp) { return { si: resp.filter(Boolean).length, faltan: Q.filter(function (q, i) { return resp[i] === false; }).map(function (q) { return q[1]; }) }; }
+  console.assert(auditar([true, true, true, true, true, true, true, true]).si === 8);
+  console.assert(auditar([false, true, false, true, true, true, true, true]).faltan.length === 2 && auditar([false, true, false, true, true, true, true, true]).si === 6);
+  var resp = new Array(8);
+  $('qs').innerHTML = Q.map(function (q, i) { return '<fieldset><legend>' + (i + 1) + '. ' + q[0] + '</legend><div class="row"><label class="row"><input type="radio" name="q' + i + '" value="1" style="width:20px;height:20px"> Sí</label><label class="row"><input type="radio" name="q' + i + '" value="0" style="width:20px;height:20px"> No</label></div></fieldset>'; }).join('');
+  $('f').addEventListener('change', function (e) {
+    resp[+e.target.name.slice(1)] = e.target.value === '1';
+    var hechas = resp.filter(function (x) { return x !== undefined; }).length;
+    if (hechas < 8) { $('res').innerHTML = '<p class="muted">Faltan ' + (8 - hechas) + ' preguntas.</p>'; return; }
+    var a = auditar(resp);
+    $('res').innerHTML = '<p class="big">' + a.si + ' de 8</p>' + (a.faltan.length ? '<p class="muted">Arréglalo en este orden:</p><ol class="stack">' + a.faltan.map(function (t) { return '<li>' + t + '</li>'; }).join('') + '</ol>' : '<p class="alert alert-ok">Tu bio cumple las ocho. Lo que sigue es publicar contenido que lleve gente a ella.</p>');
+    Tool.used('bio');
+  });
+})();
+</script>
+</body>
+</html>

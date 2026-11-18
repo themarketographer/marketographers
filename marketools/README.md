@@ -29,6 +29,7 @@ Algunas tools son un solo `index.html` autocontenido (sin build, sin carpeta `-a
 - **pricing** — Calculadora de precios completa (versión web del Excel "Motion Pricing v3"): gastos, costos, equipo, fondos 50/10/20/10/10, precio por hora y paquetes, punto de equilibrio, proyección a 12 meses y embudo de Meta Ads. Archivo único, sin build. El motor de cálculo está aislado en `<script id="calc">` (sin DOM). Guarda todo en `localStorage`.
 
 - **utm**, **costo-por-cliente**, **seguimiento** — Herramientas gratis de un solo archivo. Comparten estilos y medición en `_ui/` (tokens, componentes y `tool.js`).
+- **embudo**, **cotizador**, **portafolio**, **bio**, **anticipo**, **testimonio** — Herramientas gratis hechas con el generador `ecosistema/herramientas/herramientas-nuevas.py` (se corre desde la carpeta de marketographers; es seguro correrlo otra vez). Para agregar una nueva, se agrega su bloque al final de la lista `T` del script. El cotizador no guarda nada en servidores: el paquete viaja dentro del link, después del `#`.
 - **contrato** — Herramienta premium (incluida en la membresía). Pide la clave del mes.
 
 ## Herramientas premium y clave del mes

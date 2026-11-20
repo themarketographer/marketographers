@@ -5,11 +5,9 @@ Dashboard de campañas de Meta Ads para alumnos, sin backend.
 - HTML/CSS/JS plano (`index.html` más `adsboard.js`), sin dependencias ni build.
 - No usa Vite/React porque no hace falta: no hay assets locales que
   requieran rutas base ni un paso de compilación.
-- Por eso `adsboard-app/` y `adsboard/` tienen los mismos archivos
-  (`index.html` y `adsboard.js`), a diferencia de otras tools de esta carpeta.
 - Cada vez que cambie `adsboard.js`, subir el mismo valor de versión en tres
   lugares: `adsboard/index.html` (`adsboard.js?v=...`) y las dos líneas
-  de `adsboard/sw.js` (`CACHE` y `SHELL`). Hoy es `extras3`.
+  de `adsboard/sw.js` (`CACHE` y `SHELL`). Hoy es `extras4`.
 - Login con Facebook (Facebook Login for Business), permiso ads_read
   únicamente. El token vive solo en el navegador del alumno, nunca
   pasa por ningún servidor nuestro.
@@ -23,6 +21,6 @@ Dashboard de campañas de Meta Ads para alumnos, sin backend.
   nichos de fotografía por igual.
 - Modo demo: botón "Ver una demo con datos de ejemplo" en el login,
   para que un alumno sin cuenta conectada entienda qué va a ver.
-- Pendiente / próximos pasos: agregar selector de rango de fechas
-  (hoy está fijo en últimos 7 días vía date_preset), y mostrar el
-  motivo del rechazo cuando hay anuncios DISAPPROVED.
+- Rango de fechas: el selector de la cabecera ofrece 7, 14, 30, 60 y 90 días y se recuerda por alumno.
+- Anuncios rechazados: se pide `ad_review_feedback` y el motivo (`global`, valores separados por punto) sale en el detalle del anuncio y en la alerta, con el encabezado "Rechazado por Meta:". El modo demo trae un anuncio rechazado de ejemplo.
+- La carpeta `adsboard-app/` era una copia idéntica; se borró y `/marketools/adsboard-app/` redirige aquí.

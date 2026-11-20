@@ -202,6 +202,12 @@ E.groupBy = function (rows, key) {
   rows.forEach(function (r) { var k = r[key]; if (k === undefined || k === null) return; (g[k] = g[k] || []).push(r); });
   return g;
 };
+// ad_review_feedback.global es un objeto (motivo: explicación). Se muestra con los valores separados por punto.
+E.reviewText = function (fb) {
+  var g = fb && fb.global; if (!g || typeof g !== "object") return "";
+  return Object.keys(g).map(function (k) { return String(g[k] || k).replace(/[.\s]+$/, ""); }).filter(Boolean).join(". ");
+};
+console.assert(E.reviewText({ global: { a: "Uno.", b: "Dos" } }) === "Uno. Dos" && E.reviewText(null) === "" && E.reviewText({}) === "");
 E.dailySeries = function (rows, since, until) {
   var by = E.groupBy(rows, "date");
   var days = Object.keys(by).sort();
@@ -717,7 +723,7 @@ M.graph = function (method, path, p, body) {
         }
         if (kind === "campaigns") return { data: U.campaigns.map(function (c) { return { id: c.id, name: c.name, status: c.status, effective_status: c.status, objective: c.objective, buying_type: "AUCTION" }; }) };
         if (kind === "adsets") return { data: U.adsets.map(function (a) { return { id: a.id, name: a.name, status: a.status, effective_status: a.effective_status, campaign_id: a.campaign_id, daily_budget: String(a.daily_budget), optimization_goal: a.optimization_goal, learning_stage_info: a.learning_stage_info, targeting: a.targeting, billing_event: "IMPRESSIONS", bid_strategy: "LOWEST_COST_WITHOUT_CAP" }; }) };
-        if (kind === "ads") return { data: U.ads.map(function (a) { return { id: a.id, name: a.name, status: a.status, effective_status: a.effective_status, adset_id: a.adset_id, campaign_id: a.campaign_id, created_time: a.created_time, creative: a.creative }; }) };
+        if (kind === "ads") return { data: U.ads.map(function (a) { return { id: a.id, name: a.name, status: a.status, effective_status: a.effective_status, adset_id: a.adset_id, campaign_id: a.campaign_id, created_time: a.created_time, creative: a.creative, ad_review_feedback: a.id === "a5" ? { global: { "Promesa de resultado": "El anuncio promete un resultado garantizado y eso no se permite" } } : undefined }; }) };
         if (kind === "customconversions") return { data: [] };
         if (kind === "adspixels") return { data: [{ id: "px1", name: "Pixel Estudio Graphica", last_fired_time: new Date(Date.now() - 3600e3).toISOString(), is_created_by_business: true }, { id: "px2", name: "Desactivada 1", last_fired_time: null }] };
         if (kind === "customaudiences") return { data: [
@@ -814,7 +820,7 @@ C.run = function (A) {
   A.ads.forEach(function (ad) {
     var m = ad.m, active = (ad.effStatus || ad.status) === "ACTIVE";
     if (ad.effStatus === "DISAPPROVED" || ad.effStatus === "WITH_ISSUES") {
-      add({ id: "rej-" + ad.id, sev: "r", title: "Anuncio con problemas de aprobación: " + ad.name, why: "Meta lo frenó por política o por un error de configuración. Cada día así es entrega perdida.",
+      add({ id: "rej-" + ad.id, sev: "r", title: "Anuncio con problemas de aprobación: " + ad.name, why: (ad.review ? "Rechazado por Meta: " + ad.review + ". " : "Meta lo frenó por política o por un error de configuración. ") + "Cada día así es entrega perdida.",
         fix: "Ábrelo en Ads Manager, lee el motivo y corrige. Evita promesas de resultado garantizado y frases que asumen atributos personales de quien mira.", entity: { type: "ad", id: ad.id }, impact: 1 });
     }
     if (!active || m.spend <= 0) return;
@@ -1299,7 +1305,7 @@ AB.loadData = function () {
     safe(G.all(acct + "/insights", Object.assign({ level: "ad", fields: INS + ",quality_ranking,engagement_rate_ranking,conversion_rate_ranking", limit: 500 }, base), 12).then(function (d) { R.totals = d; }), "insights totales", R),
     safe(G.all(acct + "/campaigns", { fields: "id,name,status,effective_status,objective,daily_budget,lifetime_budget,buying_type", limit: 200 }, 10).then(function (d) { R.camps = d; }), "campañas", R),
     safe(G.all(acct + "/adsets", { fields: "id,name,status,effective_status,campaign_id,daily_budget,lifetime_budget,optimization_goal,promoted_object,learning_stage_info,targeting,bid_strategy", limit: 200 }, 10).then(function (d) { R.adsets = d; }), "conjuntos", R),
-    safe(G.all(acct + "/ads", { fields: "id,name,status,effective_status,adset_id,campaign_id,created_time,creative.thumbnail_width(480).thumbnail_height(480){id,thumbnail_url,image_url,video_id}", limit: 200 }, 10).then(function (d) { R.ads = d; }), "anuncios", R),
+    safe(G.all(acct + "/ads", { fields: "id,name,status,effective_status,ad_review_feedback,adset_id,campaign_id,created_time,creative.thumbnail_width(480).thumbnail_height(480){id,thumbnail_url,image_url,video_id}", limit: 200 }, 10).then(function (d) { R.ads = d; }), "anuncios", R),
     safe(G.get(acct + "/adspixels", { fields: "id,name,last_fired_time,is_created_by_business" }).then(function (j) { R.pixels = j.data || []; }), "píxeles", R),
     safe(G.get(acct + "/customaudiences", { fields: "id,name,subtype,approximate_count_lower_bound,approximate_count_upper_bound,delivery_status", limit: 60 }).then(function (j) { R.auds = j.data || []; }), "audiencias", R),
     safe(G.all(acct + "/customconversions", { fields: "id,name", limit: 100 }, 2).then(function (d) { R.convs = d; }), "conversiones", R),
@@ -1356,7 +1362,7 @@ AB.analyze = function (R) {
     var cr = meta.creative || {};
     ads.push({ id: id, name: meta.name || first.adName || id, status: meta.status || "UNKNOWN", effStatus: meta.effective_status || meta.status || "UNKNOWN",
       adsetId: meta.adset_id || first.adsetId, campaignId: meta.campaign_id || first.campaignId, m: m, series: seriesOf(rr), created: meta.created_time,
-      thumb: cr.image_url || cr.thumbnail_url || null, isVideo: !!cr.video_id || m.isVideo });
+      thumb: cr.image_url || cr.thumbnail_url || null, isVideo: !!cr.video_id || m.isVideo, review: E.reviewText(meta.ad_review_feedback) });
   });
   var pool = ads.filter(function (a) { return a.m.impr > 1000; });
   var medians = {
@@ -1622,6 +1628,7 @@ T.adCard = function (a) {
     '<div class="tl">' + (a.isVideo ? '<span class="chip n">Video</span>' : '<span class="chip n">Imagen</span>') + (a.effStatus !== "ACTIVE" ? F.chip("n", F.statusEs(a.effStatus)) : "") + '</div>' +
     '<div class="tr"><div class="scorebadge ' + lv + '" data-tip="Puntaje creativo 0 a 100: combina hook, retención, CTR, costo y frescura. ' + (sc.grade || "") + '">' + (sc.score === null ? "—" : sc.score) + '</div></div>' +
     '<div class="name">' + F.esc(a.name) + '</div></div>' +
+    (a.effStatus === "DISAPPROVED" && a.review ? '<div class="sub" style="color:var(--r,#c0392b);padding:6px 10px"><b>Rechazado por Meta:</b> ' + F.esc(a.review) + '</div>' : '') +
     '<div class="ad-body"><div class="mini2"><div><div class="k">Gasto</div><div class="v">' + F.money(m.spend) + '</div></div><div><div class="k">Costo x result.</div><div class="v">' + F.money(m.cpr) + '</div></div>' +
     (a.isVideo ? '<div><div class="k">Hook ' + F.help("hook") + '</div><div class="v">' + F.pct(m.hook, 0) + '</div></div><div><div class="k">Retención ' + F.help("hold") + '</div><div class="v">' + F.pct(m.hold, 0) + '</div></div>' :
       '<div><div class="k">CTR</div><div class="v">' + F.pct(m.ctr, 2) + '</div></div><div><div class="k">Resultados</div><div class="v">' + F.num(m.results) + '</div></div>') + '</div>' +
@@ -1648,7 +1655,7 @@ T.adDetail = function (id) {
   var A = S.A, a = A.ads.filter(function (x) { return x.id === id; })[0]; if (!a) return "";
   var m = a.m, sc = a.score;
   var camp = A.campaigns.filter(function (c) { return c.id === a.campaignId; })[0] || {}, aset = A.adsets.filter(function (c) { return c.id === a.adsetId; })[0] || {};
-  var html = '<h2 style="font-size:20px;margin:6px 60px 4px 0">' + F.esc(a.name) + '</h2><div class="sub">' + F.esc(camp.name || "") + ' › ' + F.esc(aset.name || "") + ' · ' + F.statusEs(a.effStatus) + '</div>';
+  var html = '<h2 style="font-size:20px;margin:6px 60px 4px 0">' + F.esc(a.name) + '</h2><div class="sub">' + F.esc(camp.name || "") + ' › ' + F.esc(aset.name || "") + ' · ' + F.statusEs(a.effStatus) + '</div>' + (a.effStatus === "DISAPPROVED" && a.review ? '<div class="sub" style="color:var(--r,#c0392b);margin-top:6px"><b>Rechazado por Meta:</b> ' + F.esc(a.review) + '</div>' : '');
   html += '<div class="grid g3" style="margin:14px 0"><div class="card pad" style="text-align:center"><div class="eyebrow" style="justify-content:center">Puntaje creativo ' + F.help("puntaje") + '</div>' + Ch.gauge(sc.score, sc.score === null ? "n" : (sc.score >= 65 ? "g" : (sc.score >= 40 ? "y" : "r")), "Puntaje") + '<div class="sub">' + F.esc(sc.grade || "Sin datos") + '</div></div>' +
     '<div class="card pad" style="text-align:center"><div class="eyebrow" style="justify-content:center">Saturación ' + F.help("saturacion") + '</div>' + Ch.gauge(a.fat.score, a.fat.level, "Saturación") + '<div class="sub">' + F.esc(a.fat.label) + (a.fat.daysLeft !== null ? " · ~" + a.fat.daysLeft + " d a frecuencia 3,5" : "") + '</div></div>' +
     '<div class="card pad"><div class="eyebrow">Costo por resultado</div><div class="big" style="margin:6px 0">' + F.money(m.cpr) + '</div>' + verdictChip(a.verdict) + '</div></div>';

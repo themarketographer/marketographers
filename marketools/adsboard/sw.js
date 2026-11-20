@@ -2,8 +2,8 @@
    Estrategia: la página y el código se piden siempre primero a internet, así cada
    alumno recibe la versión nueva apenas la subes a GitHub. Si no hay conexión,
    se usa la última copia guardada. Las llamadas a Meta nunca se guardan. */
-var CACHE = "adsboard-extras3";
-var SHELL = ["./", "./index.html", "./adsboard.js?v=extras3", "./manifest.webmanifest", "./icons/icon-192.png", "./icons/icon-512.png"];
+var CACHE = "adsboard-extras4";
+var SHELL = ["./", "./index.html", "./adsboard.js?v=extras4", "./manifest.webmanifest", "./icons/icon-192.png", "./icons/icon-512.png"];
 self.addEventListener("install", function (e) {
   e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(SHELL).catch(function () {}); }));
 });

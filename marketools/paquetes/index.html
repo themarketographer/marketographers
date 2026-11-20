@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Calculadora de paquetes para fotógrafos | MarkeTools</title>
+<meta name="description" content="Arma tres paquetes de fotografía (esencial, recomendado y completo) a partir de tu precio por hora, con tus multiplicadores y tus extras. Herramienta de la membresía.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://marketographers.com/marketools/paquetes/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Marketographers">
+<meta property="og:title" content="Calculadora de paquetes para fotógrafos | MarkeTools">
+<meta property="og:description" content="Arma tres paquetes de fotografía (esencial, recomendado y completo) a partir de tu precio por hora, con tus multiplicadores y tus extras. Herramienta de la membresía.">
+<meta property="og:url" content="https://marketographers.com/marketools/paquetes/">
+<meta property="og:image" content="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto/v1785200397/Banner_z6b496.png">
+<link rel="icon" type="image/png" href="https://res.cloudinary.com/dplhu2z6j/image/upload/q_auto,f_auto,w_64,h_64/v1755314905/Marketographers_Negro_S_F_tgh9z2.png">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="/marketools/_ui/tokens.css">
+<link rel="stylesheet" href="/marketools/_ui/ui.css">
+<link rel="stylesheet" href="/marketools/_ui/tool.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Calculadora de paquetes", "url": "https://marketographers.com/marketools/paquetes/", "description": "Arma tres paquetes de fotografía (esencial, recomendado y completo) a partir de tu precio por hora, con tus multiplicadores y tus extras. Herramienta de la membresía.", "applicationCategory": "BusinessApplication", "operatingSystem": "Web", "inLanguage": "es", "isAccessibleForFree": false, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "author": {"@type": "Person", "name": "Pablo Villarroel", "url": "https://marketographers.com/"}}</script>
+</head>
+<body>
+<header class="wrap nav">
+  <a class="brand" href="/marketools/">MarkeTools</a>
+  <a class="btn btn-secondary" href="/masterclass/" data-cta="paquetes-nav">Clase gratis</a>
+</header>
+<main class="wrap tool">
+  <header>
+    <h1>Calculadora de paquetes</h1>
+    <p>Pones tu precio por hora y las horas de una sesión base. Te arma tres paquetes: esencial, recomendado y completo. Los multiplicadores y los extras los cambias tú.</p>
+  </header>
+  <form class="card stack" id="gate" hidden style="max-width:440px">
+    <h2>Herramienta de la membresía</h2>
+    <p class="muted">Viene incluida en The Marketographers. La clave cambia cada mes y está fijada en la comunidad.</p>
+    <div class="field"><label for="gateKey">Clave de este mes</label><input class="input" id="gateKey" autocomplete="off" autocapitalize="characters" maxlength="12" required></div>
+    <button class="btn btn-primary" type="submit">Entrar</button>
+    <p class="field-error" id="gateErr" role="alert" hidden></p>
+    <p class="muted">¿Todavía no eres parte? <a href="/#planes" data-cta="premium-membresia">Mira qué incluye la membresía</a>.</p>
+  </form>
+  <div id="app" hidden>
+    <div class="cols2">
+      <form class="card stack" id="f">
+        <div class="field"><label for="hora">Tu precio por hora</label><input class="input" id="hora" type="number" inputmode="decimal" min="0" placeholder="40"></div>
+        <div class="field"><label for="horas">Horas de la sesión base</label><input class="input" id="horas" type="number" inputmode="decimal" min="0.5" step="0.5" value="2"></div>
+        <div class="field"><label for="m1">Multiplicador del paquete recomendado</label><input class="input" id="m1" type="number" step="0.1" min="1" value="1.6"></div>
+        <div class="field"><label for="m2">Multiplicador del paquete completo</label><input class="input" id="m2" type="number" step="0.1" min="1" value="2.4"></div>
+        <div class="field"><label for="extras">Extras (uno por línea; el recomendado lleva los dos primeros, el completo todos)</label><textarea class="input" id="extras" rows="5">Más fotos editadas
+Entrega en 48 horas
+Media hora extra de sesión
+Fotos listas para redes</textarea></div>
+        <div class="field"><label for="mon">Moneda</label><input class="input" id="mon" maxlength="8" value="USD"></div>
+      </form>
+      <section class="card stack out" aria-live="polite"><h2>Tus tres paquetes</h2><div id="res"><p class="muted">Llena tu precio por hora.</p></div></section>
+    </div>
+  </div>
+  <aside class="card pitch">
+    <div class="stack" style="max-width:60ch"><h2>¿Te sirvió?</h2><p class="muted">En la clase gratis en vivo vemos cómo llenar la agenda de sesiones con este tipo de números y mensajes. Entras al grupo de WhatsApp y te avisamos la fecha.</p></div>
+    <a class="btn btn-primary" href="/masterclass/" data-cta="paquetes-pie">Quiero entrar a la clase gratis</a>
+  </aside>
+</main>
+<footer class="wrap foot"><span>Una herramienta de <a href="/">The Marketographers</a>, por Pablo Villarroel.</span><a href="/marketools/">Ver todas las herramientas</a></footer>
+<script src="/marketools/_ui/tool.js"></script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var m = function (x) { return (Math.round(x * 100) / 100).toLocaleString('es', { minimumFractionDigits: 0, maximumFractionDigits: 2 }); };
+  // Cuenta pura. Esencial = precio base; recomendado y completo = base por su multiplicador, redondeado al entero.
+  function paquetes(hora, horas, m1, m2, extras) {
+    var base = Math.round(hora * horas * 100) / 100;
+    if (m2 < m1) m2 = m1;
+    return [
+      { nombre: 'Esencial', precio: base, incluye: horas + (horas === 1 ? ' hora' : ' horas') + ' de sesión' },
+      { nombre: 'Recomendado', precio: Math.round(base * m1), incluye: [horas + ' horas de sesión'].concat(extras.slice(0, 2)).join(', ') },
+      { nombre: 'Completo', precio: Math.round(base * m2), incluye: [horas + ' horas de sesión'].concat(extras).join(', ') }
+    ];
+  }
+  var t = paquetes(40, 2, 1.6, 2.4, ['a', 'b', 'c']);
+  console.assert(t[0].precio === 80 && t[1].precio === 128 && t[2].precio === 192 && t[1].incluye.indexOf('c') < 0 && t[2].incluye.indexOf('c') > 0);
+  console.assert(paquetes(50, 1, 2, 1, [])[2].precio === 100);
+  Tool.premium(function () {
+    function calc() {
+      var hora = parseFloat($('hora').value), horas = parseFloat($('horas').value) || 0;
+      if (!(hora > 0) || !(horas > 0)) { $('res').innerHTML = '<p class="muted">Llena tu precio por hora.</p>'; return; }
+      var m1 = Math.max(parseFloat($('m1').value) || 1, 1), m2 = Math.max(parseFloat($('m2').value) || 1, 1), mon = $('mon').value.trim() || 'USD';
+      var extras = $('extras').value.split('\n').map(function (x) { return x.trim(); }).filter(Boolean);
+      var p = paquetes(hora, horas, m1, m2, extras), L = ['Mis paquetes de fotografía:', ''];
+      var html = p.map(function (x) { L.push(x.nombre + ': ' + m(x.precio) + ' ' + mon, x.incluye, ''); return '<div class="kv"><span><strong>' + x.nombre + '</strong><br><small class="muted" data-i></small></span><span>' + m(x.precio) + ' ' + mon.replace(/[<&]/g, '') + '</span></div>'; }).join('');
+      $('res').innerHTML = html + '<button type="button" class="btn btn-primary" id="cp">Copiar paquetes</button>';
+      var si = $('res').querySelectorAll('[data-i]'); p.forEach(function (x, i) { si[i].textContent = x.incluye; });
+      var msg = L.join('\n').trim(); $('cp').onclick = function () { Tool.copy(msg, this); }; Tool.used('paquetes');
+    }
+    $('f').addEventListener('input', calc);
+  });
+})();
+</script>
+</body>
+</html>

@@ -61,3 +61,5 @@
 - [Auditor de bio de Instagram](https://marketographers.com/marketools/bio/): Ocho preguntas de sí o no sobre tu perfil. Te dice cuántas cumples y qué arreglar primero.
 - [Anticipo y cuotas](https://marketographers.com/marketools/anticipo/): Calcula el anticipo y las cuotas con sus fechas, y copia el mensaje de WhatsApp para tu cliente.
 - [Pedir un testimonio](https://marketographers.com/marketools/testimonio/): Genera el mensaje de WhatsApp con tres preguntas concretas para que tu cliente te deje un testimonio útil.
+- [Calculadora de paquetes](https://marketographers.com/marketools/paquetes/): Arma tres paquetes a partir de tu precio por hora, con tus multiplicadores y tus extras. Incluida en la membresía.
+- [Planificador de 30 días](https://marketographers.com/marketools/planificador/): Arma 30 días de contenido a partir del problema de tu cliente, con gancho, distancia y el texto para pedir el guión. Incluida en la membresía.

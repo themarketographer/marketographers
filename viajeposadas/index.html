@@ -255,6 +255,92 @@ input[type=text],select{font:inherit;color:var(--ink);background:var(--s2);borde
 .cnew{display:grid;gap:8px}
 .cnew .row{display:flex;gap:8px}
 .cnew input{flex:1;min-width:0}
+
+/* app shell */
+.page{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+.top{align-items:center;flex-wrap:nowrap}
+.me{padding:4px 14px 4px 4px;gap:10px}
+.me .who{display:grid;line-height:1.1;text-align:left}.me .who small{font-size:11px;color:var(--muted)}.me .who b{font-size:15px;color:var(--ink)}
+.av.md{width:40px;height:40px;font-size:16px}.av.xl{width:64px;height:64px;font-size:26px}
+.pic.lg{width:56px;height:56px;border-radius:14px}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:40;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:8px 10px calc(8px + env(safe-area-inset-bottom));background:rgba(12,12,12,.86);backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);border-top:1px solid var(--line)}
+.tab{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:52px;border-radius:14px;color:var(--muted);font-size:12px;font-weight:600;transition:background .15s,color .15s,transform .12s}
+.tab svg{width:22px;height:22px}
+.tab:active{transform:scale(.96)}
+.tab.on{color:var(--accent-ink);background:var(--accent)}
+.tab.on .av{outline:2px solid var(--accent-ink)}
+.dotb{position:absolute;top:6px;right:calc(50% - 18px);width:9px;height:9px;border-radius:50%;background:var(--solo);box-shadow:0 0 0 2px var(--bg)}
+@media (min-width:900px){
+  .page{padding-bottom:40px}
+  .tabs{position:sticky;top:0;bottom:auto;left:auto;right:auto;margin:0 auto 20px;max-width:560px;border:1px solid var(--line);border-radius:999px;padding:5px;background:rgba(21,21,21,.85)}
+  .tab{flex-direction:row;min-height:40px;border-radius:999px;font-size:14px;gap:8px}
+  .tab svg{width:18px;height:18px}
+  .dotb{top:8px;right:14px}
+}
+.view-body{display:grid;gap:20px;min-width:0}
+.home,.calv,.plv,.meview{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;min-width:0}
+.view-body{grid-template-columns:minmax(0,1fr)}
+.ph2 .btn{white-space:nowrap;flex:none}
+.g2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:900px){.g2{grid-template-columns:minmax(0,1fr)}}
+.todo{padding:18px}
+.todo.ok{padding:14px 18px}
+.todo-h{display:flex;gap:12px;align-items:center}
+.todo .big{font-family:var(--fd);font-weight:400;font-size:22px;line-height:1.15;letter-spacing:-.01em;display:block;margin-bottom:4px}
+.todo .tick{width:32px;height:32px;border-radius:50%;background:var(--free-soft);color:var(--free-ink);display:grid;place-items:center;font-weight:800}
+.todo-a{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.todo.ok .todo-a{margin-top:10px}
+.steps{list-style:none;counter-reset:s;margin:14px 0 0;padding:0;display:grid;gap:10px}
+.steps li{counter-increment:s;display:grid;grid-template-columns:28px minmax(0,1fr);column-gap:12px;align-items:start}
+.steps li::before{content:counter(s);grid-row:1/3;width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-weight:800;font-size:14px}
+.steps li b{font-weight:600}.steps li span{color:var(--muted);font-size:13px}
+.hint{font-size:13px;color:var(--muted)}.hint b{color:var(--ink);font-weight:600}
+.crewbar{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 6px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.crewbar::-webkit-scrollbar{display:none}
+.crewbar .chip{flex:none;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.fab{position:fixed;right:16px;bottom:calc(86px + env(safe-area-inset-bottom));z-index:35;display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:var(--accent-ink);font-weight:700;border-radius:999px;padding:14px 20px;box-shadow:0 10px 30px -8px rgba(0,0,0,.7);transition:transform .12s}
+.fab:active{transform:scale(.96)}.fab svg{width:18px;height:18px}
+@media (min-width:900px){.fab{bottom:28px;right:28px}}
+.ph2{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.ph2 h2{font-family:var(--fd);font-weight:400;font-size:28px;margin:0;letter-spacing:-.01em}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+.pcard{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:14px;display:grid;gap:10px;align-content:start;min-width:0}
+.pcard.dimr{opacity:.4}
+.pc-main{display:flex;gap:12px;align-items:center;text-align:left;width:100%}
+.pc-t{min-width:0}.pc-t b{display:block;font-size:17px;font-weight:600;line-height:1.2;overflow-wrap:anywhere}
+.pc-c{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px}
+.tag{display:inline-flex;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--glass);color:var(--muted)}
+.tag.o{background:var(--free-soft);color:var(--free-ink)}.tag.x{background:var(--glass);color:var(--ink)}
+.pc-d{margin:0;font-size:14px;line-height:1.4;color:var(--ink);opacity:.9;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+.pc-d.none{color:var(--muted);font-style:italic}
+.pc-v{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);min-width:0}
+.pc-v span:last-child{min-width:0;overflow-wrap:anywhere}
+.pc-a{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.jl{display:grid;gap:6px;padding:0 12px 14px}
+.jrow{display:flex;align-items:center;gap:10px;padding:8px 8px;border-radius:14px;background:var(--s2)}
+.jrow.dimr{opacity:.4}
+.jrow .grow{min-width:0}.jrow b{display:block}
+.prof{padding:16px 18px}
+.prof-h{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.prof-h h2{font-family:var(--fd);font-weight:400;font-size:28px;margin:0}
+.prof-h .grow{flex:1;min-width:140px}
+.brow-l{display:grid;gap:6px;padding:0 12px 10px}
+.brow{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:10px 12px;border-radius:14px;background:var(--s2)}
+.brow .bd{font-weight:700;min-width:54px}.brow .grow{flex:1;min-width:0}.brow b{display:block}.brow small{color:var(--muted)}
+.brow svg{width:16px;height:16px;color:var(--muted)}
+.glist{display:grid;gap:6px;padding:0 12px 14px}
+.grow2{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:10px 12px;border-radius:14px;background:var(--s2)}
+.grow2 .grow{flex:1;min-width:0}.grow2 b{display:block}.grow2 small{color:var(--muted)}
+.grow2 svg{width:16px;height:16px;color:var(--muted)}
+.st-d{width:9px;height:9px;border-radius:50%;background:var(--solo);flex:none}.st-d.ok{background:var(--free)}
+.ipick{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.ipick .ic{aspect-ratio:1;border-radius:12px;background:var(--s2);color:var(--muted);display:grid;place-items:center;border:1px solid transparent}
+.ipick .ic svg{width:22px;height:22px}
+.ipick .ic[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+textarea{width:100%;background:var(--s2);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font:inherit;resize:vertical;min-height:84px}
+.opt{display:grid;gap:2px;text-align:left;padding:12px 14px}.opt small{font-weight:500;color:var(--muted);font-size:12px}
+.opt[aria-pressed="true"] small{color:inherit;opacity:.8}
+@media (max-width:640px){.top{margin-bottom:12px}.top h1{font-size:34px}.dates{font-size:13px}}
 /* sheets */
 .scrim{position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:40;display:flex;align-items:flex-end;justify-content:center;animation:fade 200ms var(--ease)}
 @media (min-width:720px){.scrim{align-items:center}}
@@ -337,7 +423,7 @@ var ICONS={
 };
 function icon(k){var s=document.createElement('span');s.style.display='contents';s.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true">'+(ICONS[k]||ICONS.pin)+'</svg>';return s;}
 
-var S={me:null,people:{},avail:{},plans:{},votes:{},log:{},joins:{},view:(function(){try{var v=localStorage.getItem('posadas-view');if(v)return v;}catch(e){}return window.innerWidth<700?'agenda':'cal';})(),filter:'all',focus:null,sheet:null,shownKey:null,newPlan:'',newCat:'pos',toast:'',offline:false,loaded:false,pending:false,db:null,assets:null,scrolled:false};
+var S={tab:(function(){try{return localStorage.getItem('posadas-tab')||'home';}catch(e){return 'home';}})(),pf:'all',me:null,people:{},avail:{},plans:{},votes:{},log:{},joins:{},view:(function(){try{var v=localStorage.getItem('posadas-view');if(v)return v;}catch(e){}return window.innerWidth<700?'agenda':'cal';})(),filter:'all',focus:null,sheet:null,shownKey:null,newPlan:'',newCat:'pos',toast:'',offline:false,loaded:false,pending:false,db:null,assets:null,scrolled:false};
 var saving=false,dirty=false,toastT=null;
 
 function slugify(n){return String(n).trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')||'x';}
@@ -435,6 +521,33 @@ async function addPlan(){
   S.newPlan='';
   try{S.plans[id]=data;render();await S.db.collection('plans').doc(id).set(data);logEv('add',t);}catch(e){fail();}
 }
+function iconPicker(cur,onpick){
+  var box=el('div',{class:'ipick',role:'group','aria-label':'Ícono'});
+  ['pin','food','burger','coffee','beer','glass','music','mic','bowling','pool','wave','tree','leaf','sparkles','flame','moon','city','home'].forEach(function(k){
+    box.appendChild(el('button',{class:'ic','aria-pressed':cur===k,'aria-label':k,onclick:function(){onpick(k);}},icon(k)));
+  });
+  return box;
+}
+function newPlanSheet(sh){
+  var ti=el('input',{type:'text',placeholder:'Ej: Café con Matías',maxlength:'60','aria-label':'Nombre del plan',value:sh.title});
+  ti.addEventListener('input',function(){sh.title=ti.value;});
+  var ta=el('textarea',{rows:'3',maxlength:'240',placeholder:'¿De qué trata? Cuenta en una o dos líneas qué se hace y por qué vale la pena.','aria-label':'Descripción'});ta.value=sh.desc||'';
+  ta.addEventListener('input',function(){sh.desc=ta.value;});
+  var cats=el('div',{class:'chips'});[['pos','Posadas'],['py','Paraguay'],['otro','Otro']].forEach(function(c){cats.appendChild(el('button',{class:'chip','aria-pressed':sh.cat===c[0],onclick:function(){sh.cat=c[0];render();}},c[1]));});
+  async function save(){
+    var t=(sh.title||'').trim();if(!t){toast('Ponle un nombre al plan.');return;}
+    var id=sh.cat+'-'+slugify(t)+'-'+Date.now().toString(36);
+    var data={title:t,cat:sh.cat,icon:sh.icon,desc:(sh.desc||'').trim(),order:Date.now(),sched:null,photo:null,by:S.me.name};
+    S.plans[id]=data;closeSheet();toast('Plan creado. Anótate para poder agendarlo.');
+    try{await S.db.collection('plans').doc(id).set(data);logEv('add',t);}catch(e){fail();}
+  }
+  return [shead('Nuevo plan','Cuéntale al grupo qué quieres hacer.'),
+    el('div',null,el('p',{class:'lab'},'Nombre'),ti),
+    el('div',null,el('p',{class:'lab'},'¿De qué trata?'),ta),
+    el('div',null,el('p',{class:'lab'},'¿Dónde?'),cats),
+    el('div',null,el('p',{class:'lab'},'Ícono'),iconPicker(sh.icon,function(k){sh.icon=k;render();})),
+    el('button',{class:'btn block primary',onclick:save},'Crear plan')];
+}
 async function createPlanAt(t,val){
   var low=t.toLowerCase(),icon0=/caf[eé]|merienda/.test(low)?'coffee':/cerveza|bar\b|birra|trago/.test(low)?'beer':/almuerzo|cena|comer|parrilla|restaurante|pizza|asado/.test(low)?'food':/karaoke|cantar/.test(low)?'mic':/playa|rio|río|costanera|nadar/.test(low)?'wave':'pin';
   var id='otro-'+slugify(t)+'-'+Date.now().toString(36);
@@ -516,7 +629,7 @@ function suggestions(p){
 var app=document.getElementById('app');
 function render(){
   var a=document.activeElement;
-  if(a&&(a.tagName==='INPUT'||a.tagName==='SELECT')){S.pending=true;return;}
+  if(a&&(a.tagName==='INPUT'||a.tagName==='SELECT'||a.tagName==='TEXTAREA')){S.pending=true;return;}
   S.pending=false;
   var sc=document.querySelector('.scroller'),sl=sc?sc.scrollLeft:null,stp=sc?sc.scrollTop:null;
   var pl=document.querySelector('.plist'),plt=pl?pl.scrollTop:0;
@@ -561,16 +674,133 @@ function welcome(){
     el('div',{style:'display:flex;gap:8px;margin-top:12px'},inp,el('button',{class:'btn primary',onclick:function(){go(inp.value);}},'Entrar')));
 }
 
+function setTab(t){S.tab=t;try{localStorage.setItem('posadas-tab',t);}catch(e){}window.scrollTo(0,0);render();}
+function topBar(){
+  var n=daysLeft();
+  return el('header',{class:'top'},
+    el('div',null,el('h1',null,'Viaje ',el('mark',null,'Posadas')),
+      el('div',{class:'dates'},'1 al 11 de diciembre'+(n>0?' · ':''),n>0?el('span',{class:'cd'},icon('plane'),n===1?'Pablo vuela mañana':'Faltan '+n+' días'):null)),
+    el('button',{class:'me press',onclick:function(){setTab('me');},'aria-label':'Tu perfil: '+S.me.name},avatar(S.me.slug),el('span',{class:'who'},el('small',null,'Eres'),el('b',null,S.me.name))));
+}
+function tabBar(){
+  var T=[['home','Inicio','home'],['cal','Calendario','cal'],['plans','Planes','sparkles'],['me','Yo',null]];
+  var nav=el('nav',{class:'tabs',role:'tablist','aria-label':'Secciones'});
+  T.forEach(function(t){
+    var on=S.tab===t[0];
+    nav.appendChild(el('button',{class:'tab'+(on?' on':''),role:'tab','aria-selected':on,onclick:function(){if(S.tab===t[0])window.scrollTo({top:0,behavior:'smooth'});else setTab(t[0]);}},
+      t[2]?icon(t[2]):avatar(S.me.slug,'sm'),el('span',null,t[1]),
+      t[0]==='home'&&!isDone(S.me.slug)?el('i',{class:'dotb','aria-label':'Pendiente'}):null));
+  });
+  return nav;
+}
+function todoCard(){
+  var mine=blocksOf(S.me.slug).length,done=isDone(S.me.slug);
+  if(done)return el('section',{class:'card quiet todo ok'},
+    el('div',{class:'todo-h'},el('span',{class:'tick'},'✓'),el('div',{class:'grow'},el('b',null,'Tu horario está listo'),el('div',{class:'s'},mine+(mine===1?' bloque ocupado marcado':' bloques ocupados marcados')+'. Si algo cambia, edítalo cuando quieras.'))),
+    el('div',{class:'todo-a'},el('button',{class:'btn',onclick:function(){setTab('me');}},'Ver mi horario'),el('button',{class:'btn',onclick:function(){openBusy(null,2,780);}},icon('plus'),'Marcar otro')));
+  return el('section',{class:'card todo'},
+    el('div',{class:'todo-h'},el('div',{class:'grow'},el('b',{class:'big'},'Hola '+S.me.name+', cuéntanos cuándo estás ocupado'),el('div',{class:'s'},'Así el grupo sabe cuándo coinciden todos.'))),
+    el('ol',{class:'steps'},
+      el('li',null,el('b',null,'Toca "Marcar ocupado"'),el('span',null,'Elige el día y la hora en que no puedes.')),
+      el('li',null,el('b',null,'Di si pueden acompañarte'),el('span',null,'"Pueden sumarse" deja que otros vayan contigo. "Voy solo" no.')),
+      el('li',null,el('b',null,'Toca "Ya marqué todo"'),el('span',null,'Cuando termines, para que sepan que tu horario está completo.'))),
+    el('div',{class:'todo-a'},el('button',{class:'btn primary',onclick:function(){openBusy(null,2,780);}},icon('plus'),'Marcar ocupado'),
+      el('button',{class:'btn',onclick:function(){var a=myDoc();a.done=true;saveMine();logEv('done');render();}},'No tengo nada ocupado')));
+}
+function homeView(){
+  return el('div',{class:'home'},todoCard(),
+    el('div',{class:'g2'},bestCard(),activityCard()),
+    flightsBoth());
+}
+function crewBar(){
+  var box=el('div',{class:'crewbar'});
+  box.appendChild(el('button',{class:'chip','aria-pressed':!S.focus,onclick:function(){S.focus=null;render();}},'Todos'));
+  everyone().forEach(function(s){box.appendChild(el('button',{class:'chip pers','aria-pressed':S.focus===s,onclick:function(){S.focus=S.focus===s?null:s;render();}},avatar(s,'sm'),nameOf(s)));});
+  return box;
+}
+function calView(){
+  return el('div',{class:'calv'},
+    el('div',{class:'hint'},el('b',null,'Filtra por persona'),' para ver solo su horario y sus planes.'),crewBar(),calendarCard(),
+    el('button',{class:'fab',onclick:function(){openBusy(null,2,780);}},icon('plus'),'Ocupado'));
+}
+function planCard(p){
+  var v=votersOf(p.id),sc=schedOf(p),mine=!!S.votes[p.id+'__'+S.me.slug];
+  var names=v.length?(allIn(v)?'Van todos':v.slice(0,3).map(nameOf).join(', ')+(v.length>3?' y '+(v.length-3)+' más':'')):'Nadie se anotó todavía';
+  var stack=el('span',{class:'stackav'});v.slice(0,5).forEach(function(x){stack.appendChild(avatar(x,'sm'));});
+  return el('article',{class:'pcard'+(S.focus&&v.indexOf(S.focus)<0?' dimr':'')},
+    el('button',{class:'pc-main',onclick:function(){openPlan(p.id);}},
+      thumb(p,'lg'),
+      el('div',{class:'pc-t'},el('b',null,p.title),el('div',{class:'pc-c'},el('span',{class:'tag'},CAT[p.cat]||'Otro'),sc?el('span',{class:'when-chip'},dlab(sc.d)+' '+fmt(sc.from)):null))),
+    el('p',{class:'pc-d'+(p.desc?'':' none')},p.desc||'Sin descripción todavía. Toca para contar de qué trata.'),
+    el('div',{class:'pc-v'},v.length?stack:null,el('span',null,names)),
+    el('div',{class:'pc-a'},
+      el('button',{class:'btn'+(mine?'':' primary'),'aria-pressed':mine,onclick:function(){toggleVote(p.id);}},mine?'Voy ✓':'Me anoto'),
+      el('button',{class:'btn',onclick:function(){openPlan(p.id);}},'Ver detalle')));
+}
+function joinList(){
+  var out=[];
+  everyone().forEach(function(o){if(o===S.me.slug)return;blocksOf(o).forEach(function(b){if(b.type==='o')out.push({o:o,b:b});});});
+  out.sort(function(a,b){return a.b.d-b.b.d||a.b.from-b.b.from;});
+  var box=el('div',{class:'jl'});
+  out.forEach(function(x){
+    var js=joinersOf(x.o,x.b.id),mine=js.indexOf(S.me.slug)>-1;
+    box.appendChild(el('div',{class:'jrow'+(S.focus&&S.focus!==x.o&&js.indexOf(S.focus)<0?' dimr':'')},avatar(x.o,'sm'),
+      el('div',{class:'grow'},el('b',null,nameOf(x.o)),el('div',{class:'s'},dlab(x.b.d)+', '+span(x.b)+(js.length?' · van '+js.slice(0,3).map(nameOf).join(', ')+(js.length>3?' y '+(js.length-3)+' más':''):' · nadie todavía'))),
+      el('button',{class:'btn sm'+(mine?'':' primary'),onclick:function(){toggleJoin(x.o,x.b);}},mine?'Voy ✓':'Me sumo')));
+  });
+  if(!out.length)box.appendChild(el('div',{class:'s',style:'padding:6px 4px'},'Todavía nadie marcó horarios a los que puedas sumarte.'));
+  return el('section',{class:'card quiet'},el('div',{class:'sec-h'},el('h2',null,'Horarios donde te puedes sumar'),el('span',{class:'s'},'Eventos de tus amigos abiertos a que los acompañes')),box);
+}
+function plansView(){
+  var all=planList(),f=S.pf;
+  var chips=el('div',{class:'crewbar'});
+  [['all','Todos'],['mine','Mis planes'],['pos','Posadas'],['py','Paraguay'],['otro','Otros']].forEach(function(o){chips.appendChild(el('button',{class:'chip','aria-pressed':f===o[0],onclick:function(){S.pf=o[0];render();}},o[1]));});
+  var items=all.filter(function(p){
+    var v=votersOf(p.id);
+    if(f==='mine'&&v.indexOf(S.me.slug)<0)return false;
+    if((f==='pos'||f==='py'||f==='otro')&&(p.cat||'otro')!==f)return false;
+    if(S.focus&&v.indexOf(S.focus)<0)return false;return true;});
+  items.sort(function(a,b){var x=schedOf(a)?0:1,y=schedOf(b)?0:1;return x-y||votersOf(b.id).length-votersOf(a.id).length||(a.order||0)-(b.order||0);});
+  var grid=el('div',{class:'pgrid'});items.forEach(function(p){grid.appendChild(planCard(p));});
+  if(!items.length)grid.appendChild(el('div',{class:'empty'},f==='mine'?'Todavía no te anotaste a ningún plan.':S.focus?nameOf(S.focus)+' todavía no se anotó a ningún plan.':'No hay planes aquí.'));
+  return el('div',{class:'plv'},
+    el('div',{class:'ph2'},el('div',null,el('h2',null,'Planes'),el('div',{class:'s'},all.length+' ideas. Anótate a los que quieras y agéndalos.')),
+      el('button',{class:'btn primary',onclick:function(){S.sheet={k:'newplan',title:'',cat:'pos',icon:'pin',desc:''};render();}},icon('plus'),'Nuevo plan')),
+    chips,S.focus?el('div',{class:'fbar'},avatar(S.focus,'sm'),el('span',{class:'tx'},'Planes de ',el('b',null,nameOf(S.focus))),el('button',{class:'btn sm',onclick:function(){S.focus=null;render();}},'Ver todos')):null,
+    grid,joinList());
+}
+function meView(){
+  var me=S.me.slug,bl=blocksOf(me).slice().sort(function(a,b){return a.d-b.d||a.from-b.from;}),done=isDone(me);
+  var prof=el('section',{class:'card prof'},
+    el('div',{class:'prof-h'},avatar(me,'xl'),el('div',{class:'grow'},el('div',{class:'s'},'Estás usando el perfil de'),el('h2',null,S.me.name)),
+      el('button',{class:'btn',onclick:function(){try{localStorage.removeItem('posadas-me');}catch(e){}S.me=null;S.sheet=null;render();}},'No soy yo, cambiar')));
+  var rows=el('div',{class:'brow-l'});
+  bl.forEach(function(b){
+    rows.appendChild(el('button',{class:'brow press',onclick:function(){openBusy(b);}},
+      el('span',{class:'bd'},dlab(b.d)),el('span',{class:'grow'},el('b',null,span(b)),el('small',null,b.type==='o'?'Pueden sumarse':'Voy solo')),
+      el('span',{class:'tag '+(b.type==='o'?'o':'x')},b.type==='o'?'Abierto':'Solo'),icon('chev')));
+  });
+  if(!bl.length)rows.appendChild(el('div',{class:'s',style:'padding:6px 2px 10px'},'Todavía no marcaste horarios ocupados. Toca "Marcar ocupado" para empezar.'));
+  var sch=el('section',{class:'card'},
+    el('div',{class:'sec-h'},el('h2',null,'Mi horario'),el('span',{class:'s'},bl.length+(bl.length===1?' bloque':' bloques'))),
+    rows,
+    el('div',{class:'todo-a',style:'padding:4px 18px 16px'},el('button',{class:'btn primary',onclick:function(){openBusy(null,2,780);}},icon('plus'),'Marcar ocupado'),
+      el('button',{class:'btn'+(done?'':' primary'),onclick:function(){var a=myDoc();a.done=!done;saveMine();if(a.done)logEv('done');render();}},done?'Horario listo ✓':'Ya marqué todo')));
+  var mp=planList().filter(function(p){return votersOf(p.id).indexOf(me)>-1;});
+  var mpc=el('section',{class:'card quiet'},el('div',{class:'sec-h'},el('h2',null,'Mis planes'),el('span',{class:'s'},mp.length+' anotados')),
+    el('div',{class:'plist',style:'padding:0 8px 10px'},mp.length?mp.map(planRow):el('div',{class:'s',style:'padding:6px 10px'},'Todavía no te anotaste a ninguno. Mira la pestaña Planes.')));
+  var grp=el('section',{class:'card quiet'},el('div',{class:'sec-h'},el('h2',null,'El grupo'),el('span',{class:'s'},'Toca a alguien para ver su horario')),
+    el('div',{class:'glist'},everyone().map(function(s){
+      var np=planList().filter(function(p){return votersOf(p.id).indexOf(s)>-1;}).length;
+      return el('button',{class:'grow2 press',onclick:function(){S.focus=s;setTab('cal');}},avatar(s,'md'),
+        el('span',{class:'grow'},el('b',null,nameOf(s)+(s===me?' (tú)':'')),el('small',null,(zoneOf(s)==='bsas'?'Buenos Aires · ':'')+(isDone(s)?'Horario listo':'Falta su horario')+' · '+np+(np===1?' plan':' planes'))),
+        el('i',{class:'st-d'+(isDone(s)?' ok':'')}),icon('chev'));
+    })));
+  return el('div',{class:'meview'},prof,el('div',{class:'g2'},sch,mpc),grp);
+}
 function page(){
-  var meBtn=el('button',{class:'me press',onclick:function(){try{localStorage.removeItem('posadas-me');}catch(e){}S.me=null;S.sheet=null;render();}},avatar(S.me.slug),el('b',null,S.me.name),el('span',null,'Cambiar'));
-  var sched=planList().filter(schedOf).length;
-  return el('div',{class:'page'},
-    el('header',{class:'top'},
-      el('div',null,el('h1',null,'Viaje ',el('mark',null,'Posadas')),el('div',{class:'dates'},'1 al 11 de diciembre · '+posadas().length+' en Posadas · '+sched+(sched===1?' plan agendado':' planes agendados')),(function(){var n=daysLeft();return n>0?el('div',{class:'cd'},icon('plane'),n===1?'Pablo vuela mañana':'Faltan '+n+' días'):null;})()),
-      meBtn),
-    el('div',{class:'strip'},bestCard(),crewCard()),
-    el('div',{class:'row2'},flightsBoth(),activityCard()),
-    el('div',{class:'layout'},calendarCard(),plansCard()));
+  var v=S.tab==='cal'?calView():S.tab==='plans'?plansView():S.tab==='me'?meView():homeView();
+  return el('div',{class:'page tab-'+S.tab},topBar(),tabBar(),el('main',{class:'view-body'},v));
 }
 
 function daysLeft(){
@@ -830,7 +1060,7 @@ function shead(title,sub){
 }
 function sheetView(){
   var sh=S.sheet,key=sh.k+(sh.id||'')+(sh.d||'')+(sh.m||''),first=S.shownKey!==key;S.shownKey=key;
-  var body=sh.k==='slot'?slotSheet(sh):sh.k==='plan'?planSheet(sh):sh.k==='join'?joinSheet(sh):busySheet(sh);
+  var body=sh.k==='slot'?slotSheet(sh):sh.k==='plan'?planSheet(sh):sh.k==='join'?joinSheet(sh):sh.k==='newplan'?newPlanSheet(sh):busySheet(sh);
   if(!body){S.sheet=null;return el('div');}
   var box=el('div',{class:'sheet'+(first?'':' still'),role:'dialog','aria-modal':'true'},body);
   var scrim=el('div',{class:'scrim'+(first?'':' still'),onclick:function(e){if(e.target===scrim)closeSheet();}},box);
@@ -871,6 +1101,9 @@ function planSheet(sh){
   var out=[];
   if(p.photo&&/^[\w-]+$/.test(p.photo))out.push(el('img',{class:'hero',src:API+'?photo='+p.photo,alt:''}));
   out.push(shead(p.title,(CAT[p.cat]||'Otro')+(p.by?' · sugerido por '+p.by:'')));
+  var dta=el('textarea',{rows:'3',maxlength:'240',placeholder:'Escribe de qué trata este plan para que los demás decidan si se suman.','aria-label':'Descripción del plan'});dta.value=p.desc||'';
+  dta.addEventListener('change',function(){var t=dta.value.trim();p.desc=t;S.db.collection('plans').doc(p.id).update({desc:t});});
+  out.push(el('div',null,el('p',{class:'lab'},'¿De qué trata?'),dta));
   out.push(el('div',null,el('p',{class:'lab'},v.length?(allIn(v)?'Van todos':v.length+(v.length===1?' va':' van')):'Nadie se anotó todavía'),
     v.length?el('div',{class:'who-busy'},v.map(function(s){return el('span',null,avatar(s,'sm'),nameOf(s));})):null));
   out.push(el('button',{class:'btn block'+(mine?'':' primary'),onclick:function(){toggleVote(p.id);}},mine?'Ya no voy':'Me anoto'));
@@ -889,6 +1122,7 @@ function planSheet(sh){
     out.push(el('div',null,el('p',{class:'lab'},sg.yes?'Mejores horarios para los que van':'Mejores horarios para todos'),box));
     out.push(el('div',{class:'s',style:'text-align:center'},'También puedes tocar una hora en el calendario.'));
   }
+  out.push(el('div',null,el('p',{class:'lab'},'Ícono'),iconPicker(p.icon||'pin',function(k){p.icon=k;S.db.collection('plans').doc(p.id).update({icon:k});render();})));
   var pl=el('input',{type:'text',placeholder:'Lugar o dirección',maxlength:'80','aria-label':'Lugar en el mapa',value:p.place||''});
   pl.addEventListener('change',function(){var v=pl.value.trim();p.place=v;S.db.collection('plans').doc(p.id).update({place:v});});
   out.push(el('div',null,el('p',{class:'lab'},'Lugar'),el('div',{class:'mapb'},pl,el('a',{class:'btn',href:mapUrl(p),target:'_blank',rel:'noopener noreferrer',onclick:function(e){var v=pl.value.trim();if(v!==(p.place||'')){p.place=v;S.db.collection('plans').doc(p.id).update({place:v});}e.currentTarget.href=mapUrl(p);}},icon('map'),'Mapa'))));
@@ -917,13 +1151,13 @@ function busySheet(sh){
     if(sh.id)a.blocks=a.blocks.map(function(x){return x.id===sh.id?nb:x;});else a.blocks.push(nb);
     closeSheet();saveMine();
   }
-  return [shead(sh.id?'Editar horario':'Estoy ocupado',S.me.name),
-    el('div',null,el('p',{class:'lab'},'Día'),dc),
-    el('div',null,el('p',{class:'lab'},'Atajo'),q),
+  return [shead(sh.id?'Editar horario ocupado':'Marcar que estoy ocupado','Tus amigos verán que no estás libre a esa hora.'),
+    el('div',null,el('p',{class:'lab'},'1. ¿Qué día?'),dc),
+    el('div',null,el('p',{class:'lab'},'2. ¿A qué hora?'),q),
     el('div',{class:'two'},el('div',null,el('p',{class:'lab'},'Desde'),timeSelect('Desde',sh.from,function(v){sh.from=v;})),el('div',null,el('p',{class:'lab'},'Hasta'),timeSelect('Hasta',sh.to,function(v){sh.to=v;}))),
-    el('div',null,el('p',{class:'lab'},'¿Pueden acompañarte?'),el('div',{class:'two'},
-      el('button',{class:'opt','aria-pressed':sh.type==='o',onclick:function(){sh.type='o';render();}},'Sí, pueden venir'),
-      el('button',{class:'opt','aria-pressed':sh.type==='x',onclick:function(){sh.type='x';render();}},'No, voy solo'))),
+    el('div',null,el('p',{class:'lab'},'3. ¿Pueden acompañarte?'),el('div',{class:'two'},
+      el('button',{class:'opt','aria-pressed':sh.type==='o',onclick:function(){sh.type='o';render();}},el('b',null,'Pueden sumarse'),el('small',null,'Otros pueden ir contigo')),
+      el('button',{class:'opt','aria-pressed':sh.type==='x',onclick:function(){sh.type='x';render();}},el('b',null,'Voy solo'),el('small',null,'No se pueden sumar')))),
     el('button',{class:'btn block primary',onclick:save},'Guardar'),
     sh.id?el('button',{class:'btn block danger',onclick:function(){var a=myDoc();a.blocks=a.blocks.filter(function(x){return x.id!==sh.id;});closeSheet();saveMine();}},'Eliminar'):null];
 }

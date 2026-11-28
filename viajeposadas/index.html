@@ -391,10 +391,24 @@ async function toggleVote(id){
     if(on){delete S.votes[vid];render();await S.db.collection('votes').doc(vid).delete();}
     else{S.votes[vid]={plan:id,who:S.me.slug,v:'y'};render();await S.db.collection('votes').doc(vid).set({plan:id,who:S.me.slug,v:'y'});}
     logEv(on?'unvote':'vote',(S.plans[id]||{}).title);
+    if(on&&S.plans[id]&&S.plans[id].sched&&!votersOf(id).length){S.plans[id].sched=null;render();await S.db.collection('plans').doc(id).update({sched:null});toast('Se quitó la hora de '+S.plans[id].title+' porque ya nadie va.');}
   }catch(e){fail();}
 }
+function clashWith(id,val){
+  if(!val)return null;
+  var o=planList().filter(function(q){var c=schedOf(q);return q.id!==id&&c&&c.d===val.d&&c.from<val.to&&c.to>val.from;});
+  return o[0]||null;
+}
+function canSchedule(id,val){
+  if(!val)return '';
+  if(!votersOf(id).length)return 'Primero alguien tiene que anotarse a este plan. Después se puede agendar.';
+  var c=clashWith(id,val);
+  if(c)return 'A esa hora ya está '+c.title+'. Elige otro horario.';
+  return '';
+}
 async function schedule(id,val){
-  try{if(S.plans[id])S.plans[id].sched=val;render();await S.db.collection('plans').doc(id).update({sched:val});if(val)logEv('sched',(S.plans[id]||{}).title);}catch(e){fail();}
+  var msg=canSchedule(id,val);if(msg){toast(msg);return false;}
+  try{if(S.plans[id])S.plans[id].sched=val;render();await S.db.collection('plans').doc(id).update({sched:val});if(val)logEv('sched',(S.plans[id]||{}).title);return true;}catch(e){fail();return false;}
 }
 async function addPlan(){
   var t=S.newPlan.trim();if(!t)return;
@@ -462,7 +476,7 @@ function suggestions(p){
   var group=yes.length?yes:friendsPos();
   var night=NIGHT.indexOf(p.icon)>-1,tf=night?1140:780,tt=night?1500:1200;
   var c=[];
-  for(var d=1;d<=10;d++)freeWindows(group,d,tf,tt,120).forEach(function(w){c.push(w);});
+  for(var d=1;d<=10;d++)freeWindows(group,d,tf,tt,120).forEach(function(w){var to=Math.min(w.to,w.from+180);if(!clashWith(p.id,{d:w.d,from:w.from,to:to}))c.push(w);});
   c.sort(function(a,b){return (b.to-b.from)-(a.to-a.from)||a.d-b.d;});
   var o=[],seen={};c.forEach(function(w){if(o.length<3&&!seen[w.d]){o.push(w);seen[w.d]=1;}});
   return {list:o,yes:yes.length};
@@ -773,16 +787,18 @@ function slotSheet(sh){
   var wins=freeWindows(d===11?groupFor(11):friendsPos(),d,R0*60,R1*60,30).filter(function(w){return w.from<=m&&w.to>m;});
   var status=wins.length?el('div',{class:'ok'},'Todos libres de '+span(wins[0])):
     el('div',{class:'who-busy'},busy.map(function(e){return el('span',null,avatar(e.s,'sm'),nameOf(e.s)+(e.b.type==='o'?', pueden ir':', solo'));}));
-  var un=planList().filter(function(p){return !schedOf(p);}).sort(function(a,b){return votersOf(b.id).length-votersOf(a.id).length||(a.order||0)-(b.order||0);});
+  var un=planList().filter(function(p){return !schedOf(p)&&votersOf(p.id).length>0;}).sort(function(a,b){return votersOf(b.id).length-votersOf(a.id).length||(a.order||0)-(b.order||0);});
   var to=wins.length?Math.min(wins[0].to,m+180):m+120;
+  var taken=planList().filter(function(q){var c=schedOf(q);return c&&c.d===d&&c.from<to&&c.to>m;})[0];
   var box=el('div',{class:'box'});
+  if(taken)un=[];
   un.slice(0,8).forEach(function(p){
     var v=votersOf(p.id);
-    box.appendChild(el('button',{class:'prow press',onclick:function(){schedule(p.id,{d:d,from:m,to:to});closeSheet();toast(p.title+' quedó para el '+dlab(d)+' a las '+fmt(m)+'.');}},
+    box.appendChild(el('button',{class:'prow press',onclick:function(){schedule(p.id,{d:d,from:m,to:to}).then(function(ok){if(ok){closeSheet();toast(p.title+' quedó para el '+dlab(d)+' a las '+fmt(m)+'.');}});}},
       thumb(p,'sm'),el('span',{style:'flex:1;min-width:0'},el('div',{class:'ptitle'},p.title),el('div',{class:'s'},v.length?(v.length+(v.length===1?' anotado':' anotados')):'Nadie anotado todavía')),
       el('span',{style:'color:var(--accent);font-weight:600;font-size:14px'},'Agendar')));
   });
-  if(!un.length)box.appendChild(el('div',{class:'empty'},'Todos los planes ya están agendados.'));
+  if(!un.length)box.appendChild(el('div',{class:'empty'},taken?'A esa hora ya está '+taken.title+'. Prueba con otra hora.':'Todavía no hay planes votados para agendar. Anótate a uno en el panel de Planes y vuelve aquí.'));
   return [shead(dlab(d)+' de diciembre, '+fmt(m),null),status,
     el('div',null,el('p',{class:'lab'},'Agendar un plan a esta hora ('+fmt(m)+' a '+fmt(to)+')'),box),
     el('button',{class:'btn block',onclick:function(){openBusy(null,d,m);}},icon('plus'),'Estoy ocupado a esta hora')];
@@ -798,6 +814,8 @@ function planSheet(sh){
   out.push(el('button',{class:'btn block'+(mine?'':' primary'),onclick:function(){toggleVote(p.id);}},mine?'Ya no voy':'Me anoto'));
   if(sc){
     out.push(el('div',{class:'sug'},el('span',null,el('b',null,dlab(sc.d)),', '+span(sc)),el('button',{class:'btn sm danger',onclick:function(){schedule(p.id,null);}},'Quitar')));
+  } else if(!v.length){
+    out.push(el('div',{class:'s',style:'text-align:center;padding:6px 0'},'Para agendarlo, primero alguien tiene que anotarse.'));
   } else {
     var sg=suggestions(p),box=el('div',{style:'display:grid;gap:8px'});
     sg.list.forEach(function(w){

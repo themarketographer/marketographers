@@ -20,7 +20,7 @@
   --bg:#0c0c0c; --card:#151515; --s2:#1d1d1d; --ink:#f8f8f8; --muted:#a9a9a9; --line:rgba(255,255,255,.1); --line2:rgba(255,255,255,.05);
   --accent:#fddc5b; --accent-ink:#181818; --accent-soft:rgba(253,220,91,.13);
   --free:#3DBB84; --free-ink:#6fdcaa; --free-soft:rgba(61,187,132,.12);
-  --solo:#ff5c5c; --glass:rgba(255,255,255,.07); --glass-b:rgba(255,255,255,.14);
+  --solo:#ff5c5c; --fly:#7db4ff; --fly-soft:rgba(125,180,255,.14); --glass:rgba(255,255,255,.07); --glass-b:rgba(255,255,255,.14);
   --font:"Poppins",system-ui,sans-serif; --fd:"Working","Poppins",system-ui,sans-serif;
   --ease:cubic-bezier(.22,1,.36,1); --drawer:cubic-bezier(.32,.72,0,1);
   --H:34px; color-scheme:dark;
@@ -51,7 +51,7 @@ h1{font-family:var(--fd);font-size:clamp(34px,5vw,52px);line-height:1;letter-spa
 .ok{color:var(--free-ink);font-weight:600}
 
 /* crew + best */
-.strip{align-items:start;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;margin-bottom:20px}
+.strip{align-items:start;display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:20px;margin-bottom:20px}
 @media (max-width:1000px){.strip{grid-template-columns:1fr}}
 .crew{display:flex;flex-wrap:wrap;gap:8px;padding:0 14px 16px}
 .mate{display:inline-flex;align-items:center;gap:8px;padding:5px 12px 5px 5px;border-radius:999px;background:var(--bg);font-size:14px;font-weight:600;border:2px solid transparent;transition:transform 160ms var(--ease),opacity 160ms var(--ease)}
@@ -153,7 +153,7 @@ input[type=text],select{font:inherit;color:var(--ink);background:var(--s2);borde
 @media (max-width:640px){.cgrid{grid-template-columns:44px repeat(11,minmax(132px,1fr))}.page{padding-left:14px;padding-right:14px}.top{margin-bottom:14px}.leg{grid-template-columns:54px 14px minmax(0,1fr)}.leg:not(:last-child)::before{left:65px}}
 @media (max-width:1000px){.fl{grid-template-columns:1fr}}
 .leg-h{display:flex;align-items:center;gap:10px;padding:16px 18px 6px}
-.leg-h .pic{width:34px;height:34px;border-radius:10px}
+.leg-h .pic{width:34px;height:34px;border-radius:10px;background:var(--fly-soft);color:var(--fly)}
 .leg-h h2{font-family:var(--fd);font-weight:400;font-size:22px;letter-spacing:-.01em;margin:0}
 .leg-h .s{margin-left:auto;white-space:nowrap}
 .legs{padding:4px 18px 16px;display:grid;gap:0}
@@ -163,14 +163,14 @@ input[type=text],select{font:inherit;color:var(--ink);background:var(--s2);borde
 .leg .t small{display:block;font-size:11px;color:var(--muted);font-weight:500;line-height:1.2}
 .leg .dot{width:10px;height:10px;border-radius:50%;margin:5px 2px 0;background:var(--s2);box-shadow:0 0 0 2px var(--muted);position:relative;z-index:1}
 .leg:not(:last-child)::before{content:'';position:absolute;left:73px;top:18px;bottom:-3px;width:2px;background:var(--line)}
-.leg.fly .dot{background:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
-.leg.fly:not(:last-child)::before{background:repeating-linear-gradient(to bottom,var(--accent) 0 4px,transparent 4px 8px);opacity:.6}
+.leg.fly .dot{background:var(--fly);box-shadow:0 0 0 2px var(--fly-soft)}
+.leg.fly:not(:last-child)::before{background:repeating-linear-gradient(to bottom,var(--fly) 0 4px,transparent 4px 8px);opacity:.6}
 .leg .w b{display:block;font-weight:600;line-height:20px}
 .leg .w span{display:block;font-size:12px;color:var(--muted)}
 .leg.arr .dot{background:var(--free);box-shadow:0 0 0 2px var(--free-soft)}
-.cd{display:inline-flex;align-items:center;gap:6px;color:var(--accent);font-weight:600;font-size:14px}
+.cd{display:inline-flex;align-items:center;gap:6px;color:var(--fly);font-weight:600;font-size:14px}
 .cd svg{width:16px;height:16px}
-.away.fly span{display:inline-flex;align-items:center;gap:6px;color:var(--accent);background:var(--card)}
+.away.fly span{display:inline-flex;align-items:center;gap:6px;color:var(--fly);background:var(--card)}
 .away.fly svg{width:13px;height:13px}
 .away{flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;padding:0 0 8px}.away span,.away small{position:relative;z-index:3;box-shadow:0 0 0 1px var(--line)}
 .away small{font-weight:500;font-size:10px;color:var(--muted);background:var(--card);padding:0 6px;border-radius:999px}
@@ -200,8 +200,8 @@ input[type=text],select{font:inherit;color:var(--ink);background:var(--s2);borde
 .ag-box.free b{color:var(--free-ink)}
 .ag-box.plan{background:var(--accent);color:var(--accent-ink);box-shadow:none}
 .ag-box.plan span.sub{color:inherit;opacity:.8}
-.ag-box.fly{background:transparent;box-shadow:inset 3px 0 0 var(--accent),inset 0 0 0 1px var(--line)}
-.ag-box.fly svg{color:var(--accent)}
+.ag-box.fly{background:var(--fly-soft);box-shadow:inset 3px 0 0 var(--fly)}
+.ag-box.fly svg{color:var(--fly)}
 .ag-box.off{opacity:.18}
 .ag-add{display:flex;margin:6px 16px 0 104px;font-size:13px;font-weight:600;color:var(--accent);min-height:34px;align-items:center;gap:6px}
 .ag-add svg{width:15px;height:15px}
@@ -216,6 +216,22 @@ input[type=text],select{font:inherit;color:var(--ink);background:var(--s2);borde
 .mapb{display:flex;gap:8px;align-items:stretch}
 .mapb input{flex:1}
 .mapb .btn{flex:none;text-decoration:none}
+
+
+/* jerarquia */
+.card.lead{border-color:rgba(253,220,91,.28);background:linear-gradient(180deg,rgba(253,220,91,.07),#121212 70%);box-shadow:0 18px 50px -28px rgba(253,220,91,.35)}
+.card.quiet{background:#111;border-color:var(--line2)}
+.card.quiet .sec-h h2,.card.quiet .leg-h h2{font-size:18px}
+.row2{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:20px;align-items:start;margin-bottom:20px}
+@media (max-width:1000px){.row2{grid-template-columns:1fr}}
+.fcols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px 28px;padding:0 18px 16px}
+@media (max-width:700px){.fcols{grid-template-columns:1fr}}
+.fcols .legs{padding:0}
+.fh{display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:6px 0 10px;border-bottom:1px solid var(--line2);margin-bottom:12px}
+.fh b{font-weight:600}.fh span{font-size:12px;color:var(--muted)}
+.st{display:inline-flex;align-items:center;font-size:12px;font-weight:700;border-radius:6px;padding:1px 7px;white-space:nowrap}
+.st.none{color:var(--muted);background:var(--glass)}
+.st.votes{color:var(--ink);background:var(--glass-b)}
 
 /* sheets */
 .scrim{position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:40;display:flex;align-items:flex-end;justify-content:center;animation:fade 200ms var(--ease)}
@@ -500,9 +516,8 @@ function page(){
     el('header',{class:'top'},
       el('div',null,el('h1',null,'Viaje ',el('mark',null,'Posadas')),el('div',{class:'dates'},'1 al 11 de diciembre · '+posadas().length+' en Posadas · '+sched+(sched===1?' plan agendado':' planes agendados')),(function(){var n=daysLeft();return n>0?el('div',{class:'cd'},icon('plane'),n===1?'Pablo vuela mañana':'Faltan '+n+' días'):null;})()),
       meBtn),
-    el('div',{class:'strip'},crewCard(),bestCard()),
-    el('div',{class:'fl'},flightsCard(FLIGHTS[0]),flightsCard(FLIGHTS[1])),
-    el('div',{style:'margin-bottom:20px'},activityCard()),
+    el('div',{class:'strip'},bestCard(),crewCard()),
+    el('div',{class:'row2'},flightsBoth(),activityCard()),
     el('div',{class:'layout'},calendarCard(),plansCard()));
 }
 
@@ -510,6 +525,19 @@ function daysLeft(){
   var now=new Date(),t=new Date(2026,11,1);
   var n=Math.ceil((t-new Date(now.getFullYear(),now.getMonth(),now.getDate()))/864e5);
   return n;
+}
+function flightsBoth(){
+  var cols=el('div',{class:'fcols'});
+  FLIGHTS.forEach(function(f){
+    var box=el('div',{class:'legs'});
+    f.legs.forEach(function(l){
+      box.appendChild(el('div',{class:'leg'+(l.fly?' fly':'')+(l.k==='arr'?' arr':'')},
+        el('div',{class:'t'},l.t,l.sat?el('small',null,'sáb 12'):null),el('span',{class:'dot'}),
+        el('div',{class:'w'},el('b',null,l.w),el('span',null,l.s))));
+    });
+    cols.appendChild(el('div',null,el('div',{class:'fh'},el('b',null,f.title),el('span',null,f.date)),box));
+  });
+  return el('section',{class:'card quiet'},el('div',{class:'leg-h'},el('span',{class:'pic'},icon('plane')),el('h2',null,'Vuelos de Pablo')),cols);
 }
 function flightsCard(f){
   var box=el('div',{class:'legs'});
@@ -534,7 +562,7 @@ function activityCard(){
       el('span',{class:'tx'},el('b',null,nameOf(e.who)),' '+(LOGTXT[e.kind]||'hizo un cambio')+(e.plan?' ':''),e.plan?el('b',null,e.plan):null),
       el('span',{class:'tm'},ago(e.t))));
   });
-  return el('section',{class:'card'},el('div',{class:'sec-h'},el('h2',null,'Últimos cambios'),
+  return el('section',{class:'card quiet'},el('div',{class:'sec-h'},el('h2',null,'Últimos cambios'),
     fresh?el('button',{class:'btn sm',onclick:function(){markSeen();render();}},fresh+(fresh===1?' nuevo, marcar visto':' nuevos, marcar visto')):el('span',{class:'s'},'Estás al día')),box);
 }
 function crewCard(){
@@ -546,7 +574,7 @@ function crewCard(){
       el('span',{class:'av'+(isDone(s)?' done':''),style:'background:'+colorOf(s)},nameOf(s).charAt(0).toUpperCase()),
       nameOf(s),zoneOf(s)==='bsas'?el('em',null,'Buenos Aires'):null));
   });
-  return el('section',{class:'card'},
+  return el('section',{class:'card quiet'},
     el('div',{class:'sec-h'},el('h2',null,'El grupo'),el('span',{class:'s'},missing.length?('Falta el horario de '+missing.map(nameOf).join(', ')):'Todos marcaron su horario')),
     box);
 }
@@ -559,7 +587,7 @@ function bestCard(){
       el('span',{class:'when'},el('b',null,dlab(w.d)),el('span',{class:'s'},span(w)+' · '+Math.round((w.to-w.from)/60)+' h libres')),
       el('span',{class:'go'},'Agendar plan')));
   });
-  return el('section',{class:'card'},el('div',{class:'sec-h'},el('h2',null,'Cuando estamos todos'),el('span',{class:'s'},'Según '+friendsPos().filter(function(x){return blocksOf(x).length;}).length+' de '+friendsPos().length+' que ya marcaron')),list);
+  return el('section',{class:'card lead'},el('div',{class:'sec-h'},el('h2',null,'Cuando estamos todos'),el('span',{class:'s'},'Según '+friendsPos().filter(function(x){return blocksOf(x).length;}).length+' de '+friendsPos().length+' que ya marcaron')),list);
 }
 
 /* ----- calendario ----- */
@@ -702,7 +730,7 @@ function planRow(p){
   var stack=el('span',{class:'stackav'});v.slice(0,5).forEach(function(s){stack.appendChild(avatar(s,'sm'));});
   var meta=el('div',{class:'pmeta'},
     sc?el('span',{class:'when-chip'},dlab(sc.d)+' '+fmt(sc.from)):el('span',null,CAT[p.cat]||'Otro'),
-    allIn(v)?el('span',{class:'all-chip'},'Van todos'):(v.length?[stack,el('span',null,v.length+(v.length===1?' va':' van'))]:el('span',null,'· nadie anotado')));
+    allIn(v)?el('span',{class:'all-chip'},'Van todos'):(v.length?[stack,el('span',{class:'st votes'},v.length+(v.length===1?' voto':' votos'))]:el('span',{class:'st none'},'Sin votos')));
   return el('div',{class:'prow'},
     el('button',{class:'main',onclick:function(){openPlan(p.id);}},thumb(p),el('span',{style:'min-width:0'},el('div',{class:'ptitle'},p.title),meta)),
     el('button',{class:'join','aria-pressed':mine,'aria-label':(mine?'Ya no voy a ':'Me anoto a ')+p.title,onclick:function(){toggleVote(p.id);}},mine?'Voy ✓':'Me anoto'));

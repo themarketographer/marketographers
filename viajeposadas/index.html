@@ -233,6 +233,10 @@ input[type=text],select{font:inherit;color:var(--ink);background:var(--s2);borde
 .st.none{color:var(--muted);background:var(--glass)}
 .st.votes{color:var(--ink);background:var(--glass-b)}
 
+.pwho{font-size:12px;color:var(--ink);opacity:.8;margin-top:3px;overflow-wrap:anywhere}
+.prow.dimr{opacity:.4}
+.fbar{display:flex;align-items:center;gap:10px;margin:2px 2px 6px;padding:8px 10px;border-radius:12px;background:var(--glass);font-size:14px}
+.fbar .tx{flex:1;min-width:0}
 /* sheets */
 .scrim{position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:40;display:flex;align-items:flex-end;justify-content:center;animation:fade 200ms var(--ease)}
 @media (min-width:720px){.scrim{align-items:center}}
@@ -576,7 +580,7 @@ function crewCard(){
   });
   return el('section',{class:'card quiet'},
     el('div',{class:'sec-h'},el('h2',null,'El grupo'),el('span',{class:'s'},missing.length?('Falta el horario de '+missing.map(nameOf).join(', ')):'Todos marcaron su horario')),
-    box);
+    box,el('div',{class:'s',style:'padding:0 18px 14px'},'Toca un nombre para ver su horario y a qué planes se anotó.'));
 }
 function bestCard(){
   var best=bestForAll(),list=el('div',{class:'best'});
@@ -649,7 +653,7 @@ function agendaView(){
       var body,click=null;
       if(it.k==='fly'){body=el('div',{class:'ag-box fly'},icon('plane'),el('div',{class:'tx'},el('b',null,it.t),el('span',{class:'sub'},it.sub)));}
       else if(it.k==='free'){body=el('div',{class:'ag-box free'},el('div',{class:'tx'},el('b',null,it.t),el('span',{class:'sub'},it.sub)));click=function(){openSlot(d,it.w.from);};}
-      else if(it.k==='p'){var v=votersOf(it.p.id);body=el('div',{class:'ag-box plan'},icon(it.p.icon),el('div',{class:'tx'},el('b',null,it.p.title),el('span',{class:'sub'},'Plan'+(v.length?' · van '+v.length:'')+(allIn(v)?' (todos)':''))));click=function(){openPlan(it.p.id);};}
+      else if(it.k==='p'){var v=votersOf(it.p.id);body=el('div',{class:'ag-box plan'+(S.focus&&v.indexOf(S.focus)<0?' off':'')},icon(it.p.icon),el('div',{class:'tx'},el('b',null,it.p.title),el('span',{class:'sub'},'Plan'+(allIn(v)?' · van todos':(v.length?' · van '+v.slice(0,3).map(nameOf).join(', ')+(v.length>3?' y '+(v.length-3)+' más':''):'')))));click=function(){openPlan(it.p.id);};}
       else{var e=it.e,mine=e.s===S.me.slug,dim=S.focus&&S.focus!==e.s;
         body=el('div',{class:'ag-box '+(e.b.type==='o'?'o':'')+(dim?' off':''),style:'--c:'+colorOf(e.s)},avatar(e.s,'sm'),el('div',{class:'tx'},el('b',null,nameOf(e.s)),el('span',{class:'sub'},e.b.type==='o'?'Ocupado, pueden acompañar':'Ocupado, va solo')));
         click=function(){if(mine)openBusy(e.b);else toast(nameOf(e.s)+', '+span(e.b)+(e.b.type==='o'?'. Se puede acompañar.':'. Va solo.'));};}
@@ -684,7 +688,7 @@ function dayCol(d,H,rows){
     var st='top:'+top+'px;height:'+h+'px;left:calc('+(it.lane/n*100)+'% + 3px);width:calc('+(100/n)+'% - 6px)';
     if(it.k==='p'){
       var v=votersOf(it.p.id);
-      col.appendChild(el('button',{class:'ev p',style:st,'aria-label':it.p.title,onclick:function(e){e.stopPropagation();openPlan(it.p.id);}},
+      col.appendChild(el('button',{class:'ev p'+(S.focus&&v.indexOf(S.focus)<0?' dim':''),style:st,'aria-label':it.p.title,onclick:function(e){e.stopPropagation();openPlan(it.p.id);}},
         el('span',{class:'pt'},icon(it.p.icon),el('span',{style:'overflow:hidden;text-overflow:ellipsis;white-space:nowrap'},it.p.title)),
         h>=40?el('small',null,span(it)+(v.length?' · van '+v.length:'')):null));
     } else {
@@ -705,15 +709,16 @@ function dayCol(d,H,rows){
 function plansCard(){
   var all=planList();
   var f=S.filter;
-  var items=all.filter(function(p){return f==='all'||(p.cat||'otro')===f;});
+  var items=all.filter(function(p){return (f==='all'||(p.cat||'otro')===f)&&(!S.focus||votersOf(p.id).indexOf(S.focus)>-1);});
   var seg=el('div',{class:'seg',role:'group','aria-label':'Filtrar planes'});
   [['all','Todos'],['pos','Posadas'],['py','Paraguay']].forEach(function(o){seg.appendChild(el('button',{'aria-pressed':f===o[0],onclick:function(){S.filter=o[0];render();}},o[1]));});
   var list=el('div',{class:'plist'});
+  if(S.focus)list.appendChild(el('div',{class:'fbar'},avatar(S.focus,'sm'),el('span',{class:'tx'},'Planes de ',el('b',null,nameOf(S.focus)),' · '+items.length),el('button',{class:'btn sm',onclick:function(){S.focus=null;render();}},'Ver todos')));
   var sch=items.filter(schedOf).sort(function(a,b){var x=schedOf(a),y=schedOf(b);return x.d-y.d||x.from-y.from;});
   var un=items.filter(function(p){return !schedOf(p);}).sort(function(a,b){return votersOf(b.id).length-votersOf(a.id).length||(a.order||0)-(b.order||0);});
   if(sch.length){list.appendChild(el('div',{class:'ph'},'Agendados'));sch.forEach(function(p){list.appendChild(planRow(p));});}
   if(un.length){list.appendChild(el('div',{class:'ph'},'Por agendar · los más votados arriba'));un.forEach(function(p){list.appendChild(planRow(p));});}
-  if(!items.length)list.appendChild(el('div',{class:'empty'},S.loaded?'No hay planes aquí.':'Cargando'));
+  if(!items.length)list.appendChild(el('div',{class:'empty'},S.loaded?(S.focus?nameOf(S.focus)+' todavía no se anotó a ningún plan.':'No hay planes aquí.'):'Cargando'));
   var inp=el('input',{type:'text',placeholder:'Sugerir un plan',maxlength:'60','aria-label':'Nuevo plan',value:S.newPlan});
   inp.addEventListener('input',function(){S.newPlan=inp.value;});
   inp.addEventListener('keydown',function(e){if(e.key==='Enter'){S.newPlan=inp.value;inp.blur();addPlan();}});
@@ -731,8 +736,9 @@ function planRow(p){
   var meta=el('div',{class:'pmeta'},
     sc?el('span',{class:'when-chip'},dlab(sc.d)+' '+fmt(sc.from)):el('span',null,CAT[p.cat]||'Otro'),
     allIn(v)?el('span',{class:'all-chip'},'Van todos'):(v.length?[stack,el('span',{class:'st votes'},v.length+(v.length===1?' voto':' votos'))]:el('span',{class:'st none'},'Sin votos')));
-  return el('div',{class:'prow'},
-    el('button',{class:'main',onclick:function(){openPlan(p.id);}},thumb(p),el('span',{style:'min-width:0'},el('div',{class:'ptitle'},p.title),meta)),
+  var who=null;if(v.length&&!allIn(v)){var nm=v.slice(0,3).map(nameOf);who=el('div',{class:'pwho'},nm.join(', ')+(v.length>3?' y '+(v.length-3)+' más':''));}
+  return el('div',{class:'prow'+(S.focus&&v.indexOf(S.focus)<0?' dimr':'')},
+    el('button',{class:'main',onclick:function(){openPlan(p.id);}},thumb(p),el('span',{style:'min-width:0'},el('div',{class:'ptitle'},p.title),meta,who)),
     el('button',{class:'join','aria-pressed':mine,'aria-label':(mine?'Ya no voy a ':'Me anoto a ')+p.title,onclick:function(){toggleVote(p.id);}},mine?'Voy ✓':'Me anoto'));
 }
 

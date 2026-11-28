@@ -51,7 +51,7 @@ h1{font-family:var(--fd);font-size:clamp(34px,5vw,52px);line-height:1;letter-spa
 .ok{color:var(--free-ink);font-weight:600}
 
 /* crew + best */
-.strip{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;margin-bottom:20px}
+.strip{align-items:start;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;margin-bottom:20px}
 @media (max-width:1000px){.strip{grid-template-columns:1fr}}
 .crew{display:flex;flex-wrap:wrap;gap:8px;padding:0 14px 16px}
 .mate{display:inline-flex;align-items:center;gap:8px;padding:5px 12px 5px 5px;border-radius:999px;background:var(--bg);font-size:14px;font-weight:600;border:2px solid transparent;transition:transform 160ms var(--ease),opacity 160ms var(--ease)}
@@ -149,7 +149,7 @@ input[type=text],select{font:inherit;color:var(--ink);background:var(--s2);borde
 
 
 /* vuelos */
-.fl{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;margin-bottom:20px}
+.fl{align-items:start;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;margin-bottom:20px}
 @media (max-width:640px){.cgrid{grid-template-columns:44px repeat(11,minmax(132px,1fr))}.page{padding-left:14px;padding-right:14px}.top{margin-bottom:14px}.leg{grid-template-columns:54px 14px minmax(0,1fr)}.leg:not(:last-child)::before{left:65px}}
 @media (max-width:1000px){.fl{grid-template-columns:1fr}}
 .leg-h{display:flex;align-items:center;gap:10px;padding:16px 18px 6px}
@@ -174,6 +174,48 @@ input[type=text],select{font:inherit;color:var(--ink);background:var(--s2);borde
 .away.fly svg{width:13px;height:13px}
 .away{flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;padding:0 0 8px}.away span,.away small{position:relative;z-index:3;box-shadow:0 0 0 1px var(--line)}
 .away small{font-weight:500;font-size:10px;color:var(--muted);background:var(--card);padding:0 6px;border-radius:999px}
+
+
+/* agenda */
+.view{display:inline-flex;background:var(--bg);border-radius:999px;padding:3px;gap:2px}
+.view button{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;font-size:13px;font-weight:600;color:var(--muted);text-align:center}
+.view button svg{width:15px;height:15px}
+.view button[aria-pressed="true"]{background:var(--s2);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.4)}
+.agenda{border-top:1px solid var(--line);max-height:min(74vh,900px);overflow:auto;overscroll-behavior:contain;padding:0 0 8px}
+.ag-day{padding:14px 16px 4px}
+.ag-h{position:sticky;top:0;z-index:2;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;padding:8px 16px;background:rgba(21,21,21,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line2)}
+.ag-h .dn{font-family:var(--fd);font-size:22px;line-height:1;letter-spacing:-.02em}
+.ag-h .dw{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.ag-h .sum{margin-left:auto;font-size:12px}
+.ag-h.ba .dn,.ag-h.ba .dw{color:var(--accent)}
+.ag-row{display:grid;grid-template-columns:78px minmax(0,1fr);column-gap:10px;align-items:start;width:100%;padding:8px 16px;border-radius:0}
+.ag-row .tm{font-variant-numeric:tabular-nums;font-size:13px;font-weight:700;line-height:1.3}
+.ag-row .tm small{display:block;font-weight:500;color:var(--muted);font-size:11px}
+.ag-box{min-width:0;border-radius:12px;padding:8px 12px;background:var(--s2);display:flex;align-items:center;gap:10px;box-shadow:inset 3px 0 0 var(--c,var(--muted))}
+.ag-box .tx{min-width:0;flex:1}
+.ag-box b{display:block;font-weight:600;line-height:1.25;overflow-wrap:anywhere}
+.ag-box span.sub{display:block;font-size:12px;color:var(--muted)}
+.ag-box.o{background:transparent;box-shadow:inset 3px 0 0 var(--c),inset 0 0 0 1px var(--line)}
+.ag-box.free{background:var(--free-soft);box-shadow:inset 3px 0 0 var(--free)}
+.ag-box.free b{color:var(--free-ink)}
+.ag-box.plan{background:var(--accent);color:var(--accent-ink);box-shadow:none}
+.ag-box.plan span.sub{color:inherit;opacity:.8}
+.ag-box.fly{background:transparent;box-shadow:inset 3px 0 0 var(--accent),inset 0 0 0 1px var(--line)}
+.ag-box.fly svg{color:var(--accent)}
+.ag-box.off{opacity:.18}
+.ag-add{display:flex;margin:6px 16px 0 104px;font-size:13px;font-weight:600;color:var(--accent);min-height:34px;align-items:center;gap:6px}
+.ag-add svg{width:15px;height:15px}
+/* actividad */
+.act{display:grid;gap:2px;padding:0 10px 12px}
+.act-r{display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:12px;font-size:14px;line-height:1.3;min-width:0}
+.act-r .tx{flex:1;min-width:0;overflow-wrap:anywhere}
+.act-r .tx b{font-weight:600}
+.act-r .tm{font-size:12px;color:var(--muted);white-space:nowrap}
+.act-r.new{background:var(--accent-soft)}
+.act-r.new .tm::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);margin-right:6px}
+.mapb{display:flex;gap:8px;align-items:stretch}
+.mapb input{flex:1}
+.mapb .btn{flex:none;text-decoration:none}
 
 /* sheets */
 .scrim{position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:40;display:flex;align-items:flex-end;justify-content:center;animation:fade 200ms var(--ease)}
@@ -251,11 +293,13 @@ var ICONS={
  x:'<path d="M6 6l12 12M18 6L6 18"/>',
  cal:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/>',
  chev:'<path d="M9 6l6 6-6 6"/>',
+ list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+ map:'<path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2zM9 4v14M15 6v14"/>',
  plane:'<path d="M10.5 13.5L3 11l1.5-1.5L14 9l4-5a1.6 1.6 0 0 1 2.4 2.1L16 11l-.5 9.5L14 22l-2.5-7.5L5 17z"/>'
 };
 function icon(k){var s=document.createElement('span');s.style.display='contents';s.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true">'+(ICONS[k]||ICONS.pin)+'</svg>';return s;}
 
-var S={me:null,people:{},avail:{},plans:{},votes:{},filter:'all',focus:null,sheet:null,shownKey:null,newPlan:'',newCat:'pos',toast:'',offline:false,loaded:false,pending:false,db:null,assets:null,scrolled:false};
+var S={me:null,people:{},avail:{},plans:{},votes:{},log:{},view:(function(){try{var v=localStorage.getItem('posadas-view');if(v)return v;}catch(e){}return window.innerWidth<700?'agenda':'cal';})(),filter:'all',focus:null,sheet:null,shownKey:null,newPlan:'',newCat:'pos',toast:'',offline:false,loaded:false,pending:false,db:null,assets:null,scrolled:false};
 var saving=false,dirty=false,toastT=null;
 
 function slugify(n){return String(n).trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')||'x';}
@@ -308,22 +352,36 @@ async function saveMine(){
   while(dirty){dirty=false;try{var a=S.avail[S.me.slug];await S.db.collection('avail').doc(S.me.slug).set({name:S.me.name,done:!!a.done,blocks:a.blocks||[]});}catch(e){fail();}}
   saving=false;
 }
+function logEv(kind,planTitle){
+  try{
+    var id=Date.now().toString(36)+Math.random().toString(36).slice(2,5),d={t:Date.now(),who:S.me.slug,kind:kind,plan:planTitle||''};
+    S.log[id]=d;S.db.collection('log').doc(id).set(d);
+    var ks=Object.keys(S.log).sort();
+    if(ks.length>80)ks.slice(0,ks.length-80).forEach(function(k){delete S.log[k];S.db.collection('log').doc(k).delete();});
+  }catch(e){}
+}
+var LOGTXT={vote:'se anotó a',unvote:'se bajó de',sched:'agendó',add:'sugirió',done:'marcó su horario'};
+function ago(t){var m=Math.round((Date.now()-t)/60000);if(m<1)return 'ahora';if(m<60)return 'hace '+m+' min';var h=Math.round(m/60);if(h<24)return 'hace '+h+' h';var d=Math.round(h/24);return 'hace '+d+(d===1?' día':' días');}
+function seenAt(){try{return parseInt(localStorage.getItem('posadas-seen')||'0',10)||0;}catch(e){return 0;}}
+function markSeen(){try{localStorage.setItem('posadas-seen',String(Date.now()));}catch(e){}}
+function mapUrl(p){var q=(p.place&&p.place.trim())||(p.title+' '+(p.cat==='py'?'Encarnación Paraguay':'Posadas Misiones Argentina'));return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q);}
 async function toggleVote(id){
   var vid=id+'__'+S.me.slug,on=!!S.votes[vid];
   try{
     if(on){delete S.votes[vid];render();await S.db.collection('votes').doc(vid).delete();}
     else{S.votes[vid]={plan:id,who:S.me.slug,v:'y'};render();await S.db.collection('votes').doc(vid).set({plan:id,who:S.me.slug,v:'y'});}
+    logEv(on?'unvote':'vote',(S.plans[id]||{}).title);
   }catch(e){fail();}
 }
 async function schedule(id,val){
-  try{if(S.plans[id])S.plans[id].sched=val;render();await S.db.collection('plans').doc(id).update({sched:val});}catch(e){fail();}
+  try{if(S.plans[id])S.plans[id].sched=val;render();await S.db.collection('plans').doc(id).update({sched:val});if(val)logEv('sched',(S.plans[id]||{}).title);}catch(e){fail();}
 }
 async function addPlan(){
   var t=S.newPlan.trim();if(!t)return;
   var id=S.newCat+'-'+slugify(t)+'-'+Date.now().toString(36);
   var data={title:t,cat:S.newCat,icon:'pin',order:Date.now(),sched:null,photo:null,by:S.me.name};
   S.newPlan='';
-  try{S.plans[id]=data;render();await S.db.collection('plans').doc(id).set(data);}catch(e){fail();}
+  try{S.plans[id]=data;render();await S.db.collection('plans').doc(id).set(data);logEv('add',t);}catch(e){fail();}
 }
 async function uploadPhoto(id,file){
   if(!S.assets||!file)return;
@@ -444,6 +502,7 @@ function page(){
       meBtn),
     el('div',{class:'strip'},crewCard(),bestCard()),
     el('div',{class:'fl'},flightsCard(FLIGHTS[0]),flightsCard(FLIGHTS[1])),
+    el('div',{style:'margin-bottom:20px'},activityCard()),
     el('div',{class:'layout'},calendarCard(),plansCard()));
 }
 
@@ -463,6 +522,20 @@ function flightsCard(f){
   });
   return el('section',{class:'card'},
     el('div',{class:'leg-h'},el('span',{class:'pic'},icon('plane')),el('h2',null,f.title),el('span',{class:'s'},f.date)),box);
+}
+function activityCard(){
+  var ks=Object.keys(S.log).filter(function(k){return S.log[k]&&S.log[k].t;}).sort().reverse().slice(0,6),seen=seenAt();
+  var box=el('div',{class:'act'});
+  if(!ks.length)box.appendChild(el('div',{class:'s',style:'padding:4px 8px 4px'},'Todavía no hay movimientos. Cuando alguien se anote o agende algo, aparece aquí.'));
+  var fresh=0;
+  ks.forEach(function(k){
+    var e=S.log[k],nw=e.t>seen&&e.who!==S.me.slug;if(nw)fresh++;
+    box.appendChild(el('div',{class:'act-r'+(nw?' new':'')},avatar(e.who,'sm'),
+      el('span',{class:'tx'},el('b',null,nameOf(e.who)),' '+(LOGTXT[e.kind]||'hizo un cambio')+(e.plan?' ':''),e.plan?el('b',null,e.plan):null),
+      el('span',{class:'tm'},ago(e.t))));
+  });
+  return el('section',{class:'card'},el('div',{class:'sec-h'},el('h2',null,'Últimos cambios'),
+    fresh?el('button',{class:'btn sm',onclick:function(){markSeen();render();}},fresh+(fresh===1?' nuevo, marcar visto':' nuevos, marcar visto')):el('span',{class:'s'},'Estás al día')),box);
 }
 function crewCard(){
   var friends=friendsPos(),missing=friends.filter(function(s){return !isDone(s);});
@@ -503,15 +576,15 @@ function calendarCard(){
   var foot=el('div',{class:'now-me'},
     el('div',{class:'grow'},el('b',null,'Tu horario'),el('div',{class:'s'},(mine?mine+(mine===1?' bloque ocupado':' bloques ocupados'):'Todavía no marcaste nada')+'. Toca cualquier hora del calendario para agregar o agendar.')),
     el('button',{class:'btn',onclick:function(){openBusy(null,2,780);}},icon('plus'),'Ocupado'),
-    el('button',{class:'btn'+(done?'':' primary'),onclick:function(){var a=myDoc();a.done=!done;saveMine();render();}},done?'Listo ✓':'Ya marqué todo'));
+    el('button',{class:'btn'+(done?'':' primary'),onclick:function(){var a=myDoc();a.done=!done;saveMine();if(a.done)logEv('done');render();}},done?'Listo ✓':'Ya marqué todo'));
   return el('section',{class:'card',style:'overflow:hidden'},
-    el('div',{class:'calhead'},el('h2',null,'Calendario'),
-      el('div',{class:'legend'},
+    el('div',{class:'calhead'},el('h2',null,S.view==='agenda'?'Agenda':'Calendario'),viewToggle(),
+      S.view==='agenda'?null:el('div',{class:'legend'},
         el('span',null,el('i',{class:'lgd x'}),'Ocupado, va solo'),
         el('span',null,el('i',{class:'lgd o'}),'Pueden sumarse'),
         el('span',null,el('i',{class:'lgd f'}),'Todos libres'),
         el('span',null,el('i',{class:'lgd p'}),'Plan'))),
-    el('div',{class:'scroller'},g),foot);
+    S.view==='agenda'?agendaView():el('div',{class:'scroller'},g),foot);
 }
 function dayHead(d){
   var sum;
@@ -522,6 +595,41 @@ function dayHead(d){
     sum=w?el('div',{class:'sum ok'},'Libres '+fmt(w.from)+' a '+fmt(w.to)):el('div',{class:'sum s'},c?c+' ocupados':'Sin datos');
   }
   return el('div',{class:'dh'+(d===11?' ba':''),'data-day':d},el('div',{class:'row1'},el('span',{class:'dw'},dayName(d)),el('span',{class:'dn'},String(d))),sum);
+}
+function viewToggle(){
+  function set(v){S.view=v;try{localStorage.setItem('posadas-view',v);}catch(e){}render();}
+  return el('div',{class:'view',role:'group','aria-label':'Vista'},
+    el('button',{'aria-pressed':S.view!=='agenda',onclick:function(){set('cal');}},icon('cal'),'Calendario'),
+    el('button',{'aria-pressed':S.view==='agenda',onclick:function(){set('agenda');}},icon('list'),'Agenda'));
+}
+function agendaView(){
+  var box=el('div',{class:'agenda'});
+  for(var d=1;d<=11;d++)(function(d){
+    var sum;
+    if(d===11)sum=el('span',{class:'sum s'},'Buenos Aires con Matías');
+    else{var w=freeWindows(friendsPos(),d,600,1560,120).sort(function(a,b){return (b.to-b.from)-(a.to-a.from);})[0];sum=w?el('span',{class:'sum ok'},'Libres '+fmt(w.from)+' a '+fmt(w.to)):el('span',{class:'sum s'},'');}
+    box.appendChild(el('div',{class:'ag-h'+(d===11?' ba':'')},el('span',{class:'dw'},dayName(d)),el('span',{class:'dn'},String(d)),sum));
+    var items=[];
+    if(d===1){items.push({from:120,to:ARR,k:'fly',t:'Pablo en vuelo',sub:'VVI 02:20 a AEP, AEP 11:15 a PSS',tm:'02:20'});items.push({from:ARR,to:ARR,k:'fly',t:'Pablo llega a Posadas',sub:'Aeropuerto Libertador San Martín',tm:'12:55',pt:1});}
+    if(d===11){items.push({from:420,to:BA_IN,k:'fly',t:'Pablo vuela a Buenos Aires',sub:'Aeropuerto 07:00, PSS 10:00, llega 11:40',tm:'07:00'});items.push({from:BA_OUT,to:1625,k:'fly',t:'Pablo al aeropuerto',sub:'Aeroparque 19:00, vuelo 22:05 a Santa Cruz',tm:'19:00'});}
+    freeWindows(d===11?groupFor(11):friendsPos(),d,R0*60,R1*60,60).forEach(function(w){items.push({from:w.from,to:w.to,k:'free',t:'Todos libres',sub:Math.round((w.to-w.from)/60)+' h para un plan',w:w});});
+    dayBlocks(d).forEach(function(e){items.push({from:e.b.from,to:e.b.to,k:'b',e:e});});
+    planList().forEach(function(p){var sc=schedOf(p);if(sc&&sc.d===d)items.push({from:sc.from,to:sc.to,k:'p',p:p});});
+    items.sort(function(a,b){return a.from-b.from||(a.k==='free'?-1:0)-(b.k==='free'?-1:0);});
+    items.forEach(function(it){
+      var tm=el('div',{class:'tm'},it.tm||fmt(it.from),it.pt?null:(it.tm?null:el('small',null,'a '+fmt(it.to))));
+      var body,click=null;
+      if(it.k==='fly'){body=el('div',{class:'ag-box fly'},icon('plane'),el('div',{class:'tx'},el('b',null,it.t),el('span',{class:'sub'},it.sub)));}
+      else if(it.k==='free'){body=el('div',{class:'ag-box free'},el('div',{class:'tx'},el('b',null,it.t),el('span',{class:'sub'},it.sub)));click=function(){openSlot(d,it.w.from);};}
+      else if(it.k==='p'){var v=votersOf(it.p.id);body=el('div',{class:'ag-box plan'},icon(it.p.icon),el('div',{class:'tx'},el('b',null,it.p.title),el('span',{class:'sub'},'Plan'+(v.length?' · van '+v.length:'')+(allIn(v)?' (todos)':''))));click=function(){openPlan(it.p.id);};}
+      else{var e=it.e,mine=e.s===S.me.slug,dim=S.focus&&S.focus!==e.s;
+        body=el('div',{class:'ag-box '+(e.b.type==='o'?'o':'')+(dim?' off':''),style:'--c:'+colorOf(e.s)},avatar(e.s,'sm'),el('div',{class:'tx'},el('b',null,nameOf(e.s)),el('span',{class:'sub'},e.b.type==='o'?'Ocupado, pueden acompañar':'Ocupado, va solo')));
+        click=function(){if(mine)openBusy(e.b);else toast(nameOf(e.s)+', '+span(e.b)+(e.b.type==='o'?'. Se puede acompañar.':'. Va solo.'));};}
+      box.appendChild(click?el('button',{class:'ag-row press',onclick:click},tm,body):el('div',{class:'ag-row'},tm,body));
+    });
+    if(d!==1||true)box.appendChild(el('button',{class:'ag-add',onclick:function(){openSlot(d,Math.max(780,d===1?ARR:780));}},icon('plus'),'Agregar a este día'));
+  })(d);
+  return box;
 }
 function dayBlocks(d){var o=[];groupFor(d).forEach(function(s){blocksOf(s).forEach(function(b){if(b.d===d)o.push({s:s,b:b});});});return o;}
 function dayCol(d,H,rows){
@@ -667,6 +775,9 @@ function planSheet(sh){
     out.push(el('div',null,el('p',{class:'lab'},sg.yes?'Mejores horarios para los que van':'Mejores horarios para todos'),box));
     out.push(el('div',{class:'s',style:'text-align:center'},'También puedes tocar una hora en el calendario.'));
   }
+  var pl=el('input',{type:'text',placeholder:'Lugar o dirección',maxlength:'80','aria-label':'Lugar en el mapa',value:p.place||''});
+  pl.addEventListener('change',function(){var v=pl.value.trim();p.place=v;S.db.collection('plans').doc(p.id).update({place:v});});
+  out.push(el('div',null,el('p',{class:'lab'},'Lugar'),el('div',{class:'mapb'},pl,el('a',{class:'btn',href:mapUrl(p),target:'_blank',rel:'noopener noreferrer',onclick:function(e){var v=pl.value.trim();if(v!==(p.place||'')){p.place=v;S.db.collection('plans').doc(p.id).update({place:v});}e.currentTarget.href=mapUrl(p);}},icon('map'),'Mapa'))));
   if(S.assets){
     var fi=el('input',{type:'file',accept:'image/*',style:'display:none',onchange:function(e){uploadPhoto(p.id,e.target.files[0]);}});
     out.push(fi,el('button',{class:'btn block',onclick:function(){fi.click();}},p.photo?'Cambiar foto':'Agregar foto'));
@@ -705,7 +816,7 @@ function busySheet(sh){
 
 /* ---------- servidor (Netlify) ---------- */
 var API='/api/viajeposadas';
-var store={rev:'',data:{people:{},avail:{},plans:{},votes:{}},subs:{},pending:0};
+var store={rev:'',data:{people:{},avail:{},plans:{},votes:{},log:{}},subs:{},pending:0};
 function emit(){Object.keys(store.subs).forEach(function(c){var o=store.data[c]||{};store.subs[c]({docs:Object.keys(o).map(function(id){return {id:id,data:o[id]};})});});}
 async function post(body){
   store.pending++;
@@ -720,7 +831,7 @@ async function pull(force){
     var j=await r.json();
     if(j.same)return;
     if(store.pending)return;
-    store.rev=j.rev;store.data=j.data;S.offline=false;emit();
+    j.data.log=j.data.log||{};store.rev=j.rev;store.data=j.data;S.offline=false;emit();
   }catch(e){if(!S.loaded){S.offline=true;render();}}
 }
 var shimDb={collection:function(c){return {
@@ -741,10 +852,11 @@ var shimAssets={upload:async function(file){var data=await shrink(file);var j=aw
 try{var sv=JSON.parse(localStorage.getItem('posadas-me')||'null');if(sv&&sv.name&&sv.slug)S.me={name:sv.name,slug:sv.slug};}catch(e){}
 render();
 S.db=shimDb;S.assets=shimAssets;
-['people','avail','plans','votes'].forEach(listen);
+['people','avail','plans','votes','log'].forEach(listen);
 pull(true);
 setInterval(function(){if(!document.hidden)pull(false);},4000);
-document.addEventListener('visibilitychange',function(){if(!document.hidden)pull(false);});
+document.addEventListener('visibilitychange',function(){if(document.hidden)markSeen();else pull(false);});
+window.addEventListener('pagehide',markSeen);
 })();
 </script>
 </body>

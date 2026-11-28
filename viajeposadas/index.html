@@ -693,6 +693,15 @@ function tabBar(){
   });
   return nav;
 }
+function isOwner(p){return !!(p&&S.me&&p.by===S.me.name);}
+function undescribed(){return planList().filter(function(p){return isOwner(p)&&!(p.desc&&p.desc.trim());});}
+function descCard(){
+  var u=undescribed();if(!u.length)return null;
+  return el('section',{class:'card todo'},
+    el('div',{class:'todo-h'},el('div',{class:'grow'},el('b',{class:'big'},u.length===1?'Un plan tuyo no tiene descripción':u.length+' planes tuyos no tienen descripción'),
+      el('div',{class:'s'},'Cuenta en una o dos líneas de qué trata cada uno. Así tus amigos deciden si se anotan.'))),
+    el('div',{class:'todo-a'},el('button',{class:'btn primary',onclick:function(){S.pf='made';setTab('plans');}},'Escribir descripciones')));
+}
 function todoCard(){
   var mine=blocksOf(S.me.slug).length,done=isDone(S.me.slug);
   if(done)return el('section',{class:'card quiet todo ok'},
@@ -708,7 +717,7 @@ function todoCard(){
       el('button',{class:'btn',onclick:function(){var a=myDoc();a.done=true;saveMine();logEv('done');render();}},'No tengo nada ocupado')));
 }
 function homeView(){
-  return el('div',{class:'home'},todoCard(),
+  return el('div',{class:'home'},todoCard(),descCard(),
     el('div',{class:'g2'},bestCard(),activityCard()),
     flightsBoth());
 }
@@ -731,11 +740,11 @@ function planCard(p){
     el('button',{class:'pc-main',onclick:function(){openPlan(p.id);}},
       thumb(p,'lg'),
       el('div',{class:'pc-t'},el('b',null,p.title),el('div',{class:'pc-c'},el('span',{class:'tag'},CAT[p.cat]||'Otro'),sc?el('span',{class:'when-chip'},dlab(sc.d)+' '+fmt(sc.from)):null))),
-    el('p',{class:'pc-d'+(p.desc?'':' none')},p.desc||'Sin descripción todavía. Toca para contar de qué trata.'),
+    el('p',{class:'pc-d'+(p.desc?'':' none')},p.desc||(isOwner(p)?'Falta tu descripción. Toca "Escribir" para contar de qué trata.':(p.by||'Quien lo propuso')+' todavía no cuenta de qué trata este plan.')),
     el('div',{class:'pc-v'},v.length?stack:null,el('span',null,names)),
     el('div',{class:'pc-a'},
       el('button',{class:'btn'+(mine?'':' primary'),'aria-pressed':mine,onclick:function(){toggleVote(p.id);}},mine?'Voy ✓':'Me anoto'),
-      el('button',{class:'btn',onclick:function(){openPlan(p.id);}},'Ver detalle')));
+      el('button',{class:'btn'+(isOwner(p)&&!p.desc?' primary':''),onclick:function(){openPlan(p.id);}},isOwner(p)&&!p.desc?'Escribir descripción':'Ver detalle')));
 }
 function joinList(){
   var out=[];
@@ -754,15 +763,16 @@ function joinList(){
 function plansView(){
   var all=planList(),f=S.pf;
   var chips=el('div',{class:'crewbar'});
-  [['all','Todos'],['mine','Mis planes'],['pos','Posadas'],['py','Paraguay'],['otro','Otros']].forEach(function(o){chips.appendChild(el('button',{class:'chip','aria-pressed':f===o[0],onclick:function(){S.pf=o[0];render();}},o[1]));});
+  [['all','Todos'],['mine','Donde voy'],['made','Los que propuse'],['pos','Posadas'],['py','Paraguay'],['otro','Otros']].forEach(function(o){chips.appendChild(el('button',{class:'chip','aria-pressed':f===o[0],onclick:function(){S.pf=o[0];render();}},o[1]));});
   var items=all.filter(function(p){
     var v=votersOf(p.id);
     if(f==='mine'&&v.indexOf(S.me.slug)<0)return false;
+    if(f==='made'&&!isOwner(p))return false;
     if((f==='pos'||f==='py'||f==='otro')&&(p.cat||'otro')!==f)return false;
     if(S.focus&&v.indexOf(S.focus)<0)return false;return true;});
   items.sort(function(a,b){var x=schedOf(a)?0:1,y=schedOf(b)?0:1;return x-y||votersOf(b.id).length-votersOf(a.id).length||(a.order||0)-(b.order||0);});
   var grid=el('div',{class:'pgrid'});items.forEach(function(p){grid.appendChild(planCard(p));});
-  if(!items.length)grid.appendChild(el('div',{class:'empty'},f==='mine'?'Todavía no te anotaste a ningún plan.':S.focus?nameOf(S.focus)+' todavía no se anotó a ningún plan.':'No hay planes aquí.'));
+  if(!items.length)grid.appendChild(el('div',{class:'empty'},f==='mine'?'Todavía no te anotaste a ningún plan.':f==='made'?'Todavía no propusiste ningún plan. Toca "Nuevo plan".':S.focus?nameOf(S.focus)+' todavía no se anotó a ningún plan.':'No hay planes aquí.'));
   return el('div',{class:'plv'},
     el('div',{class:'ph2'},el('div',null,el('h2',null,'Planes'),el('div',{class:'s'},all.length+' ideas. Anótate a los que quieras y agéndalos.')),
       el('button',{class:'btn primary',onclick:function(){S.sheet={k:'newplan',title:'',cat:'pos',icon:'pin',desc:''};render();}},icon('plus'),'Nuevo plan')),
@@ -1101,9 +1111,14 @@ function planSheet(sh){
   var out=[];
   if(p.photo&&/^[\w-]+$/.test(p.photo))out.push(el('img',{class:'hero',src:API+'?photo='+p.photo,alt:''}));
   out.push(shead(p.title,(CAT[p.cat]||'Otro')+(p.by?' · sugerido por '+p.by:'')));
-  var dta=el('textarea',{rows:'3',maxlength:'240',placeholder:'Escribe de qué trata este plan para que los demás decidan si se suman.','aria-label':'Descripción del plan'});dta.value=p.desc||'';
-  dta.addEventListener('change',function(){var t=dta.value.trim();p.desc=t;S.db.collection('plans').doc(p.id).update({desc:t});});
-  out.push(el('div',null,el('p',{class:'lab'},'¿De qué trata?'),dta));
+  if(isOwner(p)){
+    var dta=el('textarea',{rows:'4',maxlength:'240',placeholder:'Ejemplo: Cena con parrilla en la costanera, cada uno paga lo suyo.','aria-label':'Descripción del plan'});dta.value=p.desc||'';
+    var sv=el('button',{class:'btn block'+(p.desc?'':' primary'),onclick:function(){var t=dta.value.trim();p.desc=t;S.db.collection('plans').doc(p.id).update({desc:t});toast(t?'Descripción guardada':'Descripción borrada');render();}},'Guardar descripción');
+    out.push(el('div',null,el('p',{class:'lab'},'¿De qué trata? Este plan es tuyo, tú lo explicas'),dta,el('div',{style:'height:8px'}),sv));
+  } else {
+    out.push(el('div',null,el('p',{class:'lab'},'¿De qué trata?'),
+      el('p',{class:'pc-d'+(p.desc?'':' none'),style:'display:block;-webkit-line-clamp:unset'},p.desc||((p.by||'Quien lo propuso')+' todavía no cuenta de qué trata este plan. Pregúntale en el grupo.'))));
+  }
   out.push(el('div',null,el('p',{class:'lab'},v.length?(allIn(v)?'Van todos':v.length+(v.length===1?' va':' van')):'Nadie se anotó todavía'),
     v.length?el('div',{class:'who-busy'},v.map(function(s){return el('span',null,avatar(s,'sm'),nameOf(s));})):null));
   out.push(el('button',{class:'btn block'+(mine?'':' primary'),onclick:function(){toggleVote(p.id);}},mine?'Ya no voy':'Me anoto'));

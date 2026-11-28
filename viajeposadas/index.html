@@ -341,6 +341,7 @@ textarea{width:100%;background:var(--s2);color:var(--ink);border:1px solid var(-
 .opt{display:grid;gap:2px;text-align:left;padding:12px 14px}.opt small{font-weight:500;color:var(--muted);font-size:12px}
 .opt[aria-pressed="true"] small{color:inherit;opacity:.8}
 @media (max-width:640px){.top{margin-bottom:12px}.top h1{font-size:34px}.dates{font-size:13px}}
+.btn.off,.join.off{opacity:.55;border-style:dashed}
 /* sheets */
 .scrim{position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:40;display:flex;align-items:flex-end;justify-content:center;animation:fade 200ms var(--ease)}
 @media (min-width:720px){.scrim{align-items:center}}
@@ -489,8 +490,33 @@ function ago(t){var m=Math.round((Date.now()-t)/60000);if(m<1)return 'ahora';if(
 function seenAt(){try{return parseInt(localStorage.getItem('posadas-seen')||'0',10)||0;}catch(e){return 0;}}
 function markSeen(){try{localStorage.setItem('posadas-seen',String(Date.now()));}catch(e){}}
 function mapUrl(p){var q=(p.place&&p.place.trim())||(p.title+' '+(p.cat==='py'?'Encarnación Paraguay':'Posadas Misiones Argentina'));return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q);}
+function ovl(a,b){return a.d===b.d&&a.from<b.to&&a.to>b.from;}
+/* Qué compromiso de esa persona choca con esa franja: horario ocupado propio, plan agendado al que va, o evento de un amigo al que se sumó */
+function conflictFor(slug,val,ign){
+  ign=ign||{};
+  if(!ign.noOwn){var ob=blocksOf(slug).filter(function(b){return ovl(b,val)&&b.id!==ign.block;})[0];if(ob)return {k:'busy',t:'ocupado'};}
+  var pl=planList().filter(function(q){var c=schedOf(q);return q.id!==ign.plan&&c&&ovl(c,val)&&votersOf(q.id).indexOf(slug)>-1;})[0];
+  if(pl)return {k:'plan',t:pl.title};
+  var js=Object.keys(S.joins).map(function(k){return {id:k,j:S.joins[k]};}).filter(function(x){return x.j&&x.j.who===slug&&x.id!==ign.join;});
+  for(var i=0;i<js.length;i++){var j=js[i].j,b=blocksOf(j.owner).filter(function(z){return z.id===j.block&&z.type==='o';})[0];if(b&&ovl(b,val))return {k:'join',t:'lo de '+nameOf(j.owner)};}
+  return null;
+}
+function conflictMsg(slug,c){
+  var me=S.me&&slug===S.me.slug,n=me?'Tú':nameOf(slug);
+  if(c.k==='busy')return me?'A esa hora marcaste que estás ocupado. Cambia ese horario o elige otro plan.':n+' está ocupado a esa hora.';
+  return me?'A esa hora ya vas a '+c.t+'. Bájate de ahí primero.':n+' a esa hora ya va a '+c.t+'.';
+}
+function voteBlock(p){
+  var sc=schedOf(p);if(!sc||S.votes[p.id+'__'+S.me.slug])return '';
+  var c=conflictFor(S.me.slug,sc,{plan:p.id});return c?conflictMsg(S.me.slug,c):'';
+}
+function joinBlock(o,b){
+  if(S.joins[jid(o,b.id,S.me.slug)])return '';
+  var c=conflictFor(S.me.slug,b,{join:jid(o,b.id,S.me.slug)});return c?conflictMsg(S.me.slug,c):'';
+}
 async function toggleVote(id){
   var vid=id+'__'+S.me.slug,on=!!S.votes[vid];
+  if(!on&&S.plans[id]){var vb=voteBlock(S.plans[id]);if(vb){toast(vb);return;}}
   try{
     if(on){delete S.votes[vid];render();await S.db.collection('votes').doc(vid).delete();}
     else{S.votes[vid]={plan:id,who:S.me.slug,v:'y'};render();await S.db.collection('votes').doc(vid).set({plan:id,who:S.me.slug,v:'y'});}
@@ -508,6 +534,8 @@ function canSchedule(id,val){
   if(!votersOf(id).length)return 'Primero alguien tiene que anotarse a este plan. Después se puede agendar.';
   var c=clashWith(id,val);
   if(c)return 'A esa hora ya está '+c.title+'. Elige otro horario.';
+  var vs=votersOf(id);
+  for(var i=0;i<vs.length;i++){var k=conflictFor(vs[i],val,{plan:id});if(k)return conflictMsg(vs[i],k)+' Elige otro horario.';}
   return '';
 }
 async function schedule(id,val){
@@ -549,6 +577,7 @@ function newPlanSheet(sh){
     el('button',{class:'btn block primary',onclick:save},'Crear plan')];
 }
 async function createPlanAt(t,val){
+  var cf=conflictFor(S.me.slug,val);if(cf){toast(conflictMsg(S.me.slug,cf));return;}
   var low=t.toLowerCase(),icon0=/caf[eé]|merienda/.test(low)?'coffee':/cerveza|bar\b|birra|trago/.test(low)?'beer':/almuerzo|cena|comer|parrilla|restaurante|pizza|asado/.test(low)?'food':/karaoke|cantar/.test(low)?'mic':/playa|rio|río|costanera|nadar/.test(low)?'wave':'pin';
   var id='otro-'+slugify(t)+'-'+Date.now().toString(36);
   var data={title:t,cat:'otro',icon:icon0,order:Date.now(),sched:val,photo:null,by:S.me.name};
@@ -743,7 +772,7 @@ function planCard(p){
     el('p',{class:'pc-d'+(p.desc?'':' none')},p.desc||(isOwner(p)?'Falta tu descripción. Toca "Escribir" para contar de qué trata.':(p.by||'Quien lo propuso')+' todavía no cuenta de qué trata este plan.')),
     el('div',{class:'pc-v'},v.length?stack:null,el('span',null,names)),
     el('div',{class:'pc-a'},
-      el('button',{class:'btn'+(mine?'':' primary'),'aria-pressed':mine,onclick:function(){toggleVote(p.id);}},mine?'Voy ✓':'Me anoto'),
+      el('button',{class:'btn'+(mine?'':(voteBlock(p)?' off':' primary')),'aria-pressed':mine,onclick:function(){toggleVote(p.id);}},mine?'Voy ✓':(voteBlock(p)?'No puedo ese horario':'Me anoto')),
       el('button',{class:'btn'+(isOwner(p)&&!p.desc?' primary':''),onclick:function(){openPlan(p.id);}},isOwner(p)&&!p.desc?'Escribir descripción':'Ver detalle')));
 }
 function joinList(){
@@ -755,7 +784,7 @@ function joinList(){
     var js=joinersOf(x.o,x.b.id),mine=js.indexOf(S.me.slug)>-1;
     box.appendChild(el('div',{class:'jrow'+(S.focus&&S.focus!==x.o&&js.indexOf(S.focus)<0?' dimr':'')},avatar(x.o,'sm'),
       el('div',{class:'grow'},el('b',null,nameOf(x.o)),el('div',{class:'s'},dlab(x.b.d)+', '+span(x.b)+(js.length?' · van '+js.slice(0,3).map(nameOf).join(', ')+(js.length>3?' y '+(js.length-3)+' más':''):' · nadie todavía'))),
-      el('button',{class:'btn sm'+(mine?'':' primary'),onclick:function(){toggleJoin(x.o,x.b);}},mine?'Voy ✓':'Me sumo')));
+      el('button',{class:'btn sm'+(mine?'':(joinBlock(x.o,x.b)?' off':' primary')),onclick:function(){toggleJoin(x.o,x.b);}},mine?'Voy ✓':(joinBlock(x.o,x.b)?'Choca':'Me sumo'))));
   });
   if(!out.length)box.appendChild(el('div',{class:'s',style:'padding:6px 4px'},'Todavía nadie marcó horarios a los que puedas sumarte.'));
   return el('section',{class:'card quiet'},el('div',{class:'sec-h'},el('h2',null,'Horarios donde te puedes sumar'),el('span',{class:'s'},'Eventos de tus amigos abiertos a que los acompañes')),box);
@@ -796,9 +825,18 @@ function meView(){
     rows,
     el('div',{class:'todo-a',style:'padding:4px 18px 16px'},el('button',{class:'btn primary',onclick:function(){openBusy(null,2,780);}},icon('plus'),'Marcar ocupado'),
       el('button',{class:'btn'+(done?'':' primary'),onclick:function(){var a=myDoc();a.done=!done;saveMine();if(a.done)logEv('done');render();}},done?'Horario listo ✓':'Ya marqué todo')));
-  var mp=planList().filter(function(p){return votersOf(p.id).indexOf(me)>-1;});
-  var mpc=el('section',{class:'card quiet'},el('div',{class:'sec-h'},el('h2',null,'Mis planes'),el('span',{class:'s'},mp.length+' anotados')),
-    el('div',{class:'plist',style:'padding:0 8px 10px'},mp.length?mp.map(planRow):el('div',{class:'s',style:'padding:6px 10px'},'Todavía no te anotaste a ninguno. Mira la pestaña Planes.')));
+  var items=[];
+  planList().forEach(function(p){if(votersOf(p.id).indexOf(me)>-1){var c=schedOf(p);items.push({t:'p',p:p,d:c?c.d:99,f:c?c.from:0});}});
+  everyone().forEach(function(o){if(o===me)return;blocksOf(o).forEach(function(b){if(b.type==='o'&&joinersOf(o,b.id).indexOf(me)>-1)items.push({t:'j',o:o,b:b,d:b.d,f:b.from});});});
+  items.sort(function(x,y){return x.d-y.d||x.f-y.f;});
+  var rowsP=items.map(function(x){
+    if(x.t==='p')return planRow(x.p);
+    return el('div',{class:'prow'},el('button',{class:'main',onclick:function(){openJoin(x.o,x.b);}},avatar(x.o,'md'),
+      el('span',{style:'min-width:0'},el('div',{class:'ptitle'},'Con '+nameOf(x.o)),el('div',{class:'pmeta'},el('span',{class:'when-chip'},dlab(x.b.d)+' '+span(x.b))))),
+      el('button',{class:'join','aria-pressed':true,onclick:function(){toggleJoin(x.o,x.b);}},'Voy ✓'));
+  });
+  var mpc=el('section',{class:'card quiet'},el('div',{class:'sec-h'},el('h2',null,'Mis planes'),el('span',{class:'s'},items.length+(items.length===1?' plan':' planes'))),
+    el('div',{class:'plist',style:'padding:0 8px 10px'},rowsP.length?rowsP:el('div',{class:'s',style:'padding:6px 10px'},'Todavía no te anotaste a ninguno. Mira la pestaña Planes.')));
   var grp=el('section',{class:'card quiet'},el('div',{class:'sec-h'},el('h2',null,'El grupo'),el('span',{class:'s'},'Toca a alguien para ver su horario')),
     el('div',{class:'glist'},everyone().map(function(s){
       var np=planList().filter(function(p){return votersOf(p.id).indexOf(s)>-1;}).length;
@@ -1027,7 +1065,7 @@ function planRow(p){
   var who=null;if(v.length&&!allIn(v)){var nm=v.slice(0,3).map(nameOf);who=el('div',{class:'pwho'},nm.join(', ')+(v.length>3?' y '+(v.length-3)+' más':''));}
   return el('div',{class:'prow'+(S.focus&&v.indexOf(S.focus)<0?' dimr':'')},
     el('button',{class:'main',onclick:function(){openPlan(p.id);}},thumb(p),el('span',{style:'min-width:0'},el('div',{class:'ptitle'},p.title),meta,who)),
-    el('button',{class:'join','aria-pressed':mine,'aria-label':(mine?'Ya no voy a ':'Me anoto a ')+p.title,onclick:function(){toggleVote(p.id);}},mine?'Voy ✓':'Me anoto'));
+    el('button',{class:'join'+(!mine&&voteBlock(p)?' off':''),'aria-pressed':mine,'aria-label':(mine?'Ya no voy a ':'Me anoto a ')+p.title,onclick:function(){toggleVote(p.id);}},mine?'Voy ✓':'Me anoto'));
 }
 
 /* ----- hojas ----- */
@@ -1039,10 +1077,11 @@ function openSlot(d,m){
 }
 function openPlan(id){S.sheet={k:'plan',id:id};render();}
 function jid(o,b,w){return (o+'_'+b+'__'+w).toLowerCase().replace(/[^a-z0-9_-]/g,'-').slice(0,90);}
-function joinersOf(o,b){return Object.keys(S.joins).map(function(k){return S.joins[k];}).filter(function(j){return j&&j.owner===o&&j.block===b;}).map(function(j){return j.who;});}
+function joinersOf(o,b){var ok=blocksOf(o).some(function(x){return x.id===b&&x.type==='o';});if(!ok)return [];return Object.keys(S.joins).map(function(k){return S.joins[k];}).filter(function(j){return j&&j.owner===o&&j.block===b&&S.people[j.who];}).map(function(j){return j.who;});}
 function openJoin(owner,b){S.sheet={k:'join',id:owner+'|'+b.id,owner:owner,bid:b.id,d:b.d,from:b.from,to:b.to};render();}
 async function toggleJoin(owner,b){
   var id=jid(owner,b.id,S.me.slug),on=!!S.joins[id],label='lo de '+nameOf(owner)+', '+dlab(b.d)+' '+fmt(b.from);
+  if(!on){var jb=joinBlock(owner,b);if(jb){toast(jb);return;}}
   try{
     if(on){delete S.joins[id];render();await S.db.collection('joins').doc(id).delete();}
     else{var d={owner:owner,block:b.id,who:S.me.slug};S.joins[id]=d;render();await S.db.collection('joins').doc(id).set(d);}
@@ -1056,7 +1095,11 @@ function joinSheet(sh){
     el('div',{class:'ok',style:'background:var(--glass);color:var(--ink)'},'Se puede acompañar. Anótate si quieres ir.'),
     el('div',null,el('p',{class:'lab'},js.length?(js.length===1?'Se suma':'Se suman')+' '+js.length:'Nadie se sumó todavía'),
       js.length?el('div',{class:'who-busy'},js.map(function(s){return el('span',null,avatar(s,'sm'),nameOf(s));})):null),
-    el('button',{class:'btn block'+(mine?'':' primary'),onclick:function(){toggleJoin(own,b);}},mine?'Ya no voy':'Me sumo')];
+    el('button',{class:'btn block'+(mine?'':(joinBlock(own,b)?' off':' primary')),onclick:function(){toggleJoin(own,b);}},mine?'Ya no voy':'Me sumo'),
+    joinBlock(own,b)?el('div',{class:'s',style:'text-align:center'},joinBlock(own,b)):null];
+}
+function dropJoins(owner,bid){
+  Object.keys(S.joins).forEach(function(k){var j=S.joins[k];if(j&&j.owner===owner&&j.block===bid){delete S.joins[k];S.db.collection('joins').doc(k).delete().catch(function(){});}});
 }
 function openBusy(b,d,from){
   var own=zoneOf(S.me.slug)==='bsas';
@@ -1121,7 +1164,9 @@ function planSheet(sh){
   }
   out.push(el('div',null,el('p',{class:'lab'},v.length?(allIn(v)?'Van todos':v.length+(v.length===1?' va':' van')):'Nadie se anotó todavía'),
     v.length?el('div',{class:'who-busy'},v.map(function(s){return el('span',null,avatar(s,'sm'),nameOf(s));})):null));
-  out.push(el('button',{class:'btn block'+(mine?'':' primary'),onclick:function(){toggleVote(p.id);}},mine?'Ya no voy':'Me anoto'));
+  var vb=voteBlock(p);
+  out.push(el('button',{class:'btn block'+(mine?'':(vb?' off':' primary')),onclick:function(){toggleVote(p.id);}},mine?'Ya no voy':'Me anoto'));
+  if(vb)out.push(el('div',{class:'s',style:'text-align:center;color:var(--warn,#ffb454)'},vb));
   if(sc){
     out.push(el('div',{class:'sug'},el('span',null,el('b',null,dlab(sc.d)),', '+span(sc)),el('button',{class:'btn sm danger',onclick:function(){schedule(p.id,null);}},'Quitar')));
   } else if(!v.length){
@@ -1162,8 +1207,11 @@ function busySheet(sh){
   [['Mañana',480,780],['Tarde',780,1140],['Noche',1140,1560]].forEach(function(x){q.appendChild(el('button',{class:'chip','aria-pressed':sh.from===x[1]&&sh.to===x[2],onclick:function(){sh.from=x[1];sh.to=x[2];render();}},x[0]));});
   function save(){
     if(sh.to<=sh.from){toast('La hora final tiene que ser después de la inicial.');return;}
+    var cc=conflictFor(S.me.slug,{d:sh.d,from:sh.from,to:sh.to},{noOwn:true});if(cc){toast('A esa hora ya vas a '+cc.t+'. Bájate de ahí primero.');return;}
     var a=myDoc(),nb={id:sh.id||Date.now().toString(36)+Math.floor(Math.random()*999).toString(36),d:sh.d,from:sh.from,to:sh.to,type:sh.type};
-    if(sh.id)a.blocks=a.blocks.map(function(x){return x.id===sh.id?nb:x;});else a.blocks.push(nb);
+    if(sh.id){var old=a.blocks.filter(function(x){return x.id===sh.id;})[0];
+      if(old&&(old.d!==nb.d||old.from!==nb.from||old.to!==nb.to||nb.type!=='o'))dropJoins(S.me.slug,sh.id);
+      a.blocks=a.blocks.map(function(x){return x.id===sh.id?nb:x;});}else a.blocks.push(nb);
     closeSheet();saveMine();
   }
   return [shead(sh.id?'Editar horario ocupado':'Marcar que estoy ocupado','Tus amigos verán que no estás libre a esa hora.'),
@@ -1174,7 +1222,7 @@ function busySheet(sh){
       el('button',{class:'opt','aria-pressed':sh.type==='o',onclick:function(){sh.type='o';render();}},el('b',null,'Pueden sumarse'),el('small',null,'Otros pueden ir contigo')),
       el('button',{class:'opt','aria-pressed':sh.type==='x',onclick:function(){sh.type='x';render();}},el('b',null,'Voy solo'),el('small',null,'No se pueden sumar')))),
     el('button',{class:'btn block primary',onclick:save},'Guardar'),
-    sh.id?el('button',{class:'btn block danger',onclick:function(){var a=myDoc();a.blocks=a.blocks.filter(function(x){return x.id!==sh.id;});closeSheet();saveMine();}},'Eliminar'):null];
+    sh.id?el('button',{class:'btn block danger',onclick:function(){var a=myDoc();a.blocks=a.blocks.filter(function(x){return x.id!==sh.id;});dropJoins(S.me.slug,sh.id);closeSheet();saveMine();}},'Eliminar'):null];
 }
 
 /* ---------- servidor (Netlify) ---------- */
